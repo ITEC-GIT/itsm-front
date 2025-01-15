@@ -64,6 +64,16 @@ const RemoteSSHPage = () => {
     setAlertVariant("success");
   };
 
+  const handleReset = () => {
+    setHostname(null);
+    setPort("");
+    setUsername("");
+    setPassword("");
+    setAlertMessage("");
+    setAlertVariant("");
+    setConnected(false);
+  };
+
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
@@ -118,7 +128,7 @@ const RemoteSSHPage = () => {
               />
             </div>
 
-            <div className="mb-3">
+            <div className="mb-5">
               <label htmlFor="passwordInput" className="form-label">
                 Password
               </label>
@@ -132,13 +142,22 @@ const RemoteSSHPage = () => {
               />
             </div>
 
-            <button
-              type="button"
-              className="btn btn-primary w-100"
-              onClick={handleConnect}
-            >
-              Connect
-            </button>
+            <div className="d-flex flex-column flex-sm-row gap-3">
+              <button
+                type="button"
+                className="btn custom-btn-primary w-100 hyper-connect-btn"
+                onClick={handleConnect}
+              >
+                Connect
+              </button>
+              <button
+                type="button"
+                className="btn custom-btn-warning w-100 hyper-reset-btn"
+                onClick={handleReset}
+              >
+                Reset
+              </button>
+            </div>
           </form>
 
           {alertMessage && (

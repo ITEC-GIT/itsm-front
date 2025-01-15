@@ -1,51 +1,79 @@
 .hyper-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer !important;
-  
-    @include media-breakpoint-up(sm) {
-      margin-bottom: 20px;
-    }
-  
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer !important;
+
+  @include media-breakpoint-up(sm) {
+    margin-bottom: 20px;
   }
-  
-  .hyper-icon {
-    font-size: 2.5rem;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
-  
-  .hyper-card-title {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+}
+
+.hyper-icon {
+  font-size: 2.5rem;
+}
+
+.hyper-card-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.hyper-card-text {
+  font-size: 0.9rem;
+  color: $gray-600;
+}
+
+.hyper-container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  @include media-breakpoint-down(xs) {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
-  
-  .hyper-card-text {
-    font-size: 0.9rem;
-    color: $gray-600;
+}
+
+.hyper-row {
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+}
+
+.hyper-col {
+  margin-bottom: 1.5rem;
+
+  @include media-breakpoint-up(md) {
+    margin-bottom: 0;
   }
-  
-  .hyper-container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  
-    @include media-breakpoint-down(xs) {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-  }
-  
-  .hyper-row {
-    margin-left: -0.75rem;
-    margin-right: -0.75rem;
-  }
-  
-  .hyper-col {
-    margin-bottom: 1.5rem;
-  
-    @include media-breakpoint-up(md) {
-      margin-bottom: 0;
-    }
-  }
+}
+
+.hyper-connect-btn {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: #fff !important;
+  font-weight: bold !important;
+  border: none;
+  border-radius: 25px !important;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.hyper-connect-btn:hover {
+  background: linear-gradient(90deg, #0056b3, #007bff);
+  transform: scale(1.01);
+}
+
+.hyper-reset-btn {
+  background: linear-gradient(90deg, #c0c0c0, #a6a6a6);
+  color: #fff !important;
+  font-weight: bold !important;
+  border: none;
+  border-radius: 25px !important;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.hyper-reset-btn:hover {
+  background: linear-gradient(90deg, #a6a6a6, #c0c0c0);
+  transform: scale(1.01);
+}

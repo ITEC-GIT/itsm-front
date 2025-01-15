@@ -136,11 +136,12 @@ const SoftwareInstallationPage: FC = () => {
             </div>
             <button
               type="button"
-              className="btn btn-primary w-100"
+              className="btn btn-primary w-100 hyper-connect-btn"
               onClick={handleInstall}
             >
               Install
             </button>
+
             {progress > 0 && (
               <div className="progress mt-3">
                 <div
