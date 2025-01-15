@@ -24,3 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 *.env*
+
+*.pdf
+ps_history.txt
