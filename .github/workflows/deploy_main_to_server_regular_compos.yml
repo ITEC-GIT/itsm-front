@@ -7,10 +7,13 @@ on:
 
 jobs:
   deploy:
-    if: github.event.release.target_commitish == 'main' # Replace 'main' with your branch name
+    if: github.event.release.target_commitish == 'main'|| github.ref == 'refs/heads/main' # Check if the target_commitish is 'main' or if the ref is 'main'
     runs-on: self-hosted
 
     steps:
+      - name: Debug target_commitish
+        run: echo "Target commitish: ${{ github.event.release.target_commitish }}"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
