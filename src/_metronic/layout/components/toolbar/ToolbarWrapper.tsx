@@ -11,7 +11,7 @@ const ToolbarWrapper = ({
   source,
 }: {
   setDashboardView?: React.Dispatch<React.SetStateAction<"main" | "analytics">>;
-  source:string;
+  source?:string;
 }) => {
   console.log("source ==> ", source)
   const [currentView, setCurrentView] = useState<"main" | "analytics">("main");

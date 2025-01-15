@@ -12,7 +12,7 @@ const AccountHeader: FC = () => {
 
   return (
     <>
-      <ToolbarWrapper />
+      <ToolbarWrapper source='account' />
       <Content>
         <div className='card mb-5 mb-xl-10'>
           <div className='card-body pt-9 pb-0'>

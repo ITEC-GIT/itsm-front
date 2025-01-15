@@ -10,6 +10,8 @@ import {
 } from "../../../../app/atoms/auth-atoms/authAtom";
 import { authChannel } from "../../../../app/pages/login-page/authChannel";
 import Cookies from "js-cookie";
+import { UserAtomType } from "../../../../app/types/AuthTypes";
+// import { UserAtomType } from "../../../../app/atoms/auth-atoms/authAtom";
 
 const HeaderUserMenu: FC = () => {
   const { currentUser } = useAuth();
@@ -20,7 +22,7 @@ const HeaderUserMenu: FC = () => {
     console.log("logout");
     Cookies.set("isAuthenticated", "false");
     Cookies.remove("session_token");
-    setUserAtom({});
+    setUserAtom({} as UserAtomType);
     setIsAuthAtom(false);
 
     authChannel.postMessage("logout");

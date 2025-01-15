@@ -201,6 +201,8 @@ const Statistics: FC = () => {
               iconColor='primary'
               title='500M$'
               description='SAP UI Progress'
+              titleColor='black'
+              descriptionColor='black'
             />
           </div>
 

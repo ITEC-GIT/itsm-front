@@ -25,7 +25,7 @@ const UsersListWrapper = () => (
   <QueryRequestProvider>
     <QueryResponseProvider>
       <ListViewProvider>
-        <ToolbarWrapper />
+        <ToolbarWrapper/>
         <Content>
           <UsersList />
         </Content>
