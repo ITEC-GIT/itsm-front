@@ -17,8 +17,6 @@ jobs:
         id: determine-branch
         run: |
           BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -E 'origin/main$' || true)
-          echo "::set-output name=BRANCH::${BRANCH}"
-
       - name: Deploy application
         if: steps.determine-branch.outputs.BRANCH == 'origin/main'
         run: |
