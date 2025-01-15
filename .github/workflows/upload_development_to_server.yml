@@ -15,5 +15,5 @@ jobs:
 
     - name: Deploy Application
       run: |
-        mkdir -p /home/itsm_glpi/development
-        rsync -avz --exclude='.git/' ./ /home/itsm_glpi/development/
+        mkdir -p /home/glpi/development
+        rsync -avz --exclude='.git/' ./ /home/glpi/development/
