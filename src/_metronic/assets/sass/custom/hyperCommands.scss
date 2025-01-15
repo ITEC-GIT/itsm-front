@@ -1,0 +1,51 @@
+.hyper-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer !important;
+  
+    @include media-breakpoint-up(sm) {
+      margin-bottom: 20px;
+    }
+  
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  .hyper-icon {
+    font-size: 2.5rem;
+  }
+  
+  .hyper-card-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .hyper-card-text {
+    font-size: 0.9rem;
+    color: $gray-600;
+  }
+  
+  .hyper-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  
+    @include media-breakpoint-down(xs) {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+  
+  .hyper-row {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+  }
+  
+  .hyper-col {
+    margin-bottom: 1.5rem;
+  
+    @include media-breakpoint-up(md) {
+      margin-bottom: 0;
+    }
+  }

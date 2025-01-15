@@ -1,0 +1,43 @@
+Basic Tree:
+App.tsx --- MasterInit.tsx in components folder --- MasterLayout(contains all the things i want to change)
+
+Master Layout 
+----------------------------
+    <PageDataProvider>
+      <div className='d-flex flex-column flex-root app-root' id='kt_app_root'>
+        <div className='app-page flex-column flex-column-fluid' id='kt_app_page'>
+          <HeaderWrapper />                                                              ----------------------------------->contains the header at top of page-- have left header part, the <Header /> and the     <Navbar /> which is the right nav bar
+          <div className='app-wrapper flex-column flex-row-fluid' id='kt_app_wrapper'>
+            <Sidebar />                                                                  ------------------------------------> contains the sidebar( AKA the ' ASIDE' ) in it, u can change the items of the aside -C:\Users\User\Desktop\glpi project\glpi_front_end_from_sally_demo1\ITESM-FRONTEND\src\_metronic\layout\components\sidebar\sidebar-menu\SidebarMenuMain.tsx
+            <div className='app-main flex-column flex-row-fluid' id='kt_app_main'>
+              <div className='d-flex flex-column flex-column-fluid'>
+                <Outlet />                                                                ------------------------------------> this here is changed by the react router dom as the 'Outlet', which is , when a link is clicked, this is changed, on each 
+                --------------------------------- Menu inside the 'SidebarMenuMain.tsx' if u see definition of each menu item 'SidebarMenuItem', it is a <Link> of react-router-dom
+              </div>
+              <FooterWrapper />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* begin:: Drawers */}
+      <ActivityDrawer />
+      <RightToolbar />
+      <DrawerMessenger />
+      {/* end:: Drawers */}
+
+      {/* begin:: Modals */}
+      <InviteUsers />
+      <UpgradePlan />
+      {/* end:: Modals */}
+      <ScrollTop />
+    </PageDataProvider>
+
+    in index.C:\Users\User\Desktop\glpi project\glpi_front_end_from_sally_demo1\ITESM-FRONTEND\index.html , exists the splash screen and the main loading page
+----------------------------
+---to access the side bar -MasterLayout is the parent of all and in it is the outlet-sidebar-sidebarmenu-sidebar-menu-main
+----to access the logo of the aside menu
+--to access the header of any page,u go for --- Master layout-HeaderWrapper-Header-
+
+---to change the logo of the side bar aside C:\Users\User\Desktop\glpi project\glpi_front_end_from_sally_demo1\ITESM-FRONTEND\src\_metronic\layout\components\sidebar\SidebarLogo.tsx
+u need to change  the '.svg' file in this tsx file , u need to change it in 'public' media .....

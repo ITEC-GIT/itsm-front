@@ -1,0 +1,24 @@
+import axios from "axios";
+
+export const PrivateApiCall = axios.create({
+  baseURL: import.meta.env.VITE_APP_ITSM_GLPI_API,
+  withCredentials: true,
+});
+
+PrivateApiCall.interceptors.request.use(
+  (req: any) => {
+    return req;
+  },
+  (err: any) => {
+    throw err;
+  }
+);
+
+PrivateApiCall.interceptors.response.use(
+  (res: any) => {
+    return res;
+  },
+  (err: any) => {
+    throw err;
+  }
+);

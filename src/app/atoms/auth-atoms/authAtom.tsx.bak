@@ -1,0 +1,9 @@
+// src/state/authAtoms.ts
+import { atom } from "jotai";
+import { UserAtomType } from "../../types/AuthTypes";
+
+export const userAtom = atom({});
+userAtom.debugLabel = "userFullSessionAtom";
+
+export const isAuthenticatedAtom = atom(false);
+isAuthenticatedAtom.debugLabel = "isAuthenticatedAtom";

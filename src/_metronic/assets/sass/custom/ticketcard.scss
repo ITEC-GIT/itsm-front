@@ -1,0 +1,208 @@
+/* Global Styles */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+
+    .badge {
+      font-size: 0.9rem;
+      flex-grow: 1;
+      text-align: center;
+      margin-left:0% !important;
+      align-self: center !important;
+    }
+  
+    img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+    }
+  
+    .rounded-circle {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  }
+  
+  .containers {
+    display: flex;
+    justify-content: center;  /* Centers content horizontally */
+    align-items: center;      /* Centers content vertically */
+    height: 100vh;
+    width: 100%;              /* Ensure full width */
+  }
+  
+  /* Hover Effect for Icons */
+  .icon-container:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .card-container:hover .card {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .hover-bg-gray {
+    transition: background-color 0.3s ease; /* Smooth transition */
+  
+    &:hover {
+      background-color: gray; /* Gray background on hover */
+    }
+  }
+  
+  /* Card Title */
+  .cardTitle {
+    margin-left: 4% !important;
+  }
+  
+  .card-title-container {
+    margin-left: 0%;
+  }
+  
+  /* Custom Button */
+  .custom-button {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    transform: translateY(-50%);
+    width: 27px;
+    height: 27px;
+    z-index: 1;
+    background-color: transparent;
+    border-top: 3px solid transparent;
+    border-left: 3px solid transparent;
+    border-bottom: 3px solid #f1f1f4;
+    border-right: 3px solid #f1f1f4;
+    border-bottom-right-radius: 15px;
+    cursor: pointer;
+  
+    &.selected {
+      background-color: #007bff;
+      border-color: #0056b3; /* Change the border color when selected */
+    }
+  }
+  
+  /* Card Footer Table */
+  .card-footer-table {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-spacing: 0;
+    height: 10%;
+    td {
+      padding: 0;
+      border: none;
+    }
+  
+    tr {
+      width: 100%;
+    }
+  }
+  
+  .card-content {
+    margin-top: 15px;
+  }
+  
+  .title-desc {
+    margin-left: 1.5%;
+    margin-bottom: 1%;
+  }
+  .other-info {
+    margin-left: 1.5%;
+
+  }
+  
+  .icon-container {
+    position: relative;
+    display: flex;
+    justify-content: space-around !important;
+    padding: 0%;
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #ddd;
+    }
+  
+    &::before {
+      left: 33.33%;
+    }
+  
+    &::after {
+      left: 66.66%;
+    }
+  }
+  
+  .icon-cell {
+    height: 50px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f0f3fb; // Change background color on hover
+    }
+    i:hover {
+      color: gold;
+    }
+  }
+
+  
+  .abbr {
+    margin-top: 10px;
+  }
+ 
+  
+  .id-text {
+    margin-bottom: 0.2rem; // Add spacing between id and badge
+  }
+  .bdd{
+    padding: 0;
+  }
+  .badgee {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
+  }
+  
+  .id-text {
+    padding-left: 3%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+  }
+.badge-bg-assigned{
+  background-color: darkcyan;
+}
+.badge-bg-new{
+  background-color: orange;
+}
+.badge-bg-solved{
+  background-color: green;
+}
+.badge-bg-closed{
+  background-color: darkslategray;
+}
+.row-bottom-margin{
+  margin-bottom: 1%;
+}
+.row-upper-border{
+  border-top: 1px solid #ddd;
+
+}
+.cell-border{
+  border-right: 1px solid #ddd !important;
+
+}
+.card-column-border-right{
+  border-right: 1px solid #ddd !important; // Add right border to each column
+
+}

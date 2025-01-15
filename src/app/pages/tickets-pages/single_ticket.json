@@ -1,0 +1,112 @@
+{
+    "id": 1,
+    "entities_id": 0,
+    "name": "TEST ",
+    "date": "2024-05-28 11:56:05",
+    "closedate": null,
+    "solvedate": "2024-05-28 11:58:56",
+    "takeintoaccountdate": "2024-05-28 11:58:56",
+    "date_mod": "2024-09-01 19:05:48",
+    "users_id_lastupdater": 2,
+    "status": 5,
+    "users_id_recipient": 7,
+    "requesttypes_id": 1,
+    "content": "&#60;p&#62;TESTÂ &#60;/p&#62;",
+    "urgency": 2,
+    "impact": 3,
+    "priority": 2,
+    "itilcategories_id": 0,
+    "type": 1,
+    "global_validation": 4,
+    "slas_id_ttr": 0,
+    "slas_id_tto": 0,
+    "slalevels_id_ttr": 0,
+    "time_to_resolve": null,
+    "time_to_own": null,
+    "begin_waiting_date": "2024-05-28 11:58:56",
+    "sla_waiting_duration": 0,
+    "ola_waiting_duration": 0,
+    "olas_id_tto": 0,
+    "olas_id_ttr": 0,
+    "olalevels_id_ttr": 0,
+    "ola_tto_begin_date": null,
+    "ola_ttr_begin_date": null,
+    "internal_time_to_resolve": null,
+    "internal_time_to_own": null,
+    "waiting_duration": 0,
+    "close_delay_stat": 0,
+    "solve_delay_stat": 171,
+    "takeintoaccount_delay_stat": 171,
+    "actiontime": 0,
+    "is_deleted": 0,
+    "locations_id": 0,
+    "validation_percent": 0,
+    "date_creation": "2024-05-28 11:56:05",
+    "areas_id": null,
+    "links": [
+        {
+            "rel": "Entity",
+            "href": "http://192.168.151.20/apirest.php/Entity/0"
+        },
+        {
+            "rel": "User",
+            "href": "http://192.168.151.20/apirest.php/User/2"
+        },
+        {
+            "rel": "User",
+            "href": "http://192.168.151.20/apirest.php/User/7"
+        },
+        {
+            "rel": "RequestType",
+            "href": "http://192.168.151.20/apirest.php/RequestType/1"
+        },
+        {
+            "rel": "Document_Item",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/Document_Item/"
+        },
+        {
+            "rel": "TicketTask",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/TicketTask/"
+        },
+        {
+            "rel": "TicketValidation",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/TicketValidation/"
+        },
+        {
+            "rel": "TicketCost",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/TicketCost/"
+        },
+        {
+            "rel": "Problem_Ticket",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/Problem_Ticket/"
+        },
+        {
+            "rel": "Change_Ticket",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/Change_Ticket/"
+        },
+        {
+            "rel": "Item_Ticket",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/Item_Ticket/"
+        },
+        {
+            "rel": "ITILSolution",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/ITILSolution/"
+        },
+        {
+            "rel": "ITILFollowup",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/ITILFollowup/"
+        },
+        {
+            "rel": "Ticket_User",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/Ticket_User/"
+        },
+        {
+            "rel": "Group_Ticket",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/Group_Ticket/"
+        },
+        {
+            "rel": "Supplier_Ticket",
+            "href": "http://192.168.151.20/apirest.php/Ticket/1/Supplier_Ticket/"
+        }
+    ]
+}
