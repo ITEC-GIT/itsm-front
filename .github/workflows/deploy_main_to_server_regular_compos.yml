@@ -1,4 +1,4 @@
-name: Deploy Docker on git release Tag with Image Retention (Self-Hosted Runner)
+name: Deploy Main Docker on git release Tag with Image Retention (Self-Hosted Runner)
 
 on:
   push:
@@ -7,14 +7,20 @@ on:
 
 jobs:
   deploy:
-    if: startsWith(github.ref, 'refs/tags/') && github.event.ref_type == 'tag' && github.event.base_ref == 'refs/heads/main'
     runs-on: self-hosted
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Determine branch
+        id: determine-branch
+        run: |
+          BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -E 'origin/main$' || true)
+          echo "::set-output name=BRANCH::${BRANCH}"
+
       - name: Deploy application
+        if: steps.determine-branch.outputs.BRANCH == 'origin/main'
         run: |
           IMAGE_NAME=react_test
           CONTAINER_NAME=test_container
