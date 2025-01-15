@@ -1,2 +1,2 @@
-# glpi_front
-react front end of the glpi project
+# ITSM_FRONT
+react front end of the ITSM project
