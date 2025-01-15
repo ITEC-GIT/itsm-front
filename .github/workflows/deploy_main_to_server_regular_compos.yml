@@ -11,8 +11,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Debug target_commitish
-        run: echo "The target_commitish is ${{ github.event.release.target_commitish }}"
       - name: Checkout code
         uses: actions/checkout@v3
 
