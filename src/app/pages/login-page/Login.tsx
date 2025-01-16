@@ -42,8 +42,9 @@ export function LoginPage() {
       try {
         const response = await LoginApi(login, password);
 
-        if (response.code === "ERR_BAD_REQUEST") {
-          throw new Error("Wrong Credentials");
+        if (Array.isArray(response) && response.length === 2) {
+          const [errorCode, errorMessage] = response;
+          throw new Error(`${errorMessage}`);
         } else if (response.code === "ERR_NETWORK") {
           throw new Error(
             "Ooops! Something went wrong. Please try again later."
