@@ -1,13 +1,10 @@
-# Use an official Node.js image to build the app
-FROM node:22 AS build
+# Use the official Node.js image as a base image
+FROM node:18 AS build
 
-RUN mkdir -p /home/src
-# Create the /home/src/app directory
-RUN mkdir -p /home/src/app
-# Set working directory
-WORKDIR /home/src/app
+# Set the working directory
+WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json (or yarn.lock)
 COPY package*.json ./
 
 # Install dependencies
@@ -16,28 +13,17 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# ...existing code...
-
-# Build the Vite app
+# Build the application
 RUN npm run build
 
-# List the contents of the /usr/src/app directory to verify the build output
-RUN ls -la /home/src/app
-
-# Production image using Nginx
+# Use a lightweight web server to serve the app
 FROM nginx:alpine
 
-# ...existing code...
+# Copy the build output to the Nginx html directory
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy the build output from the build stage
-COPY --from=build /home/src/app/dist /usr/share/nginx/html
-
-# Make port 80 available to the world outside this container
+# Expose the port that Nginx will run on
 EXPOSE 80
 
-# Define build argument
-ARG IMAGE_TAG
-ENV IMAGE_TAG=${IMAGE_TAG}
-
-# Run Nginx
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
