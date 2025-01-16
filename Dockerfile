@@ -1,5 +1,5 @@
 # Use an official Node.js image to build the app
-FROM node:14 AS build
+FROM node:22 AS build
 
 # Set working directory
 WORKDIR /usr/src/app
