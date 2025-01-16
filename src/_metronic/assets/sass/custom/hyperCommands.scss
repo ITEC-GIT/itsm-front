@@ -1,3 +1,5 @@
+@import "variables";
+
 .hyper-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -76,4 +78,47 @@
 .hyper-reset-btn:hover {
   background: linear-gradient(90deg, #a6a6a6, #c0c0c0);
   transform: scale(1.01);
+}
+
+.hyper-console-card {
+  background-color: whitesmoke !important;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.hyper-console-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hyper-console-card .card-header {
+  border-bottom: none !important;
+}
+
+.hyper-console-card .card-body {
+  padding: 0 !important;
+}
+
+.hyper-last-date {
+  background-color: $content-background-color !important;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+.pulse-animation {
+  animation: pulse 1s infinite;
 }
