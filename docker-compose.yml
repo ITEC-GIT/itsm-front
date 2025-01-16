@@ -8,5 +8,15 @@ services:
         IMAGE_TAG: ${TAG} # Dynamically passed from GitHub Actions
     image: react-itsm-image:${TAG} # Set the dynamic tag for the image
     ports:
-      - "3001:80"
+      - "3000:3000"
     restart: unless-stopped
+# version: '3'
+# services:
+#   react-ui:
+#     container_name: react-itsm-ui
+#     build:
+#       context: .
+#     image: react-itsm-image
+#     ports:
+#       - "3001:3001"
+#     restart: unless-stopped
