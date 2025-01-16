@@ -1,7 +1,7 @@
 # Use an official Node.js image to build the app
 FROM node:22 AS build
 
-
+RUN mkdir -p /home/src
 # Create the /home/src/app directory
 RUN mkdir -p /home/src/app
 # Set working directory
