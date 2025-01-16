@@ -1,6 +1,9 @@
 # Use an official Node.js image to build the app
 FROM node:22 AS build
 
+
+# Create the /usr/src/app directory
+RUN mkdir -p /usr/src/app
 # Set working directory
 WORKDIR /usr/src/app
 
