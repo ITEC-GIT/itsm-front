@@ -21,6 +21,10 @@ FROM nginx:alpine
 
 # Copy the build output to the Nginx html directory
 COPY --from=build /app/dist /usr/share/nginx/html
+# Define build argument
+ARG IMAGE_TAG
+ENV IMAGE_TAG=${IMAGE_TAG}
+
 
 # Expose the port that Nginx will run on
 EXPOSE 80
