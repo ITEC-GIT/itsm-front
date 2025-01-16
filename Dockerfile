@@ -13,11 +13,18 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# ...existing code...
+
 # Build the Vite app
 RUN npm run build
 
+# List the contents of the /usr/src/app directory to verify the build output
+RUN ls -la /usr/src/app
+
 # Production image using Nginx
 FROM nginx:alpine
+
+# ...existing code...
 
 # Copy the build output from the build stage
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
