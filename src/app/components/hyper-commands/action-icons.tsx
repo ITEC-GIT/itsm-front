@@ -5,7 +5,7 @@ const ActionIcons = () => {
   const handleNavigation = (page: string) => {
     navigate(`/hyper-commands/${page}`);
   };
-  console.log("window.location ==>", window.location.pathname);
+
   return (
     <div className="d-flex justify-content-end mb-4">
       <div
