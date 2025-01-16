@@ -29,8 +29,8 @@ RUN ls -la /usr/src/app/dist
 EXPOSE 3000
 
 # Define build argument
-# ARG IMAGE_TAG
-# ENV IMAGE_TAG=${IMAGE_TAG}
+ARG IMAGE_TAG
+ENV IMAGE_TAG=${IMAGE_TAG}
 
 # Run Nginx in the foreground
 CMD ["npm", "run", "serve"]
