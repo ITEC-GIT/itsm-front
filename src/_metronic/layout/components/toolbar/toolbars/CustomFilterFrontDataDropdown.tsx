@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Select from "react-select";
 
 const CustomFilterFrontDataDropdown: React.FC = () => {
   const [status, setStatus] = useState('');
@@ -55,52 +56,36 @@ const CustomFilterFrontDataDropdown: React.FC = () => {
         </select>
       </div>
 
-      {/* Member Type Section */}
+      {/* Status Section */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Member Type:</label>
-        <div className="d-flex">
-          <div className="form-check me-3">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              checked={isAuthor}
-              onChange={() => setIsAuthor(!isAuthor)}
-              id="authorCheck"
-            />
-            <label className="form-check-label" htmlFor="authorCheck">
-              Author
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              checked={isCustomer}
-              onChange={() => setIsCustomer(!isCustomer)}
-              id="customerCheck"
-            />
-            <label className="form-check-label" htmlFor="customerCheck">
-              Customer
-            </label>
-          </div>
-        </div>
+        <label className="form-label fw-bold">Urgency:</label>
+        <select
+          className="form-select"
+          value={status}
+          onChange={handleStatusChange}
+        >
+          <option value="">Select option</option>
+          <option value="1">Approved</option>
+          <option value="2">Pending</option>
+          <option value="3">In Process</option>
+          <option value="4">Rejected</option>
+        </select>
       </div>
 
-      {/* Notifications Section */}
+      {/* Status Section */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Notifications:</label>
-        <div className="form-check form-switch">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            checked={notificationsEnabled}
-            onChange={() => setNotificationsEnabled(!notificationsEnabled)}
-            id="notificationsSwitch"
-          />
-          <label className="form-check-label" htmlFor="notificationsSwitch">
-            Enabled
-          </label>
-        </div>
+        <label className="form-label fw-bold">Priority:</label>
+        <select
+          className="form-select"
+          value={status}
+          onChange={handleStatusChange}
+        >
+          <option value="">Select option</option>
+          <option value="1">Approved</option>
+          <option value="2">Pending</option>
+          <option value="3">In Process</option>
+          <option value="4">Rejected</option>
+        </select>
       </div>
 
       {/* Buttons */}

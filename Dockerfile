@@ -33,4 +33,4 @@ EXPOSE 3000
 # ENV IMAGE_TAG=${IMAGE_TAG}
 
 # Run Nginx in the foreground
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "serve"]
