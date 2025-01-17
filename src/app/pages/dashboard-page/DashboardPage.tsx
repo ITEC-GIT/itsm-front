@@ -41,7 +41,10 @@ const DashboardPage: FC = () => {
 
   return (
     <>
-      <ToolbarWrapper setDashboardView={setDashboardView} />
+      <ToolbarWrapper
+        setDashboardView={setDashboardView}
+        source={"dashboard"}
+      />
 
       {dashboardView === "main" ? (
         <Content>
