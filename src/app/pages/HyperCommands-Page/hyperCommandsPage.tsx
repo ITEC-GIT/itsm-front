@@ -2,9 +2,9 @@ import { FC, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { PageTitle } from "../../../_metronic/layout/core";
 import { ToolbarWrapper } from "../../../_metronic/layout/components/toolbar/ToolbarWrapper";
-import { Content } from "../../../_metronic/layout/components/content/Content";
 import { actions } from "../../data/hyperCommands";
 import { useNavigate } from "react-router-dom";
+import { Content } from "../../../_metronic/layout/components/content/Content";
 
 const HyperCommandsPage: FC = () => {
   const navigate = useNavigate();

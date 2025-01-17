@@ -10,6 +10,8 @@ import TicketsDetailPage from "../pages/tickets-pages/TicketsDetailPage";
 import { HyperCommandsWrapper } from "../pages/HyperCommands-Page/hyperCommandsPage";
 import { SoftwareInstallationPage } from "../pages/HyperCommands-Page/softwareInstallationPage";
 import { RemoteSSHPage } from "../pages/HyperCommands-Page/remoteSSHPage";
+import { RemoteConsolePage } from "../pages/HyperCommands-Page/remoteConsolePage";
+import { PerformanceMonitoringPage } from "../pages/HyperCommands-Page/performanceMonitoringPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -34,6 +36,14 @@ const PrivateRoutes = () => {
           element={<SoftwareInstallationPage />}
         />
         <Route path="hyper-commands/remote-ssh" element={<RemoteSSHPage />} />
+        <Route
+          path="hyper-commands/remote-console"
+          element={<RemoteConsolePage />}
+        />
+        <Route
+          path="hyper-commands/performance-monitoring"
+          element={<PerformanceMonitoringPage />}
+        />
         <Route path="tickets" element={<TicketPageWrapper />} />
         <Route path="/ticket/:id" element={<TicketsDetailPage />} />
         {/* 

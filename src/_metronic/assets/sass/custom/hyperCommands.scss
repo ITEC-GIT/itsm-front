@@ -80,11 +80,44 @@
   transform: scale(1.01);
 }
 
+// .hyper-create-session-btn {
+//   background: linear-gradient(135deg, #6e7dff, #4a63ff);
+//   color: white;
+//   font-weight: bold;
+//   border: none;
+//   padding: 12px 24px;
+//   border-radius: 30px;
+//   transition: all 0.3s ease-in-out;
+//   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+// }
+
+// .hyper-create-session-btn:hover {
+//   background: linear-gradient(135deg, #4a63ff, #6e7dff);
+//   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+// }
+
+// .hyper-create-session-btn:focus {
+//   outline: none;
+//   box-shadow: 0 0 0 0.25rem rgba(82, 153, 255, 0.5);
+// }
+
 .hyper-console-card {
-  background-color: whitesmoke !important;
+  background-color: white !important;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.hyper-console-disabled-card {
+  background-color: #faf5ff !important;
+  color: #6c757d;
+  pointer-events: none;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hyper-console-disabled-card > .hyper-last-date {
+  background-color: white !important;
 }
 
 .hyper-console-card:hover {

@@ -1,6 +1,8 @@
 import { FC, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
-const SoftwareInstallationPage: FC = () => {
+import { Content } from "../../../_metronic/layout/components/content/Content";
+
+const SoftwareInstallationPage = () => {
   const [progress, setProgress] = useState(0);
   const [selectedSoftware, setSelectedSoftware] = useState("Software A");
   const [selectedDevice, setSelectedDevice] = useState("Device 1");
@@ -85,194 +87,196 @@ const SoftwareInstallationPage: FC = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-10 col-lg-8 col-xl-10">
-          <h2 className="text-center mb-4">🚀 Software Installation</h2>
-          <ActionIcons />
-          <form className="p-4 shadow-sm bg-light rounded">
-            <div className="mb-3">
-              <label htmlFor="softwareSelect" className="form-label">
-                Select Software
-              </label>
-              <select
-                id="softwareSelect"
-                className="form-select"
-                value={selectedSoftware}
-                onChange={(e) => setSelectedSoftware(e.target.value)}
-              >
-                <option>Software A</option>
-                <option>Software B</option>
-                <option>Software C</option>
-              </select>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="deviceSelect" className="form-label">
-                Select Device
-              </label>
-              <select
-                id="deviceSelect"
-                className="form-select"
-                value={selectedDevice}
-                onChange={(e) => setSelectedDevice(e.target.value)}
-              >
-                <option>Device 1</option>
-                <option>Device 2</option>
-                <option>Device 3</option>
-              </select>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="versionInput" className="form-label">
-                Version
-              </label>
-              <input
-                type="text"
-                id="versionInput"
-                className="form-control"
-                placeholder="e.g., 1.0.0"
-                value={version}
-                onChange={(e) => setVersion(e.target.value)}
-              />
-            </div>
-            <button
-              type="button"
-              className="btn btn-primary w-100 hyper-connect-btn"
-              onClick={handleInstall}
-            >
-              Install
-            </button>
-
-            {progress > 0 && (
-              <div className="progress mt-3">
-                <div
-                  className="progress-bar progress-bar-striped progress-bar-animated"
-                  role="progressbar"
-                  style={{ width: `${progress}%` }}
-                  aria-valuenow={progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
+    <Content>
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-10 col-lg-10 col-xl-12">
+            <h2 className="text-center mb-4">🚀 Software Installation</h2>
+            <ActionIcons />
+            <form className="p-4 shadow-sm bg-light rounded">
+              <div className="mb-3">
+                <label htmlFor="softwareSelect" className="form-label">
+                  Select Software
+                </label>
+                <select
+                  id="softwareSelect"
+                  className="form-select"
+                  value={selectedSoftware}
+                  onChange={(e) => setSelectedSoftware(e.target.value)}
                 >
-                  {progress}%
+                  <option>Software A</option>
+                  <option>Software B</option>
+                  <option>Software C</option>
+                </select>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="deviceSelect" className="form-label">
+                  Select Device
+                </label>
+                <select
+                  id="deviceSelect"
+                  className="form-select"
+                  value={selectedDevice}
+                  onChange={(e) => setSelectedDevice(e.target.value)}
+                >
+                  <option>Device 1</option>
+                  <option>Device 2</option>
+                  <option>Device 3</option>
+                </select>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="versionInput" className="form-label">
+                  Version
+                </label>
+                <input
+                  type="text"
+                  id="versionInput"
+                  className="form-control"
+                  placeholder="e.g., 1.0.0"
+                  value={version}
+                  onChange={(e) => setVersion(e.target.value)}
+                />
+              </div>
+              <button
+                type="button"
+                className="btn btn-primary w-100 hyper-connect-btn"
+                onClick={handleInstall}
+              >
+                Install
+              </button>
+
+              {progress > 0 && (
+                <div className="progress mt-3">
+                  <div
+                    className="progress-bar progress-bar-striped progress-bar-animated"
+                    role="progressbar"
+                    style={{ width: `${progress}%` }}
+                    aria-valuenow={progress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  >
+                    {progress}%
+                  </div>
+                </div>
+              )}
+            </form>
+
+            {showAlert && (
+              <div
+                className={`alert alert-${alertVariant} alert-dismissible fade show mt-4`}
+                role="alert"
+              >
+                <div className="d-flex justify-content-between">
+                  <span>{alertMessage}</span>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    aria-label="Close"
+                    onClick={() => setShowAlert(false)}
+                  ></button>
                 </div>
               </div>
             )}
-          </form>
 
-          {showAlert && (
-            <div
-              className={`alert alert-${alertVariant} alert-dismissible fade show mt-4`}
-              role="alert"
-            >
-              <div className="d-flex justify-content-between">
-                <span>{alertMessage}</span>
-                <button
-                  type="button"
-                  className="btn-close"
-                  aria-label="Close"
-                  onClick={() => setShowAlert(false)}
-                ></button>
-              </div>
-            </div>
-          )}
-
-          <h3 className="mt-5">Installation History</h3>
-          <div className="table-responsive mt-3">
-            <table className="table table-hover table-bordered table-striped table-sm">
-              <thead>
-                <tr className="table-dark">
-                  <th>Software</th>
-                  <th>Device</th>
-                  <th>Version</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {history.map((entry, index) => (
-                  <tr key={index}>
-                    <td>{entry.software}</td>
-                    <td>{entry.device}</td>
-                    <td>{entry.version}</td>
-                    <td>
-                      <button
-                        className="btn btn-info btn-sm"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                        title="View Details"
-                        onClick={() => viewDeviceDetails(entry.device)}
-                      >
-                        <i className="bi bi-eye"></i>
-                      </button>
-                    </td>
+            <h3 className="mt-5">Installation History</h3>
+            <div className="table-responsive mt-3">
+              <table className="table table-hover table-bordered table-striped table-sm">
+                <thead>
+                  <tr className="table-dark">
+                    <th>Software</th>
+                    <th>Device</th>
+                    <th>Version</th>
+                    <th>Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {history.map((entry, index) => (
+                    <tr key={index}>
+                      <td>{entry.software}</td>
+                      <td>{entry.device}</td>
+                      <td>{entry.version}</td>
+                      <td>
+                        <button
+                          className="btn btn-info btn-sm"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
+                          title="View Details"
+                          onClick={() => viewDeviceDetails(entry.device)}
+                        >
+                          <i className="bi bi-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
 
-      {isModalOpen && (
-        <div
-          className="modal fade show"
-          id="deviceDetailsModal"
-          tabIndex={-1}
-          aria-labelledby="deviceDetailsModalLabel"
-          aria-hidden="false"
-          style={{ display: "block" }}
-        >
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="deviceDetailsModalLabel">
-                  Installation History for {selectedDevice}
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={closeModal}
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="modal-body">
-                <div className="table-responsive">
-                  <table className="table table-bordered table-striped table-sm">
-                    <thead>
-                      <tr className="table-dark">
-                        <th>Software</th>
-                        <th>Version</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedDeviceHistory.length === 0 ? (
-                        <tr>
-                          <td colSpan={2}>No software installed yet.</td>
+        {isModalOpen && (
+          <div
+            className="modal fade show"
+            id="deviceDetailsModal"
+            tabIndex={-1}
+            aria-labelledby="deviceDetailsModalLabel"
+            aria-hidden="false"
+            style={{ display: "block" }}
+          >
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title" id="deviceDetailsModalLabel">
+                    Installation History for {selectedDevice}
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={closeModal}
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="table-responsive">
+                    <table className="table table-bordered table-striped table-sm">
+                      <thead>
+                        <tr className="table-dark">
+                          <th>Software</th>
+                          <th>Version</th>
                         </tr>
-                      ) : (
-                        selectedDeviceHistory.map((entry, index) => (
-                          <tr key={index}>
-                            <td>{entry.software}</td>
-                            <td>{entry.version}</td>
+                      </thead>
+                      <tbody>
+                        {selectedDeviceHistory.length === 0 ? (
+                          <tr>
+                            <td colSpan={2}>No software installed yet.</td>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                        ) : (
+                          selectedDeviceHistory.map((entry, index) => (
+                            <tr key={index}>
+                              <td>{entry.software}</td>
+                              <td>{entry.version}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeModal}
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={closeModal}
-                >
-                  Close
-                </button>
-              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Content>
   );
 };
 
