@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export const PublicApiCall = axios.create({
-  baseURL: import.meta.env.VITE_APP_ITSM_GLPI_API_BASE_URL,
+  baseURL: 'https://cobalt.pulsar.ao/apirest.php'
 });
 
 export const PrivateApiCall = axios.create({
-  baseURL: import.meta.env.VITE_APP_ITSM_GLPI_API_BASE_URL,
+  baseURL: 'https://cobalt.pulsar.ao/apirest.php',
   withCredentials: true,
 });
 
