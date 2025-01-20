@@ -6,7 +6,7 @@ services:
       context: .
       args:
         IMAGE_TAG: ${TAG} # Dynamically passed from GitHub Actions
-    image: react-itsm-image:${TAG} # Set the dynamic tag for the image
+    image: react_itsm_image:${TAG} # Set the dynamic tag for the image
     ports:
       - "3000:3000"
     restart: unless-stopped

@@ -15,7 +15,7 @@ jobs:
 
       - name: Deploy application
         run: |
-          IMAGE_NAME= react-itsm-image
+          IMAGE_NAME= react_itsm_image
           CONTAINER_NAME=react-itsm-ui
           
           # Stop and remove the old container
