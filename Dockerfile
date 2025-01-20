@@ -12,7 +12,6 @@ RUN npm install
 
 # Copy the application code
 COPY . .
-COPY ./.env .env
 # Build the Vite app
 RUN npm run build
 
