@@ -5,6 +5,12 @@
   padding-top: 20px !important;
 }
 
+.required::after {
+  content: "*";
+  color: red;
+  margin-left: 5px;
+}
+
 .spinner-loading-data {
   color: #007bff;
   width: 5rem;

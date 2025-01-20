@@ -155,3 +155,83 @@
 .pulse-animation {
   animation: pulse 1s infinite;
 }
+
+//for table
+.status-initial {
+  margin-left: 15px !important;
+}
+
+.status-initial::before {
+  background-color: pink !important;
+}
+
+.table-colored tbody > tr td:first-child {
+  position: relative;
+  border-radius: 15px 0 0 15px;
+  overflow: hidden;
+}
+
+.table-colored tbody > tr td:first-child::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 100%;
+  border-radius: 15px 0 0 15px;
+  // background-color: yellowgreen !important;
+}
+
+// for inputs
+
+.custom-select .react-select__control {
+  height: 40px;
+  min-height: 40px;
+  border: 2px solid #0d6efd !important;
+  border-radius: 0.375rem !important;
+  padding: 0.5rem;
+  font-size: 1rem;
+  box-shadow: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.custom-select .react-select__control--is-focused {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Blue glow shadow */
+}
+
+.custom-select .react-select__value-container {
+  padding: 2px 8px; /* Align text properly */
+}
+
+.custom-select .react-select__single-value {
+  margin: 0;
+  line-height: 1.5; /* Match input alignment */
+}
+
+.custom-select .react-select__indicator {
+  padding: 5px; /* Align dropdown arrow */
+}
+
+.custom-select .react-select__menu {
+  z-index: 1050; /* Ensure dropdown appears above other elements */
+}
+
+.custom-select .react-select__menu-list {
+  max-height: 200px; /* Control dropdown height */
+  overflow-y: auto;
+}
+
+.custom-input {
+  height: 40px; /* Match height with select */
+  line-height: 1.5;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.custom-input:focus {
+  border-color: #007bff; /* Blue border on focus */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Blue glow shadow */
+}
