@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { Content } from "../../../_metronic/layout/components/content/Content";
 import Select from "react-select";
+import DataTable from "react-data-table-component";
+import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 
 type HistoryType = {
   device: string;
@@ -18,7 +21,47 @@ const initialMockData: HistoryType[] = [
     device: "Device 1",
     destination: "/usr/local/bin/software1",
     variables: "/a /b arg1=value1",
-    status: "Completed",
+    status: "initialized",
+    user: "Admin",
+  },
+  {
+    software: "http://example.com/software1.tar.gz",
+    device: "Device 1",
+    destination: "/usr/local/bin/software1",
+    variables: "/a /b arg1=value1",
+    status: "canceled",
+    user: "Admin",
+  },
+  {
+    software: "http://example.com/software1.tar.gz",
+    device: "Device 1",
+    destination: "/usr/local/bin/software1",
+    variables: "/a /b arg1=value1",
+    status: "received",
+    user: "Admin",
+  },
+  {
+    software: "http://example.com/software1.tar.gz",
+    device: "Device 1",
+    destination: "/usr/local/bin/software1",
+    variables: "/a /b arg1=value1",
+    status: "canceled",
+    user: "Admin",
+  },
+  {
+    software: "http://example.com/software1.tar.gz",
+    device: "Device 1",
+    destination: "/usr/local/bin/software1",
+    variables: "/a /b arg1=value1",
+    status: "initialized",
+    user: "Admin",
+  },
+  {
+    software: "http://example.com/software1.tar.gz",
+    device: "Device 1",
+    destination: "/usr/local/bin/software1",
+    variables: "/a /b arg1=value1",
+    status: "canceled",
     user: "Admin",
   },
   {
@@ -26,7 +69,39 @@ const initialMockData: HistoryType[] = [
     device: "Device 2",
     destination: "/usr/local/bin/software2",
     variables: "/x /y arg2=value2",
-    status: "Initialized",
+    status: "initialized",
+    user: "User1",
+  },
+  {
+    software: "http://example.com/software2.tar.gz",
+    device: "Device 2",
+    destination: "/usr/local/bin/software2",
+    variables: "/x /y arg2=value2",
+    status: "initialized",
+    user: "User1",
+  },
+  {
+    software: "http://example.com/software2.tar.gz",
+    device: "Device 2",
+    destination: "/usr/local/bin/software2",
+    variables: "/x /y arg2=value2",
+    status: "initialized",
+    user: "User1",
+  },
+  {
+    software: "http://example.com/software2.tar.gz",
+    device: "Device 2",
+    destination: "/usr/local/bin/software2",
+    variables: "/x /y arg2=value2",
+    status: "initialized",
+    user: "User1",
+  },
+  {
+    software: "http://example.com/software2.tar.gz",
+    device: "Device 2",
+    destination: "/usr/local/bin/software2",
+    variables: "/x /y arg2=value2",
+    status: "initialized",
     user: "User1",
   },
   {
@@ -34,7 +109,7 @@ const initialMockData: HistoryType[] = [
     device: "Device 3",
     destination: "/usr/local/bin/software3",
     variables: "",
-    status: "Completed",
+    status: "initialized",
     user: "User2",
   },
 ];
@@ -57,6 +132,25 @@ const SoftwareInstallationPage = () => {
   const [disableInstallButton, setDisableInstallButton] = useState(false);
   const [deviceError, setDeviceError] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<HistoryType>();
+
+  const SoftwarePerPage = 6;
+  const totalPages = Math.ceil(history.length / SoftwarePerPage);
+  const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
+  const [paginatedHistory, setPaginatedTickets] = useState<any[]>([]);
+  const handleFirstPage = () => setCurrentHistoryPage(1);
+
+  const handlePreviousPage = () =>
+    setCurrentHistoryPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () =>
+    setCurrentHistoryPage((prev) => Math.min(prev + 1, totalPages));
+  const handleLastPage = () => setCurrentHistoryPage(totalPages);
+  const handlePageChange = (page: number) => {
+    setCurrentHistoryPage(page);
+  };
+  const minPagesToShow = 8;
+  const startPage =
+    Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
+  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
 
   const clearFields = () => {
     setSoftwareUrl("");
@@ -87,6 +181,7 @@ const SoftwareInstallationPage = () => {
       (entry) =>
         entry.software === softwareUrl && entry.device === selectedDevice
     );
+
     if (isAlreadyInstalled) {
       setAlertMessage(
         `${softwareUrl} is already installed on ${selectedDevice}.`
@@ -104,6 +199,7 @@ const SoftwareInstallationPage = () => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
+
           setAlertMessage(`${softwareUrl} installed successfully!`);
           setAlertVariant("success");
           setShowAlert(true);
@@ -114,12 +210,18 @@ const SoftwareInstallationPage = () => {
               device: selectedDevice,
               variables: variables,
               destination: destination,
-              status: "Initialized",
+              status: "initialized",
               user: "cobalt",
             },
           ]);
+
           setProgress(0);
           setDisableInstallButton(false);
+
+          setTimeout(() => {
+            setProgress(0);
+          }, 1000);
+
           return prev;
         }
         return prev + 10;
@@ -140,14 +242,162 @@ const SoftwareInstallationPage = () => {
       setIsModalOpen(false);
     }
   };
+
+  const columns = [
+    {
+      name: "Software URL",
+      selector: (row: HistoryType) => row.software,
+      sortable: true,
+      grow: 2,
+      cell: (row: HistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.software}
+        >
+          {row.software}
+        </span>
+      ),
+    },
+    {
+      name: "Serial Number",
+      selector: (row: HistoryType) => row.device,
+      sortable: true,
+      grow: 1.2,
+      cell: (row: HistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.device}
+        >
+          {row.device}
+        </span>
+      ),
+    },
+    {
+      name: "Device Name",
+      selector: (row: HistoryType) => row.device,
+      cell: (row: HistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.device}
+        >
+          {row.device}
+        </span>
+      ),
+      sortable: true,
+    },
+    {
+      name: "Destination",
+      selector: (row: HistoryType) => row.destination,
+      sortable: true,
+      cell: (row: HistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.destination}
+        >
+          {row.destination}
+        </span>
+      ),
+    },
+    {
+      name: "Arguments",
+      selector: (row: HistoryType) => row.variables,
+      sortable: true,
+      cell: (row: HistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.variables}
+        >
+          {row.variables}
+        </span>
+      ),
+    },
+    {
+      name: "Status",
+      selector: (row: HistoryType) => row.status,
+      sortable: true,
+      cell: (row: HistoryType) => {
+        // Conditional styling based on status
+        const getStatusStyle = (status: string) => {
+          switch (status.toLowerCase()) {
+            case "initialized":
+              return { color: "orange", fontWeight: "bold" };
+            case "received":
+              return { color: "green", fontWeight: "bold" };
+            case "canceled":
+              return { color: "red", fontWeight: "bold" };
+            default:
+              return { color: "black" };
+          }
+        };
+
+        return (
+          <span
+            style={getStatusStyle(row.status)}
+            className="status-cell"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title={row.status}
+          >
+            {row.status}
+          </span>
+        );
+      },
+      grow: 0.5,
+    },
+    {
+      name: "User",
+      selector: (row: HistoryType) => row.user,
+      sortable: true,
+    },
+    {
+      name: "Action",
+      cell: (row: HistoryType) => (
+        <button
+          className="btn btn-danger btn-sm d-flex justify-content-center align-items-center"
+          style={{
+            width: "30px",
+            height: "30px",
+            borderRadius: "50%",
+          }}
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Cancel Installation"
+          onClick={() => handleCancelClick(row)}
+          disabled={row.status === "canceled" || row.status === "received"}
+        >
+          <i
+            className="bi bi-ban text-center"
+            style={{ fontSize: "1rem", padding: 0 }}
+          ></i>
+        </button>
+      ),
+      sortable: false,
+      grow: 0.5,
+    },
+  ];
+
+  useEffect(() => {
+    const paginatedTickets = history.slice(
+      (currentHistorysPage - 1) * SoftwarePerPage,
+      currentHistorysPage * SoftwarePerPage
+    );
+    setPaginatedTickets(paginatedTickets);
+  }, [currentHistorysPage, history]);
+
   return (
     <Content>
       <div className="container mt-5">
         <div className="row justify-content-center">
           <div className="col-md-10 col-lg-10 col-xl-12">
             <h2 className="text-center mb-4">🚀 Software Installation</h2>
+
             <ActionIcons />
-            {/* cards */}
+
             <div className="row g-4 justify-content-center">
               <div className="col-3">
                 <div
@@ -167,7 +417,7 @@ const SoftwareInstallationPage = () => {
                       </div>
                     </div>
                     <div className="col">
-                      <h5 className="mb-1">Initialized Software</h5>
+                      <h5 className="mb-1">initialized Software</h5>
                       <h6 className="text-muted">150</h6>
                     </div>
                   </div>
@@ -378,7 +628,61 @@ const SoftwareInstallationPage = () => {
             )}
 
             <h3 className="mt-5">Installation History</h3>
-            <div className="table-responsive mt-3">
+            <DataTable
+              customStyles={customStyles}
+              columns={columns}
+              data={paginatedHistory}
+              responsive
+              highlightOnHover
+            />
+
+            <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
+              <button
+                className="btn btn-sm btn-light me-2"
+                onClick={handleFirstPage}
+                disabled={currentHistorysPage === 1}
+              >
+                First
+              </button>
+              <button
+                className="btn btn-sm btn-light me-2"
+                onClick={handlePreviousPage}
+                disabled={currentHistorysPage === 1}
+              >
+                Previous
+              </button>
+              {Array.from(
+                { length: endPage - startPage + 1 },
+                (_, index) => startPage + index
+              ).map((page) => (
+                <button
+                  key={page}
+                  className={clsx("btn btn-sm me-2", {
+                    "btn-primary": currentHistorysPage === page,
+                    "btn-light": currentHistorysPage !== page,
+                  })}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                className="btn btn-sm btn-light me-2"
+                onClick={handleNextPage}
+                disabled={currentHistorysPage === totalPages}
+              >
+                Next
+              </button>
+              <button
+                className="btn btn-sm btn-light"
+                onClick={handleLastPage}
+                disabled={currentHistorysPage === totalPages}
+              >
+                Last
+              </button>
+            </div>
+
+            {/* <div className="table-responsive mt-3">
               <table className="table table-hover table-bordered table-striped table-sm table-colored">
                 <thead>
                   <tr className="table-dark">
@@ -414,7 +718,7 @@ const SoftwareInstallationPage = () => {
                           data-bs-placement="top"
                           title="Cancel Installation"
                           onClick={() => handleCancelClick(entry)}
-                          disabled={entry.status !== "Initialized"}
+                          disabled={entry.status !== "initialized"}
                         >
                           <i
                             className="bi bi-ban text-center"
@@ -426,10 +730,10 @@ const SoftwareInstallationPage = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div> */}
           </div>
         </div>
-        {/* Modal */}
+
         {isModalOpen && (
           <div
             className="modal show"
