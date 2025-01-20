@@ -36,3 +36,4 @@ ENV IMAGE_TAG=${IMAGE_TAG}
 
 # Run Nginx in the foreground
 CMD ["npm", "run", "serve"]
+#sda 
