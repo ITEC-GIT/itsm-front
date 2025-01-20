@@ -15,8 +15,8 @@ jobs:
 
       - name: Deploy application
         run: |
-          IMAGE_NAME= itsm_image
-          CONTAINER_NAME=react-itsm-ui
+          IMAGE_NAME=react_test
+          CONTAINER_NAME=test_container
           
           # Stop and remove the old container
           docker ps -a -q --filter "name=$CONTAINER_NAME" | xargs -r docker rm -f
