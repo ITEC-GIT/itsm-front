@@ -6,6 +6,7 @@ import { ToolbarWrapper } from '../../../_metronic/layout/components/toolbar'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { toolbarTicketsNavigationAtom, toolbarTicketsSearchAtom } from '../../atoms/toolbar-atoms/toolbarTicketsAtom';
 import { totalTicketsAtom, fetchedTicketsAtom, isTicketsFetchedAtom, fetchMorePagesFlagAtom, maxIdAtom, ticketsAtom, maxTotalAtom, pinnedTicketsIdsAtom } from '../../atoms/tickets-page-atom/ticketsPageAtom';
+import { toolbarTicketsFrontFiltersAtom } from '../../atoms/toolbar-atoms/toolbarTicketsAtom'
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
 
 import { PageTitleTickets } from '../../../_metronic/layout/components/toolbar/page-title/PageTitleTickets'
@@ -24,7 +25,9 @@ const TicketsPage: React.FC = () => {
   const location = useLocation();
   // const [ticketsFetched, setTicketsFetched] = useAtom(fetchedTicketsAtom)
   const [tickets, setTickets] = useAtom(ticketsAtom)
-  const [ticketsFiltered, setTicketsFiltered] = useState<any[]>([])
+  const [frontFilter, setFrontFilter] = useAtom(toolbarTicketsFrontFiltersAtom)
+
+  const [ticketsSearchFiltered, setTicketsSearchFiltered] = useState<any[]>([])
 
   const setIsTicketsFetch = useSetAtom(isTicketsFetchedAtom)
   const fetchMorePagesFlag = useAtomValue(fetchMorePagesFlagAtom)
@@ -32,13 +35,14 @@ const TicketsPage: React.FC = () => {
   const [totalPagesFetched, setTotalPagesFetched] = useState<number>(1)
 
   const setTotalTickets = useSetAtom(totalTicketsAtom)// Set the total tickets per query of fetched in this instance only
-  const [isDataLoading, setIsDataLoading] = useState(true) 
-  const [maxTotalTickets, setMaxTotalTickets] = useAtom(maxTotalAtom) 
+  const [isDataLoading, setIsDataLoading] = useState(true)
+  const [maxTotalTickets, setMaxTotalTickets] = useAtom(maxTotalAtom)
   const [paginatedTickets, setPaginatedTickets] = useState<any[]>([])
 
   const [pinnedTicketIds, setPinnedTicketIds] = useAtom(pinnedTicketsIdsAtom) // State to track pinned ticket IDs
   const [sortedTickets, setSortedTickets] = useState<any[]>([])
-  const usrAtom= useAtomValue(userAtom);
+  const usrAtom = useAtomValue(userAtom);
+
   // useEffect(() => {
   //   if (location.state?.from === "details" && ticketsFetched.length > 0) {
   //     console.log("Navigated back from details; skipping fetch");
@@ -57,224 +61,7 @@ const TicketsPage: React.FC = () => {
 
   //   fetchTickets()
   // }, [])
-  const demoTickets = [
-    {
-      id: 53,
-      entities_id: 0,
-      name: "test203",
-      date: "2025-01-07 10:59:27",
-      closedate: null,
-      solvedate: null,
-      takeintoaccountdate: null,
-      date_mod: "2025-01-07 09:59:28",
-      users_id_lastupdater: 7,
-      users_lastupdater: "m.hareb",
-      status: 1,
-      status_label: "new",
-      users_id_recipient: 7,
-      users_recipient: "m.hareb",
-      requesttypes_id: 1,
-      content: "",
-      urgency: 4,
-      urgency_label: "High",
-      impact: 3,
-      impact_label: "Medium",
-      priority: 3,
-      priority_label: "Medium",
-      itilcategories_id: 3,
-      type: 1,
-      type_label: "Incident",
-      global_validation: 1,
-      slas_id_ttr: 0,
-      slas_id_tto: 0,
-      slalevels_id_ttr: 0,
-      time_to_resolve: null,
-      time_to_own: null,
-      begin_waiting_date: null,
-      sla_waiting_duration: 0,
-      ola_waiting_duration: 0,
-      olas_id_tto: 0,
-      olas_id_ttr: 0,
-      olalevels_id_ttr: 0,
-      ola_tto_begin_date: null,
-      ola_ttr_begin_date: null,
-      internal_time_to_resolve: null,
-      internal_time_to_own: null,
-      waiting_duration: 0,
-      close_delay_stat: 0,
-      solve_delay_stat: 0,
-      takeintoaccount_delay_stat: 0,
-      actiontime: 0,
-      is_deleted: 0,
-      locations_id: 0,
-      validation_percent: 0,
-      date_creation: "2025-01-07 09:59:28",
-      areas_id: 0,
-      area: null,
-    },
-    {
-      id: 52,
-      entities_id: 0,
-      name: "test201",
-      date: "2025-01-07 09:47:23",
-      closedate: null,
-      solvedate: null,
-      takeintoaccountdate: null,
-      date_mod: "2025-01-07 08:47:23",
-      users_id_lastupdater: 7,
-      users_lastupdater: "m.hareb",
-      status: 1,
-      status_label: "new",
-      users_id_recipient: 7,
-      users_recipient: "m.hareb",
-      requesttypes_id: 1,
-      content: "",
-      urgency: 5,
-      urgency_label: "Very high",
-      impact: 3,
-      impact_label: "Medium",
-      priority: 3,
-      priority_label: "Medium",
-      itilcategories_id: 3,
-      type: 1,
-      type_label: "Incident",
-      global_validation: 1,
-      slas_id_ttr: 0,
-      slas_id_tto: 0,
-      slalevels_id_ttr: 0,
-      time_to_resolve: null,
-      time_to_own: null,
-      begin_waiting_date: null,
-      sla_waiting_duration: 0,
-      ola_waiting_duration: 0,
-      olas_id_tto: 0,
-      olas_id_ttr: 0,
-      olalevels_id_ttr: 0,
-      ola_tto_begin_date: null,
-      ola_ttr_begin_date: null,
-      internal_time_to_resolve: null,
-      internal_time_to_own: null,
-      waiting_duration: 0,
-      close_delay_stat: 0,
-      solve_delay_stat: 0,
-      takeintoaccount_delay_stat: 0,
-      actiontime: 0,
-      is_deleted: 0,
-      locations_id: 0,
-      validation_percent: 0,
-      date_creation: "2025-01-07 08:47:23",
-      areas_id: 0,
-      area: null,
-    },
-    {
-      id: 51,
-      entities_id: 0,
-      name: "(*&#38;^%$",
-      date: "2025-01-07 09:34:37",
-      closedate: null,
-      solvedate: "2025-01-07 09:34:37",
-      takeintoaccountdate: null,
-      date_mod: "2025-01-07 08:34:37",
-      users_id_lastupdater: 7,
-      users_lastupdater: "m.hareb",
-      status: 5,
-      status_label: "solved",
-      users_id_recipient: 7,
-      users_recipient: "m.hareb",
-      requesttypes_id: 1,
-      content: "",
-      urgency: 1,
-      urgency_label: "Very low",
-      impact: 3,
-      impact_label: "Medium",
-      priority: 2,
-      priority_label: "Low",
-      itilcategories_id: 3,
-      type: 2,
-      type_label: "Demand",
-      global_validation: 1,
-      slas_id_ttr: 0,
-      slas_id_tto: 0,
-      slalevels_id_ttr: 0,
-      time_to_resolve: null,
-      time_to_own: null,
-      begin_waiting_date: null,
-      sla_waiting_duration: 0,
-      ola_waiting_duration: 0,
-      olas_id_tto: 0,
-      olas_id_ttr: 0,
-      olalevels_id_ttr: 0,
-      ola_tto_begin_date: null,
-      ola_ttr_begin_date: null,
-      internal_time_to_resolve: null,
-      internal_time_to_own: null,
-      waiting_duration: 0,
-      close_delay_stat: 0,
-      solve_delay_stat: 0,
-      takeintoaccount_delay_stat: 0,
-      actiontime: 0,
-      is_deleted: 0,
-      locations_id: 0,
-      validation_percent: 0,
-      date_creation: "2025-01-07 08:34:37",
-      areas_id: 0,
-      area: null,
-    },
-    {
-      id: 50,
-      entities_id: 0,
-      name: "!@#$%",
-      date: "2025-01-07 09:31:07",
-      closedate: null,
-      solvedate: null,
-      takeintoaccountdate: null,
-      date_mod: "2025-01-07 08:31:08",
-      users_id_lastupdater: 7,
-      users_lastupdater: "m.hareb",
-      status: 1,
-      status_label: "new",
-      users_id_recipient: 7,
-      users_recipient: "m.hareb",
-      requesttypes_id: 1,
-      content: "",
-      urgency: 5,
-      urgency_label: "Very high",
-      impact: 3,
-      impact_label: "Medium",
-      priority: 4,
-      priority_label: "High",
-      itilcategories_id: 3,
-      type: 1,
-      type_label: "Incident",
-      global_validation: 1,
-      slas_id_ttr: 0,
-      slas_id_tto: 0,
-      slalevels_id_ttr: 0,
-      time_to_resolve: null,
-      time_to_own: null,
-      begin_waiting_date: null,
-      sla_waiting_duration: 0,
-      ola_waiting_duration: 0,
-      olas_id_tto: 0,
-      olas_id_ttr: 0,
-      olalevels_id_ttr: 0,
-      ola_tto_begin_date: null,
-      ola_ttr_begin_date: null,
-      internal_time_to_resolve: null,
-      internal_time_to_own: null,
-      waiting_duration: 0,
-      close_delay_stat: 0,
-      solve_delay_stat: 0,
-      takeintoaccount_delay_stat: 0,
-      actiontime: 0,
-      is_deleted: 0,
-      locations_id: 0,
-      validation_percent: 0,
-      date_creation: "2025-01-07 08:31:08",
-      areas_id: 0,
-      area: null,
-    },
-  ]
+
 
   const handlePinTicket = async (id: string) => {
     setPinnedTicketIds((prevPinned) => {
@@ -288,7 +75,7 @@ const TicketsPage: React.FC = () => {
     })
   }
   const handleStarringTicket = async (id: string) => {
-   return
+    return
   }
   const x =
     useEffect(() => {
@@ -304,7 +91,7 @@ const TicketsPage: React.FC = () => {
           const responseData = response.data.data
           setMaxTotalTickets(response.data.totalcount)
           setTickets(responseData)
-          setTotalTickets(responseData.length) 
+          setTotalTickets(responseData.length)
           setIsTicketsFetch(true)
           setIsDataLoading(false)
 
@@ -324,7 +111,7 @@ const TicketsPage: React.FC = () => {
     if (fetchMorePagesFlag) {
       const fetchMorePages = async () => {
         try {
-          const nextPage = totalPagesFetched + 1
+          const countOfPages = totalPagesFetched + 1
 
           const lowestId = getLowestId(tickets)
           if (lowestId !== null) {
@@ -338,11 +125,10 @@ const TicketsPage: React.FC = () => {
 
               setTickets(updatedTickets)
               setTotalTickets(prevTotal => prevTotal + responseData.length)
-
               setIsDataLoading(false)
 
             }
-            setTotalPagesFetched(nextPage)
+            setTotalPagesFetched(countOfPages)
             setFetchMorePagesFlag(false)
           }
         } catch (error) {
@@ -373,17 +159,41 @@ const TicketsPage: React.FC = () => {
   const replyToTicket = (id: number) => {
     console.log(`Reply to ticket ID: ${id}`)
   }
+
   const ticketsPerPage = 6 // tickets to show in 1 page
 
+  const updatePaginatedTickets = () => {
+    const startIdx = (currentTicketsPage - 1) * ticketsPerPage;
+    const endIdx = currentTicketsPage * ticketsPerPage;
 
-
-
+    if (toolbarSearch.trim()) {
+      setPaginatedTickets(ticketsSearchFiltered.slice(startIdx, endIdx));
+    } else if (frontFilter) {
+      setPaginatedTickets(filteredTickets.slice(startIdx, endIdx));
+    } else {
+      setPaginatedTickets(tickets.slice(startIdx, endIdx));
+    }
+  };
+  useEffect(() => {
+    updatePaginatedTickets();
+  }, [currentTicketsPage, ticketsSearchFiltered, frontFilter]);
+  useEffect(() => {
+    setCurrentTicketsPage(1);
+  }, [toolbarSearch, frontFilter]);
+  // const updatePaginatedTickets = () => {
+  //   const startIdx = (currentTicketsPage - 1) * ticketsPerPage;
+  //   const endIdx = currentTicketsPage * ticketsPerPage;
+  //   setPaginatedTickets(filteredTickets.slice(startIdx, endIdx));
+  // };
+  useEffect(() => {
+    updatePaginatedTickets();
+  }, [currentTicketsPage, ticketsSearchFiltered, frontFilter]);
 
   useEffect(() => {
     if (toolbarSearch.trim() === '') {
-      setTicketsFiltered(tickets); // Reset to all tickets if search is empty or whitespace
+      setTicketsSearchFiltered(tickets); // Reset to all tickets if search is empty or whitespace
     } else {
-      setTicketsFiltered(
+      setTicketsSearchFiltered(
         tickets.filter((item) => {
           return Object.values(item)
             .join("")
@@ -404,13 +214,45 @@ const TicketsPage: React.FC = () => {
       }
       return 0
     })
-
-    const paginatedTickets = sortedTickets.slice((currentTicketsPage - 1) * ticketsPerPage, currentTicketsPage * ticketsPerPage)
+    const filtered = sortedTickets.filter(ticket => {
+      const matchesStatus = frontFilter.status === '' || ticket.status_label === frontFilter.status;
+      const matchesUrgency = frontFilter.urgency === '' || ticket.urgency_label === frontFilter.urgency;
+      const matchesPriority = frontFilter.priority === '' || ticket.priority_label === frontFilter.priority;
+      const matchesType = frontFilter.type === '' || ticket.type_label === frontFilter.type;
+      const matchesRequester = frontFilter.requester === '' || ticket.requester === frontFilter.requester;
+      const matchesBranch = frontFilter.branch === '' || ticket.area === frontFilter.branch;
+      const matchesAssignee = frontFilter.assignee === '' || ticket.users_recipient === frontFilter.assignee;
+      return matchesStatus && matchesUrgency && matchesPriority && matchesType && matchesRequester && matchesBranch && matchesAssignee;
+    });
+    // fix how many pages number is show in tool bar tickets
+    // make the pages number to be in footer maybe fixed at end of page
+    const paginatedTickets = filtered.slice((currentTicketsPage - 1) * ticketsPerPage, currentTicketsPage * ticketsPerPage)
     setPaginatedTickets(paginatedTickets)
-  }, [currentTicketsPage, tickets, pinnedTicketIds])
+  }, [currentTicketsPage, tickets, pinnedTicketIds, frontFilter])
+  const calculateFilteredTickets = () => {
+    return tickets.filter((ticket) => {
+      const matchesStatus = frontFilter.status === '' || ticket.status_label === frontFilter.status;
+      const matchesUrgency = frontFilter.urgency === '' || ticket.urgency_label === frontFilter.urgency;
+      const matchesPriority = frontFilter.priority === '' || ticket.priority_label === frontFilter.priority;
+      const matchesType = frontFilter.type === '' || ticket.type_label === frontFilter.type;
+      const matchesRequester = frontFilter.requester === '' || ticket.requester === frontFilter.requester;
+      const matchesBranch = frontFilter.branch === '' || ticket.area === frontFilter.branch;
+      const matchesAssignee = frontFilter.assignee === '' || ticket.users_recipient === frontFilter.assignee;
+      return matchesStatus && matchesUrgency && matchesPriority && matchesType && matchesRequester && matchesBranch && matchesAssignee;
+    });
+  };
 
-  const totalPages = Math.ceil(tickets.length / ticketsPerPage)
+  const filteredTickets = frontFilter ? calculateFilteredTickets() : tickets;
 
+
+
+  const totalPages = Math.ceil(
+    toolbarSearch.trim()
+      ? ticketsSearchFiltered.length / ticketsPerPage
+      : frontFilter
+        ? filteredTickets.length / ticketsPerPage
+        : tickets.length / ticketsPerPage
+  );
   const handleFirstPage = () => setCurrentTicketsPage(1)
   const handlePreviousPage = () => setCurrentTicketsPage(prev => Math.max(prev - 1, 1))
   const handleNextPage = () => setCurrentTicketsPage(prev => Math.min(prev + 1, totalPages))
@@ -422,6 +264,7 @@ const TicketsPage: React.FC = () => {
   const maxPagesToShow = Math.min(totalPages, minPagesToShow)
   const startPage = Math.floor((currentTicketsPage - 1) / minPagesToShow) * minPagesToShow + 1
   const endPage = Math.min(startPage + minPagesToShow - 1, totalPages)
+  const xx = 0;
   useEffect(() => {
 
     const fetchPinnedTicketIds = async () => {
@@ -430,59 +273,95 @@ const TicketsPage: React.FC = () => {
     }
     fetchPinnedTicketIds()
   }, [setPinnedTicketIds])
+  const [filteredFrontTickets, setFilteredFrontTickets] = useState<any[]>([])
+
+
+  useEffect(() => {
+    console.log('frontFilter', frontFilter);
+    const filtered = filteredTickets.filter(ticket => {
+      const matchesStatus = frontFilter.status === '' || ticket.status_label === frontFilter.status;
+      const matchesUrgency = frontFilter.urgency === '' || ticket.urgency_label === frontFilter.urgency;
+      const matchesPriority = frontFilter.priority === '' || ticket.priority_label === frontFilter.priority;
+      const matchesType = frontFilter.type === '' || ticket.type_label === frontFilter.type;
+      const matchesRequester = frontFilter.requester === '' || ticket.requester === frontFilter.requester;
+      const matchesBranch = frontFilter.branch === '' || ticket.area === frontFilter.branch;
+      const matchesAssignee = frontFilter.assignee === '' || ticket.users_recipient === frontFilter.assignee;
+      return matchesStatus && matchesUrgency && matchesPriority && matchesType && matchesRequester && matchesBranch && matchesAssignee;
+    });
+    const xx = 0;
+    // setFilteredFrontTickets(filtered);
+    // setTotalPagesFetched(countOfPages)
+
+  }, [frontFilter, tickets]);
+  useEffect(() => {
+    return () => {
+      // Reset the filters when the component unmounts
+      setFrontFilter({
+        status: '',
+        urgency: '',
+        priority: '',
+        type: '',
+        requester: '',
+        branch: '',
+        assignee: ''
+      });
+    };
+  }, [setFrontFilter]);
+  const hasActiveFilters = Object.values(frontFilter).some(value => value !== '');
+
 
   return (
     <>
       {/* <PageTitleTickets>{(toolbarSearch && toolbarSearch.trim() !== '') ? 'Filtered Tickets' : 'Tickets'}</PageTitleTickets> */}
-      <ToolbarWrapper  source={"tickets"}/>
+      <ToolbarWrapper source={"tickets"} />
       <Content>
-      <div className="d-flex flex-column justify-content-between h-100">
-  {isDataLoading ? (
-    <div className="spinner-wrapper">
-      <div className="spinner-border spinner-loading-data" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>
-  ) : (
-    ((toolbarSearch && toolbarSearch.trim() !== '') ? ticketsFiltered : paginatedTickets).map(ticket => (
-      <TicketCard
-        key={ticket.id}
-        id={ticket.id}
-        status={ticket.status_label}
-        date={ticket.date}
-        title={ticket.name}
-        description={ticket.content || "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
-        assignedTo={{ name: ticket.users_recipient, avatar: "https://via.placeholder.com/40" }} // Placeholder avatar
-        raisedBy={{ name: ticket.users_lastupdater, initials: ticket?.users_lastupdater?.charAt(0) }}
-        priority={ticket.priority_label}
-        category={ticket.type_label}
-        lastUpdate={ticket.date_mod}
-        onClick={() => handleTicketClick(ticket)} // Add onClick handler
-        onPin={handlePinTicket} // Pass the handlePinTicket function
-        isPinned={pinnedTicketIds.includes(ticket.id)} // Pass the pinned status
-        isStarred={ticket.is_starred} // Pass the pinned status
-        onStarred={handleStarringTicket} // Pass the handlePinTicket function
+        <div className="d-flex flex-column justify-content-between h-100">
+          {isDataLoading ? (
+            <div className="spinner-wrapper">
+              <div className="spinner-border spinner-loading-data" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            ((filteredFrontTickets.length > 0 ? filteredFrontTickets : (toolbarSearch && toolbarSearch.trim() !== '') ? ticketsSearchFiltered : paginatedTickets)).map(ticket => (
+              <TicketCard
+                key={ticket.id}
+                id={ticket.id}
+                status={ticket.status_label}
+                date={ticket.date}
+                title={ticket.name}
+                description={ticket.content || "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
+                assignedTo={{ name: ticket.users_recipient, avatar: "https://via.placeholder.com/40" }} // Placeholder avatar
+                raisedBy={{ name: ticket.users_lastupdater, initials: ticket?.users_lastupdater?.charAt(0) }}
+                priority={ticket.priority_label}
+                category={ticket.type_label}
+                lastUpdate={ticket.date_mod}
+                onClick={() => handleTicketClick(ticket)} // Add onClick handler
+                onPin={handlePinTicket} // Pass the handlePinTicket function
+                isPinned={pinnedTicketIds.includes(ticket.id)} // Pass the pinned status
+                isStarred={ticket.is_starred} // Pass the pinned status
+                onStarred={handleStarringTicket} // Pass the handlePinTicket function
 
-      />
-    ))
-  )}
+              />
+            ))
+          )}
 
-  <div className="pagination-controls d-flex justify-content-end mt-3">
-    <button className='btn btn-sm btn-light me-2' onClick={handleFirstPage} disabled={currentTicketsPage === 1}>First</button>
-    <button className='btn btn-sm btn-light me-2' onClick={handlePreviousPage} disabled={currentTicketsPage === 1}>Previous</button>
-    {Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index).map(page => (
-      <button
-        key={page}
-        className={clsx('btn btn-sm me-2', { 'btn-primary': currentTicketsPage === page, 'btn-light': currentTicketsPage !== page })}
-        onClick={() => handlePageChange(page)}
-      >
-        {page}
-      </button>
-    ))}
-    <button className='btn btn-sm btn-light me-2' onClick={handleNextPage} disabled={currentTicketsPage === totalPages}>Next</button>
-    <button className='btn btn-sm btn-light' onClick={handleLastPage} disabled={currentTicketsPage === totalPages}>Last</button>
-  </div>
-</div>
+          <div className="pagination-controls d-flex justify-content-end mt-3">
+            <button className='btn btn-sm btn-light me-2' onClick={handleFirstPage} disabled={currentTicketsPage === 1}>First</button>
+            <button className='btn btn-sm btn-light me-2' onClick={handlePreviousPage} disabled={currentTicketsPage === 1}>Previous</button>
+            {Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index).map(page => (
+              <button
+                key={page}
+                className={clsx('btn btn-sm me-2', { 'btn-primary': currentTicketsPage === page, 'btn-light': currentTicketsPage !== page })}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </button>
+            ))}
+            <button className='btn btn-sm btn-light me-2' onClick={handleNextPage} disabled={currentTicketsPage === totalPages}>Next</button>
+            <button className='btn btn-sm btn-light' onClick={handleLastPage} disabled={currentTicketsPage === totalPages}>Last</button>
+          </div>
+        </div>
 
       </Content>
       {/* <TicketCard

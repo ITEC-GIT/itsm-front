@@ -9,3 +9,15 @@ toolbarTicketsNavigationAtom.debugLabel = "toolbarTicketsNavigationAtom";
 export const toolbarTicketsSearchAtom = atom('');
 toolbarTicketsSearchAtom.debugLabel = "toolbarTicketsSearchAtom";
 
+
+
+export const toolbarTicketsFrontFiltersAtom = atom({
+    status: '',
+    urgency: '',
+    priority: '',
+    type: '',
+    requester: '',
+    branch: '',
+    assignee:''
+});
+toolbarTicketsFrontFiltersAtom.debugLabel = "toolbarTicketsFrontFiltersAtom";
