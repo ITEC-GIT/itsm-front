@@ -24,7 +24,9 @@ RUN ls -la /usr/src/app/dist
 
 # Copy the build output from the build stage
 #COPY --from=build /usr/src/app/dist /usr/share/nginx/html/pulsar/itsm
-
+# Set the base URL for Vite
+ARG VITE_BASE_URL=/pulsar/itsm/
+ENV VITE_BASE_URL=$VITE_BASE_URL
 # Expose port 80
 EXPOSE 3000
 

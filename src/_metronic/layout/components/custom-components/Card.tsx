@@ -206,7 +206,7 @@ const TicketCard: React.FC<CardProps> = ({
                 </div>
               </div>
               <div
-                className="text-center border-end icon-cell"
+                className="text-center  icon-cell"
                 onClick={(e) => handleIconClick("star", e)}
               >
                 <div className="d-flex justify-content-center align-items-center" style={{ height: "100%" }}>
@@ -221,7 +221,7 @@ const TicketCard: React.FC<CardProps> = ({
                 </div>
               </div>
               <div
-                className="text-center border-end icon-cell"
+                className="text-center icon-cell"
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f3fb")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                 onClick={(e) => handleIconClick("threeDotsCircle", e)} // Call the handler to toggle color

@@ -36,10 +36,11 @@ const CustomFilterFrontDataDropdown: React.FC = () => {
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setAssignee(e.target.value);
   };
-  const statusOptions = [{ value: 'Approved', label: 'Approved' }, { value: 'Pending', label: 'Pending' }, { value: 'Process', label: 'Process' }, { value: 'Rejected', label: 'Rejected' }];
-  const urgencyOptions = [{ value: 'Very low', label: 'Very low' }, { value: 'Very high', label: 'Very high' }];
-  const priorityOptions = [{ value: 'Low', label: 'Low' }, { value: 'Medium', label: 'Medium' }, { value: 'High', label: 'High' }];
-  const typeOptions = [{ value: 'Incident', label: 'Incident' }, { value: 'Request', label: 'Request' }];
+  const statusOptions = [{ value: 'new', label: 'new' }, { value: 'assigned', label: 'assigned' }, { value: 'plan', label: 'plan' }, { value: 'solved', label: 'solved' }];
+  const urgencyOptions = [{ value: 'Very low', label: 'Very low' }, { value: 'Very high', label: 'Very high' }, { value: 'Medium', label: 'Medium' }, { value: 'High', label: 'High' }, { value: 'Low', label: 'Low' }];
+  const priorityOptions = [{ value: 'Very low', label: 'Very low' }, { value: 'Medium', label: 'Medium' }, { value: 'Very high', label: 'Very high' }];
+  const typeOptions = [{ value: 'Incident', label: 'Incident' }, { value: 'Request', label: 'Request' }, { value: 'Demand', label: 'Demand' }];
+  // the 3 below are the ones i want to get from db 
   const requesterOptions = [{ value: 'User1', label: 'User1' }, { value: 'User2', label: 'User2' }];
   const branchOptions = [{ value: 'Branch1', label: 'Branch1' }, { value: 'Branch2', label: 'Branch2' }];
   const assigneeOptions = [{ value: 'm.harb', label: 'm.harb' }, { value: 'cobalt', label: 'cobalt' }, { value: 'm.hareb', label: 'm.hareb' }];
