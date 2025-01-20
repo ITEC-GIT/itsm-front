@@ -1,7 +1,7 @@
 version: '3'
 services:
   react-ui:
-    container_name: react-itsm-ui:${TAG}
+    container_name: react-itsm-ui
     build:
       context: .
       args:
