@@ -11,7 +11,7 @@ services:
       - "3001:3000"
     restart: unless-stopped
     env_file: 
-      - /home/hlpi/main/.env # Include the .env file
+      - /home/glpi/main/.env # Include the .env file
 
 # version: '3'
 # services:
