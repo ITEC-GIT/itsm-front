@@ -6,3 +6,12 @@ export type DeviceType = {
   isActive: boolean;
   lastConnected: string;
 };
+
+export type HistoryType = {
+  device: string;
+  software: string;
+  destination: string;
+  variables: string;
+  status: string;
+  user: string;
+};
