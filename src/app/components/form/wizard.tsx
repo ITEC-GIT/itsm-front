@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Select from "react-select";
 import { HistoryType } from "../../types/HyperCommandsTypes";
-import { initialMockData } from "../../pages/HyperCommands-Page/softwareInstallationPage";
 
 interface Step {
   id: number;
@@ -19,11 +18,19 @@ interface StepNavigationStepProps {
   isActive: boolean;
   isComplete: boolean;
 }
-
-const Wizard = ({ steps }: { steps: any }) => {
-  //temporary
-  const [history, setHistory] = useState<HistoryType[]>(initialMockData);
-
+//temporary history
+const Wizard = ({
+  steps,
+  history,
+  add,
+}: {
+  steps: any;
+  history: HistoryType[];
+  add: any;
+}) => {
+  if (!history) {
+    return;
+  }
   const [currentStep, setCurrentStep] = useState<number>(1);
   const deviceOptions = ["Device 1", "Device 2", "Device 3"];
   const [selectedDevice, setSelectedDevice] = useState<string>("");
@@ -111,7 +118,15 @@ const Wizard = ({ steps }: { steps: any }) => {
     setProgress(10);
 
     setCurrentStep(5);
-
+    const record = {
+      software: softwareUrl,
+      device: selectedDevice,
+      destination: destination,
+      variables: variables,
+      status: "initialized",
+      user: "Admin",
+    };
+    setDisableInstallButton(true);
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -121,29 +136,17 @@ const Wizard = ({ steps }: { steps: any }) => {
           setAlertVariant("success");
           setShowAlert(true);
 
-          setHistory((prevHistory) => [
-            ...prevHistory,
-            {
-              software: softwareUrl,
-              device: selectedDevice,
-              variables: variables,
-              destination: destination,
-              status: "initialized",
-              user: "cobalt",
-            },
-          ]);
-
           setTimeout(() => {
+            add(record);
+            setDisableInstallButton(false);
             setProgress(0);
             setShowAlert(false);
-            setDisableInstallButton(false);
             setCurrentStep(1);
           }, 1000);
 
           return prev;
         }
 
-        // Dynamic progress feedback
         if (prev < 30) {
           setAlertMessage("Downloading software...");
         } else if (prev < 70) {
@@ -327,15 +330,11 @@ const Wizard = ({ steps }: { steps: any }) => {
       </div>
 
       {showAlert && (
-        <div className={`alert alert-${alertVariant} mt-3`}>
-          <i
-            className={`fas ${
-              alertVariant === "success"
-                ? "fa-check-circle"
-                : "fa-exclamation-triangle"
-            }`}
-          ></i>
-          {alertMessage}
+        <div className="success-indicator">
+          <div className="success-circle">
+            <i className="fas fa-check-circle"></i>
+          </div>
+          <p className="success-message">Installed Successfully!</p>
         </div>
       )}
 

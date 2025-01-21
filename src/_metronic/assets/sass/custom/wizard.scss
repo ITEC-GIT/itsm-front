@@ -121,3 +121,29 @@
   flex-direction: column;
   align-items: flex-start !important;
 }
+
+.success-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.success-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #28a745;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.success-message {
+  font-size: 1.2rem;
+  color: #28a745;
+  font-weight: bold;
+}

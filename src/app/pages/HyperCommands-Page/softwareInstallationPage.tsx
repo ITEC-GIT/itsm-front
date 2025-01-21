@@ -113,6 +113,10 @@ const SoftwareInstallationPage = () => {
 
   const [history, setHistory] = useState<HistoryType[]>(initialMockData);
 
+  const handleNewInstallation = (record: HistoryType) => {
+    setHistory((prevHistory) => [...prevHistory, record]);
+  };
+
   const [selectedEntry, setSelectedEntry] = useState<HistoryType>();
 
   const SoftwarePerPage = 6;
@@ -382,7 +386,13 @@ const SoftwareInstallationPage = () => {
               )}
             </button>
 
-            {showForm && <Wizard steps={steps} />}
+            {showForm && (
+              <Wizard
+                steps={steps}
+                history={history}
+                add={handleNewInstallation}
+              />
+            )}
 
             <h3 className="mt-5">Installation History</h3>
             <DataTable
