@@ -39,33 +39,33 @@
   position: relative;
   z-index: 1;
   background-color: transparent !important;
-  color: lightgray;
-  border: 2px solid red !important;
+  color: #007bff !important;
+  border: 2px solid #007bff !important;
 }
 
-.border-success {
-  border-color: #28a745;
-  color: #28a745;
+.border-color-success {
+  border-color: #28a745 !important;
+  color: #28a745 !important;
 }
 
-.text-success {
-  color: #28a745;
+.text-color-success {
+  color: #28a745 !important;
 }
 
-.border-primary {
-  border-color: #007bff;
+.border-color-primary {
+  border-color: #007bff !important;
 }
 
-.text-primary {
-  color: #007bff;
+.text-color-primary {
+  color: #007bff !important;
 }
 
-.border-secondary {
-  border-color: red;
+.border-color-secondary {
+  border-color: #707070 !important;
 }
 
-.text-secondary {
-  color: red//#6c757d;
+.text-color-secondary {
+  color: #707070 !important;
 }
 
 // .step-button {

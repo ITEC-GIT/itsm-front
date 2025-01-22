@@ -424,10 +424,10 @@ const StepNavigationStep: React.FC<StepNavigationStepProps> = ({
   isComplete,
 }) => {
   const buttonClass = isComplete
-    ? "border-success text-success"
+    ? "border-color-success text-color-success"
     : isActive
-    ? "border-primary text-primary"
-    : "border-secondary text-secondary";
+    ? "border-color-primary text-color-primary"
+    : "border-color-secondary text-color-secondary";
 
   return (
     <div className="d-flex flex-column align-items-center">
