@@ -1,4 +1,5 @@
 import { ErrorResponse } from "../types/AuthTypes";
+import { CreateSoftInstRequestType } from "../types/softwareInstallation";
 import {
   PrivateApiCall,
   PublicApiCall,
@@ -116,7 +117,7 @@ async function GetAllSoftwareInstallations() {
     .catch((error: any) => errorCatch(error));
 }
 
-async function CreateSoftwareInstallation() {
+async function CreateSoftwareInstallation(data: CreateSoftInstRequestType) {
   return await PrivateApiCall.post(`/antitheft/software_installation`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
