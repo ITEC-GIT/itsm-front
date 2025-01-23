@@ -25,8 +25,10 @@ interface StepNavigationStepProps {
   isActive: boolean;
   isComplete: boolean;
 }
-//temporary history
+
 const Wizard = ({ steps, add }: { steps: any; add: any }) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [deviceOptions, setDeviceOptions] = useState<
@@ -51,6 +53,11 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
   const [file, setFile] = useState<File | null>(null);
 
   const [showAlert, setShowAlert] = useState(false);
+  const [alertContent, setAlertContent] = useState<{
+    message: string;
+    icon: string;
+    type: "success" | "error";
+  } | null>(null);
   const [disableInstallButton, setDisableInstallButton] = useState(false);
 
   const isLastStep = currentStep === steps.length;
@@ -101,29 +108,42 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
   };
 
   const InsertSoftwareInstallation = async () => {
-    const formdata = new FormData();
-    formdata.append(
-      "uploadManifest",
-      JSON.stringify({
-        input: {
-          mid: selectedDevice?.serial,
-          software: softwareName,
-          url: softwareUrl,
-          destination: destination,
-          arguments: variables,
-          computers_id: selectedDevice?.id,
-        },
-      })
-    );
-    if (file) {
+    try {
+      const formdata = new FormData();
       formdata.append(
-        "file",
-        file,
-        "postman-cloud:///1ef377a9-7314-40e0-ad32-85259e782318"
+        "uploadManifest",
+        JSON.stringify({
+          input: {
+            mid: selectedDevice?.serial,
+            software: softwareName,
+            url: softwareUrl,
+            destination: destination,
+            arguments: variables,
+            computers_id: selectedDevice?.id,
+          },
+        })
       );
+      if (file) {
+        formdata.append(
+          "file",
+          file,
+          "postman-cloud:///1ef377a9-7314-40e0-ad32-85259e782318"
+        );
+      }
+      const response = await InitiateSoftwareInstallation(formdata);
+      console.log("response ==>>", response);
+
+      if (response.status !== 200) {
+        throw new Error("Opps! Something went wrong!");
+      }
+      return response;
+    } catch (error: any) {
+      console.error("Error during software installation:", error);
+      if (!error.message) {
+        setErrorMessage("An unknown error occurred during the installation.");
+      }
+      throw error;
     }
-    const response = await InitiateSoftwareInstallation(formdata);
-    console.log(response);
   };
 
   const handleInstall = (
@@ -174,6 +194,12 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
               clearInterval(interval);
               setShowAlert(true);
 
+              setAlertContent({
+                message: "Installed Successfully!",
+                icon: "fas fa-check-circle",
+                type: "success",
+              });
+
               setTimeout(() => {
                 setDisableInstallButton(false);
                 setProgress(0);
@@ -189,9 +215,15 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
         }, 500);
       })
       .catch((error: any) => {
-        //should be handled
-        //I should error state to dispalye an error message
         console.error("Error creating record:", error);
+        setShowAlert(true);
+        setAlertContent({
+          message:
+            error.message ||
+            "An unknown error occurred during the installation.",
+          icon: "fas fa-exclamation-circle",
+          type: "error",
+        });
         setDisableInstallButton(false);
         setIsBackButtonDisabled(false);
         setProgress(0);
@@ -199,75 +231,6 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
 
     clearFields();
   };
-
-  // const handleInstall = (
-  //   event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  // ) => {
-  //   event.preventDefault();
-  //   setIsBackButtonDisabled(true);
-  //   setDisableInstallButton(true);
-  //   setProgress(10);
-  //   setCurrentStep(5);
-
-  //   const record = {
-  //     software: softwareUrl,
-  //     device: selectedDevice,
-  //     destination: destination,
-  //     variables: variables,
-  //     status: "initialized",
-  //     user: userData.session.glpiname,
-  //   };
-  //   setDisableInstallButton(true);
-  //   const interval = setInterval(() => {
-  //     setProgress((prev) => {
-  //       if (prev >= 100) {
-  //         clearInterval(interval);
-  //         setShowAlert(true);
-
-  //         setTimeout(() => {
-  //           add(record);
-  //           setDisableInstallButton(false);
-  //           setProgress(0);
-  //           setShowAlert(false);
-  //           setCurrentStep(1);
-  //         }, 1000);
-
-  //         return prev;
-  //       }
-
-  //       return prev + 10;
-  //     });
-  //   }, 500);
-
-  //   InsertSoftwareInstallation.then(() => {
-  //     const interval = setInterval(() => {
-  //       setProgress((prev) => {
-  //         if (prev >= 100) {
-  //           clearInterval(interval);
-  //           setShowAlert(true);
-
-  //           setTimeout(() => {
-  //             setDisableInstallButton(false);
-  //             setProgress(0);
-  //             setShowAlert(false);
-  //             setCurrentStep(1);
-  //           }, 1000);
-
-  //           return prev;
-  //         }
-
-  //         return prev + 10;
-  //       });
-  //     }, 500);
-  //   }).catch((error) => {
-  //     console.error("Error creating record:", error);
-  //     setDisableInstallButton(false);
-  //     setIsBackButtonDisabled(false);
-  //     setProgress(0);
-  //   });
-
-  //   clearFields();
-  // };
 
   const clearFields = () => {
     setSoftwareName("");
@@ -490,12 +453,30 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
         )}
       </div>
 
-      {showAlert && (
-        <div className="success-indicator">
-          <div className="success-circle">
+      {showAlert && alertContent && (
+        <div
+          className={
+            alertContent.type === "error"
+              ? "error-indicator"
+              : "success-indicator"
+          }
+        >
+          <div
+            className={
+              alertContent.type === "error" ? "error-circle" : "success-circle"
+            }
+          >
             <i className="fas fa-check-circle"></i>
           </div>
-          <p className="success-message">Installed Successfully!</p>
+          <p
+            className={
+              alertContent.type === "error"
+                ? "error-message"
+                : "success-message"
+            }
+          >
+            {alertContent.message}
+          </p>
         </div>
       )}
 
