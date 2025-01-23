@@ -156,7 +156,7 @@ const SoftwareInstallationPage = () => {
       name: "Software URL",
       selector: (row: HistoryType) => row.software,
       sortable: true,
-      grow: 2,
+      $grow: 2,
       cell: (row: HistoryType) => (
         <span
           data-bs-toggle="tooltip"
@@ -171,7 +171,7 @@ const SoftwareInstallationPage = () => {
       name: "Serial Number",
       selector: (row: HistoryType) => row.device,
       sortable: true,
-      grow: 1.2,
+      $grow: 1.2,
       cell: (row: HistoryType) => (
         <span
           data-bs-toggle="tooltip"
@@ -254,7 +254,7 @@ const SoftwareInstallationPage = () => {
           </span>
         );
       },
-      grow: 0.5,
+      $grow: 0.5,
     },
     {
       name: "User",
@@ -284,7 +284,7 @@ const SoftwareInstallationPage = () => {
         </button>
       ),
       sortable: false,
-      grow: 0.5,
+      $grow: 0.5,
     },
   ];
 

@@ -256,9 +256,12 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
     }
   };
   useEffect(() => {
-    fetchComputers();
     fetchUserData();
-  }, [userName]);
+  }, [userData]);
+
+  useEffect(() => {
+    fetchComputers();
+  }, []);
 
   return (
     <div className="container p-5 bg-white">
