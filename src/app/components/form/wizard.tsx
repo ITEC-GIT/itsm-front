@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import { HistoryType } from "../../types/HyperCommandsTypes";
 import {
   InitiateSoftwareInstallation,
   GetAllComputers,
@@ -28,7 +27,7 @@ interface StepNavigationStepProps {
 
 const Wizard = ({ steps, add }: { steps: any; add: any }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const userData = useAtomValue(userAtom);
   const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [deviceOptions, setDeviceOptions] = useState<
@@ -131,7 +130,6 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
         );
       }
       const response = await InitiateSoftwareInstallation(formdata);
-      console.log("response ==>>", response);
 
       if (response.status !== 200) {
         throw new Error("Opps! Something went wrong!");
@@ -252,14 +250,14 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
     setDeviceOptions(computersData);
   };
 
-  const fetchUserData = async () => {
-    const userData = useAtomValue(userAtom);
-    // setUserName(userData.session.glpiname);
+  const fetchUserData = () => {
+    if (userData?.session?.glpiname) {
+      setUserName(userData.session.glpiname);
+    }
   };
-
   useEffect(() => {
     fetchComputers();
-    // fetchUserData();
+    fetchUserData();
   }, [userName]);
 
   return (
