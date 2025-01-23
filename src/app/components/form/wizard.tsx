@@ -1,6 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { HistoryType } from "../../types/HyperCommandsTypes";
+import {
+  InitiateSoftwareInstallation,
+  GetAllComputers,
+} from "../../config/ApiCalls";
+import { useAtomValue } from "jotai";
+import { userAtom } from "../../atoms/auth-atoms/authAtom";
+import { SelectDeviceType } from "../../types/softwareInstallation";
 
 interface Step {
   id: number;
@@ -19,21 +26,17 @@ interface StepNavigationStepProps {
   isComplete: boolean;
 }
 //temporary history
-const Wizard = ({
-  steps,
-  history,
-  add,
-}: {
-  steps: any;
-  history: HistoryType[];
-  add: any;
-}) => {
-  if (!history) {
-    return;
-  }
+const Wizard = ({ steps, add }: { steps: any; add: any }) => {
+  const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const deviceOptions = ["Device 1", "Device 2", "Device 3"];
-  const [selectedDevice, setSelectedDevice] = useState<string>("");
+  const [deviceOptions, setDeviceOptions] = useState<
+    { id: number; name: string; serial: string }[]
+  >([]);
+
+  const [selectedDevice, setSelectedDevice] = useState<SelectDeviceType | null>(
+    null
+  );
+  const [softwareName, setSoftwareName] = useState<string>("");
   const [softwareUrl, setSoftwareUrl] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [variables, setVariables] = useState<string>("");
@@ -42,13 +45,12 @@ const Wizard = ({
   const [deviceError, setDeviceError] = useState<boolean>(false);
   const [destinationError, setDestinationError] = useState<boolean>(false);
   const [softwareUrlError, setSoftwareUrlError] = useState<boolean>(false);
+  const [softwareNameError, setSoftwareNameError] = useState<boolean>(false);
 
   const [isUrlSelected, setIsUrlSelected] = useState<boolean>(true);
   const [file, setFile] = useState<File | null>(null);
 
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertVariant, setAlertVariant] = useState("success");
   const [disableInstallButton, setDisableInstallButton] = useState(false);
 
   const isLastStep = currentStep === steps.length;
@@ -71,6 +73,11 @@ const Wizard = ({
         return;
       }
 
+      if (currentStep === 3 && !softwareName) {
+        setSoftwareNameError(true);
+        return;
+      }
+
       if (currentStep === 3 && softwareUrl && !softwareUrl.includes("/")) {
         setSoftwareUrlError(true);
         return;
@@ -84,7 +91,7 @@ const Wizard = ({
       setDeviceError(false);
       setDestinationError(false);
       setSoftwareUrlError(false);
-
+      setSoftwareNameError(false);
       setCurrentStep(currentStep + 1);
     }
   };
@@ -93,47 +100,55 @@ const Wizard = ({
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+  const InsertSoftwareInstallation = async () => {
+    const formdata = new FormData();
+    formdata.append(
+      "uploadManifest",
+      JSON.stringify({
+        input: {
+          mid: selectedDevice?.serial,
+          software: softwareName,
+          url: softwareUrl,
+          destination: destination,
+          arguments: variables,
+          computers_id: selectedDevice?.id,
+        },
+      })
+    );
+    if (file) {
+      formdata.append(
+        "file",
+        file,
+        "postman-cloud:///1ef377a9-7314-40e0-ad32-85259e782318"
+      );
+    }
+    const response = await InitiateSoftwareInstallation(formdata);
+    console.log(response);
+  };
+
   const handleInstall = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setIsBackButtonDisabled(true);
     event.preventDefault();
-
-    const isAlreadyInstalled = history.some(
-      (entry) =>
-        entry.software === softwareUrl && entry.device === selectedDevice
-    );
-
-    if (isAlreadyInstalled) {
-      setAlertMessage(
-        `${softwareUrl} is already installed on ${selectedDevice}.`
-      );
-      setAlertVariant("warning");
-      setShowAlert(true);
-      return;
-    }
-
-    setShowAlert(false);
+    setIsBackButtonDisabled(true);
     setDisableInstallButton(true);
     setProgress(10);
-
     setCurrentStep(5);
+
     const record = {
       software: softwareUrl,
-      device: selectedDevice,
+      device: selectedDevice?.name,
       destination: destination,
       variables: variables,
       status: "initialized",
-      user: "Admin",
+      user: userName,
     };
     setDisableInstallButton(true);
+
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-
-          setAlertMessage(`${softwareUrl} installed successfully!`);
-          setAlertVariant("success");
           setShowAlert(true);
 
           setTimeout(() => {
@@ -147,27 +162,142 @@ const Wizard = ({
           return prev;
         }
 
-        if (prev < 30) {
-          setAlertMessage("Downloading software...");
-        } else if (prev < 70) {
-          setAlertMessage("Installing software...");
-        } else if (prev < 100) {
-          setAlertMessage("Finalizing installation...");
-        }
-
         return prev + 10;
       });
     }, 500);
+
+    InsertSoftwareInstallation()
+      .then(() => {
+        const interval = setInterval(() => {
+          setProgress((prev) => {
+            if (prev >= 100) {
+              clearInterval(interval);
+              setShowAlert(true);
+
+              setTimeout(() => {
+                setDisableInstallButton(false);
+                setProgress(0);
+                setShowAlert(false);
+                setCurrentStep(1);
+              }, 1000);
+
+              return prev;
+            }
+
+            return prev + 10;
+          });
+        }, 500);
+      })
+      .catch((error: any) => {
+        //should be handled
+        //I should error state to dispalye an error message
+        console.error("Error creating record:", error);
+        setDisableInstallButton(false);
+        setIsBackButtonDisabled(false);
+        setProgress(0);
+      });
+
     clearFields();
   };
 
+  // const handleInstall = (
+  //   event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  // ) => {
+  //   event.preventDefault();
+  //   setIsBackButtonDisabled(true);
+  //   setDisableInstallButton(true);
+  //   setProgress(10);
+  //   setCurrentStep(5);
+
+  //   const record = {
+  //     software: softwareUrl,
+  //     device: selectedDevice,
+  //     destination: destination,
+  //     variables: variables,
+  //     status: "initialized",
+  //     user: userData.session.glpiname,
+  //   };
+  //   setDisableInstallButton(true);
+  //   const interval = setInterval(() => {
+  //     setProgress((prev) => {
+  //       if (prev >= 100) {
+  //         clearInterval(interval);
+  //         setShowAlert(true);
+
+  //         setTimeout(() => {
+  //           add(record);
+  //           setDisableInstallButton(false);
+  //           setProgress(0);
+  //           setShowAlert(false);
+  //           setCurrentStep(1);
+  //         }, 1000);
+
+  //         return prev;
+  //       }
+
+  //       return prev + 10;
+  //     });
+  //   }, 500);
+
+  //   InsertSoftwareInstallation.then(() => {
+  //     const interval = setInterval(() => {
+  //       setProgress((prev) => {
+  //         if (prev >= 100) {
+  //           clearInterval(interval);
+  //           setShowAlert(true);
+
+  //           setTimeout(() => {
+  //             setDisableInstallButton(false);
+  //             setProgress(0);
+  //             setShowAlert(false);
+  //             setCurrentStep(1);
+  //           }, 1000);
+
+  //           return prev;
+  //         }
+
+  //         return prev + 10;
+  //       });
+  //     }, 500);
+  //   }).catch((error) => {
+  //     console.error("Error creating record:", error);
+  //     setDisableInstallButton(false);
+  //     setIsBackButtonDisabled(false);
+  //     setProgress(0);
+  //   });
+
+  //   clearFields();
+  // };
+
   const clearFields = () => {
+    setSoftwareName("");
     setSoftwareUrl("");
     setDestination("");
     setVariables("");
-    setSelectedDevice("");
+    setSelectedDevice(null);
     setProgress(0);
   };
+
+  const fetchComputers = async () => {
+    const response = await GetAllComputers();
+    const data = response.data;
+    const computersData = data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      serial: item.serial,
+    }));
+    setDeviceOptions(computersData);
+  };
+
+  const fetchUserData = async () => {
+    const userData = useAtomValue(userAtom);
+    // setUserName(userData.session.glpiname);
+  };
+
+  useEffect(() => {
+    fetchComputers();
+    // fetchUserData();
+  }, [userName]);
 
   return (
     <div className="container p-5 bg-white">
@@ -183,19 +313,33 @@ const Wizard = ({
               id="deviceSelect"
               className="custom-select"
               classNamePrefix="react-select"
-              options={deviceOptions.map((device) => ({
-                value: device,
-                label: device,
-              }))}
+              options={
+                deviceOptions &&
+                deviceOptions.map((device) => ({
+                  value: device.id.toString(),
+                  label: device.name,
+                }))
+              }
               value={
                 selectedDevice
-                  ? { value: selectedDevice, label: selectedDevice }
+                  ? {
+                      value: selectedDevice.id.toString(),
+                      label: selectedDevice.name,
+                    }
                   : null
               }
-              onChange={(selectedOption) =>
-                setSelectedDevice(selectedOption ? selectedOption.value : "")
-              }
+              onChange={(selectedOption) => {
+                if (selectedOption) {
+                  const selectedDeviceDetails = deviceOptions.find(
+                    (device) => device.id.toString() === selectedOption.value
+                  );
+                  setSelectedDevice(selectedDeviceDetails || null);
+                } else {
+                  setSelectedDevice(null);
+                }
+              }}
             />
+
             {deviceError && (
               <small className="text-danger" style={{ fontSize: "0.875rem" }}>
                 Please select a device.
@@ -227,11 +371,28 @@ const Wizard = ({
         )}
         {currentStep === 3 && (
           <div className="d-flex flex-column">
+            <div className="mt-4 mb-5">
+              <label className="required">Software Name</label>
+              <input
+                type="text"
+                onChange={(e) => {
+                  setSoftwareNameError(false);
+                  setSoftwareName(e.target.value);
+                }}
+                className="form-control custom-input"
+                placeholder="Enter the software name"
+              />
+            </div>
+            {softwareNameError && (
+              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                Please provide a software name.
+              </small>
+            )}
             <div className="d-flex justify-content-between mt-5">
-              <label className="mb-3">
+              <label>
                 Choose your preferred method to provide the Software URL
               </label>
-              <div className="mb-4 d-flex">
+              <div className=" d-flex">
                 <label
                   className={`form-check-label me-2 ${
                     isUrlSelected ? "fw-bold text-dark" : "fw-bold text-muted"

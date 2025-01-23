@@ -7,6 +7,8 @@ import DataTable from "react-data-table-component";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { Wizard } from "../../components/form/wizard";
 import { HistoryType } from "../../types/HyperCommandsTypes";
+import { steps } from "../../data/softwareInstallation";
+import { GetAllSoftwareInstallations } from "../../config/ApiCalls";
 
 export const initialMockData: HistoryType[] = [
   {
@@ -227,7 +229,6 @@ const SoftwareInstallationPage = () => {
       selector: (row: HistoryType) => row.status,
       sortable: true,
       cell: (row: HistoryType) => {
-        // Conditional styling based on status
         const getStatusStyle = (status: string) => {
           switch (status.toLowerCase()) {
             case "initialized":
@@ -287,15 +288,13 @@ const SoftwareInstallationPage = () => {
     },
   ];
 
-  const steps = [
-    { id: 1, title: "Device", iconClass: "fa fa-desktop" },
-    { id: 2, title: "Destination", iconClass: "fa fa-location-arrow" },
-    { id: 3, title: "Software", iconClass: "fa fa-cogs" },
-    { id: 4, title: "Variables", iconClass: "fa fa-sliders-h" },
-    { id: 5, title: "Submission", iconClass: "fa fa-check-circle" },
-  ];
+  const fetchData = async () => {
+    const response = await GetAllSoftwareInstallations();
+    console.log("response.data ==>>", response.data);
+  };
 
   useEffect(() => {
+    fetchData();
     const paginatedTickets = history.slice(
       (currentHistorysPage - 1) * SoftwarePerPage,
       currentHistorysPage * SoftwarePerPage
@@ -386,13 +385,7 @@ const SoftwareInstallationPage = () => {
               )}
             </button>
 
-            {showForm && (
-              <Wizard
-                steps={steps}
-                history={history}
-                add={handleNewInstallation}
-              />
-            )}
+            {showForm && <Wizard steps={steps} add={handleNewInstallation} />}
 
             <h3 className="mt-5">Installation History</h3>
             <DataTable

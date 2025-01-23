@@ -117,8 +117,8 @@ async function GetAllSoftwareInstallations() {
     .catch((error: any) => errorCatch(error));
 }
 
-async function CreateSoftwareInstallation(data: CreateSoftInstRequestType) {
-  return await PrivateApiCall.post(`/antitheft/software_installation`)
+async function InitiateSoftwareInstallation(data: FormData) {
+  return await PrivateApiCall.post(`/antitheft/software_installation`, data)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -139,7 +139,7 @@ export {
   GetUsers,
   GetBranches,
   GetDashboardAnalytics,
-  CreateSoftwareInstallation,
+  InitiateSoftwareInstallation,
   GetAllSoftwareInstallations,
   GetAllComputers,
 };
