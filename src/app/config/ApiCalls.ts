@@ -1,5 +1,5 @@
 import { ErrorResponse } from "../types/AuthTypes";
-import { CreateSoftInstRequestType } from "../types/softwareInstallation";
+import { CreateSoftInstRequestType } from "../types/softwareInstallationTypes";
 import {
   PrivateApiCall,
   PublicApiCall,
@@ -111,8 +111,18 @@ async function GetBranches() {
 /** *********************************************************************************************/
 /** ************************************** Software Installation ********************************/
 /** *********************************************************************************************/
-async function GetAllSoftwareInstallations() {
-  return await PrivateApiCall.get(`/CTSoftwareInstallation`)
+async function GetAllSoftwareInstallations(
+  range: string,
+  order: string,
+  idgt?: number
+) {
+  return await PrivateApiCall.get(`/CTSoftwareInstallation/`, {
+    params: {
+      expand_dropdowns: 1,
+      range,
+      order,
+    },
+  })
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }

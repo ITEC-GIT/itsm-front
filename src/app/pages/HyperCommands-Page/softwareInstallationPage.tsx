@@ -2,129 +2,37 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { Content } from "../../../_metronic/layout/components/content/Content";
-
 import DataTable from "react-data-table-component";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { Wizard } from "../../components/form/wizard";
-import { HistoryType } from "../../types/HyperCommandsTypes";
 import { steps } from "../../data/softwareInstallation";
 import { GetAllSoftwareInstallations } from "../../config/ApiCalls";
-
-export const initialMockData: HistoryType[] = [
-  {
-    software: "http://example.com/software1.tar.gz",
-    device: "Device 1",
-    destination: "/usr/local/bin/software1",
-    variables: "/a /b arg1=value1",
-    status: "initialized",
-    user: "Admin",
-  },
-  {
-    software: "http://example.com/software1.tar.gz",
-    device: "Device 1",
-    destination: "/usr/local/bin/software1",
-    variables: "/a /b arg1=value1",
-    status: "canceled",
-    user: "Admin",
-  },
-  {
-    software: "http://example.com/software1.tar.gz",
-    device: "Device 1",
-    destination: "/usr/local/bin/software1",
-    variables: "/a /b arg1=value1",
-    status: "received",
-    user: "Admin",
-  },
-  {
-    software: "http://example.com/software1.tar.gz",
-    device: "Device 1",
-    destination: "/usr/local/bin/software1",
-    variables: "/a /b arg1=value1",
-    status: "canceled",
-    user: "Admin",
-  },
-  {
-    software: "http://example.com/software1.tar.gz",
-    device: "Device 1",
-    destination: "/usr/local/bin/software1",
-    variables: "/a /b arg1=value1",
-    status: "initialized",
-    user: "Admin",
-  },
-  {
-    software: "http://example.com/software1.tar.gz",
-    device: "Device 1",
-    destination: "/usr/local/bin/software1",
-    variables: "/a /b arg1=value1",
-    status: "canceled",
-    user: "Admin",
-  },
-  {
-    software: "http://example.com/software2.tar.gz",
-    device: "Device 2",
-    destination: "/usr/local/bin/software2",
-    variables: "/x /y arg2=value2",
-    status: "initialized",
-    user: "User1",
-  },
-  {
-    software: "http://example.com/software2.tar.gz",
-    device: "Device 2",
-    destination: "/usr/local/bin/software2",
-    variables: "/x /y arg2=value2",
-    status: "initialized",
-    user: "User1",
-  },
-  {
-    software: "http://example.com/software2.tar.gz",
-    device: "Device 2",
-    destination: "/usr/local/bin/software2",
-    variables: "/x /y arg2=value2",
-    status: "initialized",
-    user: "User1",
-  },
-  {
-    software: "http://example.com/software2.tar.gz",
-    device: "Device 2",
-    destination: "/usr/local/bin/software2",
-    variables: "/x /y arg2=value2",
-    status: "initialized",
-    user: "User1",
-  },
-  {
-    software: "http://example.com/software2.tar.gz",
-    device: "Device 2",
-    destination: "/usr/local/bin/software2",
-    variables: "/x /y arg2=value2",
-    status: "initialized",
-    user: "User1",
-  },
-  {
-    software: "http://example.com/software3.tar.gz",
-    device: "Device 3",
-    destination: "/usr/local/bin/software3",
-    variables: "",
-    status: "initialized",
-    user: "User2",
-  },
-];
+import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
+import { CardsStat } from "../../components/hyper-commands/cards-statistics";
 
 const SoftwareInstallationPage = () => {
   const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const [history, setHistory] = useState<HistoryType[]>(initialMockData);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleNewInstallation = (record: HistoryType) => {
-    setHistory((prevHistory) => [...prevHistory, record]);
-  };
+  const [softwareHistory, setSoftwareHistory] = useState<SoftwareHistoryType[]>(
+    []
+  );
 
-  const [selectedEntry, setSelectedEntry] = useState<HistoryType>();
+  const [selectedEntry, setSelectedEntry] = useState<SoftwareHistoryType>();
 
   const SoftwarePerPage = 6;
   const totalPages = Math.ceil(history.length / SoftwarePerPage);
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [paginatedHistory, setPaginatedTickets] = useState<any[]>([]);
+  const minPagesToShow = 8;
+  const startPage =
+    Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
+  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
+
+  //pagination
   const handleFirstPage = () => setCurrentHistoryPage(1);
   const handlePreviousPage = () =>
     setCurrentHistoryPage((prev) => Math.max(prev - 1, 1));
@@ -134,12 +42,22 @@ const SoftwareInstallationPage = () => {
   const handlePageChange = (page: number) => {
     setCurrentHistoryPage(page);
   };
-  const minPagesToShow = 8;
-  const startPage =
-    Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
-  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
 
-  const handleCancelClick = (entry: HistoryType) => {
+  const fetchData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await GetAllSoftwareInstallations("0-4", "desc");
+      console.log(response.data);
+      setSoftwareHistory(response.data);
+    } catch (err) {
+      setError("Failed to fetch software installations. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelClick = (entry: SoftwareHistoryType) => {
     setSelectedEntry(entry);
     setIsModalOpen(true);
   };
@@ -151,13 +69,18 @@ const SoftwareInstallationPage = () => {
     }
   };
 
+  const handleNewInstallation = (record: SoftwareHistoryType) => {
+    setSoftwareHistory((prevHistory) => [...prevHistory, record]);
+  };
+
+  //table
   const columns = [
     {
-      name: "Software URL",
-      selector: (row: HistoryType) => row.software,
+      name: "Software",
+      selector: (row: SoftwareHistoryType) => row.software,
       sortable: true,
-      $grow: 2,
-      cell: (row: HistoryType) => (
+      $grow: 1,
+      cell: (row: SoftwareHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
@@ -168,39 +91,46 @@ const SoftwareInstallationPage = () => {
       ),
     },
     {
-      name: "Serial Number",
-      selector: (row: HistoryType) => row.device,
-      sortable: true,
-      $grow: 1.2,
-      cell: (row: HistoryType) => (
+      name: "Device",
+      selector: (row: SoftwareHistoryType) => row.computers_id,
+      cell: (row: SoftwareHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title={row.device}
+          title={row.computers_id}
         >
-          {row.device}
+          {row.computers_id}
         </span>
       ),
+      sortable: true,
     },
+    // {
+    //   name: "Serial Number",
+    //   selector: (row: SoftwareHistoryType) => row.mid,
+    //   sortable: true,
+    //   $grow: 1,
+    //   cell: (row: SoftwareHistoryType) => (
+    //     <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.mid}>
+    //       {row.mid}
+    //     </span>
+    //   ),
+    // },
     {
-      name: "Device Name",
-      selector: (row: HistoryType) => row.device,
-      cell: (row: HistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.device}
-        >
-          {row.device}
+      name: "URL",
+      selector: (row: SoftwareHistoryType) => row.url,
+      sortable: true,
+      $grow: 1,
+      cell: (row: SoftwareHistoryType) => (
+        <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.url}>
+          {row.url}
         </span>
       ),
-      sortable: true,
     },
     {
       name: "Destination",
-      selector: (row: HistoryType) => row.destination,
+      selector: (row: SoftwareHistoryType) => row.destination,
       sortable: true,
-      cell: (row: HistoryType) => (
+      cell: (row: SoftwareHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
@@ -212,9 +142,9 @@ const SoftwareInstallationPage = () => {
     },
     {
       name: "Arguments",
-      selector: (row: HistoryType) => row.variables,
+      selector: (row: SoftwareHistoryType) => row.variables,
       sortable: true,
-      cell: (row: HistoryType) => (
+      cell: (row: SoftwareHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
@@ -226,17 +156,33 @@ const SoftwareInstallationPage = () => {
     },
     {
       name: "Status",
-      selector: (row: HistoryType) => row.status,
+      selector: (row: SoftwareHistoryType) => row.status,
       sortable: true,
-      cell: (row: HistoryType) => {
+      cell: (row: SoftwareHistoryType) => {
         const getStatusStyle = (status: string) => {
           switch (status.toLowerCase()) {
             case "initialized":
-              return { color: "orange", fontWeight: "bold" };
+              return {
+                color: "orange",
+                fontWeight: "bold",
+                backgroundColor: "#ffe5b4", // Light orange on hover
+                ":hover": { backgroundColor: "#ffd699" }, // Hover effect
+              };
             case "received":
-              return { color: "green", fontWeight: "bold" };
+              return {
+                color: "green",
+                fontWeight: "bold",
+                backgroundColor: "#d3ffd3", // Light green on hover
+                ":hover": { backgroundColor: "#aaffaa" }, // Hover effect
+              };
             case "canceled":
-              return { color: "red", fontWeight: "bold" };
+              return {
+                color: "red",
+                padding: "15px",
+                fontWeight: "bold",
+                backgroundColor: "#ffcccc", // Light red on hover
+                ":hover": { backgroundColor: "#ffb3b3" }, // Hover effect
+              };
             default:
               return { color: "black" };
           }
@@ -258,12 +204,25 @@ const SoftwareInstallationPage = () => {
     },
     {
       name: "User",
-      selector: (row: HistoryType) => row.user,
+      selector: (row: SoftwareHistoryType) => row.users_id,
+      sortable: true,
+    },
+    {
+      name: "Date",
+      selector: (row: SoftwareHistoryType) => {
+        const date = new Date(row.created_at);
+        const options: Intl.DateTimeFormatOptions = {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        };
+        return date.toLocaleDateString("en-US", options);
+      },
       sortable: true,
     },
     {
       name: "Action",
-      cell: (row: HistoryType) => (
+      cell: (row: SoftwareHistoryType) => (
         <button
           className="btn btn-danger btn-sm d-flex justify-content-center align-items-center"
           style={{
@@ -288,14 +247,12 @@ const SoftwareInstallationPage = () => {
     },
   ];
 
-  const fetchData = async () => {
-    const response = await GetAllSoftwareInstallations();
-    console.log("response.data ==>>", response.data);
-  };
-
   useEffect(() => {
     fetchData();
-    const paginatedTickets = history.slice(
+  }, []);
+
+  useEffect(() => {
+    const paginatedTickets = softwareHistory.slice(
       (currentHistorysPage - 1) * SoftwarePerPage,
       currentHistorysPage * SoftwarePerPage
     );
@@ -308,59 +265,8 @@ const SoftwareInstallationPage = () => {
         <div className="row justify-content-center">
           <div className="col-md-10 col-lg-10 col-xl-12">
             <h2 className="text-center mb-4">🚀 Software Installation</h2>
-
             <ActionIcons />
-
-            <div className="row g-4 justify-content-center">
-              <div className="col-3">
-                <div
-                  className="card shadow-sm p-3 mb-4"
-                  style={{ borderRadius: "10px" }}
-                >
-                  <div className="row align-items-center">
-                    <div className="col-auto text-center">
-                      <div
-                        className="d-flex justify-content-center align-items-center bg-primary text-white rounded-circle"
-                        style={{ width: "50px", height: "50px" }}
-                      >
-                        <i
-                          className="bi bi-arrow-90deg-up text-dark"
-                          style={{ fontSize: "24px" }}
-                        ></i>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <h5 className="mb-1">initialized Software</h5>
-                      <h6 className="text-muted">150</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-3">
-                <div
-                  className="card shadow-sm p-3 mb-4"
-                  style={{ borderRadius: "10px" }}
-                >
-                  <div className="row align-items-center">
-                    <div className="col-auto text-center">
-                      <div
-                        className="d-flex justify-content-center align-items-center bg-primary text-white rounded-circle"
-                        style={{ width: "50px", height: "50px" }}
-                      >
-                        <i
-                          className="bi bi-download text-dark"
-                          style={{ fontSize: "24px" }}
-                        ></i>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <h5 className="mb-1">Received Software</h5>
-                      <h6 className="text-muted">15000</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CardsStat />
 
             <button
               type="button"
@@ -395,6 +301,8 @@ const SoftwareInstallationPage = () => {
               responsive
               highlightOnHover
             />
+            {isLoading && <div>Loading...</div>}
+            {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
               <button

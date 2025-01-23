@@ -6,7 +6,7 @@ import {
 } from "../../config/ApiCalls";
 import { useAtomValue } from "jotai";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
-import { SelectDeviceType } from "../../types/softwareInstallation";
+import { SelectDeviceType } from "../../types/softwareInstallationTypes";
 
 interface Step {
   id: number;
