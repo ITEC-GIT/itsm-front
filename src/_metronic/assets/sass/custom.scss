@@ -1,37 +1,84 @@
-.content-background{
-    background-color:#D3D3D3 !important;
-    padding-top: 5px !important;
-    margin-bottom: 5px !important;
-
+.content-background {
+  background-color: #d3d3d3 !important;
+  padding-top: 5px !important;
+  margin-bottom: 5px !important;
 }
 
 .spinner-loading-data {
-    color: #007bff;
-    width: 5rem;
-    height: 5rem;
-    border-width: 0.25em;
-    border-color: #007bff; /* Blue color */
-    border-right-color: transparent; /* Make one side transparent for the spinning effect */
+  color: #007bff;
+  width: 5rem;
+  height: 5rem;
+  border-width: 0.25em;
+  border-color: #007bff; /* Blue color */
+  border-right-color: transparent; /* Make one side transparent for the spinning effect */
+}
+
+.spinner-wrapper {
+  color: #007bff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.tickets-filter-background {
+  background-color: transparent !important;
+}
+// .custom-badge {
+//   padding: 5px 10px;
+//   font-size: 14px;
+//   font-weight: bold;
+//   border-radius: 5px;
+//   text-align: center;
+//   max-width: fit-content;
+//   position: relative;
+//   margin-right: 10px; /* Add some space between badges */
+//   .badge-close {
+//     position: absolute;
+
+//     cursor: pointer;
+//     font-weight: bold;
+//     color: inherit;
+//     border-left: 2px solid currentColor; /* Add border */
+//     padding-left: 5px; /* Add padding to separate from border */
+//     &:hover {
+//       color: red; // Change color on hover
+//     }
+//   }
+// }
+.custom-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  padding-right: 0px !important;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 1px;
+  text-align: center;
+  max-width: fit-content;
+  position: relative;
+  margin-right: 10px; /* Add some space between badges */
+  .badge-close {
+    margin-left: 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: inherit;
+    border-left: 2px solid currentColor; /* Add border */
+    padding-left: 5px; /* Add padding to separate from border */
   }
-  
-  .spinner-wrapper {
-    color: #007bff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
+  .badge-close:hover {
+    color: black; /* Change background on hover */
   }
-  
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-  }
-  .tickets-filter-background{
-    background-color: transparent !important;
-  }
+}
+

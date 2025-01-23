@@ -15,6 +15,7 @@ import TicketCard from '../../../_metronic/layout/components/custom-components/C
 import { Content } from '../../../_metronic/layout/components/content'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { addPinnedTicketId, removePinnedTicketId, getPinnedTicketIds } from '../../../utils/indexDB'
+import detective from './detective.svg'
 
 const TicketsPage: React.FC = () => {
 
@@ -1968,7 +1969,7 @@ const TicketsPage: React.FC = () => {
                   date={ticket.date}
                   title={ticket.name}
                   description={ticket.content || "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
-                  assignedTo={{ name: ticket.users_recipient, avatar: "person-bounding-box" }} // Placeholder avatar
+                  assignedTo={{ name: ticket.users_recipient, avatar: detective }} // Placeholder avatar
                   raisedBy={{ name: ticket.users_lastupdater, initials: ticket?.users_lastupdater?.charAt(0) }}
                   priority={ticket.priority_label}
                   category={ticket.type_label}

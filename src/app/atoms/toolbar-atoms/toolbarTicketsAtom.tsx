@@ -21,3 +21,16 @@ export const toolbarTicketsFrontFiltersAtom = atom({
     assignee:''
 });
 toolbarTicketsFrontFiltersAtom.debugLabel = "toolbarTicketsFrontFiltersAtom";
+
+export const toolbarTicketsBackendFiltersAtom = atom({
+    status: '',
+    urgency: '',
+    priority: '',
+    type: '',
+    requester: '',
+    branch: '',
+    assignee:'',
+    from:'',
+    to:''
+});
+toolbarTicketsBackendFiltersAtom.debugLabel = "toolbarTicketsBackendFiltersAtom";

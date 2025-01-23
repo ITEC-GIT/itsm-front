@@ -15,6 +15,6 @@
   
   .tickets-component-container {
     position: relative !important; // Enables absolute positioning for the child elements
-    max-height: 95vh !important;  // Ensures the component takes full screen height
+    max-height: 95% !important;  // Ensures the component takes full screen height
     margin-bottom: 4px;
   }

@@ -153,17 +153,17 @@ const TicketCard: React.FC<CardProps> = ({
               </div>
               <div className=" d-flex id-badge align-self-start align-content-center">
                 <span
-                  className={`badgee text-uppercase text-white ${status === "SOLVED"
+                  className={`badgee text-uppercase text-white ${status === "solved"
                     ? "badge-bg-solved"
-                    : status === "CANCELED"
+                    : status === "closed"
                       ? "badge-bg-closed"
-                      : status === "PENDING"
+                      : status === "pending"
                         ? "bg-warning"
-                        : status === "ASSIGNED"
+                        : status === "assigned"
                           ? "badge-bg-assigned"
-                          : status === "NEW"
+                          : status === "new"
                             ? "badge-bg-new"
-                            : status === "PLAN"
+                            : status === "plan"
                               ? "bg-info"
                               : ""
                     }`}

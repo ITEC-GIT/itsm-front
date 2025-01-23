@@ -1,4 +1,5 @@
 import { ErrorResponse } from "../types/AuthTypes";
+import { ApiRequestBody } from "./ApiTypes";
 import { PrivateApiCall, PublicApiCall,getSessionTokenFromCookie } from "./Config";
 
 const errorCatch = (error: ErrorResponse) => {
@@ -34,6 +35,34 @@ async function LoginApi(login: string, password: string) {
     .catch((error: any) => errorCatch(error));
 }
 
+
+const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
+  try {
+    const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+    const sessionToken = getSessionTokenFromCookie();
+    const params: any = {
+      range: body.range,
+      order: body.order,
+    };
+
+    if (body.idgt !== undefined) {
+      params.idgt = body.idgt;
+    }
+    const response = await PrivateApiCall.post("/fetchFilterTickets", body, {
+      headers: {
+        "App-Token": appToken,
+        "Session-Token": sessionToken,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data; // Return only the data
+  } catch (error: any) {
+    errorCatch(error); // Use your existing error handler
+    throw error; // Rethrow the error for additional handling if necessary
+  }
+};
+
 /** ******************************************************************************************* */
 /** ************************************** User *********************************************** */
 /** ******************************************************************************************* */
@@ -56,6 +85,11 @@ async function GetTicketsView() {
 }
 async function GetDashboardAnalytics() {
   return await PrivateApiCall.get(`/AnalyticsDashboard/`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+async function GetFilterSearchTickets() {
+  return await PrivateApiCall.get(`/searchTickets/`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -91,4 +125,4 @@ async function GetTicketsViewById( range: string, order: string,idgt?: number) {
 }
 export { LoginApi, GetUserProfile,GetTicketsViewById ,  GetUsers,
   GetBranches,
-  GetDashboardAnalytics};
+  GetDashboardAnalytics,FetchFilteredTickets};

@@ -111,7 +111,7 @@ const ToolbarTickets = () => {
             <KTIcon iconName='filter' className='fs-6 text-muted me-1' />
             
           </button>
-          {isFilterFrontDropdownOpen && <CustomFilterFrontDataDropdown />}
+          {isFilterFrontDropdownOpen && <CustomFilterFrontDataDropdown setIsFilterFrontDropdownOpen={setIsFilterFrontDropdownOpen} />}
 
         </div>
        
@@ -135,7 +135,7 @@ const ToolbarTickets = () => {
           >
             <span className="visually-hidden">Toggle Dropdown</span>
           </button>
-          {isFilterDatabaseDropdownOpen && <CustomFilterDatabaseDropdown />}
+          {isFilterDatabaseDropdownOpen && <CustomFilterDatabaseDropdown  setIsFilterDatabaseDropdownOpen={setIsFilterDatabaseDropdownOpen} />}
         </div>
 
 
