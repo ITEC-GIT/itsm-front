@@ -121,6 +121,7 @@ async function FetchAllSoftwareInstallations(
       expand_dropdowns: 1,
       range,
       order,
+      idgt,
     },
   })
     .then((response) => response)

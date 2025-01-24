@@ -10,14 +10,14 @@ import { steps } from "../../data/softwareInstallation";
 import { FetchAllSoftwareInstallations } from "../../config/ApiCalls";
 import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
 import { CardsStat } from "../../components/hyper-commands/cards-statistics";
-import { getCircleColor, getStatusClass } from "../../../utils/custom";
+import {
+  getCircleColor,
+  getLowestId,
+  getStatusClass,
+} from "../../../utils/custom";
 import { SearchComponent } from "../../components/form/search";
 
 const SoftwareInstallationPage = () => {
-  //for range
-  const limit = 30;
-  const [offset, setOffset] = useState<number>(0);
-
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -34,9 +34,10 @@ const SoftwareInstallationPage = () => {
     {}
   ).current;
 
-  const SoftwarePerPage = 2;
+  const SoftwarePerPage = 5;
   const minPagesToShow = 3;
-  const totalPages = Math.ceil(16 / SoftwarePerPage); //softwareHistory.length( 16 is temporary)
+  const [maxTotalSoftwares, setMaxTotalSoftwares] = useState<number>(0);
+  const totalPages = Math.ceil(maxTotalSoftwares / SoftwarePerPage);
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [paginatedHistory, setPaginatedHistory] = useState<
     SoftwareHistoryType[]
@@ -52,34 +53,65 @@ const SoftwareInstallationPage = () => {
     setCurrentHistoryPage((prev) => Math.min(prev + 1, totalPages));
   const handleLastPage = () => setCurrentHistoryPage(totalPages);
 
-  const handlePageChange = (page: number) => {
-    setCurrentHistoryPage(page);
-    fetchData(page);
-  };
-
   const fetchData = async (page: number) => {
-    console.log("page from fetch data ==>>", page);
     setIsLoading(true);
     setError(null);
     try {
-      const startIndex = (page - 1) * SoftwarePerPage;
-      const endIndex = startIndex + SoftwarePerPage - 1;
-      const range = `${startIndex}-${endIndex}`;
-
       if (historyCache[page]) {
-        setPaginatedHistory(historyCache[page]);
+        setPaginatedHistory([...historyCache[page]]);
         return;
       }
-      const response = await FetchAllSoftwareInstallations(range, "desc");
-      const newData = response.data;
 
-      historyCache[page] = newData;
-      setSoftwareHistory((prevHistory) => [...prevHistory, ...newData]);
-      setPaginatedHistory(newData);
+      let lowestId: number | null = null;
+
+      if (softwareHistory.length > 0) {
+        lowestId = getLowestId(paginatedHistory);
+      }
+
+      const response = await FetchAllSoftwareInstallations(
+        "0-9",
+        "desc",
+        lowestId || undefined
+      );
+
+      setMaxTotalSoftwares(response.data.totalcount);
+      const newData = response.data.data;
+      const updatedSoftwares = [...softwareHistory, ...newData];
+      setSoftwareHistory(updatedSoftwares);
+
+      const filledPages = Math.ceil(newData.length / SoftwarePerPage);
+
+      const currentPage =
+        Object.keys(historyCache).length === 0
+          ? 1
+          : Object.keys(historyCache).length + 1;
+
+      for (let i = 0; i < filledPages; i++) {
+        const page = currentPage + i;
+        const pageData = newData.slice(
+          i * SoftwarePerPage,
+          (i + 1) * SoftwarePerPage
+        );
+        historyCache[page] = pageData;
+      }
+
+      setPaginatedHistory([...historyCache[page]]);
     } catch (err) {
       setError("Failed to fetch software installations. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentHistoryPage(page);
+
+    const targetBatchStartPage =
+      Math.floor((page - 1) / minPagesToShow) * minPagesToShow + 1;
+    if (!historyCache[targetBatchStartPage]) {
+      fetchData(targetBatchStartPage);
+    } else {
+      setPaginatedHistory(historyCache[page] || []);
     }
   };
 
@@ -106,7 +138,6 @@ const SoftwareInstallationPage = () => {
             item.users_id.toLowerCase().includes(query.toLowerCase()) ||
             item.url.toLowerCase().includes(query.toLowerCase())
         );
-        console.log("filteredItems ===>>>", filteredItems);
         setPaginatedHistory(filteredItems);
       } else {
         setPaginatedHistory(softwareHistory);
@@ -262,14 +293,7 @@ const SoftwareInstallationPage = () => {
   ];
 
   useEffect(() => {
-    const loadPageData = async () => {
-      if (!historyCache[currentHistorysPage]) {
-        await fetchData(currentHistorysPage);
-      }
-      setPaginatedHistory(historyCache[currentHistorysPage] || []);
-    };
-
-    loadPageData();
+    fetchData(currentHistorysPage);
   }, [currentHistorysPage]);
 
   return (

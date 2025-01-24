@@ -14,6 +14,7 @@ export type SelectDeviceType = {
 };
 
 export type SoftwareHistoryType = {
+  id: number;
   software: string; //name
   computers_id: string; //it is a name
   // mid: string; //serial number

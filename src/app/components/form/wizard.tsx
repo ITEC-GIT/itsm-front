@@ -236,7 +236,7 @@ const Wizard = ({ steps }: { steps: any }) => {
 
   const fetchComputers = async () => {
     const response = await GetAllComputers();
-    const data = response.data;
+    const data = response.data.data;
     const computersData = data.map((item: any) => ({
       id: item.id,
       name: item.name,
