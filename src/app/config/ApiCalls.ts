@@ -123,6 +123,63 @@ async function GetTicketsViewById( range: string, order: string,idgt?: number) {
     .catch((error: any) => errorCatch(error));
 
 }
+async function UpdateActions( ticketId: number , ticketStatusId: number,ticketUrgencyId: number,ticketPriorityId: number,ticketTypeID: number) {
+  const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+  const sessionToken = getSessionTokenFromCookie();
+
+  const ticketUpdateBody={
+    "id":ticketId,
+    "status":ticketStatusId,
+    "urgency":ticketUrgencyId,
+    "priority":ticketPriorityId,
+    "type":ticketTypeID,
+    "due_date":""
+  }
+
+  const response = await PrivateApiCall.post("/UpdateTicket", ticketUpdateBody, {
+    headers: {
+      "App-Token": appToken,
+      "Session-Token": sessionToken,
+      "Content-Type": "application/json",
+    },
+  })
+  .then((response) => response)
+  .catch((error: any) => errorCatch(error));
+
+
+}
+async function UpdateStarred( ticketId: number , starred: number) {
+  const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+  const sessionToken = getSessionTokenFromCookie();
+
+  const ticketStarredBody={
+    "id":ticketId,
+    "starred":starred
+  }
+
+  const response = await PrivateApiCall.post("/UpdateTicket", ticketStarredBody, {
+    headers: {
+      "App-Token": appToken,
+      "Session-Token": sessionToken,
+      "Content-Type": "application/json",
+    },
+  })
+  .then((response) => response)
+  .catch((error: any) => errorCatch(error));
+
+
+}
+async function GetStaticData( ) {
+
+  return await PrivateApiCall.get("/GetStaticData")
+  .then((response) => response)
+  .catch((error: any) => errorCatch(error));
+}
+async function GetUsersBranch( ) {
+  return await PrivateApiCall.get("/UsersAndAreas")
+  .then((response) => response)
+  .catch((error: any) => errorCatch(error));
+}
 export { LoginApi, GetUserProfile,GetTicketsViewById ,  GetUsers,
   GetBranches,
-  GetDashboardAnalytics,FetchFilteredTickets};
+  GetDashboardAnalytics,FetchFilteredTickets,UpdateStarred,GetStaticData,GetUsersBranch};

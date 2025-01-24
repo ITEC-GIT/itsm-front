@@ -8,7 +8,7 @@ import {
   loadFromIndexedDB,
   removeFromIndexedDB,
   saveToIndexedDB,
-} from "../../indexDB/Config";
+} from "../../indexDB/IndexDBConfig";
 import Cookies from "js-cookie";
 
 const AnalyticsDashboard = () => {

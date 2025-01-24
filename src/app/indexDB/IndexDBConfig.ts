@@ -40,11 +40,17 @@ export function openDB(
       const transaction = db.transaction(STORE_NAME, "readwrite");
       const store = transaction.objectStore(STORE_NAME);
   
-      data.forEach((item: any) => {
+      // Ensure data is an array
+      const dataArray = Array.isArray(data) ? data : [data];
+  
+      dataArray.forEach((item: any, index: number) => {
+        if (!item.id) {
+          item.id = index + 1; // Assign a unique id if missing
+        }
         const request = store.put(item);
-        request.onsuccess = () => console.log(`Saved item with id: ${item.id}`);
+        request.onsuccess = () => console.log(`Saved item `);
         request.onerror = () =>
-          console.error(`Error saving item with id: ${item.id}`);
+          console.error(`Error saving item`);
       });
   
       return new Promise<void>((resolve, reject) => {

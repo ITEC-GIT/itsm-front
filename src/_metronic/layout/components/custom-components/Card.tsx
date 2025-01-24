@@ -94,6 +94,7 @@ const TicketCard: React.FC<CardProps> = ({
       onPin(id); // Call the onPin function when the pin icon is clicked
     }
     else if (icon === "star") {
+      
       onStarred(id);
     }
   };

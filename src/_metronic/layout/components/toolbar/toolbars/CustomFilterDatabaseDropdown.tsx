@@ -11,6 +11,8 @@ import axios from "axios";
 import { toolbarTicketsBackendFiltersAtom } from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
 import { ApiRequestBody } from "../../../../../app/config/ApiTypes";
 import { FetchFilteredTickets } from "../../../../../app/config/ApiCalls";
+import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms/indexDBAtoms";
+import { transformStaticData } from "../../../../../utils/dataTransformUtils";
 interface CustomFilterBackendDataDropdownProps {
   setIsFilterDatabaseDropdownOpen: (isOpen: boolean) => void;
 }
@@ -21,6 +23,7 @@ const CustomFilterBackendDataDropdown: React.FC<
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
+  const [staticData] = useAtom(staticDataAtom);
 
   const [status, setStatus] = useState("");
   const [urgency, setUrgency] = useState("");
@@ -56,30 +59,14 @@ const CustomFilterBackendDataDropdown: React.FC<
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setAssignee(e.target.value);
   };
-  const statusOptions = [
-    { value: "new", label: "new" },
-    { value: "assigned", label: "assigned" },
-    { value: "plan", label: "plan" },
-    { value: "solved", label: "solved" },
-  ];
-  const urgencyOptions = [
-    { value: "Very low", label: "Very low" },
-    { value: "Very high", label: "Very high" },
-    { value: "Medium", label: "Medium" },
-    { value: "High", label: "High" },
-    { value: "Low", label: "Low" },
-  ];
-  const priorityOptions = [
-    { value: "Very low", label: "Very low" },
-    { value: "Medium", label: "Medium" },
-    { value: "Very high", label: "Very high" },
-  ];
-  const typeOptions = [
-    { value: "Incident", label: "Incident" },
-    { value: "Request", label: "Request" },
-    { value: "Demand", label: "Demand" },
-  ];
-  // the 3 below are the ones i want to get from db
+  const {
+    statusOptions,
+    urgencyOptions,
+    priorityOptions,
+    typeOptions
+  } = transformStaticData(staticData);
+
+
   const requesterOptions = [
     { value: "User1", label: "User1" },
     { value: "User2", label: "User2" },
@@ -244,7 +231,6 @@ const CustomFilterBackendDataDropdown: React.FC<
           setLoading(false);
           setRenderr(true);
         }, 500);
-
         setRenderr(false);
       },
       onError: (error) => {
