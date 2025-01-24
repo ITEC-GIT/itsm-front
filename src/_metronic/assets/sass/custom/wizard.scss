@@ -91,9 +91,7 @@
 .step-icon {
   font-size: 24px !important;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-40%, -50%);
 }
 
 // software installation
@@ -172,4 +170,37 @@
   font-size: 1.2rem;
   color: #b12e0d;
   font-weight: bold;
+}
+
+.status-initialized {
+  color: orange;
+  font-weight: bold;
+  padding: 8px;
+  background-color: #ffe5b4;
+}
+
+.status-initialized:hover {
+  background-color: #ffd699;
+}
+
+.status-received {
+  color: green;
+  font-weight: bold;
+  padding: 15px;
+  background-color: #d3ffd3;
+}
+
+.status-received:hover {
+  background-color: #aaffaa;
+}
+
+.status-canceled {
+  color: red;
+  font-weight: bold;
+  padding: 15px;
+  background-color: #ffcccc;
+}
+
+.status-canceled:hover {
+  background-color: #ffb3b3;
 }

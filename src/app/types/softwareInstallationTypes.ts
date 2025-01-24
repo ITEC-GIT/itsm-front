@@ -19,7 +19,7 @@ export type SoftwareHistoryType = {
   // mid: string; //serial number
   url: string;
   destination: string;
-  variables: string;
+  arguments: string;
   status: string;
   users_id: string; //it is a name
   created_at: string; // created at

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { debounce } from "lodash";
 import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { Content } from "../../../_metronic/layout/components/content/Content";
@@ -6,11 +7,18 @@ import DataTable from "react-data-table-component";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { Wizard } from "../../components/form/wizard";
 import { steps } from "../../data/softwareInstallation";
-import { GetAllSoftwareInstallations } from "../../config/ApiCalls";
+import { FetchAllSoftwareInstallations } from "../../config/ApiCalls";
 import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
 import { CardsStat } from "../../components/hyper-commands/cards-statistics";
+import { getCircleColor, getStatusClass } from "../../../utils/custom";
+import { SearchComponent } from "../../components/form/search";
 
 const SoftwareInstallationPage = () => {
+  //for range
+  const limit = 30;
+  const [offset, setOffset] = useState<number>(0);
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -22,34 +30,52 @@ const SoftwareInstallationPage = () => {
   );
 
   const [selectedEntry, setSelectedEntry] = useState<SoftwareHistoryType>();
+  const historyCache: { [key: number]: SoftwareHistoryType[] } = useRef(
+    {}
+  ).current;
 
-  const SoftwarePerPage = 6;
-  const totalPages = Math.ceil(history.length / SoftwarePerPage);
+  const SoftwarePerPage = 2;
+  const minPagesToShow = 3;
+  const totalPages = Math.ceil(16 / SoftwarePerPage); //softwareHistory.length( 16 is temporary)
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
-  const [paginatedHistory, setPaginatedTickets] = useState<any[]>([]);
-  const minPagesToShow = 8;
+  const [paginatedHistory, setPaginatedHistory] = useState<
+    SoftwareHistoryType[]
+  >([]);
   const startPage =
     Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
   const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
 
-  //pagination
   const handleFirstPage = () => setCurrentHistoryPage(1);
   const handlePreviousPage = () =>
     setCurrentHistoryPage((prev) => Math.max(prev - 1, 1));
   const handleNextPage = () =>
     setCurrentHistoryPage((prev) => Math.min(prev + 1, totalPages));
   const handleLastPage = () => setCurrentHistoryPage(totalPages);
+
   const handlePageChange = (page: number) => {
     setCurrentHistoryPage(page);
+    fetchData(page);
   };
 
-  const fetchData = async () => {
+  const fetchData = async (page: number) => {
+    console.log("page from fetch data ==>>", page);
     setIsLoading(true);
     setError(null);
     try {
-      const response = await GetAllSoftwareInstallations("0-4", "desc");
-      console.log(response.data);
-      setSoftwareHistory(response.data);
+      const startIndex = (page - 1) * SoftwarePerPage;
+      const endIndex = startIndex + SoftwarePerPage - 1;
+      const range = `${startIndex}-${endIndex}`;
+
+      if (historyCache[page]) {
+        setPaginatedHistory(historyCache[page]);
+        return;
+      }
+      const response = await FetchAllSoftwareInstallations(range, "desc");
+      const newData = response.data;
+
+      historyCache[page] = newData;
+      setSoftwareHistory((prevHistory) => [...prevHistory, ...newData]);
+      setPaginatedHistory(newData);
     } catch (err) {
       setError("Failed to fetch software installations. Please try again.");
     } finally {
@@ -69,11 +95,32 @@ const SoftwareInstallationPage = () => {
     }
   };
 
-  const handleNewInstallation = (record: SoftwareHistoryType) => {
-    setSoftwareHistory((prevHistory) => [...prevHistory, record]);
+  const fetchDataDebounced = useCallback(
+    debounce((query: string) => {
+      if (query) {
+        const filteredItems = softwareHistory.filter(
+          (item) =>
+            item.software.toLowerCase().includes(query.toLowerCase()) ||
+            item.status.toLowerCase().includes(query.toLowerCase()) ||
+            item.computers_id.toLowerCase().includes(query.toLowerCase()) ||
+            item.users_id.toLowerCase().includes(query.toLowerCase()) ||
+            item.url.toLowerCase().includes(query.toLowerCase())
+        );
+        console.log("filteredItems ===>>>", filteredItems);
+        setPaginatedHistory(filteredItems);
+      } else {
+        setPaginatedHistory(softwareHistory);
+      }
+    }, 300),
+    [softwareHistory]
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    fetchDataDebounced(query);
   };
 
-  //table
   const columns = [
     {
       name: "Software",
@@ -104,17 +151,6 @@ const SoftwareInstallationPage = () => {
       ),
       sortable: true,
     },
-    // {
-    //   name: "Serial Number",
-    //   selector: (row: SoftwareHistoryType) => row.mid,
-    //   sortable: true,
-    //   $grow: 1,
-    //   cell: (row: SoftwareHistoryType) => (
-    //     <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.mid}>
-    //       {row.mid}
-    //     </span>
-    //   ),
-    // },
     {
       name: "URL",
       selector: (row: SoftwareHistoryType) => row.url,
@@ -142,15 +178,15 @@ const SoftwareInstallationPage = () => {
     },
     {
       name: "Arguments",
-      selector: (row: SoftwareHistoryType) => row.variables,
+      selector: (row: SoftwareHistoryType) => row.arguments,
       sortable: true,
       cell: (row: SoftwareHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title={row.variables}
+          title={row.arguments}
         >
-          {row.variables}
+          {row.arguments}
         </span>
       ),
     },
@@ -159,45 +195,23 @@ const SoftwareInstallationPage = () => {
       selector: (row: SoftwareHistoryType) => row.status,
       sortable: true,
       cell: (row: SoftwareHistoryType) => {
-        const getStatusStyle = (status: string) => {
-          switch (status.toLowerCase()) {
-            case "initialized":
-              return {
-                color: "orange",
-                fontWeight: "bold",
-                backgroundColor: "#ffe5b4", // Light orange on hover
-                ":hover": { backgroundColor: "#ffd699" }, // Hover effect
-              };
-            case "received":
-              return {
-                color: "green",
-                fontWeight: "bold",
-                backgroundColor: "#d3ffd3", // Light green on hover
-                ":hover": { backgroundColor: "#aaffaa" }, // Hover effect
-              };
-            case "canceled":
-              return {
-                color: "red",
-                padding: "15px",
-                fontWeight: "bold",
-                backgroundColor: "#ffcccc", // Light red on hover
-                ":hover": { backgroundColor: "#ffb3b3" }, // Hover effect
-              };
-            default:
-              return { color: "black" };
-          }
-        };
-
         return (
-          <span
-            style={getStatusStyle(row.status)}
-            className="status-cell"
-            data-bs-toggle="tooltip"
-            data-bs-placement="top"
+          <div
+            className={`status-cell ${getStatusClass(row.status)}`}
             title={row.status}
           >
+            <span
+              style={{
+                display: "inline-block",
+                width: "10px",
+                height: "10px",
+                borderRadius: "50%",
+                backgroundColor: getCircleColor(row.status),
+                marginRight: "8px",
+              }}
+            ></span>
             {row.status}
-          </span>
+          </div>
         );
       },
       $grow: 0.5,
@@ -248,16 +262,15 @@ const SoftwareInstallationPage = () => {
   ];
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const loadPageData = async () => {
+      if (!historyCache[currentHistorysPage]) {
+        await fetchData(currentHistorysPage);
+      }
+      setPaginatedHistory(historyCache[currentHistorysPage] || []);
+    };
 
-  useEffect(() => {
-    const paginatedTickets = softwareHistory.slice(
-      (currentHistorysPage - 1) * SoftwarePerPage,
-      currentHistorysPage * SoftwarePerPage
-    );
-    setPaginatedTickets(paginatedTickets);
-  }, [currentHistorysPage, history]);
+    loadPageData();
+  }, [currentHistorysPage]);
 
   return (
     <Content>
@@ -291,18 +304,38 @@ const SoftwareInstallationPage = () => {
               )}
             </button>
 
-            {showForm && <Wizard steps={steps} add={handleNewInstallation} />}
+            {showForm && <Wizard steps={steps} />}
 
-            <h3 className="mt-5">Installation History</h3>
+            <div className="row mt-5 mb-5">
+              <div className="col-12 col-md-6 d-flex align-items-center">
+                <h3 className="mt-2">Installation History</h3>
+              </div>
+
+              <div className="col-12 col-md-6 d-flex justify-content-md-end">
+                <SearchComponent
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                />
+              </div>
+            </div>
+
             <DataTable
               customStyles={customStyles}
               columns={columns}
               data={paginatedHistory}
               responsive
               highlightOnHover
+              progressPending={isLoading}
+              progressComponent={
+                <div className="d-flex justify-content-center my-3">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              }
             />
-            {isLoading && <div>Loading...</div>}
-            {error && <div className="alert alert-danger">{error}</div>}
+            {/* {isLoading && <div>Loading...</div>}
+            {error && <div className="alert alert-danger">{error}</div>} */}
 
             <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
               <button

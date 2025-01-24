@@ -25,8 +25,7 @@ interface StepNavigationStepProps {
   isComplete: boolean;
 }
 
-const Wizard = ({ steps, add }: { steps: any; add: any }) => {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+const Wizard = ({ steps }: { steps: any }) => {
   const userData = useAtomValue(userAtom);
   const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -138,7 +137,13 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
     } catch (error: any) {
       console.error("Error during software installation:", error);
       if (!error.message) {
-        setErrorMessage("An unknown error occurred during the installation.");
+        setAlertContent({
+          message:
+            error.message ||
+            "An unknown error occurred during the installation.",
+          icon: "fas fa-exclamation-circle",
+          type: "error",
+        });
       }
       throw error;
     }
@@ -153,16 +158,6 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
     setProgress(10);
     setCurrentStep(5);
 
-    const record = {
-      software: softwareUrl,
-      device: selectedDevice?.name,
-      destination: destination,
-      variables: variables,
-      status: "initialized",
-      user: userName,
-    };
-    setDisableInstallButton(true);
-
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -170,7 +165,6 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
           setShowAlert(true);
 
           setTimeout(() => {
-            add(record);
             setDisableInstallButton(false);
             setProgress(0);
             setShowAlert(false);
@@ -203,6 +197,7 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
                 setProgress(0);
                 setShowAlert(false);
                 setCurrentStep(1);
+                window.location.reload();
               }, 1000);
 
               return prev;
@@ -255,6 +250,7 @@ const Wizard = ({ steps, add }: { steps: any; add: any }) => {
       setUserName(userData.session.glpiname);
     }
   };
+
   useEffect(() => {
     fetchUserData();
   }, [userData]);

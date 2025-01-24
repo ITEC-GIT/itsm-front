@@ -111,7 +111,7 @@ async function GetBranches() {
 /** *********************************************************************************************/
 /** ************************************** Software Installation ********************************/
 /** *********************************************************************************************/
-async function GetAllSoftwareInstallations(
+async function FetchAllSoftwareInstallations(
   range: string,
   order: string,
   idgt?: number
@@ -150,6 +150,6 @@ export {
   GetBranches,
   GetDashboardAnalytics,
   InitiateSoftwareInstallation,
-  GetAllSoftwareInstallations,
+  FetchAllSoftwareInstallations,
   GetAllComputers,
 };

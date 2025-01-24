@@ -1,0 +1,25 @@
+export const getStatusClass = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "initialized":
+      return "status-initialized";
+    case "received":
+      return "status-received";
+    case "canceled":
+      return "status-canceled";
+    default:
+      return "status-default";
+  }
+};
+
+export const getCircleColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "initialized":
+      return "orange";
+    case "received":
+      return "green";
+    case "canceled":
+      return "red";
+    default:
+      return "gray";
+  }
+};
