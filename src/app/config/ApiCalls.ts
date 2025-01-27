@@ -114,7 +114,8 @@ async function GetBranches() {
 async function FetchAllSoftwareInstallations(
   range: string,
   order: string,
-  idgt?: number
+  idgt?: number,
+  searchQuery?: string
 ) {
   return await PrivateApiCall.get(`/CTSoftwareInstallation/`, {
     params: {

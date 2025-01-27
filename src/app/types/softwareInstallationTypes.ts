@@ -1,3 +1,5 @@
+import { PaginatedResponse } from "./common";
+
 export type CreateSoftInstRequestType = {
   mid: string;
   computers_id: number;
@@ -25,3 +27,6 @@ export type SoftwareHistoryType = {
   users_id: string; //it is a name
   created_at: string; // created at
 };
+
+export type SoftwareInstallationResponseType =
+  PaginatedResponse<SoftwareHistoryType>;

@@ -257,3 +257,9 @@
 .status-canceled:hover {
   background-color: #ffb3b3;
 }
+
+.url-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
