@@ -28,10 +28,11 @@ const SoftwareInstallationPage = () => {
 
   const [selectedEntry, setSelectedEntry] = useState<SoftwareHistoryType>();
 
-  const SoftwarePerPage = 2; //10
+  const SoftwarePerPage = 10;
   const minPagesToShow = 3;
   const [maxTotalSoftwares, setMaxTotalSoftwares] = useState<number>(0);
   const totalPages = Math.ceil(maxTotalSoftwares / SoftwarePerPage);
+
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [paginatedHistory, setPaginatedHistory] = useState<
     SoftwareHistoryType[]
@@ -55,7 +56,7 @@ const SoftwareInstallationPage = () => {
 
   const fetchData = async () => {
     const response = await FetchAllSoftwareInstallations(
-      "0-7", //0-29
+      "0-29",
       "desc",
       getLowestId(paginatedHistory) ?? undefined
     );
@@ -76,14 +77,6 @@ const SoftwareInstallationPage = () => {
     retry: true,
     staleTime: 500,
   });
-
-  const getCurrentPageRecords = () => {
-    const startIndex = (currentHistorysPage - 1) * SoftwarePerPage; // 2*8 = 16
-    const endIndex = startIndex + SoftwarePerPage; // 16+8 = 24
-    const newData = paginatedHistory.slice(startIndex, endIndex);
-
-    return newData;
-  };
 
   const handlePageChange = (page: number) => {
     setCurrentHistoryPage(page);
@@ -119,13 +112,13 @@ const SoftwareInstallationPage = () => {
       name: "#",
       sortable: false,
       width: "50px",
-      cell: (_row: SoftwareHistoryType, index: number) => (
+      cell: (row: SoftwareHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title={(index + 1).toString()}
+          title={row.id.toString()}
         >
-          {index + 1}
+          {row.id}
         </span>
       ),
     },
@@ -277,6 +270,33 @@ const SoftwareInstallationPage = () => {
     },
   ];
 
+  const handleSearchChange = debounce((query: string) => {
+    const searchQry = query.trim();
+    setCurrentHistoryPage(1);
+    setSearchQuery(searchQry);
+  }, 100);
+
+  const filteredHistory = useMemo(() => {
+    if (!softwareHistory || !searchQuery.trim())
+      return softwareHistory?.data || [];
+
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    return softwareHistory.data.filter((entry: SoftwareHistoryType) => {
+      return (
+        entry.software.toLowerCase().includes(lowerCaseQuery) ||
+        entry.computers_id.toLowerCase().includes(lowerCaseQuery) ||
+        entry.url.toLowerCase().includes(lowerCaseQuery) ||
+        entry.users_id.toLowerCase().includes(lowerCaseQuery)
+      );
+    });
+  }, [softwareHistory, searchQuery]);
+
+  const getCurrentPageRecords = useMemo(() => {
+    const startIndex = (currentHistorysPage - 1) * SoftwarePerPage;
+    const endIndex = startIndex + SoftwarePerPage;
+    return filteredHistory.slice(startIndex, endIndex);
+  }, [filteredHistory, currentHistorysPage, SoftwarePerPage]);
+
   useEffect(() => {
     if (softwareHistory) {
       setMaxTotalSoftwares(softwareHistory.totalcount);
@@ -290,10 +310,6 @@ const SoftwareInstallationPage = () => {
       console.error("Error fetching software installation data:", error);
     }
   }, [softwareHistory, error]);
-
-  const handleSearchChange = debounce((query: string) => {
-    setSearchQuery(query);
-  }, 300);
 
   return (
     <Content>
@@ -347,7 +363,7 @@ const SoftwareInstallationPage = () => {
             <DataTable
               customStyles={customStyles}
               columns={columns}
-              data={getCurrentPageRecords()}
+              data={getCurrentPageRecords}
               responsive
               highlightOnHover
               progressPending={isLoading || isLoadingMore}
