@@ -1,5 +1,5 @@
 import { ErrorResponse } from "../types/AuthTypes";
-import { ApiRequestBody } from "./ApiTypes";
+import { ApiRequestBody, UpdateTicketRequestBody } from "./ApiTypes";
 import { PrivateApiCall, PublicApiCall,getSessionTokenFromCookie } from "./Config";
 
 const errorCatch = (error: ErrorResponse) => {
@@ -48,7 +48,7 @@ const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
     if (body.idgt !== undefined) {
       params.idgt = body.idgt;
     }
-    const response = await PrivateApiCall.post("/fetchFilterTickets", body, {
+    const response = await PrivateApiCall.post("/searchTickets", body, {
       headers: {
         "App-Token": appToken,
         "Session-Token": sessionToken,
@@ -63,6 +63,26 @@ const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
   }
 };
 
+const UpdateTicket = async (body: UpdateTicketRequestBody): Promise<any> => {
+  try {
+    const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+    const sessionToken = getSessionTokenFromCookie();
+
+
+    const response = await PrivateApiCall.post("/UpdateTicket", body, {
+      headers: {
+        "App-Token": appToken,
+        "Session-Token": sessionToken,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response; // Return only the data
+  } catch (error: any) {
+    errorCatch(error); // Use your existing error handler
+    throw error; // Rethrow the error for additional handling if necessary
+  }
+};
 /** ******************************************************************************************* */
 /** ************************************** User *********************************************** */
 /** ******************************************************************************************* */
@@ -182,4 +202,4 @@ async function GetUsersBranch( ) {
 }
 export { LoginApi, GetUserProfile,GetTicketsViewById ,  GetUsers,
   GetBranches,
-  GetDashboardAnalytics,FetchFilteredTickets,UpdateStarred,GetStaticData,GetUsersBranch};
+  GetDashboardAnalytics,FetchFilteredTickets,UpdateStarred,GetStaticData,GetUsersBranch,UpdateTicket};

@@ -98,23 +98,24 @@ const RoutesContent: FC = () => {
   const { data: userBranches, error, isLoading, refetch } = useQuery({
     queryKey: ['userBranches'], // Ensure you have a unique query key
     queryFn: GetUsersBranch, // Directly pass the function reference
-    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnWindowFocus: false, // Refetch when window regains focus
     refetchInterval: 180000, // Refetch every 3 minutes (in milliseconds)
     enabled: true, // Start fetching as soon as the component is mounted
     retry: true
   });
-  const setItsmBranches = useSetAtom(branchesAtom);
-  const setItsmSlaves = useSetAtom(slavesAtom);
+  const [itsmBranches,setItsmBranches] = useAtom(branchesAtom);
+  const [itsmSlaves,setItsmSlaves] = useAtom(slavesAtom);
   useEffect(() => {
-    if (error) {
-      console.error('Error fetching user branches:', error);
+    if (userBranches && userBranches.data) {
+      setItsmBranches((prev) =>
+        prev !== userBranches.data.Departments ? userBranches.data.Departments : prev
+      );
+      setItsmSlaves((prev) =>
+        prev !== userBranches.data.requesters ? userBranches.data.requesters : prev
+      );
     }
-    if (userBranches) {
-      console.log('User Branches:', userBranches);
-      setItsmBranches(userBranches.branches);
-      setItsmSlaves(userBranches.slaves);
-    }
-  }, [userBranches]);
+  }, [userBranches, setItsmBranches, setItsmSlaves]);
+
   return (
     <Routes>
       <Route element={<App />}>

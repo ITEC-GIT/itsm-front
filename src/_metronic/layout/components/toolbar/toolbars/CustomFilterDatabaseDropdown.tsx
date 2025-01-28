@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useAtom, useSetAtom } from "jotai";
+import React, { useState, useEffect, useCallback,useMemo } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { debounce, set } from "lodash";
 import {
   useQuery,
@@ -13,6 +13,10 @@ import { ApiRequestBody } from "../../../../../app/config/ApiTypes";
 import { FetchFilteredTickets } from "../../../../../app/config/ApiCalls";
 import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms/indexDBAtoms";
 import { transformStaticData } from "../../../../../utils/dataTransformUtils";
+import {
+  branchesAtom,
+  slavesAtom,
+} from "../../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
 interface CustomFilterBackendDataDropdownProps {
   setIsFilterDatabaseDropdownOpen: (isOpen: boolean) => void;
 }
@@ -59,26 +63,32 @@ const CustomFilterBackendDataDropdown: React.FC<
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setAssignee(e.target.value);
   };
-  const {
-    statusOptions,
-    urgencyOptions,
-    priorityOptions,
-    typeOptions
-  } = transformStaticData(staticData);
+  const { statusOptions, urgencyOptions, priorityOptions, typeOptions } =
+    transformStaticData(staticData);
 
-
-  const requesterOptions = [
-    { value: "User1", label: "User1" },
-    { value: "User2", label: "User2" },
-  ];
-  const branchOptions = [
-    { value: "Branch1", label: "Branch1" },
-    { value: "Branch2", label: "Branch2" },
-  ];
+  const ItsmBranches = useAtomValue(branchesAtom);
+  const ItsmSlaves = useAtomValue(slavesAtom);
+  const requesterOptions = useMemo(
+    () =>
+      ItsmSlaves.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    [ItsmSlaves]
+  );
+  
+  const branchOptions = useMemo(
+    () =>
+      ItsmBranches.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    [ItsmBranches]
+  );
   const assigneeOptions = [
-    { value: "m.harb", label: "m.harb" },
-    { value: "cobalt", label: "cobalt" },
-    { value: "m.hareb", label: "m.hareb" },
+    { value: "7", label: "m.hareb" },
+    { value: "2", label: "cobalt" },
+    { value: "16", label: "m.harb" },
   ];
 
   const [backendFilter, setBackendFilters] = useAtom(
@@ -100,21 +110,22 @@ const CustomFilterBackendDataDropdown: React.FC<
     setIsFilterDatabaseDropdownOpen(false);
 
     const filterBody: ApiRequestBody = {
-      status: status,
-      urgency: urgency,
-      priority: priority,
-      type: type,
-      requester: requester,
-      branch: branch,
-      assignee: assignee,
-      from: formattedFromdDate,
-      to:formattedTodDate ,
       range: "0-5",
-      order: "desc"
+      order: "desc",
+      opening_date: { from: "", to: "" },
     };
 
-    filterBackendMutation.mutate(filterBody); 
-
+    if (status) filterBody.status = status;
+    if (urgency) filterBody.urgency = urgency;
+    if (priority) filterBody.priority = priority;
+    if (type) filterBody.type = type;
+    if (requester) filterBody.requester = requester;
+    if (branch) filterBody.area_id = branch;
+    if (assignee) filterBody.assignee = assignee;
+    if (formattedFromdDate) filterBody.opening_date.from = formattedFromdDate;
+    if (formattedTodDate) filterBody.opening_date.to = formattedTodDate;
+    // filterBody.opening_date={"from":formattedFromdDate,"to":formattedTodDate}
+    // filterBackendMutation.mutate(filterBody);
   };
   const handleReset = () => {
     setStatus("");
@@ -169,10 +180,7 @@ const CustomFilterBackendDataDropdown: React.FC<
   }, [handleWindowFocus]);
   const [fromDateTime, setFromDateTime] = useState("");
   const [formattedFromdDate, setFormattedFromDate] = useState("");
-  const [toDateTime, setToDateTime] = useState("");
-  const [formattedTodDate, setFormattedToDate] = useState("");
-
-  const handleFromDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFromDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawDate = e.target.value; // Format: yyyy,mm,dd
     setFromDateTime(rawDate);
 
@@ -184,6 +192,10 @@ const CustomFilterBackendDataDropdown: React.FC<
       setFormattedFromDate("");
     }
   };
+  const [toDateTime, setToDateTime] = useState("");
+  const [formattedTodDate, setFormattedToDate] = useState("");
+
+
   const handleToDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawDate = e.target.value; // Format: yyyy,mm,dd
     setToDateTime(rawDate);
@@ -216,31 +228,23 @@ const CustomFilterBackendDataDropdown: React.FC<
   };
 
   // Define the type for the API request body
- 
+
   const [loading, setLoading] = React.useState<boolean>(false);
   const [renderr, setRenderr] = React.useState<boolean>(false);
 
-  const filterBackendMutation = useMutation<any, Error, ApiRequestBody>(
-    {
-      mutationFn: FetchFilteredTickets, 
-      onSuccess: (data) => {
-        console.log(data);
-        const message = "success";
-
-        const timer = setTimeout(() => {
-          setLoading(false);
-          setRenderr(true);
-        }, 500);
-        setRenderr(false);
-      },
-      onError: (error) => {
-        alert("There was an error: " + error.message);
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ["create"] }); // Updated invalidateQueries syntax
-      },
-    }
-  );
+  const filterBackendMutation = useMutation<any, Error, ApiRequestBody>({
+    mutationFn: FetchFilteredTickets,
+    onSuccess: (data) => {
+      console.log(data);
+      const message = "success";
+    },
+    onError: (error) => {
+      alert("There was an error: " + error.message);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["create"] }); // Updated invalidateQueries syntax
+    },
+  });
   return (
     <div
       className="dropdown-menu p-4 show"
@@ -280,14 +284,14 @@ const CustomFilterBackendDataDropdown: React.FC<
             onChange={handleStatusChange}
           >
             <option value="">Select option</option>
-            {statusOptions.map((status) => (
+            {statusOptions.map((status: { value: string; label: string }) => (
               <option key={status.value} value={status.value}>
                 {status.label}
               </option>
             ))}
           </select>
         </div>
-        <div className="flex-fill">
+        <div className="me-2 flex-fill">
           <label className="form-label fw-bold">Urgency:</label>
           <select
             className="form-select"
@@ -295,7 +299,7 @@ const CustomFilterBackendDataDropdown: React.FC<
             onChange={handleUrgencyChange}
           >
             <option value="">Select option</option>
-            {urgencyOptions.map((urgency) => (
+            {urgencyOptions.map((urgency: { value: string; label: string }) => (
               <option key={urgency.value} value={urgency.value}>
                 {urgency.label}
               </option>
@@ -310,7 +314,7 @@ const CustomFilterBackendDataDropdown: React.FC<
             onChange={handlePriorityChange}
           >
             <option value="">Select option</option>
-            {priorityOptions.map((priority) => (
+            {priorityOptions.map((priority: { value: string; label: string }) => (
               <option key={priority.value} value={priority.value}>
                 {priority.label}
               </option>
@@ -320,7 +324,7 @@ const CustomFilterBackendDataDropdown: React.FC<
       </div>
 
       <div className="d-flex mb-3">
-        <div className="flex-fill">
+        <div className="me-2 flex-fill">
           <label className="form-label fw-bold">Type:</label>
           <select
             className="form-select"
@@ -328,7 +332,7 @@ const CustomFilterBackendDataDropdown: React.FC<
             onChange={handleTypeChange}
           >
             <option value="">Select option</option>
-            {typeOptions.map((type) => (
+            {typeOptions.map((type: { value: string; label: string }) => (
               <option key={type.value} value={type.value}>
                 {type.label}
               </option>
@@ -350,7 +354,7 @@ const CustomFilterBackendDataDropdown: React.FC<
             ))}
           </select>
         </div>
-        <div className="flex-fill">
+        <div className="me-2 flex-fill">
           <label className="form-label fw-bold">Branch:</label>
           <select
             className="form-select"

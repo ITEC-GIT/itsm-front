@@ -25,6 +25,7 @@
     "bootstrap-icons": "^1.11.3",
     "chart.js": "4.4.3",
     "clsx": "2.1.1",
+    "dexie": "^4.0.11",
     "formik": "2.4.6",
     "idb": "^8.0.1",
     "jotai": "^2.11.0",
