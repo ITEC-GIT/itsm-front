@@ -40,12 +40,20 @@ const SoftwareInstallationPage = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
+  const [showUpdateAlert, setShowUpdateAlert] = useState<boolean>(false);
+  const [alertUpdateMessage, setAlertUpdateMessage] = useState<string>("");
+
   const fetchData = async () => {
     const response = await FetchAllSoftwareInstallations(
       "0-29",
       "desc",
       getLowestId(paginatedHistory) ?? undefined
     );
+    return response.data;
+  };
+
+  const initialFetch = async () => {
+    const response = await FetchAllSoftwareInstallations("0-29", "desc");
     return response.data;
   };
 
@@ -56,7 +64,7 @@ const SoftwareInstallationPage = () => {
     refetch,
   } = useQuery({
     queryKey: ["softwareHistory"],
-    queryFn: () => fetchData(),
+    queryFn: () => initialFetch(),
     refetchOnWindowFocus: true,
     refetchInterval: 180000,
     enabled: true,
@@ -69,8 +77,9 @@ const SoftwareInstallationPage = () => {
     setIsModalOpen(true);
   };
 
-  const confirmCancellation = () => {
+  const confirmCancellation = async () => {
     if (selectedEntry) {
+      await refetch();
       setSelectedEntry(undefined);
       setIsModalOpen(false);
     }
@@ -245,7 +254,7 @@ const SoftwareInstallationPage = () => {
   }, 100);
 
   const filteredHistory = useMemo(() => {
-    console.log("here");
+    console.log("paginatedHistory ==>>", paginatedHistory);
     if (!paginatedHistory || !searchQuery.trim()) return paginatedHistory || [];
 
     const lowerCaseQuery = searchQuery.toLowerCase();
@@ -299,19 +308,32 @@ const SoftwareInstallationPage = () => {
 
   useEffect(() => {
     if (softwareHistory) {
+      const { totalcount } = softwareHistory;
+      const diff = totalcount - (paginatedHistory.length ?? 0);
+      console.log("paginatedHistory.length", paginatedHistory.length);
+      console.log("diff", diff);
+      if (paginatedHistory.length !== 0 && diff !== 0) {
+        setShowUpdateAlert(true);
+        setAlertUpdateMessage(
+          `Installation history updated. ${diff} software items are being initialized.`
+        );
+      }
       setMaxTotalSoftwares(softwareHistory.totalcount);
-      setPaginatedHistory((prevHistory) => [
-        ...prevHistory,
-        ...softwareHistory.data,
-      ]);
+      setPaginatedHistory(softwareHistory.data);
+      // setPaginatedHistory((prevHistory) => [
+      //   ...prevHistory,
+      //   ...softwareHistory.data,
+      // ]);
+      console.log("softwareHistory", softwareHistory);
       setHasMore(softwareHistory.count < softwareHistory.totalcount);
+      console.log("hasMore", hasMore);
     }
     if (error) {
       console.error("Error fetching software installation data:", error);
     }
   }, [softwareHistory, error]);
 
-  // useEffect(() => {}, [paginatedHistory]);
+  const handleAlertClose = () => setShowUpdateAlert(false);
 
   return (
     <Content>
@@ -353,12 +375,30 @@ const SoftwareInstallationPage = () => {
               />
             )}
 
-            <div className="row mt-5 mb-5">
-              <div className="col-12 col-md-6 d-flex align-items-center">
+            <div className="row mt-5 mb-5 d-flex justify-content-between">
+              <div className="col-12 col-md-2 d-flex align-items-center">
                 <h3 className="mt-2">Installation History</h3>
               </div>
 
-              <div className="col-12 col-md-6 d-flex justify-content-md-end">
+              {showUpdateAlert && (
+                <div className="col-12 col-md-6 d-flex align-items-center">
+                  <div
+                    className="alert alert-info alert-dismissible fade show"
+                    role="alert"
+                    onClick={() => refetch()}
+                  >
+                    <strong>Update Detected!</strong> {alertUpdateMessage}
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={handleAlertClose}
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                </div>
+              )}
+
+              <div className="col-12 col-md-4 d-flex justify-content-md-end">
                 <SearchComponent
                   value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
