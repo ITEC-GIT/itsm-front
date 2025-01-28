@@ -7,7 +7,10 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { Wizard } from "../../components/form/wizard";
 import { steps } from "../../data/softwareInstallation";
-import { FetchAllSoftwareInstallations } from "../../config/ApiCalls";
+import {
+  CancelSoftwareInstallation,
+  FetchAllSoftwareInstallations,
+} from "../../config/ApiCalls";
 import {
   SoftwareHistoryType,
   SoftwareInstallationResponseType,
@@ -79,7 +82,14 @@ const SoftwareInstallationPage = () => {
 
   const confirmCancellation = async () => {
     if (selectedEntry) {
-      await refetch();
+      const response = await CancelSoftwareInstallation(selectedEntry.id);
+      if (response.status === 200) {
+        paginatedHistory.forEach((entry) => {
+          if (entry.id === selectedEntry.id) {
+            entry.status = "cancelled";
+          }
+        });
+      }
       setSelectedEntry(undefined);
       setIsModalOpen(false);
     }
@@ -236,7 +246,7 @@ const SoftwareInstallationPage = () => {
           data-bs-placement="top"
           title="Cancel Installation"
           onClick={() => handleCancelClick(row)}
-          disabled={row.status === "canceled" || row.status === "received"}
+          disabled={row.status === "cancelled" || row.status === "received"}
         >
           <i
             className="bi bi-ban text-center"

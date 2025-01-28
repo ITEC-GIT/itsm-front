@@ -135,6 +135,18 @@ async function InitiateSoftwareInstallation(data: FormData) {
     .catch((error: any) => errorCatch(error));
 }
 
+async function CancelSoftwareInstallation(id: number) {
+  const body = {
+    input: {
+      status: "cancelled",
+    },
+  };
+
+  return await PrivateApiCall.patch(`/CTSoftwareInstallation/${id}`, body)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 /** *********************************************************************************************/
 /** ************************************** Computers ********************************************/
 /** *********************************************************************************************/
@@ -153,5 +165,6 @@ export {
   GetDashboardAnalytics,
   InitiateSoftwareInstallation,
   FetchAllSoftwareInstallations,
+  CancelSoftwareInstallation,
   GetAllComputers,
 };
