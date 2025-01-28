@@ -266,14 +266,16 @@ const SoftwareInstallationPage = () => {
   const filteredHistory = useMemo(() => {
     console.log("paginatedHistory ==>>", paginatedHistory);
     if (!paginatedHistory || !searchQuery.trim()) return paginatedHistory || [];
-
-    const lowerCaseQuery = searchQuery.toLowerCase();
+    const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
     return softwareHistory.data.filter((entry: SoftwareHistoryType) => {
-      return (
-        entry.software.toLowerCase().includes(lowerCaseQuery) ||
-        entry.computers_id.toLowerCase().includes(lowerCaseQuery) ||
-        entry.url.toLowerCase().includes(lowerCaseQuery) ||
-        entry.users_id.toLowerCase().includes(lowerCaseQuery)
+      return keywords.every(
+        (keyword) =>
+          entry.software.toLowerCase().includes(keyword) ||
+          entry.computers_id.toLowerCase().includes(keyword) ||
+          entry.url.toLowerCase().includes(keyword) ||
+          entry.status.toLowerCase().includes(keyword) ||
+          entry.destination.toLowerCase().includes(keyword) ||
+          entry.users_id.toString().toLowerCase().includes(keyword)
       );
     });
   }, [softwareHistory, searchQuery, paginatedHistory]);
