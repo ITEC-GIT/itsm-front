@@ -333,14 +333,20 @@ const TicketsPage: React.FC = () => {
     if (toolbarSearch.trim() === "") {
       setTicketsSearchFiltered(tickets); // Reset to all tickets if search is empty or whitespace
     } else {
-      setTicketsSearchFiltered(
-        tickets.filter((item) => {
-          return Object.values(item)
-            .join("")
-            .toLowerCase()
-            .includes(toolbarSearch.toLowerCase());
-        })
-      );
+      const keywords = toolbarSearch.toLowerCase().trim().split(/\s+/);
+
+      setTicketsSearchFiltered(tickets.filter((item) => {
+        return keywords.every(
+          (keyword) =>
+            item.title.toLowerCase().includes(keyword) ||
+            item.description.toLowerCase().includes(keyword) ||
+            item.status.toLowerCase().includes(keyword) ||
+            item.priority.toLowerCase().includes(keyword) ||
+            item.urgency.toLowerCase().includes(keyword) ||
+            item.assignee.toLowerCase().includes(keyword) ||
+            item.requester.toLowerCase().includes(keyword)
+        );
+      }));
     }
   }, [toolbarSearch, tickets]);
   useEffect(() => {

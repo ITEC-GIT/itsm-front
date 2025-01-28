@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { KTIcon } from "../../../../helpers";
 import {
   CreateAppModal,
