@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
@@ -24,6 +24,7 @@ import {
 } from "../../../utils/custom";
 import { SearchComponent } from "../../components/form/search";
 import { useQuery } from "@tanstack/react-query";
+import { FilterModal } from "../../components/modal/filtersModal";
 
 const SoftwareInstallationPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -410,13 +411,20 @@ const SoftwareInstallationPage = () => {
                 </div>
               )}
 
-              <div className="col-12 col-md-4 d-flex justify-content-md-end">
+              <div className="col-12 col-md-4 d-flex justify-content-md-end gap-2">
                 <SearchComponent
                   value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleSearchChange(e.target.value)
                   }
                 />
+                {/* <button
+                  type="button"
+                  className="btn btn-primary hyper-connect-btn mb-3"
+                  onClick={() => se}
+                >
+                  Filters
+                </button> */}
               </div>
             </div>
 
@@ -482,6 +490,16 @@ const SoftwareInstallationPage = () => {
             </div>
           </div>
         </div>
+
+        {/* <FilterModal
+          isOpen={true}
+          onClose={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+          onApplyFilter={function (filters: any): void {
+            throw new Error("Function not implemented.");
+          }}
+        /> */}
 
         {isModalOpen && (
           <div
