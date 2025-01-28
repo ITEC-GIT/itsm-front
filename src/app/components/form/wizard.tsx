@@ -6,7 +6,10 @@ import {
 } from "../../config/ApiCalls";
 import { useAtomValue } from "jotai";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
-import { SelectDeviceType } from "../../types/softwareInstallationTypes";
+import {
+  SelectDeviceType,
+  SoftwareHistoryType,
+} from "../../types/softwareInstallationTypes";
 
 interface Step {
   id: number;
@@ -25,7 +28,15 @@ interface StepNavigationStepProps {
   isComplete: boolean;
 }
 
-const Wizard = ({ steps }: { steps: any }) => {
+const Wizard = ({
+  steps,
+  add,
+  idgt,
+}: {
+  steps: any;
+  add: React.Dispatch<React.SetStateAction<SoftwareHistoryType[]>>;
+  idgt: number;
+}) => {
   const userData = useAtomValue(userAtom);
   const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -113,10 +124,10 @@ const Wizard = ({ steps }: { steps: any }) => {
         JSON.stringify({
           input: {
             mid: selectedDevice?.serial,
-            software: softwareName,
-            url: softwareUrl,
-            destination: destination,
-            arguments: variables,
+            software: softwareName.trim(),
+            url: softwareUrl.trim(),
+            destination: destination.trim(),
+            arguments: variables.trim(),
             computers_id: selectedDevice?.id,
           },
         })
@@ -158,6 +169,25 @@ const Wizard = ({ steps }: { steps: any }) => {
     setProgress(10);
     setCurrentStep(5);
 
+    const date = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
+
+    const record: SoftwareHistoryType = {
+      id: idgt + 1,
+      software: softwareName.trim(),
+      url: softwareUrl.trim(),
+      destination: destination.trim(),
+      arguments: variables.trim(),
+      computers_id: selectedDevice?.name ?? "",
+      users_id: userName,
+      status: "initialized",
+      created_at: date.toLocaleDateString("en-US", options),
+    };
+
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -197,7 +227,7 @@ const Wizard = ({ steps }: { steps: any }) => {
                 setProgress(0);
                 setShowAlert(false);
                 setCurrentStep(1);
-                window.location.reload();
+                add((prev: SoftwareHistoryType[]) => [record, ...prev]);
               }, 1000);
 
               return prev;
