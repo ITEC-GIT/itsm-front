@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
 import {
   InitiateSoftwareInstallation,
   GetAllComputers,
+  GetAllLocations,
 } from "../../config/ApiCalls";
 import { useAtomValue } from "jotai";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
-import {
-  SelectDeviceType,
-  SoftwareHistoryType,
-} from "../../types/softwareInstallationTypes";
+import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
+import { SelectDeviceType } from "../../types/devicesTypes";
+import { SelectLocationType } from "../../types/locationsTypes";
+import { formatName } from "../../../utils/custom";
 
 interface Step {
   id: number;
@@ -40,13 +41,16 @@ const Wizard = ({
   const userData = useAtomValue(userAtom);
   const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [deviceOptions, setDeviceOptions] = useState<
-    { id: number; name: string; serial: string }[]
-  >([]);
-
-  const [selectedDevice, setSelectedDevice] = useState<SelectDeviceType | null>(
-    null
+  const [deviceOptions, setDeviceOptions] = useState<SelectDeviceType[]>([]);
+  const [locationOptions, setLocationOptions] = useState<SelectLocationType[]>(
+    []
   );
+
+  const [selectedDevices, setSelectedDevices] = useState<
+    SelectDeviceType[] | []
+  >([]);
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectLocationType | null>(null);
   const [softwareName, setSoftwareName] = useState<string>("");
   const [softwareUrl, setSoftwareUrl] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
@@ -75,7 +79,7 @@ const Wizard = ({
 
   const handleNext = () => {
     if (currentStep < steps.length) {
-      if (currentStep === 1 && !selectedDevice) {
+      if (currentStep === 1 && !selectedDevices) {
         setDeviceError(true);
         return;
       }
@@ -123,12 +127,11 @@ const Wizard = ({
         "uploadManifest",
         JSON.stringify({
           input: {
-            mid: selectedDevice?.serial,
+            mid: selectedDevices.map((device) => device.serial),
             software: softwareName.trim(),
             url: softwareUrl.trim(),
             destination: destination.trim(),
             arguments: variables.trim(),
-            computers_id: selectedDevice?.id,
           },
         })
       );
@@ -182,7 +185,8 @@ const Wizard = ({
       url: softwareUrl.trim(),
       destination: destination.trim(),
       arguments: variables.trim(),
-      computers_id: selectedDevice?.name ?? "",
+      computers_id:
+        selectedDevices.map((device) => device.name).join(", ") ?? "",
       users_id: userName,
       status: "initialized",
       created_at: date.toLocaleDateString("en-US", options),
@@ -260,8 +264,18 @@ const Wizard = ({
     setSoftwareUrl("");
     setDestination("");
     setVariables("");
-    setSelectedDevice(null);
+    setSelectedDevices([]);
     setProgress(0);
+  };
+
+  const fetchLocations = async () => {
+    const response = await GetAllLocations();
+    const data = response.data.data;
+    const locationData = data.map((item: any) => ({
+      id: item.id,
+      name: formatName(item.name),
+    }));
+    setLocationOptions(locationData);
   };
 
   const fetchComputers = async () => {
@@ -271,6 +285,7 @@ const Wizard = ({
       id: item.id,
       name: item.name,
       serial: item.serial,
+      locations_id: item.locations_id,
     }));
     setDeviceOptions(computersData);
   };
@@ -281,11 +296,20 @@ const Wizard = ({
     }
   };
 
+  const filteredDevices = useMemo(() => {
+    return selectedLocation
+      ? deviceOptions.filter(
+          (device) => device.locations_id === selectedLocation.id
+        )
+      : deviceOptions;
+  }, [selectedLocation, deviceOptions]);
+
   useEffect(() => {
     fetchUserData();
   }, [userData]);
 
   useEffect(() => {
+    fetchLocations();
     fetchComputers();
   }, []);
 
@@ -295,46 +319,83 @@ const Wizard = ({
 
       <div className="mt-4">
         {currentStep === 1 && (
-          <div className="mb-4" style={{ height: "90px" }}>
-            <label htmlFor="deviceSelect" className="form-label required">
-              Select Device
-            </label>
-            <Select
-              id="deviceSelect"
-              className="custom-select"
-              classNamePrefix="react-select"
-              options={
-                deviceOptions &&
-                deviceOptions.map((device) => ({
+          <div className="d-flex flex-column">
+            <div className="mb-4" style={{ height: "90px" }}>
+              <label htmlFor="locationSelect" className="form-label">
+                Select Location
+              </label>
+              <Select
+                id="locationSelect"
+                className="custom-select"
+                classNamePrefix="react-select"
+                options={locationOptions.map((location) => ({
+                  value: location.id.toString(),
+                  label: location.name,
+                }))}
+                value={
+                  selectedLocation
+                    ? {
+                        value: selectedLocation.id.toString(),
+                        label: selectedLocation.name,
+                      }
+                    : null
+                }
+                onChange={(selectedOption) => {
+                  if (selectedOption) {
+                    const selectedLocationDetails = locationOptions.find(
+                      (location) =>
+                        location.id.toString() === selectedOption.value
+                    );
+                    setSelectedLocation(selectedLocationDetails || null);
+                    setSelectedDevices([]); // Reset selected devices when location changes
+                  } else {
+                    setSelectedLocation(null);
+                    setSelectedDevices([]); // Show all devices again
+                  }
+                }}
+                isClearable // Allow user to clear selection
+              />
+            </div>
+            <div className="mb-4" style={{ height: "90px" }}>
+              <label htmlFor="deviceSelect" className="form-label required">
+                Select Device
+              </label>
+              <Select
+                id="deviceSelect"
+                className="custom-select"
+                classNamePrefix="react-select"
+                isMulti
+                options={filteredDevices.map((device) => ({
                   value: device.id.toString(),
                   label: device.name,
-                }))
-              }
-              value={
-                selectedDevice
-                  ? {
-                      value: selectedDevice.id.toString(),
-                      label: selectedDevice.name,
-                    }
-                  : null
-              }
-              onChange={(selectedOption) => {
-                if (selectedOption) {
-                  const selectedDeviceDetails = deviceOptions.find(
-                    (device) => device.id.toString() === selectedOption.value
+                }))}
+                value={selectedDevices.map((device) => ({
+                  value: device.id.toString(),
+                  label: device.name,
+                }))}
+                onChange={(selectedOptions) => {
+                  const selectedDevicesDetails = selectedOptions
+                    ? selectedOptions.map((option) =>
+                        deviceOptions.find(
+                          (device) => device.id.toString() === option.value
+                        )
+                      )
+                    : [];
+                  setSelectedDevices(
+                    (selectedDevicesDetails || []).filter(
+                      (device): device is SelectDeviceType =>
+                        device !== undefined
+                    )
                   );
-                  setSelectedDevice(selectedDeviceDetails || null);
-                } else {
-                  setSelectedDevice(null);
-                }
-              }}
-            />
+                }}
+              />
 
-            {deviceError && (
-              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
-                Please select a device.
-              </small>
-            )}
+              {deviceError && (
+                <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                  Please select a device.
+                </small>
+              )}
+            </div>
           </div>
         )}
         {currentStep === 2 && (

@@ -33,3 +33,10 @@ export const getGreatestId = (dataArray: any[]) => {
   if (dataArray.length === 0) return null;
   return Math.max(...dataArray.map((data) => data.id));
 };
+
+export const formatName = (name: string) => {
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};

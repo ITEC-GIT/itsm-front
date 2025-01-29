@@ -156,6 +156,15 @@ async function GetAllComputers() {
     .catch((error: any) => errorCatch(error));
 }
 
+/** *********************************************************************************************/
+/** ************************************** Locations ********************************************/
+/** *********************************************************************************************/
+async function GetAllLocations() {
+  return await PrivateApiCall.get(`/location`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 export {
   LoginApi,
   GetUserProfile,
@@ -167,4 +176,5 @@ export {
   FetchAllSoftwareInstallations,
   CancelSoftwareInstallation,
   GetAllComputers,
+  GetAllLocations,
 };
