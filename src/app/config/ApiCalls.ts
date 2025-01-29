@@ -165,6 +165,21 @@ async function GetAllLocations() {
     .catch((error: any) => errorCatch(error));
 }
 
+/** *********************************************************************************************/
+/** ************************************** Static Data ******************************************/
+/** *********************************************************************************************/
+async function GetStaticData() {
+  return await PrivateApiCall.get(`/GetStaticData`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetUsersAndAreas() {
+  return await PrivateApiCall.get(`/UsersAndAreas`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 export {
   LoginApi,
   GetUserProfile,
@@ -177,4 +192,6 @@ export {
   CancelSoftwareInstallation,
   GetAllComputers,
   GetAllLocations,
+  GetStaticData,
+  GetUsersAndAreas,
 };
