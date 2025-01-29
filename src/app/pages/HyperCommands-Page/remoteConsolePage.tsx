@@ -3,8 +3,9 @@ import { Pagination } from "react-bootstrap";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { Content } from "../../../_metronic/layout/components/content/Content";
 import { devicesVNC } from "../../data/hyperCommands";
-import { DeviceType } from "../../types/HyperCommandsTypes";
+
 import { SelectAssetsModal } from "../../components/modal/selectAsset";
+import { DeviceRemoteConsoleType } from "../../types/devicesTypes";
 
 const RemoteConsolePage = () => {
   const [sessionActive, setSessionActive] = useState<boolean>(false);
@@ -14,7 +15,8 @@ const RemoteConsolePage = () => {
   const [devices, setDevices] = useState<any[]>(devicesVNC);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedDevice, setSelectedDevice] = useState<DeviceType | null>(null);
+  const [selectedDevice, setSelectedDevice] =
+    useState<DeviceRemoteConsoleType | null>(null);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);

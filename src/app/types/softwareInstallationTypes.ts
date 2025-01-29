@@ -9,12 +9,6 @@ export type CreateSoftInstRequestType = {
   arguments: string;
 };
 
-export type SelectDeviceType = {
-  id: number;
-  name: string;
-  serial: string;
-};
-
 export type SoftwareHistoryType = {
   id: number;
   software: string; //name
