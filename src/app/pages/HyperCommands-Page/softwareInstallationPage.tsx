@@ -47,6 +47,8 @@ const SoftwareInstallationPage = () => {
   const [showUpdateAlert, setShowUpdateAlert] = useState<boolean>(false);
   const [alertUpdateMessage, setAlertUpdateMessage] = useState<string>("");
 
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+
   const fetchData = async () => {
     const response = await FetchAllSoftwareInstallations(
       "0-29",
@@ -265,7 +267,6 @@ const SoftwareInstallationPage = () => {
   }, 100);
 
   const filteredHistory = useMemo(() => {
-    console.log("paginatedHistory ==>>", paginatedHistory);
     if (!paginatedHistory || !searchQuery.trim()) return paginatedHistory || [];
     const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
     return softwareHistory.data.filter((entry: SoftwareHistoryType) => {
@@ -421,7 +422,9 @@ const SoftwareInstallationPage = () => {
                 {/* <button
                   type="button"
                   className="btn btn-primary hyper-connect-btn mb-3"
-                  onClick={() => se}
+                  onClick={() =>
+                    setIsFilterModalOpen((prevState) => !prevState)
+                  }
                 >
                   Filters
                 </button> */}
@@ -443,6 +446,15 @@ const SoftwareInstallationPage = () => {
                 </div>
               }
             />
+            {/* <FilterModal
+              isOpen={isFilterModalOpen}
+              onClose={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onApplyFilter={function (filters: any): void {
+                throw new Error("Function not implemented.");
+              }}
+            /> */}
             <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
               <button
                 className="btn btn-sm btn-light me-2"
@@ -490,16 +502,6 @@ const SoftwareInstallationPage = () => {
             </div>
           </div>
         </div>
-
-        {/* <FilterModal
-          isOpen={true}
-          onClose={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-          onApplyFilter={function (filters: any): void {
-            throw new Error("Function not implemented.");
-          }}
-        /> */}
 
         {isModalOpen && (
           <div

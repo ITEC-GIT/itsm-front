@@ -25,16 +25,12 @@ const FilterModal = ({ isOpen, onClose, onApplyFilter }: FilterModalProps) => {
       role="dialog"
       style={{
         display: isOpen ? "block" : "none",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
       }}
     >
-      <div className="modal-dialog" role="document">
+      <div className="modal-dialog filter-modal" role="document">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Filter Installations</h5>
-            <button type="button" className="close" onClick={onClose}>
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
           <div className="modal-body">
             <div className="mb-3">

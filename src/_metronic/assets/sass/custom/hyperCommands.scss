@@ -263,3 +263,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.filter-modal {
+  position: fixed !important;
+  top: 75px !important;
+  right: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+}
