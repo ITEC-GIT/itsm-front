@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-query";
 import axios from "axios";
 import { transformStaticData } from "../../../../utils/dataTransformUtils";
-import { staticDataAtom } from "../../../../app/atoms/app-routes-global-atoms/indexDBAtoms";
+import { staticDataAtom } from "../../../../app/atoms/app-routes-global-atoms/approutesAtoms";
 import { UpdateTicketRequestBody } from "../../../../app/config/ApiTypes";
 import { UpdateTicket } from "../../../../app/config/ApiCalls";
 import { ticketPerformingActionOnAtom } from "../../../../app/atoms/tickets-page-atom/ticketsActionsAtom";

@@ -18,10 +18,15 @@ import {
   totalTicketsAtom,
   fetchMorePagesFlagAtom,
   maxTotalAtom,
+  fetchLessPagesFlagAtom,
+  numOfTicketsToFetchAtom,
 } from "../../../../../app/atoms/tickets-page-atom/ticketsPageAtom";
 import CustomFilterDatabaseDropdown from "./CustomFilterDatabaseDropdown";
 import CustomFilterFrontDataDropdown from "./CustomFilterFrontDataDropdown";
 import useDebounce from "../../../../../app/custom-hooks/useDebounce";
+import leftArrow from "./left-arrow.png";
+import rightArrow from "./right-arrow.png";
+import { left, right } from "@popperjs/core";
 
 const ToolbarTickets = () => {
   const { config } = useLayout();
@@ -42,6 +47,7 @@ const ToolbarTickets = () => {
   const minPagesToShow = 2;
 
   const setFetchMorePagesFlag = useSetAtom(fetchMorePagesFlagAtom);
+  const setFetchLessPagesFlag = useSetAtom(fetchLessPagesFlagAtom);
 
   useEffect(() => {
     setSearchTickets(debouncedSearchInput);
@@ -55,6 +61,9 @@ const ToolbarTickets = () => {
 
   const handleFetchMorePages = () => {
     setFetchMorePagesFlag(true);
+  };
+  const handleFetchLessPages = () => {
+    setFetchLessPagesFlag(true);
   };
   const [filter, setFilter] = useState<string | null>(null);
 
@@ -89,7 +98,7 @@ const ToolbarTickets = () => {
   const toggleFrontDropdown = () => {
     setIsFilterFrontDropdownOpen(!isFilterFrontDropdownOpen);
   };
-
+  const numOfRecordsToFetch = useAtomValue(numOfTicketsToFetchAtom);
 
   return (
     <div className="d-flex align-items-center gap-2 gap-lg-3">
@@ -136,12 +145,28 @@ const ToolbarTickets = () => {
       <div className="container mt-4">
         <div className="btn-group">
           <button
-            type="button"
             className="btn btn-primary"
-            disabled={fetchedTotalTickets >= maxTotalTickets}
-            onClick={handleFetchMorePages}
+            onClick={handleFetchLessPages}
+            disabled={fetchedTotalTickets <= numOfRecordsToFetch}
           >
-            Fetch More
+            <img
+              src={leftArrow}
+              alt="Fetch Less Pages"
+              width="16"
+              height="16"
+            />
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={handleFetchMorePages}
+            disabled={fetchedTotalTickets >= maxTotalTickets}
+          >
+            <img
+              src={rightArrow}
+              alt="Fetch More Pages"
+              width="16"
+              height="16"
+            />
           </button>
           <button
             type="button"

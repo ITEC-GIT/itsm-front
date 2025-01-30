@@ -5,6 +5,7 @@ import CustomAssigneeDropDown from "./CustomAssigneDropdown";
 import CustomActionsDropdown from "./CustomActionsDropdown";
 import { ticketPerformingActionOnAtom } from "../../../../app/atoms/tickets-page-atom/ticketsActionsAtom";
 import { useAtom } from "jotai";
+import { mastersAtom } from "../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
 interface CardProps {
   id: string;
   status: "solved" | "closed" | "pending" | "assigned" | "new" | "plan";
@@ -21,13 +22,14 @@ interface CardProps {
     name: string;
   };
   type: string;
-  urgency:string
+  urgency: string;
   lastUpdate: string;
   onClick: () => void;
   onPin: (id: string) => void; // New prop for pinning
   isPinned: boolean;
   isStarred: boolean;
   onStarred: (id: string) => void;
+  isCurrentUserMaster: boolean;
 }
 const TicketCard: React.FC<CardProps> = ({
   id,
@@ -46,6 +48,7 @@ const TicketCard: React.FC<CardProps> = ({
   isPinned,
   isStarred,
   onStarred,
+  isCurrentUserMaster,
 }) => {
   const [isRadioSelected, setIsRadioSelected] = useState(false);
   const [iconColors, setIconColors] = useState({
@@ -116,7 +119,9 @@ const TicketCard: React.FC<CardProps> = ({
 
   const handleAssignToClick = (icon: "assign", e: React.MouseEvent) => {
     e.stopPropagation(); // Stop event propagation to prevent on click body
-    setIsAssigneeDropdownOpen((prev) => !prev); // Toggle dropdown state
+    if (isCurrentUserMaster) {
+      setIsAssigneeDropdownOpen((prev) => !prev); // Toggle dropdown state
+    }
   };
 
   const handleCardClick = () => {
@@ -300,7 +305,13 @@ const TicketCard: React.FC<CardProps> = ({
                 <small className="text-muted">assigned to</small>
                 <p className="mb-0">{assignedTo.name}</p>
               </div>
-              {isAssigneeDropdownOpen && <CustomAssigneeDropDown />}
+              {isAssigneeDropdownOpen && (
+                <CustomAssigneeDropDown
+                  assignedTo={assignedTo.name}
+                  ticketId={id}
+                  setIsAssigneeDropdownOpen={setIsAssigneeDropdownOpen}
+                />
+              )}
             </div>
             <div className="col-md-auto col-md-2 ps-2 border-end card-column-border-right">
               <small className="text-muted">priority</small>

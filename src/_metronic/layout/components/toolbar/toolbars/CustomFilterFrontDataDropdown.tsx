@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useAtom, useSetAtom } from "jotai";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { debounce } from "lodash";
-
+import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms/approutesAtoms";
 
 import { toolbarTicketsFrontFiltersAtom } from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
+import { transformStaticData } from "../../../../../utils/dataTransformUtils";
+import { branchesAtom, mastersAtom, slavesAtom } from "../../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
 interface CustomFilterFrontDataDropdownProps {
   setIsFilterFrontDropdownOpen: (isOpen: boolean) => void;
 }
@@ -14,6 +16,7 @@ const CustomFilterFrontDataDropdown: React.FC<
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
+  const [staticData] = useAtom(staticDataAtom);
 
   const [status, setStatus] = useState("");
   const [urgency, setUrgency] = useState("");
@@ -49,43 +52,39 @@ const CustomFilterFrontDataDropdown: React.FC<
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setAssignee(e.target.value);
   };
-  const statusOptions = [
-    { value: "new", label: "new" },
-    { value: "assigned", label: "assigned" },
-    { value: "plan", label: "plan" },
-    { value: "solved", label: "solved" },
-  ];
-  const urgencyOptions = [
-    { value: "Very low", label: "Very low" },
-    { value: "Very high", label: "Very high" },
-    { value: "Medium", label: "Medium" },
-    { value: "High", label: "High" },
-    { value: "Low", label: "Low" },
-  ];
-  const priorityOptions = [
-    { value: "Very low", label: "Very low" },
-    { value: "Medium", label: "Medium" },
-    { value: "Very high", label: "Very high" },
-  ];
-  const typeOptions = [
-    { value: "Incident", label: "Incident" },
-    { value: "Request", label: "Request" },
-    { value: "Demand", label: "Demand" },
-  ];
-  // the 3 below are the ones i want to get from db
-  const requesterOptions = [
-    { value: "User1", label: "User1" },
-    { value: "User2", label: "User2" },
-  ];
-  const branchOptions = [
-    { value: "Branch1", label: "Branch1" },
-    { value: "Branch2", label: "Branch2" },
-  ];
-  const assigneeOptions = [
-    { value: "m.harb", label: "m.harb" },
-    { value: "cobalt", label: "cobalt" },
-    { value: "m.hareb", label: "m.hareb" },
-  ];
+  const { statusOptions, urgencyOptions, priorityOptions, typeOptions } =
+    transformStaticData(staticData);
+
+  const ItsmBranches = useAtomValue(branchesAtom);
+  const ItsmSlaves = useAtomValue(slavesAtom);
+  const ItsmMasters = useAtomValue(mastersAtom);
+
+  const requesterOptions = useMemo(
+    () =>
+      ItsmSlaves.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    [ItsmSlaves]
+  );
+
+  const branchOptions = useMemo(
+    () =>
+      ItsmBranches.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    [ItsmBranches]
+  );
+  
+  const assigneeOptions = useMemo(
+    () =>
+      ItsmMasters.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    [ItsmMasters]
+  );
 
   const [frontFilter, setFilters] = useAtom(toolbarTicketsFrontFiltersAtom);
 
@@ -100,7 +99,6 @@ const CustomFilterFrontDataDropdown: React.FC<
       assignee,
     });
     setIsFilterFrontDropdownOpen(false);
-
   };
 
   const handleReset = () => {
@@ -149,7 +147,6 @@ const CustomFilterFrontDataDropdown: React.FC<
     };
   }, [handleWindowFocus]);
 
-
   return (
     <div
       className="dropdown-menu p-4 show"
@@ -168,14 +165,14 @@ const CustomFilterFrontDataDropdown: React.FC<
             onChange={handleStatusChange}
           >
             <option value="">Select option</option>
-            {statusOptions.map((status) => (
+            {statusOptions.map((status: { value: string; label: string }) => (
               <option key={status.value} value={status.value}>
                 {status.label}
               </option>
             ))}
           </select>
         </div>
-        <div className="flex-fill">
+        <div className="me-2 flex-fill">
           <label className="form-label fw-bold">Urgency:</label>
           <select
             className="form-select"
@@ -183,7 +180,7 @@ const CustomFilterFrontDataDropdown: React.FC<
             onChange={handleUrgencyChange}
           >
             <option value="">Select option</option>
-            {urgencyOptions.map((urgency) => (
+            {urgencyOptions.map((urgency: { value: string; label: string }) => (
               <option key={urgency.value} value={urgency.value}>
                 {urgency.label}
               </option>
@@ -198,7 +195,7 @@ const CustomFilterFrontDataDropdown: React.FC<
             onChange={handlePriorityChange}
           >
             <option value="">Select option</option>
-            {priorityOptions.map((priority) => (
+            {priorityOptions.map((priority: { value: string; label: string }) => (
               <option key={priority.value} value={priority.value}>
                 {priority.label}
               </option>
@@ -208,7 +205,7 @@ const CustomFilterFrontDataDropdown: React.FC<
       </div>
 
       <div className="d-flex mb-3">
-        <div className="flex-fill">
+        <div className="me-2 flex-fill">
           <label className="form-label fw-bold">Type:</label>
           <select
             className="form-select"
@@ -216,7 +213,7 @@ const CustomFilterFrontDataDropdown: React.FC<
             onChange={handleTypeChange}
           >
             <option value="">Select option</option>
-            {typeOptions.map((type) => (
+            {typeOptions.map((type: { value: string; label: string }) => (
               <option key={type.value} value={type.value}>
                 {type.label}
               </option>
@@ -238,7 +235,7 @@ const CustomFilterFrontDataDropdown: React.FC<
             ))}
           </select>
         </div>
-        <div className="flex-fill">
+        <div className="me-2 flex-fill">
           <label className="form-label fw-bold">Branch:</label>
           <select
             className="form-select"
@@ -256,7 +253,7 @@ const CustomFilterFrontDataDropdown: React.FC<
       </div>
 
       <div className="d-flex mb-3">
-        <div className="flex-fill">
+        <div className="me-2 flex-fill">
           <label className="form-label fw-bold">Assignee:</label>
           <select
             className="form-select"

@@ -14,11 +14,18 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { isAuthenticatedAtom, userAtom } from "../atoms/auth-atoms/authAtom";
 import { authChannel } from "../pages/login-page/authChannel";
 import { getSessionTokenFromCookie } from "../config/Config";
-import { GetStaticData,GetUsersBranch } from "../config/ApiCalls";
+import { GetStaticData, GetUsersBranch } from "../config/ApiCalls";
 import { loadFromIndexedDB, saveToIndexedDB } from "../indexDB/IndexDBConfig";
-import { staticDataAtom } from "../atoms/app-routes-global-atoms/indexDBAtoms";
+import {
+  isCurrentUserMasterAtom,
+  staticDataAtom,
+} from "../atoms/app-routes-global-atoms/approutesAtoms";
 import { useQuery } from "@tanstack/react-query";
-import { branchesAtom, slavesAtom } from "../atoms/app-routes-global-atoms/globalFetchedAtoms";
+import {
+  branchesAtom,
+  mastersAtom,
+  slavesAtom,
+} from "../atoms/app-routes-global-atoms/globalFetchedAtoms";
 
 /**
  * Base URL of the website.
@@ -57,12 +64,12 @@ const RoutesContent: FC = () => {
       authChannel.removeEventListener("message", handleBroadcast);
     };
   }, [navigate]);
-  
+
   const fetchStaticData = async () => {
     try {
       const userId = currentUser?.id || 0; // Replace with actual user ID
-      const DB_NAME = 'StaticDataDB';
-      const STORE_NAME = 'StaticData';
+      const DB_NAME = "StaticDataDB";
+      const STORE_NAME = "StaticData";
 
       // Check if data exists in IndexedDB
       const storedData = await loadFromIndexedDB(userId, DB_NAME, STORE_NAME);
@@ -80,39 +87,67 @@ const RoutesContent: FC = () => {
         // Set the data in the atom
         setStaticData(dataArray);
 
-        console.log('Fetched and stored data:', dataArray);
+        console.log("Fetched and stored data:", dataArray);
       } else {
         // Set the data in the atom
         setStaticData(storedData);
 
-        console.log('Data loaded from IndexedDB:', storedData);
+        console.log("Data loaded from IndexedDB:", storedData);
       }
     } catch (error) {
-      console.error('Error fetching static data:', error);
+      console.error("Error fetching static data:", error);
     }
   };
 
   useEffect(() => {
     fetchStaticData();
   }, []);
-  const { data: userBranches, error, isLoading, refetch } = useQuery({
-    queryKey: ['userBranches'], // Ensure you have a unique query key
+  const {
+    data: userBranches,
+    error,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["userBranches"], // Ensure you have a unique query key
     queryFn: GetUsersBranch, // Directly pass the function reference
     refetchOnWindowFocus: false, // Refetch when window regains focus
     refetchInterval: 180000, // Refetch every 3 minutes (in milliseconds)
     enabled: true, // Start fetching as soon as the component is mounted
-    retry: true
+    retry: true,
   });
-  const [itsmBranches,setItsmBranches] = useAtom(branchesAtom);
-  const [itsmSlaves,setItsmSlaves] = useAtom(slavesAtom);
+  const [itsmBranches, setItsmBranches] = useAtom(branchesAtom);
+  const [itsmSlaves, setItsmSlaves] = useAtom(slavesAtom);
+  const [itsmMaster, setItsmMaster] = useAtom(mastersAtom);
+  const [isCurrentUserMaster, setIsCurrentUserMaster] = useAtom(
+    isCurrentUserMasterAtom
+  );
+
   useEffect(() => {
     if (userBranches && userBranches.data) {
       setItsmBranches((prev) =>
-        prev !== userBranches.data.Departments ? userBranches.data.Departments : prev
+        prev !== userBranches.data.Departments
+          ? userBranches.data.Departments
+          : prev
       );
       setItsmSlaves((prev) =>
-        prev !== userBranches.data.requesters ? userBranches.data.requesters : prev
+        prev !== userBranches.data.requesters
+          ? userBranches.data.requesters
+          : prev
       );
+      setItsmMaster((prev) =>
+        prev !== userBranches.data.assignees
+          ? userBranches.data.assignees
+          : prev
+      );
+      const currentUser = user.session?.glpiname;
+
+      const currentAssignee = userBranches.data.assignees.find(
+        (assignee: { name: string; is_admin: number }) => assignee.name === currentUser
+      );
+
+      const isAdmin = currentAssignee ? currentAssignee.is_admin === 1 : false;
+      setIsCurrentUserMaster(isAdmin);
+      const x=0;
     }
   }, [userBranches, setItsmBranches, setItsmSlaves]);
 

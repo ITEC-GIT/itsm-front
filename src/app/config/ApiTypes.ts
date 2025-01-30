@@ -23,4 +23,5 @@ export type UpdateTicketRequestBody = {
   priority?: number;
   type?: number;
   due_date?: string;
+  assignee_id?: number;
 };

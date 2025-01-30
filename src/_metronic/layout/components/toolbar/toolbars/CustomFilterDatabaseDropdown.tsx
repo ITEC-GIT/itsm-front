@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback,useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { debounce, set } from "lodash";
 import {
@@ -11,10 +11,11 @@ import axios from "axios";
 import { toolbarTicketsBackendFiltersAtom } from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
 import { ApiRequestBody } from "../../../../../app/config/ApiTypes";
 import { FetchFilteredTickets } from "../../../../../app/config/ApiCalls";
-import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms/indexDBAtoms";
+import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms/approutesAtoms";
 import { transformStaticData } from "../../../../../utils/dataTransformUtils";
 import {
   branchesAtom,
+  mastersAtom,
   slavesAtom,
 } from "../../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
 interface CustomFilterBackendDataDropdownProps {
@@ -68,6 +69,8 @@ const CustomFilterBackendDataDropdown: React.FC<
 
   const ItsmBranches = useAtomValue(branchesAtom);
   const ItsmSlaves = useAtomValue(slavesAtom);
+  const ItsmMasters = useAtomValue(mastersAtom);
+
   const requesterOptions = useMemo(
     () =>
       ItsmSlaves.map((item) => ({
@@ -76,7 +79,7 @@ const CustomFilterBackendDataDropdown: React.FC<
       })),
     [ItsmSlaves]
   );
-  
+
   const branchOptions = useMemo(
     () =>
       ItsmBranches.map((item) => ({
@@ -85,11 +88,14 @@ const CustomFilterBackendDataDropdown: React.FC<
       })),
     [ItsmBranches]
   );
-  const assigneeOptions = [
-    { value: "7", label: "m.hareb" },
-    { value: "2", label: "cobalt" },
-    { value: "16", label: "m.harb" },
-  ];
+  const assigneeOptions = useMemo(
+    () =>
+      ItsmMasters.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    [ItsmMasters]
+  );
 
   const [backendFilter, setBackendFilters] = useAtom(
     toolbarTicketsBackendFiltersAtom
@@ -148,6 +154,7 @@ const CustomFilterBackendDataDropdown: React.FC<
       from: "",
       to: "",
     });
+    setIsFilterDatabaseDropdownOpen(false);
   };
   useEffect(() => {
     setStatus(backendFilter.status);
@@ -180,7 +187,7 @@ const CustomFilterBackendDataDropdown: React.FC<
   }, [handleWindowFocus]);
   const [fromDateTime, setFromDateTime] = useState("");
   const [formattedFromdDate, setFormattedFromDate] = useState("");
-    const handleFromDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFromDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawDate = e.target.value; // Format: yyyy,mm,dd
     setFromDateTime(rawDate);
 
@@ -194,7 +201,6 @@ const CustomFilterBackendDataDropdown: React.FC<
   };
   const [toDateTime, setToDateTime] = useState("");
   const [formattedTodDate, setFormattedToDate] = useState("");
-
 
   const handleToDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawDate = e.target.value; // Format: yyyy,mm,dd
@@ -314,11 +320,13 @@ const CustomFilterBackendDataDropdown: React.FC<
             onChange={handlePriorityChange}
           >
             <option value="">Select option</option>
-            {priorityOptions.map((priority: { value: string; label: string }) => (
-              <option key={priority.value} value={priority.value}>
-                {priority.label}
-              </option>
-            ))}
+            {priorityOptions.map(
+              (priority: { value: string; label: string }) => (
+                <option key={priority.value} value={priority.value}>
+                  {priority.label}
+                </option>
+              )
+            )}
           </select>
         </div>
       </div>

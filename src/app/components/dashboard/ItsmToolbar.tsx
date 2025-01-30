@@ -27,11 +27,11 @@ const ItsmToolbar = ({
     })
   );
 
-  const formattedUsers = users.map((user: { id: number; name: string }) => ({
-    label: user.name,
-    value: user.id,
-  }));
-
+  // const formattedUsers = users.map((user: { id: number; name: string }) => ({
+  //   label: user.name,
+  //   value: user.id,
+  // }));
+  const formattedUsers: { label: string; value: number }[] = []
   const handleSelectChange = (selectedOption: any, label: string) => {
     if (label === "Branch") {
       setSelectedBranch(selectedOption.value);
