@@ -48,6 +48,9 @@ intervalFetchedTicketsAtom.debugLabel = "intervalFetchedTicketsAtom";
 export const initialFetchedTicketsAtom = atomWithIndexedDB<any[]>('initialFetchedTicketsAtom', []);
 initialFetchedTicketsAtom.debugLabel = "initialFetchedTicketsAtom";
 
+// atom to store the tickets that are fetched every three minutes across pages in ticket page
+export const initialFetchedTicketsTotalAtom = atomWithIndexedDB<any[]>('initialFetchedTicketsTotalAtom', []);
+initialFetchedTicketsTotalAtom.debugLabel = "initialFetchedTicketsTotalAtom";
 export const maxTotalAtom = atom(0);
 maxTotalAtom.debugLabel = "maxTotalAtom";
 
