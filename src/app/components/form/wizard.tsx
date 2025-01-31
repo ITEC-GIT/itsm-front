@@ -185,9 +185,9 @@ const Wizard = ({
       url: softwareUrl.trim(),
       destination: destination.trim(),
       arguments: variables.trim(),
-      computers_id:
+      computer_name:
         selectedDevices.map((device) => device.name).join(", ") ?? "",
-      users_id: userName,
+      user_name: userName,
       status: "initialized",
       created_at: date.toLocaleDateString("en-US", options),
     };

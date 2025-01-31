@@ -11,16 +11,27 @@ export type CreateSoftInstRequestType = {
 
 export type SoftwareHistoryType = {
   id: number;
-  software: string; //name
-  computers_id: string; //it is a name
+  software: string;
+  computer_name: string;
   // mid: string; //serial number
   url: string;
   destination: string;
   arguments: string;
   status: string;
-  users_id: string; //it is a name
-  created_at: string; // created at
+  user_name: string;
+  created_at: string;
 };
 
 export type SoftwareInstallationResponseType =
   PaginatedResponse<SoftwareHistoryType>;
+
+export type GetAllSoftwareInstallationRequestType = {
+  user?: number;
+  computer?: number;
+  status?: string;
+  order?: string;
+  date_from?: string;
+  date_to?: string;
+  range?: string;
+  idgt?: number;
+};

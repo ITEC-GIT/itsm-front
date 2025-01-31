@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import Cookies from "js-cookie";
-import { DatePicker } from "../datePicker";
+import { DatePicker } from "../form/datePicker";
 import { getData } from "../../../utils/custom";
 
 interface FilterSidebar {
@@ -45,6 +45,12 @@ const filtersOptions: FiltersTitleProps[] = [
   },
 ];
 
+const filterKeyMap: Record<string, string> = {
+  softwareStatusFilter: "status",
+  userFilter: "user",
+  computersFilter: "computer",
+};
+
 const FilterSidebar: React.FC<FilterSidebar> = ({
   isOpen,
   toggleSidebar,
@@ -86,20 +92,26 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
     fetchData();
   }, [activeFilters]);
 
-  // format the date in yyyy-MM-dd" format
+  // yyyy-MM-dd
   const formatDate = (date: Date | null) => {
     if (!date) return null;
     return date.toISOString().split("T")[0]; // "2025-01-23"
   };
 
   const handleSaveFilters = () => {
-    const filters = {
-      status: selectedFilters.status?.label,
-      user: selectedFilters.user?.value,
-      computer: selectedFilters.computer?.value,
-      date_from: formatDate(startDate ? new Date(startDate) : null),
-      date_to: formatDate(endDate ? new Date(endDate) : null),
-    };
+    const filters: Record<string, any> = {};
+    Object.entries(selectedFilters).forEach(([key, value]) => {
+      if (value) {
+        filters[key] = key === "status" ? value.label : value.value;
+      }
+    });
+
+    const dateFrom = formatDate(startDate ? new Date(startDate) : null);
+    const dateTo = formatDate(endDate ? new Date(endDate) : null);
+
+    if (dateFrom) filters.date_from = dateFrom;
+    if (dateTo) filters.date_to = dateTo;
+
     console.log("filters ==>>", filters);
     saveFilters(filters);
     toggleSidebar();
@@ -109,12 +121,6 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
     filterId: string,
     selectedOption: { value: string; label: string } | null
   ) => {
-    const filterKeyMap: Record<string, string> = {
-      softwareStatusFilter: "status",
-      userFilter: "user",
-      computersFilter: "computer",
-    };
-
     const key = filterKeyMap[filterId];
     if (key) {
       setSelectedFilters((prevState) => ({
@@ -131,10 +137,10 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
       }`}
       style={{
         width: "100%",
-        maxWidth: "400px",
+        maxWidth: "20%",
         backdropFilter: isOpen ? "blur(5px)" : "none",
-        borderImageSource: "linear-gradient(90deg, #007bff, #0056b3)",
-        borderImageSlice: 1,
+        // borderImageSource: "linear-gradient(90deg, #007bff, #0056b3)",
+        // borderImageSlice: 1,
       }}
     >
       <div className="d-flex align-items-center gap-3 mb-4">

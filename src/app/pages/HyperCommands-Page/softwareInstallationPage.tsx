@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { debounce } from "lodash";
+import { debounce, range } from "lodash";
 import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { Content } from "../../../_metronic/layout/components/content/Content";
@@ -10,8 +10,12 @@ import { steps } from "../../data/softwareInstallation";
 import {
   CancelSoftwareInstallation,
   FetchAllSoftwareInstallations,
+  GetAllSoftwareInstallations,
 } from "../../config/ApiCalls";
-import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
+import {
+  GetAllSoftwareInstallationRequestType,
+  SoftwareHistoryType,
+} from "../../types/softwareInstallationTypes";
 import { CardsStat } from "../../components/hyper-commands/cards-statistics";
 import {
   getCircleColor,
@@ -56,17 +60,17 @@ const SoftwareInstallationPage = ({
     setIsSidebarOpen((prevState) => !prevState);
   };
 
-  const fetchData = async () => {
-    const response = await FetchAllSoftwareInstallations(
-      "0-99",
-      "desc",
-      getLowestId(paginatedHistory) ?? undefined
-    );
+  const fetchData = async (filters: GetAllSoftwareInstallationRequestType) => {
+    const response = await GetAllSoftwareInstallations(filters);
     return response.data;
   };
 
   const initialFetch = async () => {
-    const response = await FetchAllSoftwareInstallations("0-99", "desc");
+    const initialFilters = {
+      range: "0-50",
+      order: "desc",
+    };
+    const response = await GetAllSoftwareInstallations(initialFilters);
     return response.data;
   };
 
@@ -138,15 +142,15 @@ const SoftwareInstallationPage = ({
     },
     {
       name: "Device",
-      selector: (row: SoftwareHistoryType) => row.computers_id,
+      selector: (row: SoftwareHistoryType) => row.computer_name,
       width: "150px",
       cell: (row: SoftwareHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title={row.computers_id}
+          title={row.computer_name}
         >
-          {row.computers_id}
+          {row.computer_name}
         </span>
       ),
       sortable: true,
@@ -225,7 +229,7 @@ const SoftwareInstallationPage = ({
     {
       name: "User",
       //  width: "100px",
-      selector: (row: SoftwareHistoryType) => row.users_id,
+      selector: (row: SoftwareHistoryType) => row.user_name,
       sortable: true,
     },
     {
@@ -274,17 +278,18 @@ const SoftwareInstallationPage = ({
   }, 100);
 
   const filteredHistory = useMemo(() => {
+    console.log("came to here");
     if (!paginatedHistory || !searchQuery.trim()) return paginatedHistory || [];
     const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
     return softwareHistory.data.filter((entry: SoftwareHistoryType) => {
       return keywords.every(
         (keyword) =>
           entry.software.toLowerCase().includes(keyword) ||
-          entry.computers_id.toLowerCase().includes(keyword) ||
+          entry.computer_name?.toLowerCase().includes(keyword) ||
           entry.url.toLowerCase().includes(keyword) ||
           entry.status.toLowerCase().includes(keyword) ||
           entry.destination.toLowerCase().includes(keyword) ||
-          entry.users_id.toString().toLowerCase().includes(keyword)
+          entry.user_name.toString().toLowerCase().includes(keyword)
       );
     });
   }, [softwareHistory, searchQuery, paginatedHistory]);
@@ -304,7 +309,14 @@ const SoftwareInstallationPage = ({
 
     if (page > totalFetchedPages && hasMore) {
       setIsLoadingMore(true);
-      fetchData().then((newData) => {
+
+      const baseFilter = {
+        range: "0-50",
+        order: "desc",
+        idgt: getLowestId(paginatedHistory),
+      };
+      setFilters({ ...baseFilter, ...filters });
+      fetchData(filters).then((newData) => {
         setPaginatedHistory((prevHistory) => [...prevHistory, ...newData.data]);
         console.log();
         setHasMore(newData.totalCount > paginatedHistory.length);
@@ -335,30 +347,42 @@ const SoftwareInstallationPage = ({
 
   useEffect(() => {
     if (softwareHistory) {
-      const { totalcount } = softwareHistory;
+      const { totalcount, data: newData } = softwareHistory;
+
+      setMaxTotalSoftwares(totalcount);
+
+      setPaginatedHistory((prevHistory) => {
+        const newSize = newData.length;
+
+        const updatedHistory = [...newData, ...prevHistory.slice(newSize)];
+
+        return updatedHistory;
+      });
       const diff = totalcount - (paginatedHistory.length ?? 0);
-      console.log("paginatedHistory.length", paginatedHistory.length);
-      console.log("diff", diff);
       if (paginatedHistory.length !== 0 && diff !== 0) {
         setShowUpdateAlert(true);
         setAlertUpdateMessage(
           `Installation history updated. ${diff} software items are being initialized.`
         );
       }
-      setMaxTotalSoftwares(softwareHistory.totalcount);
-      // setPaginatedHistory(softwareHistory.data);
-      setPaginatedHistory((prevHistory) => [
-        ...prevHistory,
-        ...softwareHistory.data,
-      ]);
-      console.log("softwareHistory", softwareHistory);
-      setHasMore(softwareHistory.count < softwareHistory.totalcount);
-      console.log("hasMore", hasMore);
+      console.log("paginatedHistory =>>", paginatedHistory);
+      setHasMore(softwareHistory.count < totalcount);
     }
+
     if (error) {
       console.error("Error fetching software installation data:", error);
     }
   }, [softwareHistory, error]);
+
+  useEffect(() => {
+    if (filters) {
+      setCurrentHistoryPage(1);
+      fetchData(filters).then((newData) => {
+        setPaginatedHistory(newData.data);
+        setHasMore(newData.totalCount > paginatedHistory.length);
+      });
+    }
+  }, [filters]);
 
   const handleAlertClose = () => setShowUpdateAlert(false);
 
@@ -372,7 +396,7 @@ const SoftwareInstallationPage = ({
   return (
     <Content>
       <div className="d-flex">
-        <div className="container mt-5">
+        <div className="container mt-5" style={{ maxWidth: "100%" }}>
           <div className="row justify-content-center">
             <div className="col-md-12 col-lg-10 col-xl-12">
               <h2 className="text-center mb-4">🚀 Software Installation</h2>
@@ -501,14 +525,14 @@ const SoftwareInstallationPage = ({
                 <button
                   className="btn btn-sm btn-light me-2"
                   onClick={handleNextPage}
-                  disabled={currentHistorysPage === totalPagess2}
+                  disabled={currentHistorysPage === totalPages}
                 >
                   Next
                 </button>
                 <button
                   className="btn btn-sm btn-light"
                   onClick={handleLastPage}
-                  disabled={currentHistorysPage === totalPagess2}
+                  disabled={currentHistorysPage === totalPages}
                 >
                   Last
                 </button>
