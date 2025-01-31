@@ -27,8 +27,8 @@ const DashboardPage: FC = () => {
 
     if (res.status === 200) {
       setData(res.data.Statistics);
-      setBranchesOption(res.data.users);
-      setUsersOption(res.data.branches);
+      setBranchesOption(res.data.Departments);
+      setUsersOption(res.data.users);
     } else {
       //add loading
       return;
