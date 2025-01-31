@@ -1,7 +1,7 @@
 export const customStyles = {
   headRow: {
     style: {
-      background: "var(--blue-gradient)",
+      background: "#1b84ff", //"var(--blue-gradient)",
       color: "white",
       fontWeight: "bold",
       fontSize: "16px",
@@ -29,6 +29,7 @@ export const customStyles = {
       paddingRight: "5px",
     },
   },
+
   pagination: {
     style: {
       background: "var(--blue-gradient)",
