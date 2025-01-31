@@ -1,3 +1,5 @@
+import { loadFromIndexedDB } from "../app/indexDB/Config";
+
 export const getStatusClass = (status: string) => {
   switch (status.toLowerCase()) {
     case "initialized":
@@ -39,4 +41,14 @@ export const formatName = (name: string) => {
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
+};
+
+//load fron indexedDB into select
+export const getData = async (
+  storeName: string,
+  userId: number,
+  dbName: string
+) => {
+  const data = await loadFromIndexedDB(userId, dbName, storeName);
+  return data.map((item: any) => ({ value: item.id, label: item.name }));
 };

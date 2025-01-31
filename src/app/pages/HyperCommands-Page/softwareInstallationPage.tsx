@@ -11,10 +11,7 @@ import {
   CancelSoftwareInstallation,
   FetchAllSoftwareInstallations,
 } from "../../config/ApiCalls";
-import {
-  SoftwareHistoryType,
-  SoftwareInstallationResponseType,
-} from "../../types/softwareInstallationTypes";
+import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
 import { CardsStat } from "../../components/hyper-commands/cards-statistics";
 import {
   getCircleColor,
@@ -24,9 +21,13 @@ import {
 } from "../../../utils/custom";
 import { SearchComponent } from "../../components/form/search";
 import { useQuery } from "@tanstack/react-query";
-import { FilterModal } from "../../components/modal/filtersModal";
+import { FilterSidebar } from "../../components/sidebar/filters";
 
-const SoftwareInstallationPage = () => {
+const SoftwareInstallationPage = ({
+  toggleRightSidebar,
+}: {
+  toggleRightSidebar: any;
+}) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -47,11 +48,17 @@ const SoftwareInstallationPage = () => {
   const [showUpdateAlert, setShowUpdateAlert] = useState<boolean>(false);
   const [alertUpdateMessage, setAlertUpdateMessage] = useState<string>("");
 
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [filters, setFilters] = useState<any>({});
+
+  const toggleSidebar = () => {
+    setShowForm(false);
+    setIsSidebarOpen((prevState) => !prevState);
+  };
 
   const fetchData = async () => {
     const response = await FetchAllSoftwareInstallations(
-      "0-29",
+      "0-99",
       "desc",
       getLowestId(paginatedHistory) ?? undefined
     );
@@ -59,7 +66,7 @@ const SoftwareInstallationPage = () => {
   };
 
   const initialFetch = async () => {
-    const response = await FetchAllSoftwareInstallations("0-29", "desc");
+    const response = await FetchAllSoftwareInstallations("0-99", "desc");
     return response.data;
   };
 
@@ -283,6 +290,7 @@ const SoftwareInstallationPage = () => {
   }, [softwareHistory, searchQuery, paginatedHistory]);
 
   const totalPages = Math.ceil(filteredHistory.length / SoftwarePerPage);
+  const totalPagess2 = Math.ceil(maxTotalSoftwares / SoftwarePerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentHistoryPage(page);
@@ -290,16 +298,21 @@ const SoftwareInstallationPage = () => {
     const totalFetchedPages = Math.ceil(
       filteredHistory.length / SoftwarePerPage
     );
+    console.log("totalFetchedPages", totalFetchedPages);
+    console.log("page", page);
+    console.log("hasMore", hasMore);
 
     if (page > totalFetchedPages && hasMore) {
       setIsLoadingMore(true);
       fetchData().then((newData) => {
         setPaginatedHistory((prevHistory) => [...prevHistory, ...newData.data]);
-        setHasMore(newData.count < newData.totalcount);
+        console.log();
+        setHasMore(newData.totalCount > paginatedHistory.length);
         setIsLoadingMore(false);
       });
     }
   };
+
   const startPage =
     Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
   const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
@@ -333,11 +346,11 @@ const SoftwareInstallationPage = () => {
         );
       }
       setMaxTotalSoftwares(softwareHistory.totalcount);
-      setPaginatedHistory(softwareHistory.data);
-      // setPaginatedHistory((prevHistory) => [
-      //   ...prevHistory,
-      //   ...softwareHistory.data,
-      // ]);
+      // setPaginatedHistory(softwareHistory.data);
+      setPaginatedHistory((prevHistory) => [
+        ...prevHistory,
+        ...softwareHistory.data,
+      ]);
       console.log("softwareHistory", softwareHistory);
       setHasMore(softwareHistory.count < softwareHistory.totalcount);
       console.log("hasMore", hasMore);
@@ -349,210 +362,222 @@ const SoftwareInstallationPage = () => {
 
   const handleAlertClose = () => setShowUpdateAlert(false);
 
+  const activeFilters = [
+    "softwareStatusFilter",
+    "userFilter",
+    "computersFilter",
+    "dateFilter",
+  ];
+
   return (
     <Content>
-      <div className="container mt-5">
-        <div className="row justify-content-center">
-          <div className="col-md-10 col-lg-10 col-xl-12">
-            <h2 className="text-center mb-4">🚀 Software Installation</h2>
-            <ActionIcons />
-            <CardsStat />
+      <div className="d-flex">
+        <div className="container mt-5">
+          <div className="row justify-content-center">
+            <div className="col-md-12 col-lg-10 col-xl-12">
+              <h2 className="text-center mb-4">🚀 Software Installation</h2>
 
-            <button
-              type="button"
-              className="btn btn-primary hyper-connect-btn mb-3"
-              onClick={() => setShowForm((prev) => !prev)}
-            >
-              {showForm ? (
-                <span style={{ display: "inline-block", marginRight: "8px" }}>
-                  Install New Software
-                </span>
-              ) : (
-                <span
-                  style={{
-                    display: "inline-block",
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                  }}
-                >
-                  +
-                </span>
-              )}
-            </button>
+              <ActionIcons />
+              <CardsStat />
 
-            {showForm && (
-              <Wizard
-                steps={steps}
-                add={setPaginatedHistory}
-                idgt={getGreatestId(paginatedHistory) ?? 0}
-              />
-            )}
-
-            <div className="row mt-5 mb-5 d-flex justify-content-between">
-              <div className="col-12 col-md-2 d-flex align-items-center">
-                <h3 className="mt-2">Installation History</h3>
-              </div>
-
-              {showUpdateAlert && (
-                <div className="col-12 col-md-6 d-flex align-items-center">
-                  <div
-                    className="alert alert-info alert-dismissible fade show"
-                    role="alert"
-                    onClick={() => refetch()}
-                  >
-                    <strong>Update Detected!</strong> {alertUpdateMessage}
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleAlertClose}
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                </div>
-              )}
-
-              <div className="col-12 col-md-4 d-flex justify-content-md-end gap-2">
-                <SearchComponent
-                  value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleSearchChange(e.target.value)
-                  }
-                />
-                {/* <button
-                  type="button"
-                  className="btn btn-primary hyper-connect-btn mb-3"
-                  onClick={() =>
-                    setIsFilterModalOpen((prevState) => !prevState)
-                  }
-                >
-                  Filters
-                </button> */}
-              </div>
-            </div>
-
-            <DataTable
-              customStyles={customStyles}
-              columns={columns}
-              data={getCurrentPageRecords}
-              responsive
-              highlightOnHover
-              progressPending={isLoading || isLoadingMore}
-              progressComponent={
-                <div className="d-flex justify-content-center my-3">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              }
-            />
-            {/* <FilterModal
-              isOpen={isFilterModalOpen}
-              onClose={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onApplyFilter={function (filters: any): void {
-                throw new Error("Function not implemented.");
-              }}
-            /> */}
-            <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
               <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleFirstPage}
-                disabled={currentHistorysPage === 1}
+                type="button"
+                className="btn btn-primary hyper-connect-btn mb-3"
+                onClick={() => setShowForm((prev) => !prev)}
               >
-                First
-              </button>
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handlePreviousPage}
-                disabled={currentHistorysPage === 1}
-              >
-                Previous
-              </button>
-              {Array.from(
-                { length: endPage - startPage + 1 },
-                (_, index) => startPage + index
-              ).map((page) => (
-                <button
-                  key={page}
-                  className={clsx("btn btn-sm me-2", {
-                    "btn-primary": currentHistorysPage === page,
-                    "btn-light": currentHistorysPage !== page,
-                  })}
-                  onClick={() => handlePageChange(page)}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleNextPage}
-                disabled={currentHistorysPage === totalPages}
-              >
-                Next
-              </button>
-              <button
-                className="btn btn-sm btn-light"
-                onClick={handleLastPage}
-                disabled={currentHistorysPage === totalPages}
-              >
-                Last
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {isModalOpen && (
-          <div
-            className="modal show"
-            tabIndex={-1}
-            role="dialog"
-            style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-          >
-            <div className="modal-dialog" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Cancel Installation:</h5>
-                  <button
-                    type="button"
-                    className="close"
-                    onClick={() => setIsModalOpen(false)}
+                {showForm ? (
+                  <span style={{ display: "inline-block", marginRight: "8px" }}>
+                    Install New Software
+                  </span>
+                ) : (
+                  <span
                     style={{
-                      background: "none",
-                      border: "none",
-                      fontSize: "1.5rem",
-                      lineHeight: "1",
+                      display: "inline-block",
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      textAlign: "center",
                     }}
                   >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                    +
+                  </span>
+                )}
+              </button>
+
+              {showForm && (
+                <Wizard
+                  steps={steps}
+                  add={setPaginatedHistory}
+                  idgt={getGreatestId(paginatedHistory) ?? 0}
+                />
+              )}
+
+              <div className="row mt-5 mb-5 d-flex justify-content-between">
+                <div className="col-12 col-md-6 d-flex align-items-center">
+                  <h3 className="mt-2">Installation History</h3>
                 </div>
-                <div className="modal-body">
-                  <p>
-                    Are you sure you want to cancel the installation of{" "}
-                    <strong>{selectedEntry?.software}</strong>?
-                  </p>
-                </div>
-                <div className="modal-footer">
+
+                <div className="col-12 col-md-6 d-flex justify-content-md-end gap-2">
+                  <SearchComponent
+                    value={searchQuery}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleSearchChange(e.target.value)
+                    }
+                  />
                   <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setIsModalOpen(false)}
+                    className="btn btn-primary hyper-connect-btn mb-4"
+                    onClick={toggleSidebar}
                   >
-                    Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={confirmCancellation}
-                  >
-                    Confirm
+                    Add Filters
                   </button>
                 </div>
               </div>
+
+              <div className="row mt-5 mb-5 d-flex justify-content-between">
+                {showUpdateAlert && (
+                  <div className="col-12 col-md-12 d-flex align-items-center">
+                    <div
+                      className="alert alert-info alert-dismissible fade show"
+                      role="alert"
+                      onClick={() => refetch()}
+                    >
+                      <strong>Update Detected!</strong> {alertUpdateMessage}
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={handleAlertClose}
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <DataTable
+                customStyles={customStyles}
+                columns={columns}
+                data={getCurrentPageRecords}
+                responsive
+                highlightOnHover
+                progressPending={isLoading || isLoadingMore}
+                progressComponent={
+                  <div className="d-flex justify-content-center my-3">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                }
+              />
+
+              <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
+                <button
+                  className="btn btn-sm btn-light me-2"
+                  onClick={handleFirstPage}
+                  disabled={currentHistorysPage === 1}
+                >
+                  First
+                </button>
+                <button
+                  className="btn btn-sm btn-light me-2"
+                  onClick={handlePreviousPage}
+                  disabled={currentHistorysPage === 1}
+                >
+                  Previous
+                </button>
+                {Array.from(
+                  { length: endPage - startPage + 1 },
+                  (_, index) => startPage + index
+                ).map((page) => (
+                  <button
+                    key={page}
+                    className={clsx("btn btn-sm me-2", {
+                      "btn-primary": currentHistorysPage === page,
+                      "btn-light": currentHistorysPage !== page,
+                    })}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  className="btn btn-sm btn-light me-2"
+                  onClick={handleNextPage}
+                  disabled={currentHistorysPage === totalPagess2}
+                >
+                  Next
+                </button>
+                <button
+                  className="btn btn-sm btn-light"
+                  onClick={handleLastPage}
+                  disabled={currentHistorysPage === totalPagess2}
+                >
+                  Last
+                </button>
+              </div>
             </div>
           </div>
+
+          {isModalOpen && (
+            <div
+              className="modal show"
+              tabIndex={-1}
+              role="dialog"
+              style={{
+                display: "block",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">Cancel Installation:</h5>
+                    <button
+                      type="button"
+                      className="close"
+                      onClick={() => setIsModalOpen(false)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        fontSize: "1.5rem",
+                        lineHeight: "1",
+                      }}
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div className="modal-body">
+                    <p>
+                      Are you sure you want to cancel the installation of{" "}
+                      <strong>{selectedEntry?.software}</strong>?
+                    </p>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={confirmCancellation}
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        {isSidebarOpen && (
+          <FilterSidebar
+            isOpen={true}
+            toggleSidebar={toggleSidebar}
+            activeFilters={activeFilters}
+            saveFilters={setFilters}
+          />
         )}
       </div>
     </Content>

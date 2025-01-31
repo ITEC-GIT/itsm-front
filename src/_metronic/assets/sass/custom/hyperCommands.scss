@@ -205,6 +205,13 @@
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+.custom-label {
+  font-weight: 500;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
 .custom-input:focus {
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
@@ -262,12 +269,4 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.filter-modal {
-  position: fixed !important;
-  top: 75px !important;
-  right: 0 !important;
-  margin: 0 !important;
-  transform: none !important;
 }
