@@ -397,7 +397,7 @@ const SoftwareInstallationPage = () => {
         style={{
           transition: "margin 0.3s ease-in-out",
           marginRight: isSidebarOpen ? "10%" : "0",
-          width: isSidebarOpen ? "85%" : "100%",
+          width: isSidebarOpen ? "80%" : "100%",
         }}
       >
         <div className="row justify-content-center">
@@ -453,6 +453,7 @@ const SoftwareInstallationPage = () => {
                 <button
                   className="btn btn-primary hyper-connect-btn mb-4"
                   onClick={toggleSidebar}
+                  style={{ width: "150px" }}
                 >
                   Add Filters
                 </button>
@@ -607,8 +608,8 @@ const SoftwareInstallationPage = () => {
         <FilterSidebar
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
-          activeFilters={["softwareStatusFilter", "userFilter", "dateFilter"]}
-          saveFilters={() => {}}
+          activeFilters={activeFilters}
+          saveFilters={setFilters}
         />
       </div>
     </div>

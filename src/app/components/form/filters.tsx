@@ -59,11 +59,10 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
   saveFilters,
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
-  const [selectedFilters, setSelectedFilters] = useState({
-    status: null as { value: string; label: string } | null,
-    user: null as { value: string; label: string } | null,
-    computer: null as { value: string; label: string } | null,
-  });
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, { value: string; label: string } | null>
+  >({});
+
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
@@ -125,21 +124,25 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
 
     console.log("wholeFilter ==>>", wholeFilter);
     saveFilters(wholeFilter);
+    handleClearFilters();
 
     toggleSidebar();
+  };
+
+  const handleClearFilters = () => {
+    setSelectedFilters({});
+    setStartDate("");
+    setEndDate("");
   };
 
   const handleFilterChange = (
     filterId: string,
     selectedOption: { value: string; label: string } | null
   ) => {
-    const key = filterKeyMap[filterId];
-    if (key) {
-      setSelectedFilters((prevState) => ({
-        ...prevState,
-        [key]: selectedOption,
-      }));
-    }
+    setSelectedFilters((prevState) => ({
+      ...prevState,
+      [filterId]: selectedOption,
+    }));
   };
 
   return (
@@ -195,6 +198,7 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
                     placeholder={`Select ${filter.name}`}
                     className="custom-select shadow-sm"
                     classNamePrefix="react-select"
+                    value={selectedFilters[filter.id] ?? null}
                     onChange={(selectedOption) =>
                       handleFilterChange(
                         filter.id,
@@ -215,12 +219,19 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
         })}
       </div>
 
-      <div className="text-center mt-2">
+      <div className="d-flex justify-content-between mt-3 p-3">
         <button
           className="toggle-btn p-3 hyper-connect-btn"
           onClick={handleSaveFilters}
         >
           Save Filters
+        </button>
+
+        <button
+          className="toggle-btn p-3 hyper-connect-btn"
+          onClick={handleClearFilters}
+        >
+          Clear Filters
         </button>
       </div>
     </div>
