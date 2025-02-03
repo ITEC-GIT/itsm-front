@@ -11,7 +11,7 @@ totalTicketsNavigationAtom.debugLabel = "ticketsTotalTicketsNavigationAtom";
 export const totalTicketsAtom = atom(0);
 totalTicketsAtom.debugLabel = "totalTicketsAtom";
 // Atom to store the num of tickets to fetch per query
-export const numOfTicketsToFetchAtom = atom(12);
+export const numOfTicketsToFetchAtom = atom(60);
 numOfTicketsToFetchAtom.debugLabel = "numOfTicketsToFetchAtom";
 // Atom to store the total tickets in the tickets page we got from query
 export const fetchedTicketsAtom = atom<any[]>([]);
@@ -41,19 +41,27 @@ maxIdAtom.debugLabel = "maxIdAtom";
 export const ticketsAtom = atom<any[]>([]);
 ticketsAtom.debugLabel = "ticketsAtom";
 // atom to store the tickets that are fetched every three minutes across pages in ticket page
-export const intervalFetchedTicketsAtom = atom<any[]>([]);
-intervalFetchedTicketsAtom.debugLabel = "intervalFetchedTicketsAtom";
+export const intervalFetchedTicketsResponseAtom = atom<any>();
+intervalFetchedTicketsResponseAtom.debugLabel = "intervalFetchedTicketsResponseAtom";
 
 // atom to store the tickets that are fetched every three minutes across pages in ticket page
 export const initialFetchedTicketsAtom = atomWithIndexedDB<any[]>('initialFetchedTicketsAtom', []);
 initialFetchedTicketsAtom.debugLabel = "initialFetchedTicketsAtom";
 
 // atom to store the tickets that are fetched every three minutes across pages in ticket page
-export const initialFetchedTicketsTotalAtom = atomWithIndexedDB<any[]>('initialFetchedTicketsTotalAtom', []);
+export const initialFetchedTicketsTotalAtom = atomWithIndexedDB<number>('initialFetchedTicketsTotalAtom',0);
 initialFetchedTicketsTotalAtom.debugLabel = "initialFetchedTicketsTotalAtom";
+
 export const maxTotalAtom = atom(0);
 maxTotalAtom.debugLabel = "maxTotalAtom";
 
+export const allowFetchMoreTickets = atom(0);
+allowFetchMoreTickets.debugLabel = "allowFetchMoreTickets";
 
 export const pinnedTicketsIdsAtom = atom<string[]>([]);
 pinnedTicketsIdsAtom.debugLabel = "pinnedTicketsIdsAtom";
+
+// the number of tickets that are new for this user in the tickets page
+export const newTicketsAvailableCount = atom(0);
+newTicketsAvailableCount.debugLabel = "newTicketsAvailableCount";
+

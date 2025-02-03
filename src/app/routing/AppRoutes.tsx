@@ -10,7 +10,7 @@ import { PrivateRoutes } from "./PrivateRoutes";
 import { ErrorsPage } from "../modules/errors/ErrorsPage";
 import { Logout, AuthPage, useAuth } from "../modules/auth";
 import { App } from "../App";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { isAuthenticatedAtom, userAtom } from "../atoms/auth-atoms/authAtom";
 import { authChannel } from "../pages/login-page/authChannel";
 import { getSessionTokenFromCookie } from "../config/Config";

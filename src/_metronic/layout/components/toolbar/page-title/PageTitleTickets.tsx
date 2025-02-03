@@ -5,10 +5,15 @@ import Badge from "../../../../../app/components/custom-components/Badge";
 import { usePageData } from "../../../core/PageData";
 import { useAtom, useAtomValue } from "jotai";
 import {
+  toolbarTicketsBackendFiltersAtom,
   toolbarTicketsFrontFiltersAtom,
   toolbarTicketsSearchAtom,
 } from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
-import { totalTicketsAtom } from "../../../../../app/atoms/tickets-page-atom/ticketsPageAtom";
+import {
+  maxTotalAtom,
+  numOfTicketsToFetchAtom,
+  totalTicketsAtom,
+} from "../../../../../app/atoms/tickets-page-atom/ticketsPageAtom";
 
 const PageTitleTickets = () => {
   // const {pageTitle, pageDescription, pageBreadcrumbs} = usePageData()
@@ -16,14 +21,27 @@ const PageTitleTickets = () => {
   const appPageTitleDirection = config.app?.pageTitle?.direction;
   const toolbarSearch = useAtomValue(toolbarTicketsSearchAtom);
   const [frontFilter, setFrontFilter] = useAtom(toolbarTicketsFrontFiltersAtom);
-  const backendFilter = useAtomValue(toolbarTicketsFrontFiltersAtom);
-  const handleBadgeClose = (key: string) => {
-    setFrontFilter((prev) => ({ ...prev, [key]: "" }));
+  const [backendFilter, setBackendFilter] = useAtom(
+    toolbarTicketsBackendFiltersAtom
+  );
+  const handleBadgeFrontFiltersClose = (key: string) => {
+    setFrontFilter((prev) => ({ ...prev, [key]: { value: "", label: "" } }));
+  };
+  
+  const handleBadgeDBFiltersClose = (key: string) => {
+    setBackendFilter((prev) => ({ ...prev, [key]: { value: "", label: "" } }));
   };
   const hasFrontFilterValues = Object.values(frontFilter).some(
-    (value) => value !== ""
+    (filter) => filter && filter.value !== ""  );
+  const hasBackendFilterValues = Object.values(backendFilter).some(
+    (filter) => filter && filter.value !== ""
   );
-  const totalTickets =  useAtomValue(totalTicketsAtom);
+  const totalTickets = useAtomValue(maxTotalAtom);
+  const currentTicketsCount = useAtomValue(totalTicketsAtom); // Set the total tickets per query of fetched in this instance only
+  const displayTicketsCount = currentTicketsCount > totalTickets ? totalTickets : currentTicketsCount;
+
+  const numOfRecordsToFetch = useAtomValue(numOfTicketsToFetchAtom);
+  const fromTicketCount=currentTicketsCount > totalTickets ? currentTicketsCount-numOfRecordsToFetch : displayTicketsCount-numOfRecordsToFetch;
   return (
     <div
       id="kt_page_title"
@@ -50,7 +68,10 @@ const PageTitleTickets = () => {
           Tickets
         </h1>
         <div className="count-align-bottom">
-        <span className=" text-muted ms-2 "  style={{ fontSize: '12px' }}>count: {totalTickets}</span></div>
+          <span className=" text-muted ms-2 " style={{ fontSize: "12px" }}>
+            count: {fromTicketCount}-{displayTicketsCount} | {totalTickets}
+          </span>
+        </div>
       </div>
       {/* end::Title */}
       <div className="row align-items-between py-2 ">
@@ -65,25 +86,45 @@ const PageTitleTickets = () => {
             ""
           )}
         </div>
+        <div className="  d-flex flex-wrap align-items-center w-100 ms-4">
+
         {hasFrontFilterValues && (
-          <div className="d-flex flex-wrap align-items-center w-100">
             <div className=" d-flex align-items-center  flex-wrap">
               <strong className="me-2">Filters:</strong>
               {Object.entries(frontFilter).map(
                 ([key, value]) =>
-                  value && (
+                  value.value && (
                     <div className="me-2 my-1 " key={key}>
                       <Badge
                         backgroundColor="darkcyan"
                         color="white"
-                        text={`${key}: ${value}`}
-                        onClose={() => handleBadgeClose(key)}
+                        text={`${key}: ${value.label}`}
+                        onClose={() => handleBadgeFrontFiltersClose(key)}
                       />
                     </div>
                   )
               )}
             </div>
-            {/* <div className=" d-flex align-items-center flex-wrap flex-grow-1">
+        )}
+        {hasBackendFilterValues && (
+            <div className=" d-flex align-items-center  flex-wrap">
+              <strong className="me-2">Query Filters:</strong>
+              {Object.entries(backendFilter).map(
+                ([key, value]) =>
+                  value.value && (
+                    <div className="me-2 my-1 " key={key}>
+                      <Badge
+                        backgroundColor="darkcyan"
+                        color="white"
+                        text={`${key}: ${value.label}`}
+                        onClose={() => handleBadgeDBFiltersClose(key)}
+                      />
+                    </div>
+                  )
+              )}
+            </div>
+        )}</div>
+        {/* <div className=" d-flex align-items-center flex-wrap flex-grow-1">
             <strong className="me-2">Fetch Filters:</strong>
             {Object.entries(frontFilter).map(
               ([key, value]) =>
@@ -98,8 +139,6 @@ const PageTitleTickets = () => {
                 )
             )}
           </div> */}
-          </div>
-        )}
       </div>
     </div>
   );

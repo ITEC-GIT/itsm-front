@@ -9,28 +9,31 @@ toolbarTicketsNavigationAtom.debugLabel = "toolbarTicketsNavigationAtom";
 export const toolbarTicketsSearchAtom = atom('');
 toolbarTicketsSearchAtom.debugLabel = "toolbarTicketsSearchAtom";
 
+// new tickets available atom
+export const toolbarNewTicketsAtom = atom(false);
+toolbarNewTicketsAtom.debugLabel = "toolbarNewTicketsAtom";
 
 
 export const toolbarTicketsFrontFiltersAtom = atom({
-    status: '',
-    urgency: '',
-    priority: '',
-    type: '',
-    requester: '',
-    branch: '',
-    assignee:''
+    status: { value: '', label: '' },
+    urgency: { value: '', label: '' },
+    priority: { value: '', label: '' },
+    type: { value: '', label: '' },
+    requester: { value: '', label: '' },
+    branch: { value: '', label: '' },
+    assignee: { value: '', label: '' }
 });
 toolbarTicketsFrontFiltersAtom.debugLabel = "toolbarTicketsFrontFiltersAtom";
 
 export const toolbarTicketsBackendFiltersAtom = atom({
-    status: '',
-    urgency: '',
-    priority: '',
-    type: '',
-    requester: '',
-    branch: '',
-    assignee:'',
-    from:'',
-    to:''
-});
+    status: { value: '', label: '' },
+    urgency: { value: '', label: '' },
+    priority: { value: '', label: '' },
+    type: { value: '', label: '' },
+    requester: { value: '', label: '' },
+    branch: { value: '', label: '' },
+    assignee: { value: '', label: '' },
+    from: { value: '', label: '' },
+    to: { value: '', label: '' },
+  });
 toolbarTicketsBackendFiltersAtom.debugLabel = "toolbarTicketsBackendFiltersAtom";

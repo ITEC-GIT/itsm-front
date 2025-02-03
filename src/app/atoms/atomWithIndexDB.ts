@@ -17,25 +17,25 @@ interface AtomData<T> {
 export function atomWithIndexedDB<T>(
   key: string,
   initialValue: T
-): WritableAtom<Promise<T>, [T | ((prev: T) => T)], void> {
+): WritableAtom<T, [T | ((prev: T) => T)], void> {
   // Base atom for local state
   const baseAtom = atom(initialValue);
 
   // Read atom to fetch data from IndexedDB
-  const readAtom = atom(async (get) => {
-    try {
-      const storedValue = await db.table<AtomData<T>>('atoms').get(key);
-      return storedValue ? storedValue.value : get(baseAtom);
-    } catch (error) {
+  const readAtom = atom((get) => {
+    let storedValue: AtomData<T> | undefined;
+    db.table<AtomData<T>>('atoms').get(key).then(value => {
+      storedValue = value;
+    }).catch(error => {
       console.error('Error reading from IndexedDB:', error);
-      return get(baseAtom); // Fallback to baseAtom value on error
-    }
+    });
+    return storedValue ? storedValue.value : get(baseAtom);
   });
 
   // Write atom to update both local state and IndexedDB
   const writeAtom = atom(
     null,
-    (get, set, update: T | ((prev: T) => T)) => {
+    async (get, set, update: T | ((prev: T) => T)) => {
       const newValue =
         typeof update === 'function'
           ? (update as (prev: T) => T)(get(baseAtom))
@@ -44,11 +44,11 @@ export function atomWithIndexedDB<T>(
       set(baseAtom, newValue); // Update the base atom
 
       // Save to IndexedDB
-      db.table<AtomData<T>>('atoms')
-        .put({ key, value: newValue })
-        .catch((error) => {
-          console.error('Error writing to IndexedDB:', error);
-        });
+      try {
+        await db.table<AtomData<T>>('atoms').put({ key, value: newValue });
+      } catch (error) {
+        console.error('Error writing to IndexedDB:', error);
+      }
     }
   );
 

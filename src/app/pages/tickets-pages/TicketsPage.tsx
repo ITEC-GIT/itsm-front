@@ -12,6 +12,7 @@ import {
   toolbarTicketsBackendFiltersAtom,
   toolbarTicketsNavigationAtom,
   toolbarTicketsSearchAtom,
+  toolbarNewTicketsAtom,
 } from "../../atoms/toolbar-atoms/toolbarTicketsAtom";
 import {
   totalTicketsAtom,
@@ -24,9 +25,10 @@ import {
   maxTotalAtom,
   pinnedTicketsIdsAtom,
   numOfTicketsToFetchAtom,
-  intervalFetchedTicketsAtom,
+  intervalFetchedTicketsResponseAtom,
   initialFetchedTicketsAtom,
   initialFetchedTicketsTotalAtom,
+  newTicketsAvailableCount,
 } from "../../atoms/tickets-page-atom/ticketsPageAtom";
 import { toolbarTicketsFrontFiltersAtom } from "../../atoms/toolbar-atoms/toolbarTicketsAtom";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
@@ -51,6 +53,8 @@ import { ApiRequestBody } from "../../config/ApiTypes";
 import { ticketPerformingActionOnAtom } from "../../atoms/tickets-page-atom/ticketsActionsAtom";
 import { mastersAtom } from "../../atoms/app-routes-global-atoms/globalFetchedAtoms";
 import { isCurrentUserMasterAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
+import { isEqual } from "lodash";
+import { TicketResponse } from "../../types/TicketTypes";
 
 const TicketsPage: React.FC = () => {
   // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -60,9 +64,8 @@ const TicketsPage: React.FC = () => {
   const location = useLocation();
   // const [ticketsFetched, setTicketsFetched] = useAtom(fetchedTicketsAtom)
   const [tickets, setTickets] = useAtom(ticketsAtom);
-  const [intervalFetchedTickets, setIntervalFetchedTickets] = useAtom(
-    intervalFetchedTicketsAtom
-  );
+  const [intervalFetchedTicketsResponse, setIntervalFetchedTicketsResponse] =
+    useAtom(intervalFetchedTicketsResponseAtom);
   const [initialFetchedTickets, setInitialFetchedTickets] = useAtom(
     initialFetchedTicketsAtom
   );
@@ -82,7 +85,8 @@ const TicketsPage: React.FC = () => {
 
   const [totalPagesFetched, setTotalPagesFetched] = useState<number>(1);
 
-  const setTotalTickets = useSetAtom(totalTicketsAtom); // Set the total tickets per query of fetched in this instance only
+  const [currentTotalTicketsCount, setCurrentTotalTicketsCount] =
+    useAtom(totalTicketsAtom); // Set the total tickets per query of fetched in this instance only
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [maxTotalTickets, setMaxTotalTickets] = useAtom(maxTotalAtom);
   const [paginatedTickets, setPaginatedTickets] = useState<any[]>([]);
@@ -97,8 +101,10 @@ const TicketsPage: React.FC = () => {
   const [backendFilter, setBackendFilters] = useAtom(
     toolbarTicketsBackendFiltersAtom
   );
-  const hasNonEmptyValue = (backendFilter: Record<string, string>) => {
-    return Object.values(backendFilter).some((value) => value !== "");
+  const hasNonEmptyValue = (
+    backendFilter: Record<string, { value: string; label: string }>
+  ) => {
+    return Object.values(backendFilter).some((filter) => filter.value !== "");
   };
   const prevBackendFilter = useRef(backendFilter);
 
@@ -122,28 +128,15 @@ const TicketsPage: React.FC = () => {
     } catch (error) {
       console.error("Error getting updated tickets:", error);
     }
-
   };
-  useEffect(() => {
-    setBackendFilters({
-      status: "",
-      urgency: "",
-      priority: "",
-      type: "",
-      requester: "",
-      branch: "",
-      assignee: "",
-      from: "",
-      to: "",
-    });
-  }, [setBackendFilters]);
+
   const filterBackendMutation = useMutation<any, Error, ApiRequestBody>({
     mutationFn: FetchFilteredTickets,
     onSuccess: (response) => {
       const responseData = response.data;
       setMaxTotalTickets(response.totalcount);
       setTickets(responseData);
-      setTotalTickets(responseData.length);
+      setCurrentTotalTicketsCount(responseData.length);
       setIsTicketsFetch(true);
       setIsDataLoading(false);
       console.log("response", response);
@@ -158,8 +151,11 @@ const TicketsPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["create"] }); // Updated invalidateQueries syntax
     },
   });
-  const [automaticRefetchLengthMismatchFlag, setAutomaticRefetchLengthMismatchFlag] = useState(false);
-  const [mismatchCount, setMismatchCount] = useState(0);
+  const [
+    automaticRefetchLengthMismatchFlag,
+    setAutomaticRefetchLengthMismatchFlag,
+  ] = useState(false);
+  const [mismatchCount, setMismatchCount] = useAtom(newTicketsAvailableCount);
 
   const GetTicketsMutation = useMutation<
     any,
@@ -187,73 +183,113 @@ const TicketsPage: React.FC = () => {
       let responseData = response.data;
       if (responseData.length !== 0) {
         if (initialFetching) {
-
           setInitialFetchedTickets(response.data);
-          setInitialFetchedTicketsTotal(response.totalcount)
+          setInitialFetchedTicketsTotal(response.totalcount);
           setMaxTotalTickets(response.totalcount);
-          setTotalTickets(responseData.length);
+          setCurrentTotalTicketsCount(responseData.length);
           setTickets(responseData);
           setCurrentTicketsPage(1);
         } else if (fetchMorePagesFlag && !filterFetching) {
-          setTotalTickets((prevTotal) => prevTotal + responseData.length);
+          setCurrentTotalTicketsCount(
+            (prevTotal) => prevTotal + numOfRecordsToFetch
+          );
+          const mismatch = Math.abs(
+            Number(response.totalcount) - Number(initialFetchedTicketsTotal)
+          );
+          if (mismatch != response.totalcount) {
+            setMismatchCount(mismatch);
+          }
           setTickets(responseData);
         } else if (fetchLessPagesFlag && !filterFetching) {
-          responseData = response.data.sort((a: any, b: any) => b.id - a.id);
-          setTotalTickets((prevTotal) => prevTotal - responseData.length);
+          responseData = response.data.sort((a: any, b: any) => b.id - a.id);// i can make flag , if current response data is less than num to fetch
+          // then no need for more pagination ot the right side
+          setCurrentTotalTicketsCount((prevTotal) => {
+            const newTotal = prevTotal - responseData.length;
+  
+            return newTotal < responseData.length
+              ? responseData.length
+              : newTotal;
+          });
+          const mismatch = Math.abs(
+            Number(response.totalcount) - Number(initialFetchedTicketsTotal)
+          );
+          if (mismatch != response.totalcount) {
+            setMismatchCount(mismatch);
+          }
           setTickets(responseData);
         } else if (intervalFetching) {
-          setIntervalFetchedTickets(responseData);
+          const intervalFetchedTicketsRes: TicketResponse = response;
+
+          setIntervalFetchedTicketsResponse(intervalFetchedTicketsRes);
           // need data to be added by me maybe using pulsar , or local database
           // must set the setTotaltickets in a way
           if (response.totalcount !== initialFetchedTicketsTotal) {
             setAutomaticRefetchLengthMismatchFlag(true);
-            const mismatch = Math.abs(Number(response.totalcount) - Number(initialFetchedTicketsTotal));
-            setMismatchCount(mismatch);
+            const mismatch = Math.abs(
+              Number(response.totalcount) - Number(initialFetchedTicketsTotal)
+            );
+            console.log(`Mismatch in total tickets over interval: ${mismatch}`);
+            if (mismatch != response.totalcount) {
+              setMismatchCount(mismatch);
+            }
           }
-          const updatedTickets = getUpdatedRepliesTickets(
-            initialFetchedTickets,
-            intervalFetchedTickets
-          );
-          setInitialFetchedTickets(response);
-          setInitialFetchedTicketsTotal(response.totalcount)
-          const x=0;
+          if (
+            intervalFetchedTicketsRes &&
+            intervalFetchedTicketsRes.data.length > 0
+          ) {
+            const updatedTickets = getUpdatedRepliesTickets(
+              initialFetchedTickets,
+              intervalFetchedTicketsRes.data
+            );
+          }
+
+          const x = 0;
         } else if (filterFetching && fetchMorePagesFlag) {
           const responseData = response.data;
-          setTotalTickets((prevTotal) => prevTotal + responseData.length);
+          setCurrentTotalTicketsCount(
+            (prevTotal) => prevTotal + responseData.length
+          );
 
           setTickets(responseData);
         } else if (filterFetching && fetchLessPagesFlag) {
           responseData = response.data.sort((a: any, b: any) => b.id - a.id);
-          setTotalTickets((prevTotal) => prevTotal - responseData.length);
+          setCurrentTotalTicketsCount(
+            (prevTotal) => prevTotal - responseData.length
+          );
           setTickets(responseData);
         } else if (filterFetching) {
           const responseData = response.data;
 
           setTickets(responseData);
 
-          setTotalTickets(responseData.length);
+          setCurrentTotalTicketsCount(responseData.length);
           setCurrentTicketsPage(1);
+          setMaxTotalTickets(response.totalcount);
         }
 
         if (
           initialFetching ||
           fetchMorePagesFlag ||
           fetchLessPagesFlag ||
-          intervalFetching ||
           filterFetching
         ) {
-          setMaxTotalTickets(response.totalcount);
-          setIsTicketsFetch(true);
+          setIsTicketsFetch(false);
           setIsDataLoading(false);
+
           console.log("response", response);
+        } else {
+          // it is interval fetching through window focus or 3 mintues itnerval
+          setIsTicketsFetch(false);
         }
-      }
-      else{
-        setIsTicketsFetch(true);
+        if (currentTicketsPage > responseData.length / ticketsPerPage) {
+          setCurrentTicketsPage(1);
+        }
+      } else {
+        setIsTicketsFetch(false);
         setIsDataLoading(false);
         console.log("response", response);
-
       }
+
     },
     onError: (error) => {
       alert("There was an error: " + error.message);
@@ -262,23 +298,78 @@ const TicketsPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["create"] }); // Updated invalidateQueries syntax
     },
   });
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const reqBody: ApiRequestBody = {
-        range: `0-${numOfRecordsToFetch}`,
-        order: "desc",
-        opening_date: {},
-      };
-      GetTicketsMutation.mutate({
-        body: reqBody,
-        fetchLessPagesFlag: false,
-        fetchMorePagesFlag: false,
-        intervalFetching: true,
-      });
-    }, 20000); // 180000 3 minutes in milliseconds
+  const fetchTicketsInterval = () => {
+    const reqBody: ApiRequestBody = {
+      range: `0-${numOfRecordsToFetch}`,
+      order: "desc",
+      opening_date: {},
+    };
+    setIsTicketsFetch(true);
 
-    return () => clearInterval(interval); // Clear interval on component unmount
+    GetTicketsMutation.mutate({
+      body: reqBody,
+      fetchLessPagesFlag: false,
+      fetchMorePagesFlag: false,
+      initialFetching: false,
+      filterFetching: false,
+      intervalFetching: true,
+    });
+    // setIsTicketsFetch(false);
+  };
+
+  const getRandomInterval = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1) + min) * 1000; // Convert to milliseconds
+  };
+
+  // Set up the interval to fetch tickets at a random time between 2:45 and 3:15 minutes
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    const setRandomInterval = () => {
+      const intervalTime = getRandomInterval(165, 195); // Random time between 165 and 195 seconds
+      interval = setInterval(() => {
+        fetchTickets();
+        clearInterval(interval); // Clear the current interval
+        setRandomInterval(); // Set a new random interval
+      }, intervalTime);
+    };
+
+    setRandomInterval(); // Initial call to set the interval
+
+    // Cleanup function to clear interval on component unmount
+    return () => {
+      clearInterval(interval);
+    };
   }, [GetTicketsMutation, numOfRecordsToFetch]);
+  // Set up the event listener for window focus to fetch tickets
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchTicketsInterval();
+    };
+    window.addEventListener("focus", handleFocus);
+
+    // Cleanup function to remove event listener on component unmount
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [GetTicketsMutation, numOfRecordsToFetch]);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const reqBody: ApiRequestBody = {
+  //       range: `0-${numOfRecordsToFetch}`,
+  //       order: "desc",
+  //       opening_date: {},
+  //     };
+  //     GetTicketsMutation.mutate({
+  //       body: reqBody,
+  //       fetchLessPagesFlag: false,
+  //       fetchMorePagesFlag: false,
+  //       intervalFetching: true,
+  //     });
+  //   }, 180000); // 180000 3 minutes in milliseconds
+
+  //   return () => clearInterval(interval); // Clear interval on component unmount
+  // }, [GetTicketsMutation, numOfRecordsToFetch]);
   const [ticketPerformingActionOn, setTicketPerformingActionOn] = useAtom(
     ticketPerformingActionOnAtom
   );
@@ -386,6 +477,8 @@ const TicketsPage: React.FC = () => {
       order: "desc",
       opening_date: {},
     };
+    setIsTicketsFetch(true);
+
     GetTicketsMutation.mutate({ body: reqBody, initialFetching: true });
     isFirstRender.current = false;
 
@@ -421,16 +514,22 @@ const TicketsPage: React.FC = () => {
         opening_date: {},
       };
 
-      if (backendFilter.status) filterBody.status = backendFilter.status;
-      if (backendFilter.urgency) filterBody.urgency = backendFilter.urgency;
-      if (backendFilter.priority) filterBody.priority = backendFilter.priority;
-      if (backendFilter.type) filterBody.type = backendFilter.type;
+      if (backendFilter.status) filterBody.status = backendFilter.status.value;
+      if (backendFilter.urgency)
+        filterBody.urgency = backendFilter.urgency.value;
+      if (backendFilter.priority)
+        filterBody.priority = backendFilter.priority.value;
+      if (backendFilter.type) filterBody.type = backendFilter.type.value;
       if (backendFilter.requester)
-        filterBody.requester = backendFilter.requester;
-      if (backendFilter.branch) filterBody.area_id = backendFilter.branch;
-      if (backendFilter.assignee) filterBody.assignee = backendFilter.assignee;
-      if (backendFilter.from) filterBody.opening_date.from = backendFilter.from;
-      if (backendFilter.to) filterBody.opening_date.to = backendFilter.to;
+        filterBody.requester = backendFilter.requester.value;
+      if (backendFilter.branch) filterBody.area_id = backendFilter.branch.value;
+      if (backendFilter.assignee)
+        filterBody.assignee = backendFilter.assignee.value;
+      if (backendFilter.from)
+        filterBody.opening_date.from = backendFilter.from.value;
+      if (backendFilter.to) filterBody.opening_date.to = backendFilter.to.value;
+      setIsTicketsFetch(true);
+
       GetTicketsMutation.mutate({
         body: filterBody,
         filterFetching: true,
@@ -448,14 +547,21 @@ const TicketsPage: React.FC = () => {
     if (location.state?.from === "details" && tickets.length > 0) {
       console.log("Navigated back from details; skipping fetch");
       setIsDataLoading(false);
+      navigate(location.pathname, {
+        replace: true,
+        state: { ...location.state, from: "" },
+      });
 
       return;
     }
 
     const isBackendFilterValuesExist = hasNonEmptyValue(backendFilter);
     if (isBackendFilterValuesExist) {
-      setIsDataLoading(true);
-      fetchTickets();
+      if (!isEqual(prevBackendFilter.current, backendFilter)) {
+        setIsDataLoading(true);
+
+        fetchTickets();
+      }
     } else {
       const hadValuesBefore = hasNonEmptyValue(prevBackendFilter.current);
       const hasValuesNow = hasNonEmptyValue(backendFilter);
@@ -469,6 +575,8 @@ const TicketsPage: React.FC = () => {
           order: "desc",
           opening_date: {},
         };
+        setIsTicketsFetch(true);
+
         GetTicketsMutation.mutate({ body: reqBody, initialFetching: true });
       }
     }
@@ -492,7 +600,7 @@ const TicketsPage: React.FC = () => {
   }, [
     location.state,
     setTickets,
-    setTotalTickets,
+    setCurrentTotalTicketsCount,
     setIsTicketsFetch,
     backendFilter,
   ]);
@@ -518,15 +626,17 @@ const TicketsPage: React.FC = () => {
       opening_date: {},
     };
 
-    if (backendFilter.status) reqBody.status = backendFilter.status;
-    if (backendFilter.urgency) reqBody.urgency = backendFilter.urgency;
-    if (backendFilter.priority) reqBody.priority = backendFilter.priority;
-    if (backendFilter.type) reqBody.type = backendFilter.type;
-    if (backendFilter.requester) reqBody.requester = backendFilter.requester;
-    if (backendFilter.branch) reqBody.area_id = backendFilter.branch;
-    if (backendFilter.assignee) reqBody.assignee = backendFilter.assignee;
-    if (backendFilter.from) reqBody.opening_date.from = backendFilter.from;
-    if (backendFilter.to) reqBody.opening_date.to = backendFilter.to;
+    if (backendFilter.status) reqBody.status = backendFilter.status.value;
+    if (backendFilter.urgency) reqBody.urgency = backendFilter.urgency.value;
+    if (backendFilter.priority) reqBody.priority = backendFilter.priority.value;
+    if (backendFilter.type) reqBody.type = backendFilter.type.value;
+    if (backendFilter.requester)
+      reqBody.requester = backendFilter.requester.value;
+    if (backendFilter.branch) reqBody.area_id = backendFilter.branch.value;
+    if (backendFilter.assignee) reqBody.assignee = backendFilter.assignee.value;
+    if (backendFilter.from)
+      reqBody.opening_date.from = backendFilter.from.value;
+    if (backendFilter.to) reqBody.opening_date.to = backendFilter.to.value;
 
     return reqBody;
   };
@@ -550,6 +660,8 @@ const TicketsPage: React.FC = () => {
               "desc",
               backendFilter
             );
+            setIsTicketsFetch(true);
+
             if (isBackendFilterValuesExist) {
               GetTicketsMutation.mutate({
                 body: reqFetchMoreBody,
@@ -606,6 +718,8 @@ const TicketsPage: React.FC = () => {
               "asc",
               backendFilter
             );
+            setIsTicketsFetch(true);
+
             if (isBackendFilterValuesExist) {
               GetTicketsMutation.mutate({
                 body: reqFetchLessBody,
@@ -658,7 +772,7 @@ const TicketsPage: React.FC = () => {
     fetchLessPagesFlag,
     totalPagesFetched,
     setTickets,
-    setTotalTickets,
+    setCurrentTotalTicketsCount,
     setFetchMorePagesFlag,
     setFetchLessPagesFlag,
   ]);
@@ -748,25 +862,26 @@ const TicketsPage: React.FC = () => {
       });
       const filtered = sortedTickets.filter((ticket) => {
         const matchesStatus =
-          frontFilter.status === "" ||
-          String(ticket.status) === frontFilter.status;
+          frontFilter.status.value === "" ||
+          String(ticket.status) === frontFilter.status.value;
         const matchesUrgency =
-          frontFilter.urgency === "" ||
-          String(ticket.urgency) === frontFilter.urgency;
+          frontFilter.urgency.value === "" ||
+          String(ticket.urgency) === frontFilter.urgency.value;
         const matchesPriority =
-          frontFilter.priority === "" ||
-          String(ticket.priority) === frontFilter.priority;
+          frontFilter.priority.value === "" ||
+          String(ticket.priority) === frontFilter.priority.value;
         const matchesType =
-          frontFilter.type === "" || String(ticket.type) === frontFilter.type;
+          frontFilter.type.value === "" ||
+          String(ticket.type) === frontFilter.type.value;
         const matchesRequester =
-          frontFilter.requester === "" ||
-          String(ticket.requester) === frontFilter.requester;
+          frontFilter.requester.value === "" ||
+          String(ticket.requester) === frontFilter.requester.value;
         const matchesBranch =
-          frontFilter.branch === "" ||
-          String(ticket.areas_id) === frontFilter.branch;
+          frontFilter.branch.value === "" ||
+          String(ticket.areas_id) === frontFilter.branch.value;
         const matchesAssignee =
-          frontFilter.assignee === "" ||
-          String(ticket.users_id_recipient) === frontFilter.assignee;
+          frontFilter.assignee.value === "" ||
+          String(ticket.users_id_recipient) === frontFilter.assignee.value;
         return (
           matchesStatus &&
           matchesUrgency &&
@@ -783,14 +898,23 @@ const TicketsPage: React.FC = () => {
         (currentTicketsPage - 1) * ticketsPerPage,
         currentTicketsPage * ticketsPerPage
       );
-      const hasEmptyFilterValue = (filterObj: Record<string, string>) => {
-        return Object.values(filterObj).some((value) => value.trim() === "");
+      const hasEmptyFilterValue = (
+        filterObj: Record<string, { value: string; label: string }>
+      ) => {
+        return Object.values(filterObj).some(
+          (filter) => filter.label.trim() === ""
+        );
       };
       const startIdx = (currentTicketsPage - 1) * ticketsPerPage;
       const endIdx = currentTicketsPage * ticketsPerPage;
       if (toolbarSearch.trim()) {
         setPaginatedTickets(ticketsSearchFiltered.slice(startIdx, endIdx)); // Paginate the filtered results
-      } else if (frontFilter && !hasEmptyFilterValue(frontFilter)) {
+      } else if (
+        frontFilter &&
+        !hasEmptyFilterValue(
+          frontFilter as Record<string, { value: string; label: string }>
+        )
+      ) {
         setPaginatedTickets(paginatedTickets); // Paginate the front-filtered results
       } else {
         setPaginatedTickets(paginatedTickets); // Paginate the full list of tickets
@@ -808,25 +932,26 @@ const TicketsPage: React.FC = () => {
     if (tickets && tickets.length > 0) {
       return tickets.filter((ticket) => {
         const matchesStatus =
-          frontFilter.status === "" ||
-          String(ticket.status) === frontFilter.status;
+          frontFilter.status.value === "" ||
+          String(ticket.status) === frontFilter.status.value;
         const matchesUrgency =
-          frontFilter.urgency === "" ||
-          String(ticket.urgency) === frontFilter.urgency;
+          frontFilter.urgency.value === "" ||
+          String(ticket.urgency) === frontFilter.urgency.value;
         const matchesPriority =
-          frontFilter.priority === "" ||
-          String(ticket.priority) === frontFilter.priority;
+          frontFilter.priority.value === "" ||
+          String(ticket.priority) === frontFilter.priority.value;
         const matchesType =
-          frontFilter.type === "" || String(ticket.type) === frontFilter.type;
+          frontFilter.type.value === "" ||
+          String(ticket.type) === frontFilter.type.value;
         const matchesRequester =
-          frontFilter.requester === "" ||
-          String(ticket.requester) === frontFilter.requester;
+          frontFilter.requester.value === "" ||
+          String(ticket.requester) === frontFilter.requester.value;
         const matchesBranch =
-          frontFilter.branch === "" ||
-          String(ticket.areas_id) === frontFilter.branch;
+          frontFilter.branch.value === "" ||
+          String(ticket.areas_id) === frontFilter.branch.value;
         const matchesAssignee =
-          frontFilter.assignee === "" ||
-          String(ticket.users_id_recipient) === frontFilter.assignee;
+          frontFilter.assignee.value === "" ||
+          String(ticket.users_id_recipient) === frontFilter.assignee.value;
         return (
           matchesStatus &&
           matchesUrgency &&
@@ -858,7 +983,7 @@ const TicketsPage: React.FC = () => {
   const handlePageChange = (page: number) => {
     setCurrentTicketsPage(page);
   };
-  const minPagesToShow = 8;
+  const minPagesToShow = 5;
   const maxPagesToShow = Math.min(totalPages, minPagesToShow);
   const startPage =
     Math.floor((currentTicketsPage - 1) / minPagesToShow) * minPagesToShow + 1;
@@ -875,27 +1000,90 @@ const TicketsPage: React.FC = () => {
     };
   }, [setPinnedTicketIds]);
   // const [filteredFrontTickets, setFilteredFrontTickets] = useState<any[]>([]);
-
   useEffect(() => {
     return () => {
-      // Reset the filters when the component unmounts
-      setFrontFilter({
-        status: "",
-        urgency: "",
-        priority: "",
-        type: "",
-        requester: "",
-        branch: "",
-        assignee: "",
-      });
+      // Check if the navigation is to the details page
+      if (!window.location.pathname.startsWith("/ticket/")) {
+        // Reset the front filters when the component unmounts and not navigating to details page
+        setFrontFilter({
+          status: { value: "", label: "" },
+          urgency: { value: "", label: "" },
+          priority: { value: "", label: "" },
+          type: { value: "", label: "" },
+          requester: { value: "", label: "" },
+          branch: { value: "", label: "" },
+          assignee: { value: "", label: "" },
+        });
+      }
     };
   }, [setFrontFilter]);
-  const hasActiveFilters = Object.values(frontFilter).some(
-    (value) => value !== ""
-  );
+  useEffect(() => {
+    return () => {
+      // Check if the navigation is to the details page
+      if (!window.location.pathname.startsWith("/ticket/")) {
+        // Reset the backend filters when the component unmounts and not navigating to details page
+        setBackendFilters({
+          status: { value: "", label: "" },
+          urgency: { value: "", label: "" },
+          priority: { value: "", label: "" },
+          type: { value: "", label: "" },
+          requester: { value: "", label: "" },
+          branch: { value: "", label: "" },
+          assignee: { value: "", label: "" },
+          from: { value: "", label: "" },
+          to: { value: "", label: "" },
+        });
+      }
+    };
+  }, [setBackendFilters]);
+
   const [isCurrentUserMaster, setIsCurrentUserMaster] = useAtom(
     isCurrentUserMasterAtom
   );
+  const [toolbarNewTickets, setToolbarNewTickets] = useAtom(
+    toolbarNewTicketsAtom
+  );
+
+  useEffect(() => {
+    if (toolbarNewTickets) {
+      if (intervalFetchedTicketsResponse) {
+        setInitialFetchedTickets(intervalFetchedTicketsResponse.data);
+        setInitialFetchedTicketsTotal(
+          intervalFetchedTicketsResponse.totalcount
+        );
+        setMaxTotalTickets(intervalFetchedTicketsResponse.totalcount);
+        setCurrentTotalTicketsCount(intervalFetchedTicketsResponse.data.length);
+        setTickets(intervalFetchedTicketsResponse.data);
+        console.log("response", intervalFetchedTicketsResponse);
+        setToolbarNewTickets(false);
+        setCurrentTicketsPage(1);
+        setMismatchCount(0);
+        setIntervalFetchedTicketsResponse(null);
+      }
+      else{
+        console.log(`iam here `)
+        const reqBody: ApiRequestBody = {
+          range: `0-${numOfRecordsToFetch}`,
+          order: "desc",
+          opening_date: {},
+        };
+        setIsTicketsFetch(true);
+        setIsDataLoading(true);
+        GetTicketsMutation.mutate({ body: reqBody, initialFetching: true });
+        setMismatchCount(0);
+        setIsTicketsFetch(false);
+        setToolbarNewTickets(false);
+
+      }
+    }
+  }, [toolbarNewTickets]);
+  // Cleanup function to reset mismatchCount on component unmount
+  useEffect(() => {
+    return () => {
+      setMismatchCount(0); // Reset mismatchCount to 0
+    };
+  }, [setMismatchCount]);
+
   return (
     <>
       {/* <PageTitleTickets>{(toolbarSearch && toolbarSearch.trim() !== '') ? 'Filtered Tickets' : 'Tickets'}</PageTitleTickets> */}

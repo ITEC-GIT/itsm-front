@@ -30,39 +30,39 @@ const CustomFilterBackendDataDropdown: React.FC<
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
   const [staticData] = useAtom(staticDataAtom);
 
-  const [status, setStatus] = useState("");
-  const [urgency, setUrgency] = useState("");
-  const [priority, setPriority] = useState("");
-  const [type, setType] = useState("");
-  const [requester, setRequester] = useState("");
-  const [branch, setBranch] = useState("");
-  const [assignee, setAssignee] = useState("");
+  const [status, setStatus] = useState<{ value: string; label: string }>({ value: "", label: "" });
+  const [urgency, setUrgency] = useState<{ value: string; label: string }>({ value: "", label: "" });
+  const [priority, setPriority] = useState<{ value: string; label: string }>({ value: "", label: "" });
+  const [type, setType] = useState<{ value: string; label: string }>({ value: "", label: "" });
+  const [requester, setRequester] = useState<{ value: string; label: string }>({ value: "", label: "" });
+  const [branch, setBranch] = useState<{ value: string; label: string }>({ value: "", label: "" });
+  const [assignee, setAssignee] = useState<{ value: string; label: string }>({ value: "", label: "" });
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatus(e.target.value);
+    setStatus({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
 
   const handleUrgencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setUrgency(e.target.value);
+    setUrgency({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
 
   const handlePriorityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPriority(e.target.value);
+    setPriority({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setType(e.target.value);
+    setType({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
 
   const handleRequesterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRequester(e.target.value);
+    setRequester({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
 
   const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setBranch(e.target.value);
+    setBranch({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setAssignee(e.target.value);
+    setAssignee({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
   const { statusOptions, urgencyOptions, priorityOptions, typeOptions } =
     transformStaticData(staticData);
@@ -103,15 +103,15 @@ const CustomFilterBackendDataDropdown: React.FC<
 
   const handleApply = () => {
     setBackendFilters({
-      status,
-      urgency,
-      priority,
-      type,
-      requester,
-      branch,
-      assignee,
-      from: formattedFromdDate,
-      to: formattedTodDate,
+      status: { value: status.value, label: status.label },
+      urgency: { value: urgency.value, label: urgency.label },
+      priority: { value: priority.value, label: priority.label },
+      type: { value: type.value, label: type.label },
+      requester: { value: requester.value, label: requester.label },
+      branch: { value: branch.value, label: branch.label },
+      assignee: { value: assignee.value, label: assignee.label },
+      from: { value: formattedFromdDate, label: formattedFromdDate },
+      to: { value: formattedTodDate, label: formattedTodDate },
     });
     setIsFilterDatabaseDropdownOpen(false);
 
@@ -121,51 +121,51 @@ const CustomFilterBackendDataDropdown: React.FC<
       opening_date: { from: "", to: "" },
     };
 
-    if (status) filterBody.status = status;
-    if (urgency) filterBody.urgency = urgency;
-    if (priority) filterBody.priority = priority;
-    if (type) filterBody.type = type;
-    if (requester) filterBody.requester = requester;
-    if (branch) filterBody.area_id = branch;
-    if (assignee) filterBody.assignee = assignee;
+    if (status.value) filterBody.status = status.value;
+    if (urgency.value) filterBody.urgency = urgency.value;
+    if (priority.value) filterBody.priority = priority.value;
+    if (type.value) filterBody.type = type.value;
+    if (requester.value) filterBody.requester = requester.value;
+    if (branch.value) filterBody.area_id = branch.value;
+    if (assignee.value) filterBody.assignee = assignee.value;
     if (formattedFromdDate) filterBody.opening_date.from = formattedFromdDate;
     if (formattedTodDate) filterBody.opening_date.to = formattedTodDate;
     // filterBody.opening_date={"from":formattedFromdDate,"to":formattedTodDate}
     // filterBackendMutation.mutate(filterBody);
   };
   const handleReset = () => {
-    setStatus("");
-    setUrgency("");
-    setPriority("");
-    setType("");
-    setRequester("");
-    setBranch("");
-    setAssignee("");
+    setStatus({ value: "", label: "" });
+    setUrgency({ value: "", label: "" });
+    setPriority({ value: "", label: "" });
+    setType({ value: "", label: "" });
+    setRequester({ value: "", label: "" });
+    setBranch({ value: "", label: "" });
+    setAssignee({ value: "", label: "" });
     setFromDateTime("");
     setToDateTime("");
     setBackendFilters({
-      status: "",
-      urgency: "",
-      priority: "",
-      type: "",
-      requester: "",
-      branch: "",
-      assignee: "",
-      from: "",
-      to: "",
+      status: { value: "", label: "" },
+      urgency: { value: "", label: "" },
+      priority: { value: "", label: "" },
+      type: { value: "", label: "" },
+      requester: { value: "", label: "" },
+      branch: { value: "", label: "" },
+      assignee: { value: "", label: "" },
+      from: { value: "", label: "" },
+      to: { value: "", label: "" },
     });
     setIsFilterDatabaseDropdownOpen(false);
   };
   useEffect(() => {
-    setStatus(backendFilter.status);
-    setUrgency(backendFilter.urgency);
-    setPriority(backendFilter.priority);
-    setType(backendFilter.type);
-    setRequester(backendFilter.requester);
-    setBranch(backendFilter.branch);
-    setAssignee(backendFilter.assignee);
-    setFromDateTime(backendFilter.from);
-    setToDateTime(backendFilter.to);
+    setStatus({ value: backendFilter.status.value, label: backendFilter.status.label });
+    setUrgency({ value: backendFilter.urgency.value, label: backendFilter.urgency.label });
+    setPriority({ value: backendFilter.priority.value, label: backendFilter.priority.label });
+    setType({ value: backendFilter.type.value, label: backendFilter.type.label });
+    setRequester({ value: backendFilter.requester.value, label: backendFilter.requester.label });
+    setBranch({ value: backendFilter.branch.value, label: backendFilter.branch.label });
+    setAssignee({ value: backendFilter.assignee.value, label: backendFilter.assignee.label });
+    setFromDateTime(backendFilter.from.value);
+    setToDateTime(backendFilter.to.value);
   }, [backendFilter]);
   const handleWindowFocus = useCallback(
     debounce(() => {
@@ -286,7 +286,7 @@ const CustomFilterBackendDataDropdown: React.FC<
           <label className="form-label fw-bold">Status:</label>
           <select
             className="form-select"
-            value={status}
+            value={status.value}
             onChange={handleStatusChange}
           >
             <option value="">Select option</option>
@@ -301,7 +301,7 @@ const CustomFilterBackendDataDropdown: React.FC<
           <label className="form-label fw-bold">Urgency:</label>
           <select
             className="form-select"
-            value={urgency}
+            value={urgency.value}
             onChange={handleUrgencyChange}
           >
             <option value="">Select option</option>
@@ -316,7 +316,7 @@ const CustomFilterBackendDataDropdown: React.FC<
           <label className="form-label fw-bold">Priority:</label>
           <select
             className="form-select"
-            value={priority}
+            value={priority.value}
             onChange={handlePriorityChange}
           >
             <option value="">Select option</option>
@@ -336,7 +336,7 @@ const CustomFilterBackendDataDropdown: React.FC<
           <label className="form-label fw-bold">Type:</label>
           <select
             className="form-select"
-            value={type}
+            value={type.value}
             onChange={handleTypeChange}
           >
             <option value="">Select option</option>
@@ -351,7 +351,7 @@ const CustomFilterBackendDataDropdown: React.FC<
           <label className="form-label fw-bold">Requester:</label>
           <select
             className="form-select"
-            value={requester}
+            value={requester.value}
             onChange={handleRequesterChange}
           >
             <option value="">Select option</option>
@@ -366,7 +366,7 @@ const CustomFilterBackendDataDropdown: React.FC<
           <label className="form-label fw-bold">Branch:</label>
           <select
             className="form-select"
-            value={branch}
+            value={branch.value}
             onChange={handleBranchChange}
           >
             <option value="">Select option</option>
@@ -384,7 +384,7 @@ const CustomFilterBackendDataDropdown: React.FC<
           <label className="form-label fw-bold">Assignee:</label>
           <select
             className="form-select"
-            value={assignee}
+            value={assignee.value}
             onChange={handleAssigneeChange}
           >
             <option value="">Select option</option>

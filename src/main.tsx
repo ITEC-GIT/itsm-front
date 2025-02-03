@@ -17,7 +17,7 @@ import { BrowserRouter } from "react-router-dom";
 import { createStore, Provider as JotaiProvider } from "jotai";
 import { DevTools } from "jotai-devtools";
 import 'jotai-devtools/styles.css'
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 /**
  * Creates `axios-mock-adapter` instance for provided `axios` instance, add

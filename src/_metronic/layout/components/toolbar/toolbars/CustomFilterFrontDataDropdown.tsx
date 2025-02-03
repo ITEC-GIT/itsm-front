@@ -5,7 +5,11 @@ import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms
 
 import { toolbarTicketsFrontFiltersAtom } from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
 import { transformStaticData } from "../../../../../utils/dataTransformUtils";
-import { branchesAtom, mastersAtom, slavesAtom } from "../../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
+import {
+  branchesAtom,
+  mastersAtom,
+  slavesAtom,
+} from "../../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
 interface CustomFilterFrontDataDropdownProps {
   setIsFilterFrontDropdownOpen: (isOpen: boolean) => void;
 }
@@ -18,39 +22,82 @@ const CustomFilterFrontDataDropdown: React.FC<
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
   const [staticData] = useAtom(staticDataAtom);
 
-  const [status, setStatus] = useState("");
-  const [urgency, setUrgency] = useState("");
-  const [priority, setPriority] = useState("");
-  const [type, setType] = useState("");
-  const [requester, setRequester] = useState("");
-  const [branch, setBranch] = useState("");
-  const [assignee, setAssignee] = useState("");
+  const [status, setStatus] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
+  const [urgency, setUrgency] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
+  const [priority, setPriority] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
+  const [type, setType] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
+  const [requester, setRequester] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
+  const [branch, setBranch] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
+  const [assignee, setAssignee] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatus(e.target.value);
+    setStatus({
+      value: e.target.value,
+      label: e.target.options[e.target.selectedIndex].text,
+    });
   };
 
   const handleUrgencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setUrgency(e.target.value);
+    setUrgency({
+      value: e.target.value,
+      label: e.target.options[e.target.selectedIndex].text,
+    });
   };
 
   const handlePriorityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPriority(e.target.value);
+    setPriority({
+      value: e.target.value,
+      label: e.target.options[e.target.selectedIndex].text,
+    });
   };
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setType(e.target.value);
+    setType({
+      value: e.target.value,
+      label: e.target.options[e.target.selectedIndex].text,
+    });
   };
 
   const handleRequesterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRequester(e.target.value);
+    setRequester({
+      value: e.target.value,
+      label: e.target.options[e.target.selectedIndex].text,
+    });
   };
 
   const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setBranch(e.target.value);
+    setBranch({
+      value: e.target.value,
+      label: e.target.options[e.target.selectedIndex].text,
+    });
   };
+
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setAssignee(e.target.value);
+    setAssignee({
+      value: e.target.value,
+      label: e.target.options[e.target.selectedIndex].text,
+    });
   };
   const { statusOptions, urgencyOptions, priorityOptions, typeOptions } =
     transformStaticData(staticData);
@@ -76,7 +123,7 @@ const CustomFilterFrontDataDropdown: React.FC<
       })),
     [ItsmBranches]
   );
-  
+
   const assigneeOptions = useMemo(
     () =>
       ItsmMasters.map((item) => ({
@@ -86,47 +133,68 @@ const CustomFilterFrontDataDropdown: React.FC<
     [ItsmMasters]
   );
 
-  const [frontFilter, setFilters] = useAtom(toolbarTicketsFrontFiltersAtom);
+  const [frontFilter, setFrontFilters] = useAtom(
+    toolbarTicketsFrontFiltersAtom
+  );
 
   const handleApply = () => {
-    setFilters({
-      status,
-      urgency,
-      priority,
-      type,
-      requester,
-      branch,
-      assignee,
+    setFrontFilters({
+      status: { value: status.value, label: status.label },
+      urgency: { value: urgency.value, label: urgency.label },
+      priority: { value: priority.value, label: priority.label },
+      type: { value: type.value, label: type.label },
+      requester: { value: requester.value, label: requester.label },
+      branch: { value: branch.value, label: branch.label },
+      assignee: { value: assignee.value, label: assignee.label }
     });
     setIsFilterFrontDropdownOpen(false);
   };
 
   const handleReset = () => {
-    setStatus("");
-    setUrgency("");
-    setPriority("");
-    setType("");
-    setRequester("");
-    setBranch("");
-    setAssignee("");
-    setFilters({
-      status: "",
-      urgency: "",
-      priority: "",
-      type: "",
-      requester: "",
-      branch: "",
-      assignee: "",
+    setStatus({ value: "", label: "" });
+    setUrgency({ value: "", label: "" });
+    setPriority({ value: "", label: "" });
+    setType({ value: "", label: "" });
+    setRequester({ value: "", label: "" });
+    setBranch({ value: "", label: "" });
+    setAssignee({ value: "", label: "" });
+    setFrontFilters({
+      status: { value: "", label: "" },
+      urgency: { value: "", label: "" },
+      priority: { value: "", label: "" },
+      type: { value: "", label: "" },
+      requester: { value: "", label: "" },
+      branch: { value: "", label: "" },
+      assignee: { value: "", label: "" }
     });
   };
+
   useEffect(() => {
-    setStatus(frontFilter.status);
-    setUrgency(frontFilter.urgency);
-    setPriority(frontFilter.priority);
-    setType(frontFilter.type);
-    setRequester(frontFilter.requester);
-    setBranch(frontFilter.branch);
-    setAssignee(frontFilter.assignee);
+    setStatus({
+      value: frontFilter.status.value,
+      label: frontFilter.status.label,
+    });
+    setUrgency({
+      value: frontFilter.urgency.value,
+      label: frontFilter.urgency.label,
+    });
+    setPriority({
+      value: frontFilter.priority.value,
+      label: frontFilter.priority.label,
+    });
+    setType({ value: frontFilter.type.value, label: frontFilter.type.label });
+    setRequester({
+      value: frontFilter.requester.value,
+      label: frontFilter.requester.label,
+    });
+    setBranch({
+      value: frontFilter.branch.value,
+      label: frontFilter.branch.label,
+    });
+    setAssignee({
+      value: frontFilter.assignee.value,
+      label: frontFilter.assignee.label,
+    });
   }, [frontFilter]);
   const handleWindowFocus = useCallback(
     debounce(() => {
@@ -161,7 +229,7 @@ const CustomFilterFrontDataDropdown: React.FC<
           <label className="form-label fw-bold">Status:</label>
           <select
             className="form-select"
-            value={status}
+            value={status.value}
             onChange={handleStatusChange}
           >
             <option value="">Select option</option>
@@ -176,7 +244,7 @@ const CustomFilterFrontDataDropdown: React.FC<
           <label className="form-label fw-bold">Urgency:</label>
           <select
             className="form-select"
-            value={urgency}
+            value={urgency.value}
             onChange={handleUrgencyChange}
           >
             <option value="">Select option</option>
@@ -191,15 +259,17 @@ const CustomFilterFrontDataDropdown: React.FC<
           <label className="form-label fw-bold">Priority:</label>
           <select
             className="form-select"
-            value={priority}
+            value={priority.value}
             onChange={handlePriorityChange}
           >
             <option value="">Select option</option>
-            {priorityOptions.map((priority: { value: string; label: string }) => (
-              <option key={priority.value} value={priority.value}>
-                {priority.label}
-              </option>
-            ))}
+            {priorityOptions.map(
+              (priority: { value: string; label: string }) => (
+                <option key={priority.value} value={priority.value}>
+                  {priority.label}
+                </option>
+              )
+            )}
           </select>
         </div>
       </div>
@@ -209,7 +279,7 @@ const CustomFilterFrontDataDropdown: React.FC<
           <label className="form-label fw-bold">Type:</label>
           <select
             className="form-select"
-            value={type}
+            value={type.value}
             onChange={handleTypeChange}
           >
             <option value="">Select option</option>
@@ -224,7 +294,7 @@ const CustomFilterFrontDataDropdown: React.FC<
           <label className="form-label fw-bold">Requester:</label>
           <select
             className="form-select"
-            value={requester}
+            value={requester.value}
             onChange={handleRequesterChange}
           >
             <option value="">Select option</option>
@@ -239,7 +309,7 @@ const CustomFilterFrontDataDropdown: React.FC<
           <label className="form-label fw-bold">Branch:</label>
           <select
             className="form-select"
-            value={branch}
+            value={branch.value}
             onChange={handleBranchChange}
           >
             <option value="">Select option</option>
@@ -257,7 +327,7 @@ const CustomFilterFrontDataDropdown: React.FC<
           <label className="form-label fw-bold">Assignee:</label>
           <select
             className="form-select"
-            value={assignee}
+            value={assignee.value}
             onChange={handleAssigneeChange}
           >
             <option value="">Select option</option>
