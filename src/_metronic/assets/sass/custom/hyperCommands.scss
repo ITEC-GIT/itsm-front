@@ -59,11 +59,25 @@
   border: none;
   border-radius: 25px !important;
   transition: transform 0.2s ease, background 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .hyper-connect-btn:hover {
   background: linear-gradient(90deg, #0056b3, #007bff);
   transform: scale(1.01);
+}
+
+.hyper-btn-icon {
+  font-size: 2rem !important;
+  line-height: 1 !important;
+}
+
+.hyper-btn-text {
+  font-size: 15 !important;
+  padding: 2px !important;
+  letter-spacing: 1.5px !important;
 }
 
 .hyper-reset-btn {

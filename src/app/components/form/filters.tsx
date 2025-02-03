@@ -46,12 +46,6 @@ const filtersOptions: FiltersTitleProps[] = [
   },
 ];
 
-const filterKeyMap: Record<string, string> = {
-  softwareStatusFilter: "status",
-  userFilter: "user",
-  computersFilter: "computer",
-};
-
 const FilterSidebar: React.FC<FilterSidebar> = ({
   isOpen,
   toggleSidebar,
@@ -95,10 +89,10 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
   // yyyy-MM-dd
   const formatDate = (date: Date | null) => {
     if (!date) return null;
-    return date.toISOString().split("T")[0]; // "2025-01-23"
+    return date.toISOString().split("T")[0];
   };
 
-  const handleSaveFilters = () => {
+  const handleApplyFilters = () => {
     const filtersSelection: Record<string, any> = {};
     Object.entries(selectedFilters).forEach(([key, value]) => {
       if (value) {
@@ -226,16 +220,15 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
       <div className="d-flex justify-content-between mt-3 p-3">
         <button
           className="toggle-btn p-3 hyper-connect-btn"
-          onClick={handleSaveFilters}
-        >
-          Save Filters
-        </button>
-
-        <button
-          className="toggle-btn p-3 hyper-connect-btn"
           onClick={handleClearFilters}
         >
-          Clear Filters
+          <span className="hyper-btn-text">Clear</span>
+        </button>
+        <button
+          className="toggle-btn p-3 hyper-connect-btn"
+          onClick={handleApplyFilters}
+        >
+          <span className="hyper-btn-text">Apply</span>
         </button>
       </div>
     </div>

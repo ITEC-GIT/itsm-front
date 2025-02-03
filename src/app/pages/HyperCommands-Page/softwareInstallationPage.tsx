@@ -26,7 +26,6 @@ import {
 import { SearchComponent } from "../../components/form/search";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters";
-import { inherits } from "util";
 
 const SoftwareInstallationPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -402,9 +401,11 @@ const SoftwareInstallationPage = () => {
       >
         <div className="row justify-content-center">
           <div className="col-md-12 col-lg-10 col-xl-12">
-            <h2 className="text-center mb-4">🚀 Software Installation</h2>
+            <div className="d-flex justify-content-between">
+              <h2 className="text-center mb-4">🚀 Software Installation</h2>
+              <ActionIcons />
+            </div>
 
-            <ActionIcons />
             <CardsStat />
 
             <button
@@ -414,19 +415,10 @@ const SoftwareInstallationPage = () => {
             >
               {showForm ? (
                 <span style={{ display: "inline-block", marginRight: "8px" }}>
-                  Install New Software
+                  Installation Steps
                 </span>
               ) : (
-                <span
-                  style={{
-                    display: "inline-block",
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                  }}
-                >
-                  +
-                </span>
+                <i className="bi bi-plus-lg hyper-btn-icon"></i>
               )}
             </button>
 
