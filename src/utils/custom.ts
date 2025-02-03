@@ -43,7 +43,7 @@ export const formatName = (name: string) => {
     .join(" ");
 };
 
-//load fron indexedDB into select
+//load from indexedDB into select
 export const getData = async (
   storeName: string,
   userId: number,
@@ -51,4 +51,14 @@ export const getData = async (
 ) => {
   const data = await loadFromIndexedDB(userId, dbName, storeName);
   return data.map((item: any) => ({ value: item.id, label: item.name }));
+};
+
+// yyyy-MM-dd
+export const formatDate = (date: Date | null) => {
+  if (!date) return null;
+  return date.toISOString().split("T")[0];
+};
+
+export const deepEqual = (obj1: any, obj2: any): boolean => {
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
 };
