@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import {
   Routes,
   Route,
@@ -15,8 +14,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { isAuthenticatedAtom, userAtom } from "../atoms/auth-atoms/authAtom";
 import { authChannel } from "../pages/login-page/authChannel";
 import { getSessionTokenFromCookie } from "../config/Config";
-import { dataMissingInIndexedDB, saveToIndexedDB } from "../indexDB/Config";
-import { GetStaticData, GetUsersAndAreas } from "../config/ApiCalls";
+import { fetchStaticData } from "../../utils/fetchStaticData";
 
 /**
  * Base URL of the website.
@@ -56,84 +54,6 @@ const RoutesContent: FC = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchStaticData = async () => {
-      const STORE_NAMES = [
-        "assignees",
-        "requesters",
-        "Departments",
-        "statusOptions",
-        "urgencyOptions",
-        "priorityOptions",
-        "typeOptions",
-        "SoftwareStatus",
-        "Computers",
-        "Locations",
-      ];
-      const userId = Number(Cookies.get("user"));
-
-      if (isNaN(userId)) {
-        console.error("User ID is not a valid number.");
-        return;
-      }
-
-      try {
-        const missingStores = await dataMissingInIndexedDB(
-          userId,
-          "static_fields",
-          STORE_NAMES
-        );
-
-        if (missingStores.length > 0) {
-          try {
-            const [usersAndAreasResponse, staticDataResponse] =
-              await Promise.all([GetUsersAndAreas(), GetStaticData()]); //temporary users and area with websocket
-
-            if (
-              usersAndAreasResponse.status !== 200 ||
-              staticDataResponse.status !== 200
-            ) {
-              throw new Error(
-                `Network response was not ok: 
-              UsersAndAreas: ${usersAndAreasResponse.status} ${usersAndAreasResponse.statusText}, 
-              StaticData: ${staticDataResponse.status} ${staticDataResponse.statusText}`
-              );
-            }
-
-            const data = {
-              ...staticDataResponse.data,
-              ...usersAndAreasResponse.data,
-            };
-
-            if (typeof data === "object" && data !== null) {
-              for (const store of missingStores) {
-                if (data.hasOwnProperty(store) && data[store] !== undefined) {
-                  await saveToIndexedDB(
-                    userId,
-                    "static_fields",
-                    store,
-                    data[store]
-                  );
-                } else {
-                  console.warn(
-                    `Data for store "${store}" is missing or undefined in the API response.`
-                  );
-                }
-              }
-              console.log("Fetched from API and saved to IndexedDB");
-            } else {
-              console.error("Invalid data received from the API:", data);
-            }
-          } catch (error) {
-            console.error("Failed to fetch or save data:", error);
-          }
-        } else {
-          console.log("Using cached data");
-        }
-      } catch (error) {
-        console.error("Error checking IndexedDB or fetching data:", error);
-      }
-    };
-
     fetchStaticData();
   }, []);
 
