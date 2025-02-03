@@ -40,27 +40,44 @@ export function saveToIndexedDB(
   data: any
 ) {
   return openDB(userId, DB_NAME, STORE_NAME).then((db) => {
-    const transaction = db.transaction(STORE_NAME, "readwrite");
-    const store = transaction.objectStore(STORE_NAME);
-
-    data.forEach((item: any, index: number) => {
-      if (!item.id) {
-        item.id = index;
-        console.warn(
-          `Auto-generated ID for item in store "${STORE_NAME}": ${item.id}`
-        );
-      }
-      console.log("item ==>>", item);
-      const request = store.put(item);
-      request.onsuccess = () => console.log(`Saved item with id: ${item.id}`);
-      request.onerror = () =>
-        console.error(`Error saving item with id: ${item.id}`);
-    });
-
     return new Promise<void>((resolve, reject) => {
-      transaction.oncomplete = () => resolve();
-      transaction.onerror = () =>
-        reject(new Error("Error saving to IndexedDB"));
+      const transaction = db.transaction(STORE_NAME, "readonly");
+      const store = transaction.objectStore(STORE_NAME);
+      const getAllKeysRequest = store.getAllKeys();
+
+      getAllKeysRequest.onsuccess = () => {
+        const keys = getAllKeysRequest.result;
+        const numericKeys = keys.map(key => Number(key));
+        const highestId = numericKeys.length > 0 ? Math.max(...numericKeys) : 0;
+
+        const writeTransaction = db.transaction(STORE_NAME, "readwrite");
+        const writeStore = writeTransaction.objectStore(STORE_NAME);
+
+        const items = Array.isArray(data) ? data : [data];
+        let newId = highestId + 1;
+
+        items.forEach((item: any) => {
+          if (!item.id) {
+            item.id = newId++;
+            console.warn(
+              `Assigned new ID for item in store "${STORE_NAME}": ${item.id}`
+            );
+          }
+          console.log("Saving item:", item);
+          const request = writeStore.put(item);
+          request.onsuccess = () =>
+            console.log(`Saved item with id: ${item.id}`);
+          request.onerror = () =>
+            console.error(`Error saving item with id: ${item.id}`);
+        });
+
+        writeTransaction.oncomplete = () => resolve();
+        writeTransaction.onerror = () =>
+          reject(new Error("Error saving to IndexedDB"));
+      };
+
+      getAllKeysRequest.onerror = () =>
+        reject(new Error("Error retrieving keys from IndexedDB"));
     });
   });
 }
