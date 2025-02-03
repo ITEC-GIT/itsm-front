@@ -86,7 +86,7 @@ const RoutesContent: FC = () => {
         if (missingStores.length > 0) {
           try {
             const [usersAndAreasResponse, staticDataResponse] =
-              await Promise.all([GetUsersAndAreas(), GetStaticData()]);
+              await Promise.all([GetUsersAndAreas(), GetStaticData()]); //temporary users and area with websocket
 
             if (
               usersAndAreasResponse.status !== 200 ||

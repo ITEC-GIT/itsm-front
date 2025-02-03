@@ -102,7 +102,11 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
     const filtersSelection: Record<string, any> = {};
     Object.entries(selectedFilters).forEach(([key, value]) => {
       if (value) {
-        filtersSelection[key] = key === "status" ? value.label : value.value;
+        if (key === "softwareStatusFilter") {
+          filtersSelection.status = value.label;
+        } else {
+          filtersSelection[key] = value.value;
+        }
       }
     });
 
