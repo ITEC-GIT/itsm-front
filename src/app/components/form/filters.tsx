@@ -101,7 +101,7 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
       ...filtersSelection,
     };
     saveFilters(wholeFilter);
-    handleClearFilters();
+    // handleClearFilters();
 
     // toggleSidebar();
   };
