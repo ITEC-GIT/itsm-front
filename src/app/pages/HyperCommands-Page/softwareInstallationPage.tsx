@@ -26,6 +26,8 @@ import {
 import { SearchComponent } from "../../components/form/search";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters";
+import { useAtom } from "jotai";
+import { sidebarToggleAtom } from "../../atoms/sidebar/sidebar";
 
 const SoftwareInstallationPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -54,9 +56,16 @@ const SoftwareInstallationPage = () => {
     order: "desc",
   });
 
+  const [toggleInstance] = useAtom(sidebarToggleAtom);
+  const handleToggle = () => {
+    if (toggleInstance) {
+      toggleInstance.toggle();
+    }
+  };
   const toggleSidebar = () => {
     setShowForm(false);
     setIsSidebarOpen((prevState) => !prevState);
+    handleToggle();
   };
 
   const fetchData = async (filters: filterType) => {
