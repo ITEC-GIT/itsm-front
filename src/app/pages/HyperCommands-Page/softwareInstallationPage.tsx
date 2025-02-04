@@ -430,12 +430,12 @@ const SoftwareInstallationPage = () => {
               />
             )}
 
-            <div className="row mt-5 mb-5 d-flex justify-content-between">
-              <div className="col-12 col-md-6 d-flex align-items-center">
-                <h3 className="mt-2">Installation History</h3>
+            <div className="row mt-5 mb-5 d-flex justify-content-between align-items-center">
+              <div className="col-12 col-md-4 d-flex align-items-center">
+                <h3>Installation History</h3>
               </div>
 
-              <div className="col-12 col-md-6 d-flex justify-content-md-end gap-2">
+              <div className="col-12 col-md-8 d-flex justify-content-md-end gap-2">
                 <SearchComponent
                   value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -445,7 +445,6 @@ const SoftwareInstallationPage = () => {
                 <button
                   className="btn btn-primary hyper-connect-btn mb-4"
                   onClick={toggleSidebar}
-                  style={{ width: "150px" }}
                 >
                   Add Filters
                 </button>
