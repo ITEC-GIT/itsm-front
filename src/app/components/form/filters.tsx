@@ -200,7 +200,7 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
   const handleSaveEditedFilter = async (index: number) => {
     if (!editFilterName.trim()) return;
     const updatedFilters = [...savedFilters];
-    updatedFilters[index].name = editFilterName;
+    updatedFilters[index].name = editFilterName.trim();
 
     await saveToIndexedDB(
       userId,
