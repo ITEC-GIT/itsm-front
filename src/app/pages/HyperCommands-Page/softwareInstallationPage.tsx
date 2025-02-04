@@ -16,7 +16,7 @@ import {
   GetAllSoftwareInstallationRequestType as filterType,
   SoftwareHistoryType,
 } from "../../types/softwareInstallationTypes";
-import { CardsStat } from "../../components/hyper-commands/cards-statistics";
+import { CardsStat } from "../../components/softwareInstallation/cards-statistics";
 import {
   getCircleColor,
   getGreatestId,

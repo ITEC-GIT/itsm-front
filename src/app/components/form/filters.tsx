@@ -1,3 +1,5 @@
+// idea to be discussed
+
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import Cookies from "js-cookie";
@@ -110,6 +112,12 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
     setSelectedFilters({});
     setStartDate("");
     setEndDate("");
+    //ask about this
+    const initialFilters = {
+      range: "0-50",
+      order: "desc",
+    };
+    saveFilters(initialFilters);
   };
 
   const handleFilterChange = (
