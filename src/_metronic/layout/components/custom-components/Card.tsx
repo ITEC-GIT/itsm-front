@@ -6,6 +6,9 @@ import CustomActionsDropdown from "./CustomActionsDropdown";
 import { ticketPerformingActionOnAtom } from "../../../../app/atoms/tickets-page-atom/ticketsActionsAtom";
 import { useAtom } from "jotai";
 import { mastersAtom } from "../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
+import { Assignee } from "../../../../app/types/TicketTypes";
+import detective from "./detective.svg";
+
 interface CardProps {
   id: string;
   status: "solved" | "closed" | "pending" | "assigned" | "new" | "plan";
@@ -13,7 +16,6 @@ interface CardProps {
   description: string;
   date: string;
   assignedTo: {
-    avatar: string;
     name: string;
   };
   priority: string;
@@ -30,6 +32,7 @@ interface CardProps {
   isStarred: boolean;
   onStarred: (id: string) => void;
   isCurrentUserMaster: boolean;
+  assignees: Assignee[];
 }
 const TicketCard: React.FC<CardProps> = ({
   id,
@@ -49,6 +52,7 @@ const TicketCard: React.FC<CardProps> = ({
   isStarred,
   onStarred,
   isCurrentUserMaster,
+  assignees,
 }) => {
   const [isRadioSelected, setIsRadioSelected] = useState(false);
   const [iconColors, setIconColors] = useState({
@@ -118,16 +122,23 @@ const TicketCard: React.FC<CardProps> = ({
   const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
 
   const handleAssignToClick = (icon: "assign", e: React.MouseEvent) => {
-    e.stopPropagation(); // Stop event propagation to prevent on click body
+
+    e.stopPropagation(); 
     if (isCurrentUserMaster) {
-      setIsAssigneeDropdownOpen((prev) => !prev); // Toggle dropdown state
+      setIsAssigneeDropdownOpen((prev) => !prev); 
     }
+   
+
+
   };
 
   const handleCardClick = () => {
     setIsCardFocused((prev) => !prev); // Toggle card focus
     setIsDescriptionUnderlined((prev) => !prev); // Toggle underline for description
-    onClick(); // Call onClick prop
+    onClick();
+
+    
+     // Call onClick prop}
   };
 
   return (
@@ -292,22 +303,37 @@ const TicketCard: React.FC<CardProps> = ({
               </div>
             </div>
             <div
-              className="col-md-auto col-md-2 d-flex align-items-center ps-2 border-end other-info card-column-border-right position-relative" // Add position-relative
+              className="col-md-auto col-md-2 d-flex align-items-start ps-2 border-end other-info card-column-border-right position-relative"
               onClick={(e) => handleAssignToClick("assign", e)}
             >
-              <img
-                src={assignedTo.avatar}
-                alt="Assigned Profile"
-                className="rounded-circle me-2"
-                style={{ width: "30px", height: "30px" }}
-              />
-              <div>
-                <small className="text-muted">assigned to</small>
-                <p className="mb-0">{assignedTo.name}</p>
-              </div>
+              {assignees.map((assignee, index) => (
+                <div
+                  key={index}
+                  className="d-flex align-items-center mb-2"
+                  style={{
+                    borderRight:
+                      index !== assignees.length - 1
+                        ? "1px solid #ccc"
+                        : "none",
+                    paddingRight: index !== assignees.length - 1 ? "10px" : "0",
+                    paddingLeft: index !== 0 ? "10px" : "0",
+                  }}
+                >
+                  <img
+                    src={assignee.avatar || detective}
+                    alt="Assigned Profile"
+                    className="rounded-circle me-2"
+                    style={{ width: "30px", height: "30px" }}
+                  />
+                  <div>
+                    <small className="text-muted">assigned to</small>
+                    <p className="mb-0">{assignee.name}</p>
+                  </div>
+                </div>
+              ))}
               {isAssigneeDropdownOpen && (
                 <CustomAssigneeDropDown
-                  assignedTo={assignedTo.name}
+                  assignees={assignees}
                   ticketId={id}
                   setIsAssigneeDropdownOpen={setIsAssigneeDropdownOpen}
                 />

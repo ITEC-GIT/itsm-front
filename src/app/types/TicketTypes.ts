@@ -3,4 +3,9 @@ interface TicketResponse {
     totalcount: number;
     data: any;
   }
-export type { TicketResponse };
+interface Assignee {
+    id: number;
+    name: string;
+    avatar?: string;
+  }
+export type { TicketResponse, Assignee };

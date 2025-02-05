@@ -39,29 +39,31 @@ export const StatisticsList = ({ data }: { data: any }) => {
       <div className="row g-4 align-items-stretch justify-content-center">
         {/* left side */}
         <div className="col-12 col-sm-4 col-md-4 col-xl-3 d-flex flex-column gap-4 flex-no-wrap">
-          {(Object.keys(data) as (keyof typeof svgIconMapping)[])
-            .slice(0, 2)
-            .map((key, index) => {
-              const widgetConfig = svgIconMapping[key];
-              if (!widgetConfig) return null;
+          {data &&
+            Object.keys(data).length > 0 &&
+            (Object.keys(data) as (keyof typeof svgIconMapping)[])
+              .slice(0, 2)
+              .map((key, index) => {
+                const widgetConfig = svgIconMapping[key];
+                if (!widgetConfig) return null;
 
-              return (
-                <div className="stat-widget" key={index}>
-                  <StatisticsWidget5
-                    className="card-xl-stretch stat-widget-card"
-                    svgIcon={widgetConfig.icon}
-                    color={widgetConfig.color}
-                    iconColor="white"
-                    title={widgetConfig.title}
-                    titleColor="white"
-                    description={data[key]?.toString() || "0"}
-                    descriptionColor="white"
-                    progress={80}
-                    progressColor="primary"
-                  />
-                </div>
-              );
-            })}
+                return (
+                  <div className="stat-widget" key={index}>
+                    <StatisticsWidget5
+                      className="card-xl-stretch stat-widget-card"
+                      svgIcon={widgetConfig.icon}
+                      color={widgetConfig.color}
+                      iconColor="white"
+                      title={widgetConfig.title}
+                      titleColor="white"
+                      description={data[key]?.toString() || "0"}
+                      descriptionColor="white"
+                      progress={80}
+                      progressColor="primary"
+                    />
+                  </div>
+                );
+              })}
         </div>
 
         {/* middle */}

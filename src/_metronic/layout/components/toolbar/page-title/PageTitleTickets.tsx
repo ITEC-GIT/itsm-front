@@ -38,10 +38,19 @@ const PageTitleTickets = () => {
   );
   const totalTickets = useAtomValue(maxTotalAtom);
   const currentTicketsCount = useAtomValue(totalTicketsAtom); // Set the total tickets per query of fetched in this instance only
-  const displayTicketsCount = currentTicketsCount > totalTickets ? totalTickets : currentTicketsCount;
+  // THE BUG 
 
   const numOfRecordsToFetch = useAtomValue(numOfTicketsToFetchAtom);
-  const fromTicketCount=currentTicketsCount > totalTickets ? currentTicketsCount-numOfRecordsToFetch : displayTicketsCount-numOfRecordsToFetch;
+  const displayTicketsCount = currentTicketsCount > totalTickets ? totalTickets : (currentTicketsCount > numOfRecordsToFetch ? currentTicketsCount : (currentTicketsCount<numOfRecordsToFetch?currentTicketsCount:numOfRecordsToFetch));
+
+  // const fromTicketCount=currentTicketsCount > totalTickets ? currentTicketsCount-numOfRecordsToFetch : displayTicketsCount-numOfRecordsToFetch;
+  const fromTicketCount = currentTicketsCount > totalTickets 
+  ? currentTicketsCount - numOfRecordsToFetch 
+  : (displayTicketsCount - numOfRecordsToFetch < 0) 
+    ? 0 
+    : (displayTicketsCount - numOfRecordsToFetch)%2>0?numOfRecordsToFetch:(displayTicketsCount - numOfRecordsToFetch);
+  const x=0;
+
   return (
     <div
       id="kt_page_title"
@@ -69,7 +78,7 @@ const PageTitleTickets = () => {
         </h1>
         <div className="count-align-bottom">
           <span className=" text-muted ms-2 " style={{ fontSize: "12px" }}>
-            count: {fromTicketCount}-{displayTicketsCount} | {totalTickets}
+             {fromTicketCount}-{displayTicketsCount} of {totalTickets}
           </span>
         </div>
       </div>

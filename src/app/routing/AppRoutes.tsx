@@ -99,9 +99,6 @@ const RoutesContent: FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchStaticData();
-  }, []);
   const {
     data: userBranches,
     error,
@@ -112,7 +109,7 @@ const RoutesContent: FC = () => {
     queryFn: GetUsersBranch, // Directly pass the function reference
     refetchOnWindowFocus: false, // Refetch when window regains focus
     refetchInterval: 180000, // Refetch every 3 minutes (in milliseconds)
-    enabled: true, // Start fetching as soon as the component is mounted
+    enabled: false, // Start fetching as soon as the component is mounted
     retry: true,
   });
   const [itsmBranches, setItsmBranches] = useAtom(branchesAtom);
@@ -121,7 +118,16 @@ const RoutesContent: FC = () => {
   const [isCurrentUserMaster, setIsCurrentUserMaster] = useAtom(
     isCurrentUserMasterAtom
   );
-
+  useEffect(() => {
+    if (getSessionTokenFromCookie() == null && !isAuthAtom) {
+      setCurrentUser(null);
+      navigate("/auth/login");
+    } else {
+      refetch();
+      fetchStaticData();
+      setCurrentUser(getSessionTokenFromCookie());
+    }
+  }, [isAuthAtom, navigate]);
   useEffect(() => {
     if (userBranches && userBranches.data) {
       setItsmBranches((prev) =>

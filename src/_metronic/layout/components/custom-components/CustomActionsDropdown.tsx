@@ -158,11 +158,47 @@ const CustomActionsDropdown: React.FC<CustomActionsDropdownProps> = ({
 
     updateTicketMutation.mutate(updatePayload);
   };
+  const [dropdownPosition, setDropdownPosition] = useState("bottom");
+
+  useEffect(() => {
+    const handlePosition = () => {
+      const dropdownElement = document.getElementById(`dropdown-actions-${ticketId}`);
+      if (dropdownElement) {
+        const rect = dropdownElement.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        if (rect.bottom > windowHeight) {
+          setDropdownPosition("top");
+        } else {
+          setDropdownPosition("bottom");
+        }
+      }
+    };
+
+    handlePosition();
+    window.addEventListener("resize", handlePosition);
+    return () => {
+      window.removeEventListener("resize", handlePosition);
+    };
+  }, [ticketId]);
+  if (!dropdownPosition) {
+    return null; // Render nothing until the position is determined
+  }
   return (
     <div
+    id={`dropdown-actions-${ticketId}`}
+
       className="dropdown-menu p-4 show"
       onClick={(e) => e.stopPropagation()}
-      style={{ top: "120%", left: 0, width: "600px" }}
+      style={{
+        top: dropdownPosition === "bottom" ? "120%" : "auto",
+        bottom: dropdownPosition === "top" ? "120%" : "auto",
+        left: 0,
+        width: "600px",
+        backgroundColor: "#f8f9fa", // Off-white background color
+        border: "2px solid #ccc", // Light grey border
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow for 2D effect
+        zIndex: 1000,
+      }}
     >
       <div className="mb-3">
         <h5 className="text-primary fw-bold">Ticket Actions</h5>

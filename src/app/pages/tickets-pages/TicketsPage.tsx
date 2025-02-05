@@ -47,14 +47,14 @@ import {
   removePinnedTicketId,
   getPinnedTicketIds,
 } from "../../../utils/indexDB";
-import detective from "./detective.svg";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { ApiRequestBody } from "../../config/ApiTypes";
 import { ticketPerformingActionOnAtom } from "../../atoms/tickets-page-atom/ticketsActionsAtom";
 import { mastersAtom } from "../../atoms/app-routes-global-atoms/globalFetchedAtoms";
 import { isCurrentUserMasterAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { isEqual } from "lodash";
-import { TicketResponse } from "../../types/TicketTypes";
+import { Assignee, TicketResponse } from "../../types/TicketTypes";
+import { selectedAssigneesAtom } from "../../atoms/assignee-atoms/assigneeAtoms";
 
 const TicketsPage: React.FC = () => {
   // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -292,7 +292,7 @@ const TicketsPage: React.FC = () => {
 
     },
     onError: (error) => {
-      alert("There was an error: " + error.message);
+      alert("There was an error in searching for tickets: " + error.message);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["create"] }); // Updated invalidateQueries syntax
@@ -415,9 +415,7 @@ const TicketsPage: React.FC = () => {
       }
     }
   }, [ticketPerformingActionOn]);
-  const [ticketChangeAssigneenOn, setChangeAssigneeOn] = useAtom(
-    ticketPerformingActionOnAtom
-  );
+
 
   // useEffect(() => {
   //   if (location.state?.from === "details" && ticketsFetched.length > 0) {
@@ -1083,10 +1081,38 @@ const TicketsPage: React.FC = () => {
       setMismatchCount(0); // Reset mismatchCount to 0
     };
   }, [setMismatchCount]);
+  // const [selectedAssignees] = useAtom(selectedAssigneesAtom);
+  const [ticketChangeAssigneenOn, setChangeAssigneeOn] = useAtom(
+    ticketPerformingActionOnAtom
+  );
+
+  useEffect(() => {
+    if (ticketChangeAssigneenOn) {
+      console.log("Ticket performing action on:", ticketChangeAssigneenOn.ticketId);
+      const updatedTicket = tickets.find(
+        (ticket) => ticket.id === ticketChangeAssigneenOn.ticketId
+      );
+      if (updatedTicket) {
+        const newTicket = {
+          ...updatedTicket,
+          assignees: ticketChangeAssigneenOn.assigneeNewData,
+        };
+
+        setTickets((prevTickets) =>
+          prevTickets.map((ticket) =>
+            ticket.id === ticketChangeAssigneenOn.ticketId
+              ? { ...ticket, ...newTicket }
+              : ticket
+          )
+        );
+        console.log("Updated ticket:", newTicket);
+        // You can now use newTicket as needed, e.g., update state or make an API call
+      }
+    }
+  }, [ticketChangeAssigneenOn]);
 
   return (
     <>
-      {/* <PageTitleTickets>{(toolbarSearch && toolbarSearch.trim() !== '') ? 'Filtered Tickets' : 'Tickets'}</PageTitleTickets> */}
       <ToolbarWrapper source={"tickets"} />
       <Content>
         <div className="tickets-component-container align-self-stretch">
@@ -1101,7 +1127,9 @@ const TicketsPage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              paginatedTickets.map((ticket) => (
+              paginatedTickets.map((ticket) => {
+                const assignees: Assignee[] = JSON.parse(ticket?.assignees || "[]");
+              return (
                 <TicketCard
                   key={ticket.id}
                   id={ticket.id}
@@ -1114,11 +1142,10 @@ const TicketsPage: React.FC = () => {
                   }
                   assignedTo={{
                     name: ticket.users_recipient,
-                    avatar: detective,
                   }} // Placeholder avatar
                   raisedBy={{
-                    name: ticket.users_lastupdater,
-                    initials: ticket?.users_lastupdater?.charAt(0),
+                    name: ticket.users_recipient,
+                    initials: ticket?.users_recipient?.charAt(0),
                   }}
                   priority={ticket.priority_label}
                   type={ticket.type_label}
@@ -1130,9 +1157,11 @@ const TicketsPage: React.FC = () => {
                   isStarred={ticket.starred} // Pass the pinned status
                   onStarred={handleStarringTicket} // Pass the handlePinTicket function
                   isCurrentUserMaster={isCurrentUserMaster}
+                  assignees={assignees}
                 />
-              ))
-            )}
+              );
+            })
+          )}
           </div>
         </div>
       </Content>

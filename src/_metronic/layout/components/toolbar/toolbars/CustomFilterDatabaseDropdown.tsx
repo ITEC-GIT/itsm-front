@@ -132,6 +132,8 @@ const CustomFilterBackendDataDropdown: React.FC<
     if (formattedTodDate) filterBody.opening_date.to = formattedTodDate;
     // filterBody.opening_date={"from":formattedFromdDate,"to":formattedTodDate}
     // filterBackendMutation.mutate(filterBody);
+
+
   };
   const handleReset = () => {
     setStatus({ value: "", label: "" });
