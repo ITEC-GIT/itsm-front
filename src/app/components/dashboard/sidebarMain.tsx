@@ -1,9 +1,52 @@
+import { useAtom } from "jotai";
+import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
+import { useEffect, useState } from "react";
+import { GetComputer } from "../../config/ApiCalls";
+
 const SidebarMain = () => {
+  const [selectedComputerAtom] = useAtom(selectedComputerDashboardAtom);
+  interface Computer {
+    name: string;
+    serial: string;
+    computermodels_id: string;
+  }
+
+  const [computer, setComputer] = useState<Computer | null>(null);
+
+  const fetchComputer = async () => {
+    if (selectedComputerAtom) {
+      const computerInfo = await GetComputer(selectedComputerAtom);
+      setComputer(computerInfo.data.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchComputer();
+  }, [selectedComputerAtom]);
+
   return (
     <div className="sidebar-main" style={{ msOverflowStyle: "none" }}>
       <h4 className="sidebar-main-title" style={{}}>
         Discover
       </h4>
+      {computer ? (
+        <div className="computer-info">
+          <h5>{computer?.name ?? ""}</h5>
+          <h6>Serial: {computer.serial || ""}</h6>
+          <h6>Model: {computer.computermodels_id || ""}</h6>
+          <button className="btn btn-primary">View Tickets</button>
+
+          <h5>Hyper Commands</h5>
+          <div className="hyper-commands">
+            <button className="btn btn-secondary">Software Installation</button>
+            <button className="btn btn-secondary">Remote SSH</button>
+            <button className="btn btn-secondary">Remote Console</button>
+            <button className="btn btn-secondary">Performance</button>
+          </div>
+        </div>
+      ) : (
+        <p>No Computer Selected</p>
+      )}
     </div>
   );
 };

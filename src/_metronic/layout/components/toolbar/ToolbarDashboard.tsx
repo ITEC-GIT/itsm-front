@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { ILayout, useLayout } from "../../core";
 import { useAtom } from "jotai";
-import { dashboardViewAtom } from "../../../../app/atoms/dashboard-atom/dashboardAtom";
+import { dashboardViewAtom } from "../../../../app/atoms/dashboard-atoms/dashboardAtom";
 import { ToolbarMainDashboard } from "./toolbars/ToolbarMainDashboard";
 
 const ToolbarDashboard = () => {

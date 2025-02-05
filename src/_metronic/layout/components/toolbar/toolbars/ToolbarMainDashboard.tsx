@@ -1,26 +1,28 @@
 import clsx from "clsx";
 import Select from "react-select";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useLayout } from "../../../core";
 import { staticDataAtom } from "../../../../../app/atoms/filters-atoms/filtersAtom";
 import { StaticDataType } from "../../../../../app/types/filtersAtomType";
+import { selectValueType } from "../../../../../app/types/dashboard";
+import { selectedComputerDashboardAtom } from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
 
 const ToolbarMainDashboard = () => {
   const { classes } = useLayout();
-  const [selectedBranch, setSelectedBranch] = useState<{
-    value: number;
-    label: string;
-  } | null>(null);
-  const [selectedUser, setSelectedUser] = useState<{
-    value: number;
-    label: string;
-  } | null>(null);
-  const [selectedDevice, setSelectedDevice] = useState<{
-    value: number;
-    label: string;
-  } | null>(null);
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [selctedDeviceAtom, setSelectedDeviceAtom] = useAtom(
+    selectedComputerDashboardAtom
+  );
+  const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
+    null
+  );
+  const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
+    null
+  );
+  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
+    null
+  );
 
   const depOptions =
     staticData["Departments"]?.map((department) => ({
@@ -40,9 +42,10 @@ const ToolbarMainDashboard = () => {
       label: "name" in device ? String(device?.name) : "",
     })) || [];
 
-  function handleSearchChange(event: ChangeEvent<HTMLInputElement>): void {
-    throw new Error("Function not implemented.");
-  }
+  const handleDeviceChange = (newValue: selectValueType | null) => {
+    setSelectedDevice(newValue);
+    setSelectedDeviceAtom(Number(newValue?.value));
+  };
 
   return (
     <div
@@ -70,7 +73,7 @@ const ToolbarMainDashboard = () => {
           className="select-dashboard"
           options={compOptions}
           value={selectedDevice}
-          onChange={setSelectedDevice}
+          onChange={(newValue) => handleDeviceChange(newValue)}
           placeholder="Select Device"
         />
 

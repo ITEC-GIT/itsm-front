@@ -155,6 +155,12 @@ async function GetAllComputers() {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetComputer(id: number) {
+  return await PrivateApiCall.get(`/Computer/${id}`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 /** *********************************************************************************************/
 /** ************************************** Locations ********************************************/
 /** *********************************************************************************************/
@@ -190,6 +196,7 @@ export {
   FetchAllSoftwareInstallations,
   CancelSoftwareInstallation,
   GetAllComputers,
+  GetComputer,
   GetAllLocations,
   GetStaticData,
   GetUsersAndAreas,

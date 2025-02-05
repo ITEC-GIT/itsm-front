@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useLayout } from "../../../core";
 import { useAtom } from "jotai";
-import { dashboardViewAtom } from "../../../../../app/atoms/dashboard-atom/dashboardAtom";
+import { dashboardViewAtom } from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
 
 const PageTitleDashboard = () => {
   const { config, classes } = useLayout();

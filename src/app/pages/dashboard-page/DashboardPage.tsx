@@ -7,7 +7,7 @@ import { DashboardAnalyticsType } from "../../types/dashboard";
 
 import AnalyticsDashboard from "./analyticDashboardPage";
 import { useAtom } from "jotai";
-import { dashboardViewAtom } from "../../atoms/dashboard-atom/dashboardAtom";
+import { dashboardViewAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
 import MainDashboard from "./mainDashbaord";
 import { GetDashboardAnalytics } from "../../config/ApiCalls";
 

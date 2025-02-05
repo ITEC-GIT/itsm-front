@@ -20,3 +20,8 @@ export type ChartType =
   | "Stacked Bar Chart"
   | "Gauge Chart"
   | "Heatmap Chart";
+
+export type selectValueType = {
+  value: number;
+  label: string;
+};
