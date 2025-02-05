@@ -5,3 +5,6 @@ dashboardViewAtom.debugLabel = "dashboardViewAtom";
 
 export const selectedComputerDashboardAtom = atom<number>();
 selectedComputerDashboardAtom.debugLabel = "selectedComputerDashboardAtom";
+
+export const activeDashboardViewAtom = atom<string | null>(null);
+activeDashboardViewAtom.debugLabel = "activeDashboardViewAtom";

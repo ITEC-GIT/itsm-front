@@ -1,17 +1,31 @@
 import { useAtom } from "jotai";
-import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
+import {
+  activeDashboardViewAtom,
+  selectedComputerDashboardAtom,
+} from "../../atoms/dashboard-atoms/dashboardAtom";
 import { useEffect, useState } from "react";
 import { GetComputer } from "../../config/ApiCalls";
 
+const InfoItem = ({ label, value }: { label: string; value: string }) => (
+  <div className="info-item">
+    <span className="info-label">{label}:</span>
+    <span className="info-value">{value || "N/A"}</span>
+  </div>
+);
+
 const SidebarMain = () => {
   const [selectedComputerAtom] = useAtom(selectedComputerDashboardAtom);
+  const [computer, setComputer] = useState<Computer | null>(null);
+  const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
+
   interface Computer {
     name: string;
     serial: string;
     computermodels_id: string;
+    last_inventory_update: string;
+    entities_id: string;
+    computertypes_id: string;
   }
-
-  const [computer, setComputer] = useState<Computer | null>(null);
 
   const fetchComputer = async () => {
     if (selectedComputerAtom) {
@@ -25,27 +39,92 @@ const SidebarMain = () => {
   }, [selectedComputerAtom]);
 
   return (
-    <div className="sidebar-main" style={{ msOverflowStyle: "none" }}>
-      <h4 className="sidebar-main-title" style={{}}>
-        Discover
-      </h4>
+    <div className="sidebar-main">
       {computer ? (
         <div className="computer-info">
-          <h5>{computer?.name ?? ""}</h5>
-          <h6>Serial: {computer.serial || ""}</h6>
-          <h6>Model: {computer.computermodels_id || ""}</h6>
-          <button className="btn btn-primary">View Tickets</button>
+          <div className="computer-header">
+            <h2 className="computer-name">{computer.name}</h2>
+            <span className="computer-type">{computer.computertypes_id}</span>
+          </div>
+          <div className="d-flex flex-column gap-2">
+            <InfoItem label="Serial" value={computer.serial} />
+            <InfoItem label="Model" value={computer.computermodels_id} />
+            <InfoItem
+              label="Last Update"
+              value={computer.last_inventory_update}
+            />
+            <InfoItem label="Entity" value={computer.entities_id} />
+          </div>
+          <button
+            className={`btn btn-ticket ${
+              activeView === "ticket" ? "active" : ""
+            }`}
+            onClick={() => setActiveView("ticket")}
+          >
+            View Tickets
+          </button>
 
-          <h5>Hyper Commands</h5>
-          <div className="hyper-commands">
-            <button className="btn btn-secondary">Software Installation</button>
-            <button className="btn btn-secondary">Remote SSH</button>
-            <button className="btn btn-secondary">Remote Console</button>
-            <button className="btn btn-secondary">Performance</button>
+          <h5 className="section-title">Hyper Commands</h5>
+          <div className="d-flex flex-column align-items-start">
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("software-installation")}
+            >
+              <i className="bi bi-cloud-upload"></i>
+              Software Installation
+            </button>
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("remote-ssh")}
+            >
+              <i className="bi bi-terminal"></i>
+              Remote SSH
+            </button>
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("remote-console")}
+            >
+              <i className="bi bi-tv"></i>
+              Remote Console
+            </button>
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("performance")}
+            >
+              <i className="bi bi-speedometer2"></i>
+              Performance
+            </button>
+          </div>
+          <h5 className="section-title">Actions</h5>
+          <div className="d-flex flex-column align-items-start">
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("screenshots")}
+            >
+              <i className="bi bi-card-image"></i>
+              Screenshots
+            </button>
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("camera-picture")}
+            >
+              <i className="bi bi-camera-fill"></i>
+              Camera Picture
+            </button>
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("voice-record")}
+            >
+              <i className="bi bi-mic"></i>
+              Voice Records
+            </button>
           </div>
         </div>
       ) : (
-        <p>No Computer Selected</p>
+        <div className="empty-state">
+          <i className="bi bi-laptop icon-computer"></i>
+          <p>No Computer Selected</p>
+        </div>
       )}
     </div>
   );
