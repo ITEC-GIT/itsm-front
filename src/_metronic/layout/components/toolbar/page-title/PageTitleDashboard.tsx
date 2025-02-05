@@ -1,14 +1,17 @@
 import clsx from "clsx";
-import { Link } from "react-router-dom";
 import { useLayout } from "../../../core";
-import { usePageData } from "../../../core/PageData";
-import { useAtomValue } from "jotai";
-import { toolbarTicketsSearchAtom } from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
+import { useAtom } from "jotai";
+import { dashboardViewAtom } from "../../../../../app/atoms/dashboard-atom/dashboardAtom";
 
 const PageTitleDashboard = () => {
   const { config, classes } = useLayout();
   const appPageTitleDirection = config.app?.pageTitle?.direction;
-  const toolbarSearch = useAtomValue(toolbarTicketsSearchAtom);
+  const [currentView, setCurrentView] = useAtom(dashboardViewAtom);
+
+  const handleToggleView = () => {
+    const newView = currentView === "main" ? "analytics" : "main";
+    setCurrentView(newView);
+  };
 
   return (
     <div
@@ -22,24 +25,37 @@ const PageTitleDashboard = () => {
         "align-items-center": appPageTitleDirection !== "column",
       })}
     >
-      {/* begin::Title */}
-      <h1
-        className={clsx("page-heading d-flex text-gray-900 fw-bold fs-3 my-0", {
-          "flex-column justify-content-center": appPageTitleDirection,
-          "align-items-center": !appPageTitleDirection,
-        })}
+      <div
+        className="d-flex align-items-center gap-2"
+        onClick={handleToggleView}
+        style={{ cursor: "pointer" }}
       >
-        Tickets
-      </h1>
-      {/* end::Title */}
-      {toolbarSearch && toolbarSearch.trim() !== "" ? (
-        <div className="breadcrumb-item text-gray-900">
-          {" "}
-          Searching... {toolbarSearch}
-        </div>
-      ) : (
-        ""
-      )}
+        <i
+          className={
+            currentView === "main"
+              ? "bi bi-box"
+              : currentView === "analytics"
+              ? "bi bi-bar-chart"
+              : ""
+          }
+          style={{
+            color: "black",
+            fontSize: "medium",
+            backgroundColor: "#f0f0f0",
+            borderRadius: "5px",
+            padding: "5px",
+          }}
+        ></i>
+        {currentView === "analytics" ? (
+          <h1 className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center">
+            Analytics Dashboard
+          </h1>
+        ) : (
+          <h1 className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center">
+            Main Dashboard
+          </h1>
+        )}
+      </div>
     </div>
   );
 };

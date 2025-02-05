@@ -95,16 +95,11 @@ const MainDashboard = () => {
           </button>
 
           <div
-            // className={`col-md-8 offset-md-3 p-4 ${
-            //   isSidebarOpen ? "d-none" : ""
-            // } ms-0 ms-md-3`}
             className={`col-md-8 offset-md-3 p-4 `}
             style={{
               maxHeight: "calc(100vh - 250px)",
               overflowY: "auto",
             }}
-            // style={{ marginLeft: "250px" }}
-            // style={{ marginLeft: "auto", marginRight: "auto" }}
           >
             <div className="row">
               {selectedCharts.map(({ id, type }) => (
