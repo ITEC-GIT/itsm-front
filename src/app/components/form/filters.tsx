@@ -11,49 +11,85 @@ import {
   removeFromIndexedDB,
   saveToIndexedDB,
 } from "../../indexDB/Config";
+import { useAtom } from "jotai";
+import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
 
-interface FilterSidebar {
+interface FilterSidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
   activeFilters: string[];
   saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
 }
 
+// interface FiltersTitleProps {
+//   id: string;
+//   name: string;
+//   storeName: string;
+//   data: { value: string; label: string }[];
+//   atomName?: string;
+// }
 interface FiltersTitleProps {
   id: string;
   name: string;
-  storeName: string;
+  AtomKey: string;
   data: { value: string; label: string }[];
 }
+
+// const filtersOptions: FiltersTitleProps[] = [
+//   {
+//     id: "softwareStatusFilter",
+//     name: "Status",
+//     storeName: "SoftwareStatus",
+//     data: [],
+//   },
+//   {
+//     id: "userFilter",
+//     name: "User",
+//     storeName: "assignees",
+//     data: [],
+//   },
+//   {
+//     id: "computersFilter",
+//     name: "Computer",
+//     storeName: "Computers",
+//     data: [],
+//   },
+//   {
+//     id: "dateFilter",
+//     name: "Date Range",
+//     storeName: "",
+//     data: [],
+//   },
+// ];
 
 const filtersOptions: FiltersTitleProps[] = [
   {
     id: "softwareStatusFilter",
     name: "Status",
-    storeName: "SoftwareStatus",
+    AtomKey: "SoftwareStatus",
     data: [],
   },
   {
     id: "userFilter",
     name: "User",
-    storeName: "assignees",
+    AtomKey: "assignees",
     data: [],
   },
   {
     id: "computersFilter",
     name: "Computer",
-    storeName: "Computers",
+    AtomKey: "Computers",
     data: [],
   },
   {
     id: "dateFilter",
     name: "Date Range",
-    storeName: "",
+    AtomKey: "",
     data: [],
   },
 ];
 
-const FilterSidebar: React.FC<FilterSidebar> = ({
+const FilterSidebar: React.FC<FilterSidebarProps> = ({
   isOpen,
   toggleSidebar,
   activeFilters,
@@ -71,22 +107,36 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
   const [editFilterName, setEditFilterName] = useState<string>("");
 
   const userId = Number(Cookies.get("user"));
-  const staticDbName = "static_fields";
+  const staticDbName = "JotaiDB";
   const filtersDbName = "savedFiltersDB";
   const filtersStoreName = "softwareFilters";
 
   const handleApplyFilters = () => {
-    if (Object.keys(selectedFilters).length === 0) return;
+    console.log("hii");
+    if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
+      return;
     const filtersSelection: Record<string, any> = {};
-    Object.entries(selectedFilters).forEach(([key, value]) => {
-      if (value) {
-        if (key === "softwareStatusFilter") {
-          filtersSelection.status = value.label;
-        } else {
-          filtersSelection[key] = value.value;
+    console.log("selectedFilters ==>>", selectedFilters);
+    if (Object.keys(selectedFilters).length !== 0) {
+      Object.entries(selectedFilters).forEach(([key, value]) => {
+        const filterConfig = filtersOptions.find((option) => option.id === key);
+        if (value) {
+          if (key === "softwareStatusFilter") {
+            filtersSelection.status = value.label;
+          } else {
+            const selectedFilter = filterData[key]?.find(
+              (item: any) => item.label === value.label
+            );
+            if (selectedFilter && filterConfig) {
+              filtersSelection[filterConfig.name.toLowerCase()] = Number(
+                selectedFilter.value
+              );
+            }
+          }
         }
-      }
-    });
+      });
+    }
+
     const dateFrom = formatDate(startDate ? new Date(startDate) : null);
     const dateTo = formatDate(endDate ? new Date(endDate) : null);
 
@@ -102,6 +152,7 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
       ...initialFilters,
       ...filtersSelection,
     };
+    console.log("wholeFilter ==>>", wholeFilter);
     saveFilters(wholeFilter);
     // handleClearFilters();
 
@@ -213,9 +264,11 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
   };
 
   const handleCloseSidebar = () => {
-    handleClearFilters();
+    //handleClearFilters();
     toggleSidebar();
   };
+
+  const [staticData] = useAtom(staticDataAtom);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -224,11 +277,24 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
         if (activeFilters.includes(filter.id)) {
           try {
             if (filter.id === "dateFilter") continue;
-            newFilterData[filter.id] = await getData(
-              filter.storeName,
-              userId,
-              staticDbName
-            );
+
+            const sourceData =
+              staticData[filter.AtomKey as keyof typeof staticData];
+
+            newFilterData[filter.id] = Array.isArray(sourceData)
+              ? sourceData.map((item) => ({
+                  value: ("id" in item ? item.id?.toString() : "") || "",
+                  label:
+                    "label" in item
+                      ? item.label
+                      : "status" in item
+                      ? item.status
+                      : "name" in item
+                      ? item.name
+                      : "Unnamed",
+                }))
+              : [];
+            console.log("newFilterData ==>>", newFilterData);
           } catch (error) {
             console.error(`Failed to fetch data for ${filter.id}:`, error);
           }
@@ -239,7 +305,31 @@ const FilterSidebar: React.FC<FilterSidebar> = ({
 
     fetchData();
     loadSavedFilters();
-  }, [activeFilters]);
+  }, [staticData]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const newFilterData: Record<string, any> = {};
+  //     for (const filter of filtersOptions) {
+  //       if (activeFilters.includes(filter.id)) {
+  //         try {
+  //           if (filter.id === "dateFilter") continue;
+  //           newFilterData[filter.id] = await getData(
+  //             filter.storeName,
+  //             userId,
+  //             staticDbName
+  //           );
+  //         } catch (error) {
+  //           console.error(`Failed to fetch data for ${filter.id}:`, error);
+  //         }
+  //       }
+  //     }
+  //     setFilterData(newFilterData);
+  //   };
+
+  //   fetchData();
+  //   loadSavedFilters();
+  // }, [activeFilters]);
 
   return (
     <div

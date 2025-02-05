@@ -1,43 +1,16 @@
+import { useAtom, useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
 import { useEffect, useState } from "react";
-import { loadFromIndexedDB } from "../../indexDB/Config";
-import Cookies from "js-cookie";
+import { StaticDataType } from "../../types/filtersAtomType";
+
+// Assuming the structure of staticData
+type StaticData = {
+  "Initialized softwares": number;
+  "Received softwares": number;
+};
 
 const CardsStat = () => {
-  const [data, setData] = useState<{
-    initialized?: number;
-    received?: number;
-  } | null>(null);
-
-  const dbName = "static_fields";
-  const storeName = "SoftwareDeploymentStatus";
-
-  useEffect(() => {
-    const userId = Number(Cookies.get("user"));
-    const getData = async () => {
-      try {
-        const response = await loadFromIndexedDB(userId, dbName, storeName);
-        if (Array.isArray(response)) {
-          const formattedData = response.reduce((acc, item) => {
-            if (item.key && item.value !== undefined) {
-              acc[item.key] = item.value;
-            }
-            return acc;
-          }, {} as { initialized?: number; received?: number });
-
-          setData(formattedData);
-        } else {
-          setData(null);
-        }
-      } catch (error) {
-        console.error("Error loading data from IndexedDB:", error);
-        setData(null);
-      }
-    };
-
-    if (userId) {
-      getData();
-    }
-  }, []);
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
 
   return (
     <div className="row g-4 justify-content-center">
@@ -60,7 +33,9 @@ const CardsStat = () => {
             </div>
             <div className="col">
               <h5 className="mb-1">initialized Software</h5>
-              <h6 className="text-muted">{data?.initialized}</h6>
+              <h6 className="text-muted">
+                {staticData["Initialized softwares"] ?? 0}
+              </h6>
             </div>
           </div>
         </div>
@@ -84,7 +59,9 @@ const CardsStat = () => {
             </div>
             <div className="col">
               <h5 className="mb-1">Received Software</h5>
-              <h6 className="text-muted">{data?.received}</h6>
+              <h6 className="text-muted">
+                {staticData["Received softwares"] ?? 0}
+              </h6>
             </div>
           </div>
         </div>

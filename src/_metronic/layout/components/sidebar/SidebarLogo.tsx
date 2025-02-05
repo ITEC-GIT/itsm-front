@@ -5,7 +5,7 @@ import { useLayout } from "../../core";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { ToggleComponent } from "../../../assets/ts/components";
 import { useAtom } from "jotai";
-import { sidebarToggleAtom } from "../../../../app/atoms/sidebar/sidebar";
+import { sidebarToggleAtom } from "../../../../app/atoms/sidebar-atom/sidebar";
 
 type PropsType = {
   sidebarRef: MutableRefObject<HTMLDivElement | null>;

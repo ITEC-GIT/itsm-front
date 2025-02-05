@@ -27,7 +27,7 @@ import { SearchComponent } from "../../components/form/search";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters";
 import { useAtom } from "jotai";
-import { sidebarToggleAtom } from "../../atoms/sidebar/sidebar";
+import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 
 const SoftwareInstallationPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -377,6 +377,7 @@ const SoftwareInstallationPage = () => {
 
   useEffect(() => {
     if (filters) {
+      console.log("filters ==>>", filters);
       setCurrentHistoryPage(1);
       fetchData(filters).then((newData) => {
         setPaginatedHistory(newData.data);
@@ -404,8 +405,8 @@ const SoftwareInstallationPage = () => {
         className="content-container"
         style={{
           transition: "margin 0.3s ease-in-out",
-          marginRight: isSidebarOpen ? "10%" : "0",
-          width: isSidebarOpen ? "80%" : "100%",
+          marginRight: isSidebarOpen ? "15%" : "0",
+          width: isSidebarOpen ? "78%" : "100%",
         }}
       >
         <div className="row justify-content-center">
@@ -416,7 +417,6 @@ const SoftwareInstallationPage = () => {
             </div>
 
             <CardsStat />
-
             <button
               type="button"
               className="btn btn-primary hyper-connect-btn mb-3"
@@ -430,7 +430,6 @@ const SoftwareInstallationPage = () => {
                 <i className="bi bi-plus-lg hyper-btn-icon"></i>
               )}
             </button>
-
             {showForm && (
               <Wizard
                 steps={steps}
@@ -438,7 +437,6 @@ const SoftwareInstallationPage = () => {
                 idgt={getGreatestId(paginatedHistory) ?? 0}
               />
             )}
-
             <div className="row mt-5 mb-5 d-flex justify-content-between align-items-center">
               <div className="col-12 col-md-4 d-flex align-items-center">
                 <h3>Installation History</h3>
@@ -459,7 +457,6 @@ const SoftwareInstallationPage = () => {
                 </button>
               </div>
             </div>
-
             <div className="row mt-5 mb-5 d-flex justify-content-between">
               {showUpdateAlert && (
                 <div className="col-12 col-md-12 d-flex align-items-center">
@@ -479,7 +476,6 @@ const SoftwareInstallationPage = () => {
                 </div>
               )}
             </div>
-
             <DataTable
               customStyles={customStyles}
               columns={columns}
@@ -495,7 +491,6 @@ const SoftwareInstallationPage = () => {
                 </div>
               }
             />
-
             <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
               <button
                 className="btn btn-sm btn-light me-2"
