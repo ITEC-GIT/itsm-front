@@ -1,14 +1,14 @@
 export interface StaticDataType {
-  Computers: string[];
-  Departments: string[];
+  Computers: {}[];
+  Departments: {}[];
   "Initialized softwares": number;
-  Locations: string[];
+  Locations: {}[];
   "Received softwares": number;
-  SoftwareStatus: string[];
-  assignees: string[];
-  priorityOptions: string[];
-  requesters: string[];
-  statusOptions: string[];
-  typeOptions: string[];
-  urgencyOptions: string[];
+  SoftwareStatus: {}[];
+  assignees: {}[];
+  priorityOptions: {}[];
+  requesters: {}[];
+  statusOptions: {}[];
+  typeOptions: {}[];
+  urgencyOptions: {}[];
 }

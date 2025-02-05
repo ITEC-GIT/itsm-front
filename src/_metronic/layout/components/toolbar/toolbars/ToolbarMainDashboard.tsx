@@ -1,95 +1,91 @@
 import clsx from "clsx";
-import { useState, useEffect, useCallback } from "react";
-import { KTIcon } from "../../../../helpers";
-import {
-  CreateAppModal,
-  Dropdown1,
-  FilterDropDownMenu,
-  CustomButtonWithFilter,
-} from "../../../../partials";
+import Select from "react-select";
+import { useAtomValue } from "jotai";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useLayout } from "../../../core";
-
-import { useAtom, useSetAtom, useAtomValue } from "jotai";
-import {
-  toolbarTicketsNavigationAtom,
-  toolbarTicketsSearchAtom,
-} from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
-import {
-  totalTicketsAtom,
-  fetchMorePagesFlagAtom,
-  maxTotalAtom,
-} from "../../../../../app/atoms/tickets-page-atom/ticketsPageAtom";
-
-import useDebounce from "../../../../../app/custom-hooks/useDebounce";
-import ItsmToolbar from "../../../../../app/components/dashboard/ItsmToolbar";
+import { staticDataAtom } from "../../../../../app/atoms/filters-atoms/filtersAtom";
+import { StaticDataType } from "../../../../../app/types/filtersAtomType";
 
 const ToolbarMainDashboard = () => {
-  const { config } = useLayout();
-  const [searchTickets, setSearchTickets] = useAtom(toolbarTicketsSearchAtom);
-  const [currentTicketsPage, setCurrentTicketsPage] = useAtom(
-    toolbarTicketsNavigationAtom
+  const { classes } = useLayout();
+  const [selectedBranch, setSelectedBranch] = useState<{
+    value: number;
+    label: string;
+  } | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{
+    value: number;
+    label: string;
+  } | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<{
+    value: number;
+    label: string;
+  } | null>(null);
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+
+  const depOptions =
+    staticData["Departments"]?.map((department) => ({
+      value: "id" in department ? Number(department?.id) : 0,
+      label: "name" in department ? String(department?.name) : "",
+    })) || [];
+
+  const userOptions =
+    staticData["assignees"]?.map((assignee) => ({
+      value: "id" in assignee ? Number(assignee?.id) : 0,
+      label: "name" in assignee ? String(assignee?.name) : "",
+    })) || [];
+
+  const compOptions =
+    staticData["Computers"]?.map((device) => ({
+      value: "id" in device ? Number(device?.id) : 0,
+      label: "name" in device ? String(device?.name) : "",
+    })) || [];
+
+  function handleSearchChange(event: ChangeEvent<HTMLInputElement>): void {
+    throw new Error("Function not implemented.");
+  }
+
+  return (
+    <div
+      id="kt_app_toolbar_container"
+      className={clsx("app-container ", classes.toolbarContainer.join(" "))}
+    >
+      <div className="filters-Container">
+        <Select
+          className="select-dashboard"
+          options={depOptions}
+          value={selectedBranch}
+          onChange={(newValue) => setSelectedBranch(newValue)}
+          placeholder="Select Branch"
+        />
+
+        <Select
+          className="select-dashboard"
+          options={userOptions}
+          value={selectedUser}
+          onChange={(newValue) => setSelectedUser(newValue)}
+          placeholder="Select User"
+        />
+
+        <Select
+          className="select-dashboard"
+          options={compOptions}
+          value={selectedDevice}
+          onChange={setSelectedDevice}
+          placeholder="Select Device"
+        />
+
+        {/* <div className="search-input-wrapper">
+          <input
+            type="text"
+            id="search-input"
+            className="form-control search-input"
+            placeholder="Search..."
+            onChange={handleSearchChange}
+          />
+        </div> */}
+      </div>
+    </div>
   );
-  const [searchInput, setSearchInput] = useState<string>(searchTickets);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
-  const debouncedSearchInput = useDebounce(searchInput, 50);
-  const ticketsPerPage = 3;
-  const fetchedTotalTickets = useAtomValue(totalTicketsAtom);
-  const maxTotalTickets = useAtomValue(maxTotalAtom);
-
-  const totalPages = Math.ceil(fetchedTotalTickets / ticketsPerPage);
-  const minPagesToShow = 2;
-
-  const setFetchMorePagesFlag = useSetAtom(fetchMorePagesFlagAtom);
-
-  useEffect(() => {
-    setSearchTickets(debouncedSearchInput);
-  }, [debouncedSearchInput, setSearchTickets]);
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchInput(value);
-  }, []);
-  const handlePageChange = (page: number) => {
-    setCurrentTicketsPage(page);
-  };
-
-  const handleFetchMorePages = () => {
-    setFetchMorePagesFlag(true);
-  };
-  const [filter, setFilter] = useState<string | null>(null);
-
-  const handleFilterApply = (selectedFilters: any) => {
-    setFilter(selectedFilters);
-  };
-
-  const handleFilterReset = () => {
-    setFilter(null);
-  };
-
-  const startPage =
-    Math.floor((currentTicketsPage - 1) / minPagesToShow) * minPagesToShow + 1;
-  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
-
-  const daterangepickerButtonClass = config.app?.toolbar?.fixed?.desktop
-    ? "btn-light"
-    : "bg-body btn-color-gray-700 btn-active-color-primary";
-  const toggleFilterDropdown = () => {
-    setIsFilterOpen(!isFilterOpen);
-  };
-  const [isFilterDatabaseDropdownOpen, setIsFilterDatabaseDropdownOpen] =
-    useState(false);
-
-  const toggleDatabaseDropdown = () => {
-    setIsFilterDatabaseDropdownOpen(!isFilterDatabaseDropdownOpen);
-  };
-
-  const [isFilterFrontDropdownOpen, setIsFilterFrontDropdownOpen] =
-    useState(false);
-
-  const toggleFrontDropdown = () => {
-    setIsFilterFrontDropdownOpen(!isFilterFrontDropdownOpen);
-  };
-
-  return <ItsmToolbar />;
 };
 
 export { ToolbarMainDashboard };
