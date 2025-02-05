@@ -12,12 +12,12 @@ import "./_metronic/assets/keenicons/duotone/style.css";
 import "./_metronic/assets/keenicons/outline/style.css";
 import "./_metronic/assets/keenicons/solid/style.css";
 import "./_metronic/assets/sass/style.scss";
-import { AppRoutes } from "./app/routing/AppRoutes2.tsx.bak";
+
 import { BrowserRouter } from "react-router-dom";
 import { createStore, Provider as JotaiProvider } from "jotai";
 import { DevTools } from "jotai-devtools";
-import 'jotai-devtools/styles.css'
-
+import "jotai-devtools/styles.css";
+import { AppRoutes } from "./app/routing/AppRoutes";
 
 /**
  * Creates `axios-mock-adapter` instance for provided `axios` instance, add

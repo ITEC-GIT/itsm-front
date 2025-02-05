@@ -19,14 +19,12 @@ import {
   fetchMorePagesFlagAtom,
   maxTotalAtom,
 } from "../../../../../app/atoms/tickets-page-atom/ticketsPageAtom";
-import CustomFilterDatabaseDropdown from "./CustomFilterDatabaseDropdown";
-import CustomFilterFrontDataDropdown from "./CustomFilterFrontDataDropdown";
+
 import useDebounce from "../../../../../app/custom-hooks/useDebounce";
 import ItsmToolbar from "../../../../../app/components/dashboard/ItsmToolbar";
 
 const ToolbarMainDashboard = () => {
   const { config } = useLayout();
-  const [showCreateAppModal, setShowCreateAppModal] = useState<boolean>(false);
   const [searchTickets, setSearchTickets] = useAtom(toolbarTicketsSearchAtom);
   const [currentTicketsPage, setCurrentTicketsPage] = useAtom(
     toolbarTicketsNavigationAtom

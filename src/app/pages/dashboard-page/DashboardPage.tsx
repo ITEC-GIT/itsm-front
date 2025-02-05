@@ -3,14 +3,13 @@ import { useIntl } from "react-intl";
 import { PageTitle } from "../../../_metronic/layout/core";
 import { ToolbarWrapper } from "../../../_metronic/layout/components/toolbar";
 import { Content } from "../../../_metronic/layout/components/content/Content";
-import { StatisticsList } from "../../components/dashboard/statisticsList";
-import ItsmToolbar from "../../components/dashboard/ItsmToolbar";
 import { DashboardAnalyticsType } from "../../types/dashboard";
-import { GetDashboardAnalytics } from "../../config/ApiCalls";
+
 import AnalyticsDashboard from "./analyticDashboardPage";
 import { useAtom } from "jotai";
 import { dashboardViewAtom } from "../../atoms/dashboard-atom/dashboardAtom";
 import MainDashboard from "./mainDashbaord";
+import { GetDashboardAnalytics } from "../../config/ApiCalls";
 
 const DashboardPage: FC = () => {
   const [currentView] = useAtom(dashboardViewAtom);
