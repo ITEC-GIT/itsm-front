@@ -15,6 +15,9 @@ import { isAuthenticatedAtom, userAtom } from "../atoms/auth-atoms/authAtom";
 import { authChannel } from "../pages/login-page/authChannel";
 import { getSessionTokenFromCookie } from "../config/Config";
 
+import { staticDataAtom } from "../atoms/filters-atoms/filtersAtom";
+import { GetStaticData, GetUsersAndAreas } from "../config/ApiCalls";
+
 /**
  * Base URL of the website.
  *
@@ -27,12 +30,44 @@ const RoutesContent: FC = () => {
   const isAuthAtom = useAtomValue(isAuthenticatedAtom);
   const [user, setUser] = useAtom(userAtom);
   const navigate = useNavigate();
-
+  const [staticData, setStaticData] = useAtom(staticDataAtom);
   useEffect(() => {
     if (getSessionTokenFromCookie() == null && !isAuthAtom) {
       setCurrentUser(null);
       navigate("/auth/login");
     } else {
+      const fetchStaticDataWithAtom = async () => {
+        try {
+          const [usersAndAreasResponse, staticDataResponse] = await Promise.all(
+            [GetUsersAndAreas(), GetStaticData()]
+          );
+
+          if (
+            usersAndAreasResponse.status !== 200 ||
+            staticDataResponse.status !== 200
+          ) {
+            throw new Error(
+              `Network response was not ok: 
+            UsersAndAreas: ${usersAndAreasResponse.status} ${usersAndAreasResponse.statusText}, 
+            StaticData: ${staticDataResponse.status} ${staticDataResponse.statusText}`
+            );
+          }
+
+          const data = {
+            ...staticDataResponse.data,
+            ...usersAndAreasResponse.data,
+          };
+
+          if (typeof data === "object" && data !== null) {
+            setStaticData(data);
+          } else {
+            console.error("Invalid data received from the API:", data);
+          }
+        } catch (error) {
+          console.error("Error checking IndexedDB or fetching data:", error);
+        }
+      };
+      fetchStaticDataWithAtom();
       setCurrentUser(getSessionTokenFromCookie());
     }
   }, [isAuthAtom, navigate]);
