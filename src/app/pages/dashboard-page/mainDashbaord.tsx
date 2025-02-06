@@ -93,16 +93,16 @@ const MainDashboard = () => {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid d-flex flex-column gap-2">
       <div className="row">
         <div
-          className={`col-md-4 bg-primary text-white position-fixed ${
+          className={`col-md-2 bg-primary text-white position-fixed ${
             isSidebarOpen ? "d-block" : "d-none d-md-block"
           }`}
           style={{
             width: isSidebarOpen ? "80%" : "250px",
             height: "100%",
-            maxHeight: "68%",
+            maxHeight: "60%",
             borderRadius: isSidebarOpen ? "0" : "10px",
             boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
             overflowY: "auto",
@@ -111,7 +111,6 @@ const MainDashboard = () => {
         >
           <SidebarMain />
         </div>
-
         <button
           className="btn btn-primary position-fixed d-md-none"
           style={{
@@ -131,24 +130,21 @@ const MainDashboard = () => {
         >
           {isSidebarOpen ? "Back" : "Menu"}
         </button>
-
-        <div className="container-fluid">
-          <div className="row">
-            {/* Sidebar column remains the same */}
-
-            <div
-              className={`col-md-8 offset-md-3 p-4 `}
-              style={{
-                maxHeight: "calc(100vh - 250px)",
-                overflowY: "auto",
-              }}
-            >
-              <div className="row">{renderActiveView()}</div>
-            </div>
-          </div>
+        {/* <div className="container-fluid">
+          <div className="row"> */}
+        <div
+          className={`col-md-10 custom-offset`}
+          style={{
+            maxHeight: "calc(100vh - 250px)",
+            overflowY: "auto",
+          }}
+        >
+          <div>{renderActiveView()}</div>
         </div>
       </div>
     </div>
+    //   </div>
+    // </div>
   );
 };
 

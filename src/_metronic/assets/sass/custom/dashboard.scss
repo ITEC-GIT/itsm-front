@@ -9,11 +9,11 @@
   height: 100%;
   // width: 350px !important;
   overflow-y: auto;
-  padding: 1.5rem;
+  padding: 1rem !important;
   background: var(--background);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  // gap: 1.5rem;
   scrollbar-width: none;
 }
 
@@ -32,13 +32,14 @@
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  height: 100% !important;
+  // gap: 1.5rem;
 }
 
 .computer-header {
   border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  // margin-bottom: 1rem;
 }
 
 .computer-name {
@@ -136,6 +137,13 @@
   border-top: 1px solid #eee;
 }
 
+.section-title-borderless {
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin: 0 0 0.7rem 0;
+  padding-top: 1rem;
+}
+
 .empty-state {
   flex: 1;
   display: flex;
@@ -222,5 +230,15 @@
   .filters-field {
     flex-direction: column !important;
     gap: 8px !important;
+  }
+}
+
+.custom-offset {
+  margin-left: 14% !important;
+}
+
+@media (max-width: 768px) {
+  .custom-offset {
+    margin-left: 24% !important;
   }
 }

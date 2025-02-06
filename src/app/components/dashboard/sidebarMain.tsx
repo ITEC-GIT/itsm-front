@@ -44,9 +44,12 @@ const SidebarMain = () => {
         <div className="computer-info">
           <div className="computer-header">
             <h2 className="computer-name">{computer.name}</h2>
-            <span className="computer-type">{computer.computertypes_id}</span>
+            {/* <span className="computer-type">{computer.computertypes_id}</span> */}
+            <span className="computer-type">
+              {computer.computertypes_id} - {computer.computermodels_id}{" "}
+            </span>
           </div>
-          <div className="d-flex flex-column gap-2">
+          {/* <div className="d-flex flex-column gap-2">
             <InfoItem label="Serial" value={computer.serial} />
             <InfoItem label="Model" value={computer.computermodels_id} />
             <InfoItem
@@ -54,15 +57,18 @@ const SidebarMain = () => {
               value={computer.last_inventory_update}
             />
             <InfoItem label="Entity" value={computer.entities_id} />
+          </div> */}
+
+          <h5 className="section-title-borderless">Tickets</h5>
+          <div className="d-flex flex-column align-items-start">
+            <button
+              className="btn-command"
+              onClick={() => setActiveView("ticket")}
+            >
+              <i className="bi bi-bug"></i>
+              Tickets
+            </button>
           </div>
-          <button
-            className={`btn btn-ticket ${
-              activeView === "ticket" ? "active" : ""
-            }`}
-            onClick={() => setActiveView("ticket")}
-          >
-            View Tickets
-          </button>
 
           <h5 className="section-title">Hyper Commands</h5>
           <div className="d-flex flex-column align-items-start">
