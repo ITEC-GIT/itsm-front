@@ -35,10 +35,10 @@ const DashboardPage: FC = () => {
       <ToolbarWrapper source={"dashboard"} />
 
       {currentView === "main" ? (
-        <Content>
+        <>
           <MainDashboard />
           {/* <StatisticsList data={data} /> */}
-        </Content>
+        </>
       ) : (
         <AnalyticsDashboard />
       )}

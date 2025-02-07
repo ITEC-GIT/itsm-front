@@ -61,13 +61,9 @@ const DashboardPlaceholder = () => (
 );
 
 const MainDashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
 
-  const userId = Number(Cookies.get("user"));
-  console.log("userId ==>>", userId);
-
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  // const userId = Number(Cookies.get("user"));
 
   const renderActiveView = () => {
     switch (activeView) {
@@ -93,49 +89,24 @@ const MainDashboard = () => {
   };
 
   return (
-    <div className="container-fluid d-flex flex-column gap-2">
+    <div className="container-fluid" style={{ paddingLeft: "10px" }}>
       <div className="row">
         <div
-          className={`col-md-2 bg-primary text-white position-fixed ${
-            isSidebarOpen ? "d-block" : "d-none d-md-block"
-          }`}
+          className="col-sm-3 col-md-3 col-lg-2"
           style={{
-            width: isSidebarOpen ? "80%" : "250px",
-            height: "100%",
-            maxHeight: "60%",
-            borderRadius: isSidebarOpen ? "0" : "10px",
+            // height: "100%",
+            // maxHeight: "60%",
+            borderRadius: "10px",
             boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
-            overflowY: "auto",
-            zIndex: 99,
           }}
         >
           <SidebarMain />
         </div>
-        <button
-          className="btn btn-primary position-fixed d-md-none"
-          style={{
-            width: "40px",
-            height: "100px",
-            borderRadius: " 0 50%  50% 0",
-            fontWeight: "bold",
-            top: "50%",
-            left: isSidebarOpen ? "84%" : "0",
-            transform: "translateY(-50%)",
-            writingMode: "vertical-rl",
-            textOrientation: "upright",
-
-            zIndex: 100,
-          }}
-          onClick={toggleSidebar}
-        >
-          {isSidebarOpen ? "Back" : "Menu"}
-        </button>
-        {/* <div className="container-fluid">
-          <div className="row"> */}
         <div
-          className={`col-md-10 custom-offset`}
+          className="col-sm-9 col-md-9 col-lg-10"
           style={{
-            maxHeight: "calc(100vh - 250px)",
+            borderRadius: "10px",
+            boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
             overflowY: "auto",
           }}
         >
@@ -143,8 +114,6 @@ const MainDashboard = () => {
         </div>
       </div>
     </div>
-    //   </div>
-    // </div>
   );
 };
 

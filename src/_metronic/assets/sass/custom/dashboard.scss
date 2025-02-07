@@ -6,9 +6,10 @@
   --text-secondary: #6c757d;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  height: 100%;
+  // height: 100%;
+  // width: 100% !important;
   // width: 350px !important;
-  overflow-y: auto;
+  // overflow-y: auto;
   padding: 1rem !important;
   background: var(--background);
   display: flex;
@@ -226,19 +227,16 @@
   outline: none;
 }
 
+.dashboard-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 @media (max-width: 768px) {
   .filters-field {
     flex-direction: column !important;
     gap: 8px !important;
-  }
-}
-
-.custom-offset {
-  margin-left: 14% !important;
-}
-
-@media (max-width: 768px) {
-  .custom-offset {
-    margin-left: 24% !important;
   }
 }
