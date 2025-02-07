@@ -40,7 +40,7 @@ PrivateApiCall.interceptors.response.use(
   },
   (error: any) => {
     if (error.response?.status === 401) {
-      window.location.href = "/auth/login";
+      window.location.href = "/pulsar/itsm/auth/login";
       Cookies.set("isAuthenticated", "false");
       Cookies.remove("session_token");
     }
@@ -73,7 +73,7 @@ PublicApiCall.interceptors.response.use(
   },
   (error: any) => {
     if (error.response?.status === 401) {
-      window.location.href = "/auth/login";
+      // window.location.href = "/pulsar/itsm/auth/login";
       Cookies.set("isAuthenticated", "false");
       Cookies.remove("session_token");
     }
