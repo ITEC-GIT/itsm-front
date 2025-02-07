@@ -1,5 +1,9 @@
 import { ErrorResponse } from "../types/AuthTypes";
 import {
+  CreateSoftInstRequestType,
+  GetAllSoftwareInstallationRequestType,
+} from "../types/softwareInstallationTypes";
+import {
   PrivateApiCall,
   PublicApiCall,
   getSessionTokenFromCookie,
@@ -146,6 +150,14 @@ async function CancelSoftwareInstallation(id: number) {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetAllSoftwareInstallations(
+  data?: GetAllSoftwareInstallationRequestType
+) {
+  return await PrivateApiCall.post(`/GetSoftwareInstallation/`, data)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 /** *********************************************************************************************/
 /** ************************************** Computers ********************************************/
 /** *********************************************************************************************/
@@ -201,6 +213,7 @@ export {
   CancelSoftwareInstallation,
   GetAllComputers,
   GetComputer,
+  GetAllSoftwareInstallations,
   GetAllLocations,
   GetStaticData,
   GetUsersAndAreas,

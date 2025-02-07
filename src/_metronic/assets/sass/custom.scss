@@ -1,35 +1,43 @@
-.content-background{
-    background-color: #D9EAFD !important;
-    padding-top: 20px !important;
+@import "./custom/variables";
+
+.content-background {
+  background-color: $content-background-color !important;
+  padding-top: 20px !important;
+}
+
+.required::after {
+  content: "*";
+  color: red;
+  margin-left: 5px;
 }
 
 .spinner-loading-data {
-    color: #007bff;
-    width: 5rem;
-    height: 5rem;
-    border-width: 0.25em;
-    border-color: #007bff; /* Blue color */
-    border-right-color: transparent; /* Make one side transparent for the spinning effect */
-  }
-  
-  .spinner-wrapper {
-    color: #007bff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
-  }
-  
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-  }
-  .tickets-filter-background{
-    background-color: transparent !important;
-  }
+  color: #007bff;
+  width: 5rem;
+  height: 5rem;
+  border-width: 0.25em;
+  border-color: #007bff; /* Blue color */
+  border-right-color: transparent; /* Make one side transparent for the spinning effect */
+}
+
+.spinner-wrapper {
+  color: #007bff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.tickets-filter-background {
+  background-color: transparent !important;
+}

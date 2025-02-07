@@ -1,11 +1,11 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import clsx from "clsx";
-import { GetUserProfile, LoginApi } from "../../config/ApiCalls";
+import { LoginApi } from "../../config/ApiCalls";
 import Cookies from "js-cookie";
-import { useSetAtom,useAtom } from "jotai";
+import { useSetAtom, useAtom } from "jotai";
 import { isAuthenticatedAtom, userAtom } from "../../atoms/auth-atoms/authAtom";
 
 const loginSchema = Yup.object().shape({
@@ -23,10 +23,11 @@ const initialValues = {
 export function LoginPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [usrAtom,setUserData] = useAtom(userAtom);
   const setIsAuthenticatedAtom = useSetAtom(isAuthenticatedAtom);
   const loginRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [user, setUser] = useAtom(userAtom);
 
   const formik = useFormik({
     initialValues,
@@ -41,17 +42,38 @@ export function LoginPage() {
       try {
         const response = await LoginApi(login, password);
 
-        if (response.statusText !== "OK") {
-          throw new Error("Network response was not ok " + response.statusText);
+        if (Array.isArray(response) && response.length === 2) {
+          const [errorCode, errorMessage] = response;
+          throw new Error(`${errorMessage}`);
+        } else if (response.code === "ERR_NETWORK") {
+          throw new Error(
+            "Ooops! Something went wrong. Please try again later."
+          );
+        } else if (response.status !== 200) {
+          throw new Error("An unexpected error occurred. Please try again.");
         }
-        const res = await response.data;
-        Cookies.set("session_token", res?.session_token);
-        Cookies.set("isAuthenticated", "true");
-        setUserData(res);
-        setIsAuthenticatedAtom(true);
+
+        const res = response.data;
+        if (res) {
+          Cookies.set("session_token", res?.session_token);
+          Cookies.set("isAuthenticated", "true");
+          const userId = res.session.glpiID;
+          Cookies.set("user", userId);
+
+          setLoginError(null);
+          const {
+            session: { glpiID, ...restSession },
+            ...rest
+          } = res;
+          const updatedRes = { ...rest, session: restSession };
+          setUser(updatedRes);
+          setIsAuthenticatedAtom(true);
+        }
+
         navigate("/dashboard");
       } catch (error) {
         console.error("Error:", error);
+        setLoginError((error as Error).message);
       }
     },
   });
@@ -70,6 +92,8 @@ export function LoginPage() {
         </div>
       </div>
 
+      {loginError && <div className="alert alert-danger">{loginError}</div>}
+
       {/* begin::Form group */}
       <div className="fv-row mb-8">
         <label className="form-label fs-6 fw-bolder text-gray-900">Login</label>
@@ -77,13 +101,7 @@ export function LoginPage() {
           placeholder="login"
           ref={loginRef}
           {...formik.getFieldProps("login")}
-          className={clsx(
-            "form-control bg-transparent",
-            { "is-invalid": formik.touched.login && formik.errors.login },
-            {
-              "is-valid": formik.touched.login && !formik.errors.login,
-            }
-          )}
+          className={clsx("form-control bg-transparent")}
           autoComplete="off"
         />
         {formik.touched.login && formik.errors.login && (
@@ -105,15 +123,7 @@ export function LoginPage() {
           placeholder="Password"
           autoComplete="off"
           {...formik.getFieldProps("password")}
-          className={clsx(
-            "form-control bg-transparent",
-            {
-              "is-invalid": formik.touched.password && formik.errors.password,
-            },
-            {
-              "is-valid": formik.touched.password && !formik.errors.password,
-            }
-          )}
+          className={clsx("form-control bg-transparent")}
         />
         {formik.touched.password && formik.errors.password && (
           <div className="fv-plugins-message-container">

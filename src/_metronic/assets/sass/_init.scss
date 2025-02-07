@@ -38,5 +38,13 @@
 // hyper commands
 @import "./custom/hyperCommands.scss";
 
+@import "./custom/variables.scss";
+
+//wizards
+@import "./custom/wizard.scss";
+
+//sidebar
+@import "./custom/filterSidebar.scss";
+
 //dashbaord
 @import "./custom/dashboard.scss";
