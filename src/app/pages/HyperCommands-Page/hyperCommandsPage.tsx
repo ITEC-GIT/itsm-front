@@ -2,14 +2,18 @@ import { FC, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { PageTitle } from "../../../_metronic/layout/core";
 import { ToolbarWrapper } from "../../../_metronic/layout/components/toolbar/ToolbarWrapper";
-import { Content } from "../../../_metronic/layout/components/content/Content";
 import { actions } from "../../data/hyperCommands";
+import { useNavigate } from "react-router-dom";
+import { Content } from "../../../_metronic/layout/components/content/Content";
 
 const HyperCommandsPage: FC = () => {
-  const handleClick = (action: any) => {};
+  const navigate = useNavigate();
+  const handleClick = (action: any) => {
+    navigate(`/hyper-commands/${action}`);
+  };
   return (
     <>
-      <ToolbarWrapper source={"hyper commands"} />
+      <ToolbarWrapper source="Hyper Commands" />
 
       <Content>
         <div className="container hyper-container py-5">
@@ -18,7 +22,7 @@ const HyperCommandsPage: FC = () => {
               <div
                 className="col-12 hyper-col col-sm-6 col-lg-3"
                 key={index}
-                onClick={() => handleClick(action)}
+                onClick={() => handleClick(action.action)}
               >
                 <div className="card h-100 shadow-sm hyper-card">
                   <div className="card-body text-center hyper-card-body">
