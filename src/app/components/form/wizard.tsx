@@ -123,11 +123,15 @@ const Wizard = ({
   const InsertSoftwareInstallation = async () => {
     try {
       const formdata = new FormData();
+      const mids =
+        selectedDevices.length === 1
+          ? selectedDevices[0].serial
+          : selectedDevices.map((device) => device.serial);
       formdata.append(
         "uploadManifest",
         JSON.stringify({
           input: {
-            mid: selectedDevices.map((device) => device.serial),
+            mid: mids,
             software: softwareName.trim(),
             url: softwareUrl.trim(),
             destination: destination.trim(),
