@@ -244,9 +244,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   const handleEditFilter = (index: number, name: string) => {
-    setEditFilterIndex(index);
-    setEditFilterName(name);
+    if (editFilterIndex === index) {
+      // If the check icon is clicked, save the edited name
+      handleSaveEditedFilter(index);
+    } else {
+      // If the pen icon is clicked, enable editing mode
+      setEditFilterIndex(index);
+      setEditFilterName(name);
+    }
   };
+
+  // const handleEditFilter = (index: number, name: string) => {
+  //   setEditFilterIndex(index);
+  //   setEditFilterName(name);
+  // };
 
   const handleSaveEditedFilter = async (index: number) => {
     if (!editFilterName.trim()) return;
@@ -338,11 +349,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       }`}
       style={{
         width: "100%",
-        height: "100%",
+        height: "90%",
+        overflowY: "auto",
         backdropFilter: isOpen ? "blur(5px)" : "none",
       }}
     >
-      <div className="d-flex align-items-center gap-3 mb-4">
+      <div className="d-flex align-items-center gap-2 mb-4">
         <button
           className="toggle-btn close-filter-btn p-3"
           onClick={handleCloseSidebar}
@@ -449,34 +461,46 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   }
                 >
                   {editFilterIndex === index ? (
-                    <input
-                      type="text"
-                      value={editFilterName}
-                      onChange={(e) => setEditFilterName(e.target.value)}
-                      onBlur={() => handleSaveEditedFilter(index)}
-                      className="form-control"
-                      autoFocus
-                    />
+                    <>
+                      <input
+                        type="text"
+                        value={editFilterName}
+                        onChange={(e) => setEditFilterName(e.target.value)}
+                        onBlur={() => handleSaveEditedFilter(index)}
+                        className="form-control"
+                        autoFocus
+                      />
+                      <i
+                        className={`bi bi-check2-circle save-filters-icon`}
+                        style={{
+                          color: "green",
+                        }}
+                        onClick={() => handleSaveEditedFilter(index)}
+                      ></i>
+                    </>
                   ) : (
-                    <span
-                      className="filter-name cursor-pointer"
-                      onClick={() => handleSavedFilterClick(filter)}
-                    >
-                      {filter.name}
-                    </span>
+                    <div>
+                      <span
+                        className="filter-name cursor-pointer"
+                        onClick={() => handleSavedFilterClick(filter)}
+                      >
+                        {filter.name}
+                      </span>
+                    </div>
                   )}
                   <div className="d-flex gap-2">
-                    <i
-                      className={`bi ${
-                        editFilterIndex === index
-                          ? "bi-check2-circle"
-                          : "bi-pencil"
-                      } save-filters-icon `}
-                      style={{
-                        color: editFilterIndex === index ? "green" : "black",
-                      }}
-                      onClick={() => handleEditFilter(index, filter.name)}
-                    ></i>
+                    {editFilterIndex !== index ? (
+                      <i
+                        className={`bi bi-pencil save-filters-icon `}
+                        style={{
+                          color: "black",
+                        }}
+                        onClick={() => handleEditFilter(index, filter.name)}
+                      ></i>
+                    ) : (
+                      ""
+                    )}
+
                     <i
                       className="bi bi-trash save-filters-icon text-danger"
                       onClick={() => deleteSavedFilter(filter.id)}

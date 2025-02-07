@@ -79,7 +79,7 @@ const Wizard = ({
 
   const handleNext = () => {
     if (currentStep < steps.length) {
-      if (currentStep === 1 && !selectedDevices) {
+      if (currentStep === 1 && selectedDevices.length == 0) {
         setDeviceError(true);
         return;
       }
