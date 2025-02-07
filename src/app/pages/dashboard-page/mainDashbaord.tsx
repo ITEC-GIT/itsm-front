@@ -29,27 +29,24 @@ const RemoteConsoleiew = () => (
 const PerformanceView = () => (
   <div className="remote-ssh-view">
     <h2>Performance</h2>
-    {/* Add SSH UI here */}
   </div>
 );
 
 const ScreenshotsView = () => (
   <div className="remote-ssh-view">
     <h2>Screenshots</h2>
-    {/* Add SSH UI here */}
   </div>
 );
 
 const CameraPicrureView = () => (
   <div className="remote-ssh-view">
     <h2>Camera Picture</h2>
-    {/* Add SSH UI here */}
   </div>
 );
+
 const VoiceRecordView = () => (
   <div className="remote-ssh-view">
     <h2>Voice Record</h2>
-    {/* Add SSH UI here */}
   </div>
 );
 
@@ -89,13 +86,11 @@ const MainDashboard = () => {
   };
 
   return (
-    <div className="container-fluid" style={{ paddingLeft: "10px" }}>
+    <div className="container-fluid" style={{ paddingLeft: "20px" }}>
       <div className="row">
         <div
           className="col-sm-3 col-md-3 col-lg-2"
           style={{
-            // height: "100%",
-            // maxHeight: "60%",
             borderRadius: "10px",
             boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
           }}
@@ -107,10 +102,13 @@ const MainDashboard = () => {
           style={{
             borderRadius: "10px",
             boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
+            flexGrow: "1",
             overflowY: "auto",
+            height: "79vh",
+            maxHeight: "79vh",
           }}
         >
-          <div>{renderActiveView()}</div>
+          {renderActiveView()}
         </div>
       </div>
     </div>
