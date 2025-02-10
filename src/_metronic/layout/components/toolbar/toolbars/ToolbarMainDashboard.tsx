@@ -59,6 +59,16 @@ const ToolbarMainDashboard = () => {
           value={selectedBranch}
           onChange={(newValue) => setSelectedBranch(newValue)}
           placeholder="Select Branch"
+          styles={{
+            menu: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
+            container: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
+          }}
         />
 
         <Select
@@ -67,6 +77,16 @@ const ToolbarMainDashboard = () => {
           value={selectedUser}
           onChange={(newValue) => setSelectedUser(newValue)}
           placeholder="Select User"
+          styles={{
+            menu: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
+            container: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
+          }}
         />
 
         <Select
@@ -75,6 +95,16 @@ const ToolbarMainDashboard = () => {
           value={selectedDevice}
           onChange={(newValue) => handleDeviceChange(newValue)}
           placeholder="Select Device"
+          styles={{
+            menu: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
+            container: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
+          }}
         />
 
         {/* <div className="search-input-wrapper">
