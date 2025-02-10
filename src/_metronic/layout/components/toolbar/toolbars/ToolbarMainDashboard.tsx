@@ -17,27 +17,31 @@ const ToolbarMainDashboard = () => {
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
   );
-  const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
-    null
-  );
+  // const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
+  //   null
+  // );
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
 
   const depOptions =
-    staticData["Departments"]?.map((department) => ({
-      value: "id" in department ? Number(department?.id) : 0,
-      label: "name" in department ? String(department?.name) : "",
+    staticData["Locations"]?.map((location) => ({
+      value: "id" in location ? Number(location?.id) : 0,
+      label: "name" in location ? String(location?.name) : "",
     })) || [];
 
-  const userOptions =
-    staticData["assignees"]?.map((assignee) => ({
-      value: "id" in assignee ? Number(assignee?.id) : 0,
-      label: "name" in assignee ? String(assignee?.name) : "",
-    })) || [];
+  // const userOptions =
+  //   staticData["assignees"]?.map((assignee) => ({
+  //     value: "id" in assignee ? Number(assignee?.id) : 0,
+  //     label: "name" in assignee ? String(assignee?.name) : "",
+  //   })) || [];
+
+  const filteredDevices = staticData["Computers"]?.filter(
+    (device) => !selectedBranch || device.branchid === selectedBranch.value
+  );
 
   const compOptions =
-    staticData["Computers"]?.map((device) => ({
+    filteredDevices?.map((device) => ({
       value: "id" in device ? Number(device?.id) : 0,
       label: "name" in device ? String(device?.name) : "",
     })) || [];
@@ -71,7 +75,7 @@ const ToolbarMainDashboard = () => {
           }}
         />
 
-        <Select
+        {/* <Select
           className="select-dashboard"
           options={userOptions}
           value={selectedUser}
@@ -87,7 +91,7 @@ const ToolbarMainDashboard = () => {
               zIndex: 9999,
             }),
           }}
-        />
+        /> */}
 
         <Select
           className="select-dashboard"

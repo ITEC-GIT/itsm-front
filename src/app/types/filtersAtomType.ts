@@ -7,8 +7,16 @@ type Assignee = {
   Department: string;
 };
 
+type Computer = {
+  id: number;
+  name: string;
+  label: string;
+  value: string;
+  branchid: number;
+};
+
 export interface StaticDataType {
-  Computers: {}[];
+  Computers: Computer[];
   Departments: {}[];
   "Initialized softwares": number;
   Locations: {}[];
