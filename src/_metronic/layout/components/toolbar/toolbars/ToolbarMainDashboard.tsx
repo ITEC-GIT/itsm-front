@@ -24,11 +24,13 @@ const ToolbarMainDashboard = () => {
     null
   );
 
-  const depOptions =
-    staticData["Locations"]?.map((location) => ({
+  const depOptions = [
+    { value: 0, label: "All Branches" },
+    ...(staticData["Locations"]?.map((location) => ({
       value: "id" in location ? Number(location?.id) : 0,
       label: "name" in location ? String(location?.name) : "",
-    })) || [];
+    })) || []),
+  ];
 
   // const userOptions =
   //   staticData["assignees"]?.map((assignee) => ({
