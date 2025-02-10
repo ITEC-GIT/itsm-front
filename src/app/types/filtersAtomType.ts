@@ -1,3 +1,12 @@
+type Assignee = {
+  id: number;
+  name: string;
+  firstname: string | null;
+  Avatar: string | null;
+  is_admin: 0 | 1;
+  Department: string;
+};
+
 export interface StaticDataType {
   Computers: {}[];
   Departments: {}[];
@@ -5,7 +14,7 @@ export interface StaticDataType {
   Locations: {}[];
   "Received softwares": number;
   SoftwareStatus: {}[];
-  assignees: {}[];
+  assignees: Assignee[];
   priorityOptions: {}[];
   requesters: {}[];
   statusOptions: {}[];

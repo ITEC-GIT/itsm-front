@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { debounce, range } from "lodash";
+import Cookies from "js-cookie";
+import { debounce } from "lodash";
 import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
-import { Content } from "../../../_metronic/layout/components/content/Content";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { Wizard } from "../../components/form/wizard";
 import { steps } from "../../data/softwareInstallation";
 import {
   CancelSoftwareInstallation,
-  FetchAllSoftwareInstallations,
   GetAllSoftwareInstallations,
 } from "../../config/ApiCalls";
+
 import {
   GetAllSoftwareInstallationRequestType as filterType,
   SoftwareHistoryType,
@@ -20,22 +20,30 @@ import { CardsStat } from "../../components/softwareInstallation/cards-statistic
 import {
   getCircleColor,
   getGreatestId,
-  getLowestId,
   getStatusClass,
 } from "../../../utils/custom";
 import { SearchComponent } from "../../components/form/search";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 
-const SoftwareInstallationPage = () => {
+import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { StaticDataType } from "../../types/filtersAtomType";
+
+const SoftwareInstallationPage = ({
+  computerIdProp,
+}: {
+  computerIdProp?: number;
+}) => {
+  const loggedInUser = Number(Cookies.get("user"));
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [isAdmin, setIsAdmin] = useState<1 | 0>(0);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
   const [selectedEntry, setSelectedEntry] = useState<SoftwareHistoryType>();
-
   const SoftwarePerPage = 10;
   const minPagesToShow = 3;
   const [maxTotalSoftwares, setMaxTotalSoftwares] = useState<number>(0);
@@ -69,15 +77,18 @@ const SoftwareInstallationPage = () => {
   };
 
   const fetchData = async (filters: filterType) => {
-    const response = await GetAllSoftwareInstallations(filters);
+    const queryFilters = computerIdProp
+      ? { ...filters, computer: computerIdProp }
+      : filters;
+    const response = await GetAllSoftwareInstallations(queryFilters);
     return response.data;
   };
 
   const initialFetch = async () => {
-    const initialFilters = {
-      range: "0-50",
-      order: "desc",
-    };
+    const initialFilters = computerIdProp
+      ? { range: "0-50", order: "desc", computer: computerIdProp }
+      : { range: "0-50", order: "desc" };
+
     const response = await GetAllSoftwareInstallations(initialFilters);
     return response.data;
   };
@@ -377,14 +388,23 @@ const SoftwareInstallationPage = () => {
 
   useEffect(() => {
     if (filters) {
-      console.log("filters ==>>", filters);
       setCurrentHistoryPage(1);
       fetchData(filters).then((newData) => {
         setPaginatedHistory(newData.data);
         setHasMore(newData.totalCount > paginatedHistory.length);
       });
     }
-  }, [filters]);
+  }, [filters, computerIdProp]);
+
+  useEffect(() => {
+    if (staticData?.assignees) {
+      const user = staticData.assignees.find(
+        (assignee) => assignee?.id === loggedInUser
+      );
+      const isAdmin = user ? user.is_admin : 0;
+      setIsAdmin(isAdmin);
+    }
+  }, [loggedInUser, staticData]);
 
   const handleAlertClose = () => setShowUpdateAlert(false);
 
@@ -411,15 +431,19 @@ const SoftwareInstallationPage = () => {
       >
         <div className="row justify-content-center">
           <div className="col-md-12 col-lg-10 col-xl-12">
-            <div className="d-flex justify-content-between">
-              <h2 className="text-center mb-4">🚀 Software Installation</h2>
-              <ActionIcons />
-            </div>
+            {!computerIdProp && (
+              <>
+                <div className="d-flex justify-content-between">
+                  <h2 className="text-center mb-4">🚀 Software Installation</h2>
+                  <ActionIcons />
+                </div>
+                <CardsStat />
+              </>
+            )}
 
-            <CardsStat />
             <button
               type="button"
-              className="btn btn-primary hyper-connect-btn mb-3"
+              className="btn btn-primary hyper-connect-btn mb-3 mt-2"
               onClick={() => setShowForm((prev) => !prev)}
             >
               {showForm ? (
@@ -476,66 +500,74 @@ const SoftwareInstallationPage = () => {
                 </div>
               )}
             </div>
-            <DataTable
-              customStyles={customStyles}
-              columns={columns}
-              data={getCurrentPageRecords}
-              responsive
-              highlightOnHover
-              progressPending={isLoading || isLoadingMore}
-              progressComponent={
-                <div className="d-flex justify-content-center my-3">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
+
+            {isAdmin === 1 && (
+              <>
+                <DataTable
+                  customStyles={customStyles}
+                  columns={columns}
+                  data={getCurrentPageRecords}
+                  responsive
+                  highlightOnHover
+                  progressPending={isLoading || isLoadingMore}
+                  progressComponent={
+                    <div className="d-flex justify-content-center my-3">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                />
+                <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
+                  <button
+                    className="btn btn-sm btn-light me-2"
+                    onClick={handleFirstPage}
+                    disabled={currentHistorysPage === 1}
+                  >
+                    First
+                  </button>
+                  <button
+                    className="btn btn-sm btn-light me-2"
+                    onClick={handlePreviousPage}
+                    disabled={currentHistorysPage === 1}
+                  >
+                    Previous
+                  </button>
+                  {Array.from(
+                    { length: endPage - startPage + 1 },
+                    (_, index) => startPage + index
+                  ).map((page) => (
+                    <button
+                      key={page}
+                      className={clsx("btn btn-sm me-2", {
+                        "btn-primary": currentHistorysPage === page,
+                        "btn-light": currentHistorysPage !== page,
+                      })}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    className="btn btn-sm btn-light me-2"
+                    onClick={handleNextPage}
+                    disabled={currentHistorysPage === totalPages}
+                  >
+                    Next
+                  </button>
+                  <button
+                    className="btn btn-sm btn-light"
+                    onClick={handleLastPage}
+                    disabled={currentHistorysPage === totalPages}
+                  >
+                    Last
+                  </button>
                 </div>
-              }
-            />
-            <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleFirstPage}
-                disabled={currentHistorysPage === 1}
-              >
-                First
-              </button>
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handlePreviousPage}
-                disabled={currentHistorysPage === 1}
-              >
-                Previous
-              </button>
-              {Array.from(
-                { length: endPage - startPage + 1 },
-                (_, index) => startPage + index
-              ).map((page) => (
-                <button
-                  key={page}
-                  className={clsx("btn btn-sm me-2", {
-                    "btn-primary": currentHistorysPage === page,
-                    "btn-light": currentHistorysPage !== page,
-                  })}
-                  onClick={() => handlePageChange(page)}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleNextPage}
-                disabled={currentHistorysPage === totalPages}
-              >
-                Next
-              </button>
-              <button
-                className="btn btn-sm btn-light"
-                onClick={handleLastPage}
-                disabled={currentHistorysPage === totalPages}
-              >
-                Last
-              </button>
-            </div>
+              </>
+            )}
           </div>
         </div>
 

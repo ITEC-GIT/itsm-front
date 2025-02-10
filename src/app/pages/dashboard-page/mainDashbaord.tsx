@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { SidebarMain } from "../../components/dashboard/sidebarMain";
 import { useAtom } from "jotai";
-import { activeDashboardViewAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
+import {
+  activeDashboardViewAtom,
+  selectedComputerDashboardAtom,
+} from "../../atoms/dashboard-atoms/dashboardAtom";
 import { TicketsPage } from "../tickets-pages/TicketsPage";
-
-const SoftwareInstallationView = () => (
-  <div className="software-installation-view">
-    <h2>Software Installation</h2>
-    {/* Add your software installation UI here */}
-  </div>
-);
+import { SoftwareInstallationPage } from "../HyperCommands-Page/softwareInstallationPage";
 
 const RemoteSSHView = () => (
   <div className="remote-ssh-view">
@@ -59,8 +56,16 @@ const DashboardPlaceholder = () => (
 
 const MainDashboard = () => {
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
+  const [selctedDeviceAtom, setSelectedDeviceAtom] = useAtom<
+    number | undefined
+  >(selectedComputerDashboardAtom);
 
-  // const userId = Number(Cookies.get("user"));
+  const SoftwareInstallationView = () => {
+    if (selctedDeviceAtom) {
+      return <SoftwareInstallationPage computerIdProp={selctedDeviceAtom} />;
+    }
+    return null;
+  };
 
   const renderActiveView = () => {
     switch (activeView) {
@@ -85,11 +90,15 @@ const MainDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    setSelectedDeviceAtom(undefined);
+  }, []);
+
   return (
     <div className="container-fluid" style={{ paddingLeft: "20px" }}>
       <div className="row">
         <div
-          className="col-sm-3 col-md-3 col-lg-2"
+          className="col-sm-3 col-md-3 col-lg-3 col-xl-2"
           style={{
             borderRadius: "10px",
             boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
@@ -98,7 +107,7 @@ const MainDashboard = () => {
           <SidebarMain />
         </div>
         <div
-          className="col-sm-9 col-md-9 col-lg-10"
+          className="col-sm-9 col-md-9 col-lg-9 col-xl-10"
           style={{
             borderRadius: "10px",
             boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",

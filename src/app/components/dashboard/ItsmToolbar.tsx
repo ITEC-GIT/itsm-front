@@ -4,7 +4,6 @@ import Select from "react-select";
 import { useAtom } from "jotai";
 import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
 import { useEffect, useState } from "react";
-import { StaticDataType } from "../../types/filtersAtomType";
 
 const ItsmToolbar = () => {
   const { classes } = useLayout();
@@ -51,7 +50,6 @@ const ItsmToolbar = () => {
       className={clsx("app-container ", classes.toolbarContainer.join(" "))}
     >
       <div className="d-flex">
-        {/* Branch Select */}
         <Select
           //options={branchOptions}
           value={selectedBranch}
@@ -59,7 +57,6 @@ const ItsmToolbar = () => {
           placeholder="Select Branch"
         />
 
-        {/* User Select */}
         <Select
           //options={userOptions}
           value={selectedUser}
@@ -67,7 +64,6 @@ const ItsmToolbar = () => {
           placeholder="Select User"
         />
 
-        {/* Device Select */}
         <Select
           //options={deviceOptions}
           value={selectedDevice}
@@ -75,7 +71,6 @@ const ItsmToolbar = () => {
           placeholder="Select Device"
         />
 
-        {/* Search Input */}
         <div className="search-input-wrapper">
           <input
             type="text"

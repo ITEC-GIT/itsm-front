@@ -32,7 +32,7 @@ const PrivateRoutes = () => {
         <Route path="dashboard" element={<DashboardWrapper />} />
         <Route path="hyper-commands" element={<HyperCommandsWrapper />} />
         <Route
-          path="hyper-commands/software-installation"
+          path="hyper-commands/software-installation/:userId?"
           element={<SoftwareInstallationPage />}
         />
         <Route path="hyper-commands/remote-ssh" element={<RemoteSSHPage />} />
