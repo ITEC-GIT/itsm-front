@@ -1,15 +1,20 @@
 // src/state/authAtoms.ts
 import { atom } from 'jotai';
-import { atomWithIndexedDB } from '../atomWithIndexDB';
+
+import {atomWithIndexedDB} from '../atomWithIndexDB';
 
 
 // Atom to store the total tickets specified by the user in the 'toolbarTickets' for the all Tickets page
 export const totalTicketsNavigationAtom = atom(1);
 totalTicketsNavigationAtom.debugLabel = "ticketsTotalTicketsNavigationAtom";
 
-// Atom to store the total tickets in the tickets page we got from query
-export const totalTicketsAtom = atom(0);
-totalTicketsAtom.debugLabel = "totalTicketsAtom";
+// Atom to store the accumulation counter of pagination and normal of  total tickets in the tickets page we got from query
+export const totalTicketsAccumultionAtom = atom(0);
+totalTicketsAccumultionAtom.debugLabel = "totalTicketsAccumultionAtom";
+
+// Atom to store the actually fetched
+export const totalTicketsFetchedAtom = atom(0);
+totalTicketsFetchedAtom.debugLabel = "totalTicketsFetchedAtom";
 // Atom to store the num of tickets to fetch per query
 export const numOfTicketsToFetchAtom = atom(60);
 numOfTicketsToFetchAtom.debugLabel = "numOfTicketsToFetchAtom";
@@ -52,14 +57,16 @@ initialFetchedTicketsAtom.debugLabel = "initialFetchedTicketsAtom";
 export const initialFetchedTicketsTotalAtom = atomWithIndexedDB<number>('initialFetchedTicketsTotalAtom',0);
 initialFetchedTicketsTotalAtom.debugLabel = "initialFetchedTicketsTotalAtom";
 
+
+export const pinnedTicketsIdsAtom = atomWithIndexedDB<string[]>('pinnedTicketsIdsAtom',[]);
+pinnedTicketsIdsAtom.debugLabel = "pinnedTicketsIdsAtom";
+
 export const maxTotalAtom = atom(0);
 maxTotalAtom.debugLabel = "maxTotalAtom";
 
 export const allowFetchMoreTickets = atom(0);
 allowFetchMoreTickets.debugLabel = "allowFetchMoreTickets";
 
-export const pinnedTicketsIdsAtom = atom<string[]>([]);
-pinnedTicketsIdsAtom.debugLabel = "pinnedTicketsIdsAtom";
 
 // the number of tickets that are new for this user in the tickets page
 export const newTicketsAvailableCount = atom(0);

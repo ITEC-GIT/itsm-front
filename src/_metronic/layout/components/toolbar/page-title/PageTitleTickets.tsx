@@ -12,7 +12,7 @@ import {
 import {
   maxTotalAtom,
   numOfTicketsToFetchAtom,
-  totalTicketsAtom,
+  totalTicketsAccumultionAtom,
 } from "../../../../../app/atoms/tickets-page-atom/ticketsPageAtom";
 
 const PageTitleTickets = () => {
@@ -37,7 +37,7 @@ const PageTitleTickets = () => {
     (filter) => filter && filter.value !== ""
   );
   const totalTickets = useAtomValue(maxTotalAtom);
-  const currentTicketsCount = useAtomValue(totalTicketsAtom); // Set the total tickets per query of fetched in this instance only
+  const currentTicketsCount = useAtomValue(totalTicketsAccumultionAtom); // Set the total tickets per query of fetched in this instance only
   // THE BUG 
 
   const numOfRecordsToFetch = useAtomValue(numOfTicketsToFetchAtom);

@@ -17,7 +17,7 @@ import {
   toolbarNewTicketsAtom as importedToolbarNewTicketsAtom,
 } from "../../../../../app/atoms/toolbar-atoms/toolbarTicketsAtom";
 import {
-  totalTicketsAtom,
+  totalTicketsAccumultionAtom,
   fetchMorePagesFlagAtom,
   maxTotalAtom,
   fetchLessPagesFlagAtom,
@@ -46,7 +46,7 @@ const ToolbarTickets = () => {
 
   const debouncedSearchInput = useDebounce(searchInput, 50);
   const ticketsPerPage = 3;
-  const fetchedTotalTickets = useAtomValue(totalTicketsAtom);
+  const fetchedTotalTickets = useAtomValue(totalTicketsAccumultionAtom);
 
   const maxTotalTickets = useAtomValue(maxTotalAtom);
   const displayFetchedTotalTickets = fetchedTotalTickets > maxTotalTickets ? maxTotalTickets : fetchedTotalTickets;// this is needed in case of user creation
