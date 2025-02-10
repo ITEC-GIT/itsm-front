@@ -387,14 +387,28 @@ const SoftwareInstallationPage = ({
   }, [softwareHistory, error]);
 
   useEffect(() => {
-    if (filters) {
+    if (filters || computerIdProp) {
       setCurrentHistoryPage(1);
+      setPaginatedHistory([]);
+      setMaxTotalSoftwares(0);
+
       fetchData(filters).then((newData) => {
         setPaginatedHistory(newData.data);
-        setHasMore(newData.totalCount > paginatedHistory.length);
+        setMaxTotalSoftwares(newData.totalCount);
+        setHasMore(newData.totalCount > newData.data.length);
       });
     }
   }, [filters, computerIdProp]);
+
+  // useEffect(() => {
+  //   if (filters) {
+  //     setCurrentHistoryPage(1);
+  //     fetchData(filters).then((newData) => {
+  //       setPaginatedHistory(newData.data);
+  //       setHasMore(newData.totalCount > paginatedHistory.length);
+  //     });
+  //   }
+  // }, [filters, computerIdProp]);
 
   useEffect(() => {
     if (staticData?.assignees) {
