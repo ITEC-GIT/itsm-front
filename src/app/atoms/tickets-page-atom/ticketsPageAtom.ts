@@ -69,6 +69,11 @@ allowFetchMoreTickets.debugLabel = "allowFetchMoreTickets";
 
 
 // the number of tickets that are new for this user in the tickets page
+export const fetchActionAtom = atom('initial');
+fetchActionAtom.debugLabel = "fetchActionAtom";
+
+
+
+// the number of tickets that are new for this user in the tickets page
 export const newTicketsAvailableCount = atom(0);
 newTicketsAvailableCount.debugLabel = "newTicketsAvailableCount";
-

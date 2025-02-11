@@ -1,4 +1,4 @@
-import React, {forwardRef, useImperativeHandle, useRef, useState} from 'react'
+import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import TicketCard from "../../../_metronic/layout/components/custom-components/Card.tsx";
 import {useAtom, useAtomValue} from "jotai";
@@ -16,6 +16,35 @@ const CustomQuill = forwardRef<ReactQuill, any>((props, ref) => {
     // Expose the Quill instance via ref
     useImperativeHandle(ref, () => quillRef.current as ReactQuill);
 
+    useEffect(() => {
+        if (!quillRef.current) return;
+        const quill = quillRef.current.getEditor();
+
+        const handlePaste = (event: ClipboardEvent) => {
+            if (!event.clipboardData) return;
+
+            const items = event.clipboardData.items;
+            for (const item of items) {
+                if (item.type.startsWith("image")) {
+                    event.preventDefault();
+                    const file = item.getAsFile();
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const base64Image = e.target?.result as string;
+                            const range = quill.getSelection();
+                            quill.insertEmbed(range?.index || 0, "image", base64Image);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+        };
+
+        quill.root.addEventListener("paste", handlePaste);
+        return () => quill.root.removeEventListener("paste", handlePaste);
+    }, []);
+
     return <ReactQuill ref={quillRef} {...props} />;
 });
 const TicketsDetailPage: React.FC = () => {
@@ -32,7 +61,7 @@ const TicketsDetailPage: React.FC = () => {
     const [reply, setReply] = useState("");
     const [showReply, setShowReply] = useState(true);
     const [activeTab, setActiveTab] = useState("messages");
-
+    const [isITReply, setIsITReply] = useState(true);
     if (!ticket) {
         return <div>No ticket data available</div>
     }
@@ -68,7 +97,10 @@ const TicketsDetailPage: React.FC = () => {
                     isDetailsPage={true}
                 />
 
-
+                <button className="btn btn-sm btn-light"
+                        onClick={() => navigate('/tickets', {state: {from: 'details'}})}>
+                    Back
+                </button>
                 <div className="updates-container">
                     <h1 className="updates-title">Updates</h1>
                     <div className="tabs">
@@ -87,9 +119,30 @@ const TicketsDetailPage: React.FC = () => {
                     </div>
                     <div className="tab-content">
                         {activeTab === "messages" && (
-                            <div>
-                                <h5>Messages</h5>
-                                <p>Here are your messages...</p>
+                            <div className={`card message-card ${isITReply ? "it-reply" : "user-ticket"}`}>
+                                <div className="card-body">
+                                    <div className="header d-flex align-items-center">
+                                        <div className="avatar-circle me-2">M</div>
+                                        <div>
+                                            <h6 className="name mb-0">Matt</h6>
+                                            <p className="time text-muted small">1 hour ago</p>
+                                        </div>
+                                    </div>
+                                    <div className="message-content mt-3">
+                                        <p>Hi,</p>
+                                        <p>Our sales team is using AcmeWidgets to manage tasks and our team also uses
+                                            accounting software to manage business operations, we now need a workflow
+                                            where in we need to integrate the two apps so that we can access the
+                                            Accounting related tasks on AcmeWidgets.</p>
+                                        <p>Thanks,</p>
+                                        <p>Matt</p>
+                                    </div>
+                                    <div
+                                        className="footer text-muted small mt-3 pt-2 border-top d-flex justify-content-between">
+                                        <span>Other Recipients <span>none</span></span>
+                                        <button className="btn btn-link p-0">Show more</button>
+                                    </div>
+                                </div>
                             </div>
                         )}
                         {activeTab === "attachments" && (

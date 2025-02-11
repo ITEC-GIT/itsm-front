@@ -319,13 +319,13 @@ const TicketCard: React.FC<CardProps> = ({
                 </div>
               </div>
               <div
-                  className="col-md-auto col-md-2 d-flex align-items-start ps-2 border-end other-info card-column-border-right position-relative"
+                  className="col-md-auto col-md-2 d-flex align-items-start  ps-2 border-end other-info card-column-border-right position-relative"
                   onClick={(e) => handleAssignToClick("assign", e)}
               >
                 {assignees.map((assignee, index) => (
                     <div
                         key={index}
-                        className="d-flex align-items-center mb-2"
+                        className="d-flex align-items-center mb-2 align-self-center"
                         style={{
                           borderRight:
                               index !== assignees.length - 1

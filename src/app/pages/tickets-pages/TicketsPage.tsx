@@ -29,7 +29,7 @@ import {
     initialFetchedTicketsAtom,
     initialFetchedTicketsTotalAtom,
     newTicketsAvailableCount,
-    totalTicketsFetchedAtom,
+    totalTicketsFetchedAtom, fetchActionAtom,
 } from "../../atoms/tickets-page-atom/ticketsPageAtom";
 import {toolbarTicketsFrontFiltersAtom} from "../../atoms/toolbar-atoms/toolbarTicketsAtom";
 import {userAtom} from "../../atoms/auth-atoms/authAtom";
@@ -85,13 +85,20 @@ const TicketsPage: React.FC = () => {
     const setFetchMorePagesFlag = useSetAtom(fetchMorePagesFlagAtom);
     const fetchLessPagesFlag = useAtomValue(fetchLessPagesFlagAtom);
     const setFetchLessPagesFlag = useSetAtom(fetchLessPagesFlagAtom);
-
+    const [fetchAction, setFetchAction] = useAtom(fetchActionAtom);
     const [totalPagesFetched, setTotalPagesFetched] = useState<number>(1);
 
     const [currentTotalTicketsAccumulation, setCurrentTotalTicketsAccumulation] =
         useAtom(totalTicketsAccumultionAtom); // Set the total tickets per query of fetched in this instance only
     const [totalTicketsFetched, setTotalTicketsFetchedAtom] =
         useAtom(totalTicketsFetchedAtom); // Set the total tickets per query of fetched in this instance only
+    const prevTotalTicketsRef = useRef(totalTicketsFetched);
+
+    useEffect(() => {
+        prevTotalTicketsRef.current = totalTicketsFetched;
+    }, [totalTicketsFetched]);
+
+    const previousTotalTicketsValue = prevTotalTicketsRef.current;
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [maxTotalTickets, setMaxTotalTickets] = useAtom(maxTotalAtom);
     const [paginatedTickets, setPaginatedTickets] = useState<any[]>([]);
@@ -194,10 +201,12 @@ const TicketsPage: React.FC = () => {
                     setCurrentTotalTicketsAccumulation(responseData.length);
                     setTickets(responseData);
                     setCurrentTicketsPage(1);
+                    setFetchAction("initial");
                 } else if (fetchMorePagesFlag && !filterFetching) {
                     setCurrentTotalTicketsAccumulation(
                         (prevTotal) => prevTotal + responseData.length
                     );
+                    setFetchAction("more");
                     const mismatch = Math.abs(
                         Number(response.totalcount) - Number(initialFetchedTicketsTotal)
                     );
@@ -209,12 +218,18 @@ const TicketsPage: React.FC = () => {
                     responseData = response.data.sort((a: any, b: any) => b.id - a.id);// i can make flag , if current response data is less than num to fetch
                     // then no need for more pagination ot the right side
                     setCurrentTotalTicketsAccumulation((prevTotal) => {
-                        const newTotal = prevTotal - responseData.length;
-
-                        return newTotal < responseData.length
-                            ? responseData.length
-                            : newTotal;
+                        if(previousTotalTicketsValue<responseData.length){
+                            return prevTotal-previousTotalTicketsValue
+                        }
+                        return prevTotal - responseData.length;
+                        // const newTotal = prevTotal - responseData.length;
+                        // // return newTotal;
+                        // return newTotal < responseData.length
+                        //     ? responseData.length
+                        //     : newTotal;
                     });
+                    setFetchAction("less");
+
                     const mismatch = Math.abs(
                         Number(response.totalcount) - Number(initialFetchedTicketsTotal)
                     );
@@ -254,6 +269,7 @@ const TicketsPage: React.FC = () => {
                     setCurrentTotalTicketsAccumulation(
                         (prevTotal) => prevTotal + responseData.length
                     );
+                    setFetchAction("more");
 
                     setTickets(responseData);
                 } else if (filterFetching && fetchLessPagesFlag) {
@@ -263,11 +279,13 @@ const TicketsPage: React.FC = () => {
                     // );
                     setCurrentTotalTicketsAccumulation((prevTotal) => {
                         const newTotal = prevTotal - responseData.length;
-
+                        // return newTotal;
                         return newTotal < responseData.length
                             ? responseData.length
                             : newTotal;
                     });
+                    setFetchAction("less");
+
                     setTickets(responseData);
                 } else if (filterFetching) {
                     const responseData = response.data;
@@ -277,6 +295,8 @@ const TicketsPage: React.FC = () => {
                     setCurrentTotalTicketsAccumulation(responseData.length);
                     setCurrentTicketsPage(1);
                     setMaxTotalTickets(response.totalcount);
+                    setFetchAction("initial");
+
                 }
 
                 if (
