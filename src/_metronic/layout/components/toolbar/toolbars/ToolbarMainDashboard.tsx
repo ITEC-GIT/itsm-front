@@ -17,9 +17,9 @@ const ToolbarMainDashboard = () => {
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
   );
-  // const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
-  //   null
-  // );
+  const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
+    null
+  );
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
@@ -32,21 +32,45 @@ const ToolbarMainDashboard = () => {
     })) || []),
   ];
 
-  // const userOptions =
-  //   staticData["assignees"]?.map((assignee) => ({
-  //     value: "id" in assignee ? Number(assignee?.id) : 0,
-  //     label: "name" in assignee ? String(assignee?.name) : "",
-  //   })) || [];
+  const userOptions = (staticData["requesters"] || [])
+    // .filter((user) => !selectedBranch || user.branchid === selectedBranch.value)
+    .map((requester) => ({
+      value: "id" in requester ? Number(requester?.id) : 0,
+      label: "name" in requester ? String(requester?.name) : "",
+    }));
 
-  const filteredDevices = staticData["Computers"]?.filter(
-    (device) => !selectedBranch || device.branchid === selectedBranch.value
-  );
+  const filteredDevices = (staticData["Computers"] || []).filter((device) => {
+    if (selectedBranch && selectedUser) {
+      return (
+        device.branchid === selectedBranch.value
+        // &&
+        // device.requesterid === selectedUser.value
+      );
+    }
+    if (selectedBranch) {
+      return device.branchid === selectedBranch.value;
+    }
+    // if (selectedUser) {
+    //   return device.requesterid === selectedUser.value;
+    // }
+    return true;
+  });
 
-  const compOptions =
-    filteredDevices?.map((device) => ({
-      value: "id" in device ? Number(device?.id) : 0,
-      label: "name" in device ? String(device?.name) : "",
-    })) || [];
+  const compOptions = filteredDevices.map((device) => ({
+    value: device.id,
+    label: device.name,
+  }));
+
+  const handleBranchChange = (newValue: selectValueType | null) => {
+    setSelectedBranch(newValue);
+    setSelectedUser(null);
+    setSelectedDevice(null);
+  };
+
+  const handleUserChange = (newValue: selectValueType | null) => {
+    setSelectedUser(newValue);
+    setSelectedDevice(null);
+  };
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -59,59 +83,68 @@ const ToolbarMainDashboard = () => {
       className={clsx("app-container ", classes.toolbarContainer.join(" "))}
     >
       <div className="filters-Container">
-        <Select
-          className="select-dashboard"
-          options={depOptions}
-          value={selectedBranch}
-          onChange={(newValue) => setSelectedBranch(newValue)}
-          placeholder="Select Branch"
-          styles={{
-            menu: (base) => ({
-              ...base,
-              zIndex: 9999,
-            }),
-            container: (base) => ({
-              ...base,
-              zIndex: 9999,
-            }),
-          }}
-        />
+        <div>
+          <Select
+            className="select-dashboard"
+            options={depOptions}
+            value={selectedBranch}
+            onChange={handleBranchChange}
+            placeholder="Select Branch"
+            isClearable
+            styles={{
+              menu: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+              container: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+            }}
+          />
+        </div>
 
-        {/* <Select
-          className="select-dashboard"
-          options={userOptions}
-          value={selectedUser}
-          onChange={(newValue) => setSelectedUser(newValue)}
-          placeholder="Select User"
-          styles={{
-            menu: (base) => ({
-              ...base,
-              zIndex: 9999,
-            }),
-            container: (base) => ({
-              ...base,
-              zIndex: 9999,
-            }),
-          }}
-        /> */}
+        <div>
+          <Select
+            className="select-dashboard"
+            options={userOptions}
+            value={selectedUser}
+            onChange={handleUserChange}
+            placeholder="Select User"
+            isClearable
+            styles={{
+              menu: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+              container: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+            }}
+          />
+        </div>
 
-        <Select
-          className="select-dashboard"
-          options={compOptions}
-          value={selectedDevice}
-          onChange={(newValue) => handleDeviceChange(newValue)}
-          placeholder="Select Device"
-          styles={{
-            menu: (base) => ({
-              ...base,
-              zIndex: 9999,
-            }),
-            container: (base) => ({
-              ...base,
-              zIndex: 9999,
-            }),
-          }}
-        />
+        <div>
+          <Select
+            className="select-dashboard"
+            options={compOptions}
+            value={selectedDevice}
+            onChange={handleDeviceChange}
+            placeholder="Select Device"
+            isClearable
+            styles={{
+              menu: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+              container: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+            }}
+          />
+        </div>
 
         {/* <div className="search-input-wrapper">
           <input
