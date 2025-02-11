@@ -5,8 +5,7 @@ import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
-import { Wizard } from "../../components/form/wizard";
-import { steps } from "../../data/softwareInstallation";
+
 import {
   CancelSoftwareInstallation,
   GetAllSoftwareInstallations,
@@ -30,6 +29,8 @@ import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 
 import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
 import { StaticDataType } from "../../types/filtersAtomType";
+import { Wizard } from "../../components/form/wizard";
+import { steps } from "../../data/softwareInstallation";
 
 const SoftwareInstallationPage = ({
   computerIdProp,
