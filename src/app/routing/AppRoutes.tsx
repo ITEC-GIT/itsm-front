@@ -27,6 +27,7 @@ import {
   slavesAtom,
 } from "../atoms/app-routes-global-atoms/globalFetchedAtoms";
 
+
 /**
  * Base URL of the website.
  *
@@ -36,7 +37,7 @@ const { BASE_URL } = import.meta.env;
 
 const RoutesContent: FC = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
-  
+
   const isAuthAtom = useAtomValue(isAuthenticatedAtom);
   const [user, setUser] = useAtom(userAtom);
   useEffect(() => {
@@ -52,6 +53,38 @@ const RoutesContent: FC = () => {
       setCurrentUser(null);
       navigate("/auth/login");
     } else {
+      const fetchStaticDataWithAtom = async () => {
+        try {
+          const [usersAndAreasResponse, staticDataResponse] = await Promise.all(
+            [GetUsersAndAreas(), GetStaticData()]
+          );
+
+          if (
+            usersAndAreasResponse.status !== 200 ||
+            staticDataResponse.status !== 200
+          ) {
+            throw new Error(
+              `Network response was not ok: 
+            UsersAndAreas: ${usersAndAreasResponse.status} ${usersAndAreasResponse.statusText}, 
+            StaticData: ${staticDataResponse.status} ${staticDataResponse.statusText}`
+            );
+          }
+
+          const data = {
+            ...staticDataResponse.data,
+            ...usersAndAreasResponse.data,
+          };
+
+          if (typeof data === "object" && data !== null) {
+            setStaticData(data);
+          } else {
+            console.error("Invalid data received from the API:", data);
+          }
+        } catch (error) {
+          console.error("Error checking IndexedDB or fetching data:", error);
+        }
+      };
+      fetchStaticDataWithAtom();
       setCurrentUser(getSessionTokenFromCookie());
     }
   }, [isAuthAtom, navigate]);

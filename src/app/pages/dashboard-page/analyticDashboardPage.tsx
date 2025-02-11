@@ -19,7 +19,6 @@ const AnalyticsDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const userId = Number(Cookies.get("user"));
-  console.log("userId ==>>", userId);
 
   const toggleChart = (chartId: number, chartType: string) => {
     setSelectedCharts((prev) => {
@@ -43,7 +42,6 @@ const AnalyticsDashboard = () => {
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   useEffect(() => {
-    console.log("userId ==>>", userId);
     if (userId) {
       loadFromIndexedDB(userId, "ChartsDB", "charts").then((data) => {
         setSelectedCharts(data);

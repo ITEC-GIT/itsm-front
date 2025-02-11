@@ -1,4 +1,9 @@
 import { ErrorResponse } from "../types/AuthTypes";
+import {
+  CreateSoftInstRequestType,
+  GetAllSoftwareInstallationRequestType,
+} from "../types/softwareInstallationTypes";
+
 import { ApiRequestBody, UpdateTicketRequestBody } from "./ApiTypes";
 import { PrivateApiCall, PublicApiCall,getSessionTokenFromCookie } from "./Config";
 
@@ -92,35 +97,24 @@ async function GetUserProfile() {
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
+
 async function GetUsers() {
   return await PublicApiCall.get(`//`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
+/** *********************************************************************************************/
+/** ************************************** Tickets **********************************************/
+/** *********************************************************************************************/
 
 async function GetTicketsView() {
   return await PrivateApiCall.get(`/TicketsView/`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
-async function GetDashboardAnalytics() {
-  return await PrivateApiCall.get(`/AnalyticsDashboard/`)
-    .then((response) => response)
-    .catch((error: any) => errorCatch(error));
-}
-async function GetFilterSearchTickets() {
-  return await PrivateApiCall.get(`/searchTickets/`)
-    .then((response) => response)
-    .catch((error: any) => errorCatch(error));
-}
-async function GetBranches() {
-  return await PublicApiCall.get(`//`)
-    .then((response) => response)
-    .catch((error: any) => errorCatch(error));
-}
 
 // http://192.168.151.22/apirest.php/TicketsView?idgt=1&range=0-3&order=asc , starting from max id 1 , we get 4 items
-async function GetTicketsViewById( range: string, order: string,idgt?: number) {
+async function GetTicketsViewById(range: string, order: string, idgt?: number) {
   const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
   const sessionToken = getSessionTokenFromCookie();
   const params: any = {
@@ -141,7 +135,96 @@ async function GetTicketsViewById( range: string, order: string,idgt?: number) {
   })
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
+}
 
+/** ********************************************************************************************/
+/** ************************************** Dashboard *******************************************/
+/** ********************************************************************************************/
+
+async function GetDashboardAnalytics() {
+  return await PrivateApiCall.get(`/AnalyticsDashboard/`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+/** *********************************************************************************************/
+/** ************************************** Branches *********************************************/
+/** *********************************************************************************************/
+
+
+
+/** *********************************************************************************************/
+/** ************************************** Software Installation ********************************/
+/** *********************************************************************************************/
+async function FetchAllSoftwareInstallations(
+  range: string,
+  order: string,
+  idgt?: number,
+  searchQuery?: string
+) {
+  return await PrivateApiCall.get(`/CTSoftwareInstallation/`, {
+    params: {
+      expand_dropdowns: 1,
+      range,
+      order,
+      idgt,
+    },
+  })
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function InitiateSoftwareInstallation(data: FormData) {
+  return await PrivateApiCall.post(`/antitheft/software_installation`, data)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));}
+
+
+async function CancelSoftwareInstallation(id: number) {
+  const body = {
+    input: {
+      status: "cancelled",
+    },
+  };
+
+  return await PrivateApiCall.patch(`/CTSoftwareInstallation/${id}`, body)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetAllSoftwareInstallations(
+  data?: GetAllSoftwareInstallationRequestType
+) {
+  return await PrivateApiCall.post(`/GetSoftwareInstallation/`, data)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+/** *********************************************************************************************/
+/** ************************************** Computers ********************************************/
+/** *********************************************************************************************/
+async function GetAllComputers() {
+  return await PrivateApiCall.get(`/Computer`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+/** *********************************************************************************************/
+/** ************************************** Locations ********************************************/
+/** *********************************************************************************************/
+async function GetAllLocations() {
+  return await PrivateApiCall.get(`/location`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+/** *********************************************************************************************/
+/** ************************************** Static Data ******************************************/
+/** *********************************************************************************************/
+async function GetStaticData() {
+  return await PrivateApiCall.get(`/GetStaticData`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
 }
 async function UpdateActions( ticketId: number , ticketStatusId: number,ticketUrgencyId: number,ticketPriorityId: number,ticketTypeID: number) {
   const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
@@ -163,8 +246,8 @@ async function UpdateActions( ticketId: number , ticketStatusId: number,ticketUr
       "Content-Type": "application/json",
     },
   })
-  .then((response) => response)
-  .catch((error: any) => errorCatch(error));
+      .then((response) => response)
+      .catch((error: any) => errorCatch(error));
 
 
 }
@@ -184,22 +267,28 @@ async function UpdateStarred( ticketId: number , starred: number) {
       "Content-Type": "application/json",
     },
   })
-  .then((response) => response)
-  .catch((error: any) => errorCatch(error));
+      .then((response) => response)
+      .catch((error: any) => errorCatch(error));
 
 
 }
-async function GetStaticData( ) {
+async function GetUsersAndAreas() {
+  return await PrivateApiCall.get(`/UsersAndAreas`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
 
-  return await PrivateApiCall.get("/GetStaticData")
-  .then((response) => response)
-  .catch((error: any) => errorCatch(error));
-}
-async function GetUsersBranch( ) {
-  return await PrivateApiCall.get("/UsersAndAreas")
-  .then((response) => response)
-  .catch((error: any) => errorCatch(error));
-}
-export { LoginApi, GetUserProfile,GetTicketsViewById ,  GetUsers,
-  GetBranches,
-  GetDashboardAnalytics,FetchFilteredTickets,UpdateStarred,GetStaticData,GetUsersBranch,UpdateTicket};
+export {
+  LoginApi,
+  GetUserProfile,
+  GetTicketsViewById,
+  GetUsers,
+  GetDashboardAnalytics,
+  InitiateSoftwareInstallation,
+  FetchAllSoftwareInstallations,
+  CancelSoftwareInstallation,
+  GetAllSoftwareInstallations,
+  GetAllComputers,
+  GetAllLocations,
+  GetStaticData,
+  GetUsersAndAreas,FetchFilteredTickets,UpdateStarred,UpdateTicket};

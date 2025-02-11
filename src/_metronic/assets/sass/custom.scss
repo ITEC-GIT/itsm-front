@@ -1,7 +1,12 @@
-.content-background {
-  background-color: #d3d3d3 !important;
-  padding-top: 5px !important;
-  margin-bottom: 5px !important;
+.content-background{
+    background-color: #D9EAFD !important;
+    padding-top: 20px !important;
+}
+
+.required::after {
+  content: "*";
+  color: red;
+  margin-left: 5px;
 }
 
 .spinner-loading-data {

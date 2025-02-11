@@ -26,7 +26,7 @@ const StatisticsWidget5: React.FC<Props> = ({
   titleColor,
   description,
   descriptionColor,
-  progress = 0,
+  progress,
   progressColor,
 }) => {
   return (
@@ -51,62 +51,64 @@ const StatisticsWidget5: React.FC<Props> = ({
             marginBottom: "1rem",
           }}
         >
-          {/* circular progress bar */}
-          <svg
-            className="position-absolute w-100 h-100"
-            viewBox="0 0 36 36"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="18"
-              cy="18"
-              r="15.9155"
-              fill="none"
-              stroke="#e0e0e0"
-              strokeWidth="2"
-            />
+          {progress && progressColor && (
+            <svg
+              className="position-absolute w-100 h-100"
+              viewBox="0 0 36 36"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="18"
+                cy="18"
+                r="15.9155"
+                fill="none"
+                stroke="#e0e0e0"
+                strokeWidth="2"
+              />
 
-            <circle
-              cx="18"
-              cy="18"
-              r="15.9155"
-              fill="none"
-              stroke={`url(#gradient-${progressColor})`}
-              strokeWidth="2"
-              strokeDasharray="100"
-              strokeDashoffset={100 - progress}
-              strokeLinecap="round"
-              transform="rotate(-90 18 18)"
-            />
+              <circle
+                cx="18"
+                cy="18"
+                r="15.9155"
+                fill="none"
+                stroke={`url(#gradient-${progressColor})`}
+                strokeWidth="2"
+                strokeDasharray="100"
+                strokeDashoffset={100 - progress}
+                strokeLinecap="round"
+                transform="rotate(-90 18 18)"
+              />
 
-            <defs>
-              <linearGradient
-                id={`gradient-${progressColor}`}
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="0%"
-              >
-                <stop
-                  offset="0%"
-                  style={{ stopColor: "#4caf50", stopOpacity: 1 }}
-                />
-                <stop
-                  offset="100%"
-                  style={{ stopColor: "#81c784", stopOpacity: 1 }}
-                />
-              </linearGradient>
-            </defs>
-          </svg>
+              <defs>
+                <linearGradient
+                  id={`gradient-${progressColor}`}
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop
+                    offset="0%"
+                    style={{ stopColor: "#4caf50", stopOpacity: 1 }}
+                  />
+                  <stop
+                    offset="100%"
+                    style={{ stopColor: "#81c784", stopOpacity: 1 }}
+                  />
+                </linearGradient>
+              </defs>
+            </svg>
+          )}
 
-          {/* Icon and Description Inside the Circle */}
           <div
-            className="position-absolute d-flex flex-column align-items-center"
+            className={`position-absolute d-flex flex-column align-items-center ${
+              !(progress && progressColor) ? "gap-3" : ""
+            }`}
             style={{ zIndex: 1 }}
           >
             <KTIcon
               iconName={svgIcon}
-              className={`text-${iconColor} fs-2x ms-n1`}
+              className={`text-${iconColor} fs-3x ms-n1`}
             />
             <span className={`fw-bold text-${descriptionColor}`}>
               {description}
