@@ -40,13 +40,13 @@ const SidebarMain = () => {
 
   return (
     <div className="sidebar-main">
-      {computer ? (
+      {selectedComputerAtom ? (
         <div className="computer-info">
           <div className="computer-header">
-            <h2 className="computer-name">{computer.name}</h2>
+            <h2 className="computer-name">{computer?.name}</h2>
             {/* <span className="computer-type">{computer.computertypes_id}</span> */}
             <span className="computer-type">
-              {computer.computertypes_id} - {computer.computermodels_id}{" "}
+              {computer?.computertypes_id} - {computer?.computermodels_id}{" "}
             </span>
           </div>
           {/* <div className="d-flex flex-column gap-2">
