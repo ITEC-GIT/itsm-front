@@ -22,7 +22,7 @@ export function atomWithIndexedDB<T>(
     // Base atom for local state
     const baseAtom = atom(initialValue);
     function getUserIdFromCookie() {
-        const match = Cookies.get('user');
+        const match = Cookies.get('username');
         return match ? match : null;
     }
 
@@ -30,7 +30,10 @@ export function atomWithIndexedDB<T>(
     const readAtom = atom((get) => {
         let storedValue: AtomData<T> | undefined;
         const userId = getUserIdFromCookie();
-        const userScopedKey = `${userId}-${key}`;
+        let userScopedKey = `${key}`;
+        if (!key.startsWith(`${userId}-`)) {
+            userScopedKey = `${userId}-${key}`;
+        }
         db.table<AtomData<T>>('atoms').get(userScopedKey).then(value => {
             storedValue = value;
         }).catch(error => {
@@ -53,7 +56,9 @@ export function atomWithIndexedDB<T>(
             // Save to IndexedDB
             try {
                 const userId = getUserIdFromCookie();
-                key = `${userId}-${key}`;
+                if (!key.startsWith(`${userId}-`)) {
+                    key = `${userId}-${key}`;
+                }
                 await db.table<AtomData<T>>('atoms').put({ key, value: newValue });
             } catch (error) {
                 console.error('Error writing to IndexedDB:', error);

@@ -71,9 +71,9 @@ const RoutesContent: FC = () => {
     };
   }, [navigate]);
 
-  const fetchStaticData = async () => {
+  const fetchStaticData = async (user:any) => {
     try {
-      const userId = currentUser?.id || 0; // Replace with actual user ID
+      const userId = user || 'assignee'; // Replace with actual user ID
       const DB_NAME = "StaticDataDB";
       const STORE_NAME = "StaticData";
 
@@ -88,7 +88,6 @@ const RoutesContent: FC = () => {
         const dataArray = Array.isArray(data) ? data : [data];
 
         // Store the fetched data in IndexedDB
-        await saveToIndexedDB(userId, DB_NAME, STORE_NAME, dataArray);
 
         // Set the data in the atom
         setStaticData(dataArray);
@@ -125,13 +124,13 @@ const RoutesContent: FC = () => {
     isCurrentUserMasterAtom
   );
   useEffect(() => {
-    if (getSessionTokenFromCookie() == null && !isAuthAtom) {
+    const sessionCookie=getSessionTokenFromCookie()
+    if (sessionCookie == null && !isAuthAtom) {
       setCurrentUser(null);
       navigate("/auth/login");
     } else {
       refetch();
-      fetchStaticData();
-      setCurrentUser(getSessionTokenFromCookie());
+      setCurrentUser(sessionCookie);
     }
   }, [isAuthAtom, navigate]);
   useEffect(() => {
@@ -156,6 +155,7 @@ const RoutesContent: FC = () => {
       const currentAssignee = userBranches.data.assignees.find(
         (assignee: { name: string; is_admin: number }) => assignee.name === currentUser
       );
+      fetchStaticData(currentUser);
 
       const isAdmin = currentAssignee ? currentAssignee.is_admin === 1 : false;
       setIsCurrentUserMaster(isAdmin);

@@ -59,6 +59,7 @@ export function LoginPage() {
           Cookies.set("isAuthenticated", "true");
           const userId = res.session.glpiID;
           Cookies.set("user", userId);
+          Cookies.set("username", res.session.glpiname);
 
           setLoginError(null);
           const {
