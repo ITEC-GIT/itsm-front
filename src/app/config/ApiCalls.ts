@@ -177,6 +177,19 @@ async function GetComputer(id: number) {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetPrivateIPAddress(id: number) {
+  return await PrivateApiCall.get(`/AntComputerIP/`, {
+    params: {
+      get_hateoas: false,
+      order: "DESC",
+      "searchText[computers_id]": id,
+      range: "0-0",
+    },
+  })
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 /** *********************************************************************************************/
 /** ************************************** Locations ********************************************/
 /** *********************************************************************************************/
@@ -213,6 +226,7 @@ export {
   CancelSoftwareInstallation,
   GetAllComputers,
   GetComputer,
+  GetPrivateIPAddress,
   GetAllSoftwareInstallations,
   GetAllLocations,
   GetStaticData,

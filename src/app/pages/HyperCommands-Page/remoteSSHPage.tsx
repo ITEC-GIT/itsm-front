@@ -6,9 +6,10 @@ import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
 import { StaticDataType } from "../../types/filtersAtomType";
 import Select from "react-select";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
+import { GetPrivateIPAddress } from "../../config/ApiCalls";
+import { DeviceIPAddressType } from "../../types/devicesTypes";
 
 const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
-  const [connected, setConnected] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertVariant, setAlertVariant] = useState<string>("");
 
@@ -63,51 +64,32 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       }));
   }, [staticData, selectedBranch]);
 
-  const handleDeviceChange = (newValue: selectValueType | null) => {
-    setSelectedDevice(newValue);
+  const handleBranchChange = (newValue: selectValueType | null) => {
+    setSelectedBranch(newValue);
+    setSelectedUser(null);
+    setSelectedDevice(null);
   };
 
-  const validateHostname = (hostname: string) => {
-    const regex =
-      /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$|^([0-9]{1,3}\.){3}[0-9]{1,3}$/;
-    return regex.test(hostname);
-  };
-
-  const validatePort = (port: string | number) => {
-    return Number(port) > 0;
-  };
-
-  const validateCredentials = () => {
-    if (!userName || !pass) {
-      setAlertMessage("Please enter both username and password.");
-      setAlertVariant("danger");
-      return false;
+  const fetchIPAddress = async () => {
+    if (selectedDevice) {
+      const res = await GetPrivateIPAddress(selectedDevice.value);
+      const data: DeviceIPAddressType = res.data.data[0];
+      return data.private_ip_address;
     }
-    return true;
   };
 
-  const handleConnect = () => {
-    // if (!hostname || !port) {
-    //   setAlertMessage("Please provide both hostname and port.");
-    //   setAlertVariant("danger");
-    //   return;
-    // }
-    // if (!validateHostname(hostname as string)) {
-    //   setAlertMessage(
-    //     "Invalid hostname. Please enter a valid hostname or IP address."
-    //   );
-    //   setAlertVariant("danger");
-    //   return;
-    // }
-    // if (!validatePort(port)) {
-    //   setAlertMessage("Port must be a positive number.");
-    //   setAlertVariant("danger");
-    //   return;
-    // }
-    // if (!validateCredentials()) return;
-    // setConnected(true);
-    // setAlertMessage("Connected to server successfully!");
-    // setAlertVariant("success");
+  const handleConnect = async () => {
+    if (selectedDevice && userName && pass.trim()) {
+      const hostname = await fetchIPAddress();
+      if (!hostname) {
+        setAlertMessage(
+          "Unable to fetch IP address. Please check network connectivity, ensure the device is powered on and reachable."
+        );
+        setAlertVariant("danger");
+        return;
+      }
+      console.log("hostname ==>>", hostname);
+    }
   };
 
   const handleReset = () => {
@@ -118,7 +100,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     setSelectedUser(null);
     setAlertMessage("");
     setAlertVariant("");
-    setConnected(false);
   };
 
   useEffect(() => {
@@ -172,19 +153,12 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     options={locationOptions}
                     classNamePrefix="react-select"
                     value={selectedBranch}
-                    onChange={(newValue) => setSelectedBranch(newValue)}
+                    onChange={handleBranchChange}
                     placeholder="Select Branch"
                     isClearable
                   />
                 </div>
-                <div
-                  className="col-md-6 mb-5"
-                  // style={{
-                  //   borderRadius: "1rem",
-                  //   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  //   padding: "2rem",
-                  // }}
-                >
+                <div className="col-md-6 mb-5">
                   <label className="custom-label">Username</label>
                   <input
                     type="text"
