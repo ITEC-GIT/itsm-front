@@ -1,5 +1,4 @@
 export const transformStaticData = (data: any) => {
-    data=data[0]
     const statusOptions = data.statusOptions.map((option: any) => ({
       value: option.id,
       label: option.label,

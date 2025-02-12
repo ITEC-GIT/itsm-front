@@ -12,7 +12,7 @@ import {
   saveToIndexedDB,
 } from "../../indexDB/Config";
 import { useAtom } from "jotai";
-import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 
 interface FilterSidebarProps {
   isOpen: boolean;

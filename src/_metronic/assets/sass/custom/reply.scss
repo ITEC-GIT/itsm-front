@@ -1,23 +1,33 @@
-.reply-footer-controls-content {
+
+.reply-footer-controls {
   position: sticky; // Makes the navigation stick to the container's bottom
-  bottom: 5px !important; // Adds margin from the bottom
+  bottom: 0px !important; // Adds margin from the bottom
+
+  width: 100% !important;
+  z-index: 1001;
+  background-color: #DDE2E6 !important;
+
+}
+.reply-footer-controls-content {
+
+  background-color: #f8f9fa; // Optional: Background color for better visibility
+  border-top: 1px solid #ddd; // Optional: Adds a separator line
+  justify-content: left; // Centers the navigation horizontally
   gap: 10px;
   top: 0 !important;
   left: 0; // Aligns it to the container's left edge
   right: 0; // Aligns it to the container's right edge
   display: flex; // Allows child elements to be flexibly positioned
-  justify-content: left; // Centers the navigation horizontally
   margin: auto; // Ensures it's centered with padding around it
-  background-color: #f8f9fa; // Optional: Background color for better visibility
-  border-top: 1px solid #ddd; // Optional: Adds a separator line
-  width: 100% !important;
-  z-index: 1001;
+  margin-left: 30px !important;
+  margin-right: 30px !important;
+  border-radius: 8px;
+  border-bottom:0px !important; ;
 }
 .cancel-send{
-  padding-left: 10px !important;
-  padding: 1px;
-  gap: 10px; /* Space between buttons */
 
+  gap: 10px; /* Space between buttons */
+  margin: 8px !important;
 }
 .btn-reply {
   margin: 8px !important;
@@ -40,17 +50,15 @@
   position: relative;
   width: 100%;
   height: 40%;
+  background: #DDE2E6;
   overflow: hidden;
-  background: transparent;
-
 }
 
 .custom-offcanvas {
   position: absolute !important;  /* Keeps it inside the parent */
-  left: 10px !important;          /* Adds left margin */
-  right: 10px !important;         /* Adds right margin */
   top: 10px !important;         /* Adds right margin */
-  width: 98% !important;          /* Adjust as needed */
+  width: auto !important;
+  max-width: calc(100% - 60px) !important;
   bottom: 20px !important;        /* Adds bottom margin */
   max-height: 95% !important;     /* Prevents it from taking full height */
   border-radius: 10px;            /* Optional rounded edges */
@@ -59,7 +67,8 @@
   border: 2px solid #ccc; // Light grey border
   boxShadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Subtle shadow for 2D effect
   zIndex: 1000;
-
+  left: 30px !important;
+  right: 30px !important;
 }
 .offcanvas-backdrop {
   background: none !important; /* Removes background overlay */
@@ -113,7 +122,7 @@
 }
 
 .tab-content {
-  padding: 15px;
+  padding: 15px 15px 15px 5px;
   border-radius: 4px;
 }
 

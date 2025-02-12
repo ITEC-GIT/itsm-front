@@ -218,8 +218,8 @@ const TicketsPage: React.FC = () => {
                     responseData = response.data.sort((a: any, b: any) => b.id - a.id);// i can make flag , if current response data is less than num to fetch
                     // then no need for more pagination ot the right side
                     setCurrentTotalTicketsAccumulation((prevTotal) => {
-                        if(previousTotalTicketsValue<responseData.length){
-                            return prevTotal-previousTotalTicketsValue
+                        if (previousTotalTicketsValue < responseData.length) {
+                            return prevTotal - previousTotalTicketsValue
                         }
                         return prevTotal - responseData.length;
                         // const newTotal = prevTotal - responseData.length;
@@ -316,7 +316,7 @@ const TicketsPage: React.FC = () => {
                 if (currentTicketsPage > responseData.length / ticketsPerPage) {
                     setCurrentTicketsPage(1);
                 }
-                if(!intervalFetching ){
+                if (!intervalFetching) {
                     setTotalTicketsFetchedAtom(response.count);
 
                 }
@@ -488,15 +488,15 @@ const TicketsPage: React.FC = () => {
 
         if (ticket) {
             const newStarredStatus = ticket.starred === 1 ? 0 : 1;
-            // const response = await UpdateStarred(parseInt(id), newStarredStatus);
+            const response = await UpdateStarred(parseInt(id), newStarredStatus);
 
-            // if (response) {
-            //   setTickets(prevTickets =>
-            //     prevTickets.map(t =>
-            //       t.id === id ? { ...t, starred: newStarredStatus } : t
-            //     )
-            //   );
-            // }
+            if (response !== undefined) {
+                setTickets(prevTickets =>
+                    prevTickets.map(t =>
+                        t.id === id ? {...t, starred: newStarredStatus} : t
+                    )
+                );
+            }
         }
     };
     useEffect(() => {
@@ -540,10 +540,21 @@ const TicketsPage: React.FC = () => {
     //   };
     //   setIsBackendFilterValuesExist(hasNonEmptyValue(backendFilter));
     // }, [backendFilter]);
-    const [staticData] = useAtom(staticDataAtom);
+    const [staticData, setStaticData] = useAtom(staticDataAtom);
+    const [statusOptions, setStatusOptions] = useState([]);
+    useEffect(() => {
+        console.log("Component loaded!");
+        const hasValues = (obj: object): boolean => Object.keys(staticData).length > 0;
 
-    const {statusOptions, urgencyOptions, priorityOptions, typeOptions} =
-        transformStaticData(staticData);
+        if (staticData != undefined && hasValues(staticData)) {
+            const {statusOptions, urgencyOptions, priorityOptions, typeOptions} =
+                transformStaticData(staticData);
+            setStatusOptions(statusOptions)
+            const x = 0;
+        }
+
+    }, [staticData]); // Runs when count changes
+
     const fetchTickets = async () => {
         try {
             const filterBody: ApiRequestBody = {
@@ -1123,9 +1134,26 @@ const TicketsPage: React.FC = () => {
     }, [toolbarNewTickets]);
     // Cleanup function to reset mismatchCount on component unmount
     useEffect(() => {
+        if (location.state?.from === "details" && tickets.length > 0) {
+            console.log("Navigated back from details; skipping changing mismatch");
+            return;
+        }
         return () => {
-            setMismatchCount(0); // Reset mismatchCount to 0
+            // this is to unmount the component but not unmount data if navigating to details of any card
+            const isTicketFormat = (input: string): boolean => {
+                if (!input.startsWith("/ticket/")) return false;
+
+                const parts = input.split("/");
+                const lastPart = parts[2];
+
+                return lastPart !== undefined && !isNaN(Number(lastPart));
+            };
+            const toDetailsRoute = isTicketFormat(window.location.pathname);
+            if (!toDetailsRoute) {
+                setMismatchCount(0);
+            }
         };
+
     }, [setMismatchCount]);
     // const [selectedAssignees] = useAtom(selectedAssigneesAtom);
     const [ticketChangeAssigneenOn, setChangeAssigneeOn] = useAtom(
@@ -1142,14 +1170,16 @@ const TicketsPage: React.FC = () => {
                 const hasIds = ticketChangeAssigneenOn.assigneeIds.length > 0; // Returns true if there are IDs
                 let status = {'value': '', 'label': ''}
                 if (!hasIds) {
-                    status = statusOptions.find((option: { label: string; value: string; }) => option.label === "new");
-
-                } else {
                     status = statusOptions.find((option: {
                         label: string;
                         value: string;
-                    }) => option.label === "assigned");
+                    }) => option.label === "new") || {value: "", label: ""};
+                } else {
 
+                    status = statusOptions.find((option: {
+                        label: string;
+                        value: string;
+                    }) => option.label === "assigned") || {value: "", label: ""};
                 }
 
                 const newTicket = {

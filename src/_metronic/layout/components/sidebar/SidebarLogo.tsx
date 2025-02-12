@@ -1,9 +1,11 @@
-import {Link} from 'react-router-dom'
-import clsx from 'clsx'
-import {KTIcon, toAbsoluteUrl} from '../../../helpers'
-import {useLayout} from '../../core'
-import {MutableRefObject, useEffect, useRef} from 'react'
-import {ToggleComponent} from '../../../assets/ts/components'
+import { Link } from "react-router-dom";
+import clsx from "clsx";
+import { KTIcon, toAbsoluteUrl } from "../../../helpers";
+import { useLayout } from "../../core";
+import { MutableRefObject, useEffect, useRef } from "react";
+import { ToggleComponent } from "../../../assets/ts/components";
+import { useAtom } from "jotai";
+import { sidebarToggleAtom } from "../../../../app/atoms/sidebar-atom/sidebar";
 
 type PropsType = {
   sidebarRef: MutableRefObject<HTMLDivElement | null>;
@@ -14,22 +16,25 @@ const SidebarLogo = (props: PropsType) => {
   const toggleRef = useRef<HTMLDivElement>(null);
 
   const appSidebarDefaultMinimizeDesktopEnabled =
-    config?.app?.sidebar?.default?.minimize?.desktop?.enabled;
+      config?.app?.sidebar?.default?.minimize?.desktop?.enabled;
   const appSidebarDefaultCollapseDesktopEnabled =
-    config?.app?.sidebar?.default?.collapse?.desktop?.enabled;
+      config?.app?.sidebar?.default?.collapse?.desktop?.enabled;
   const toggleType = appSidebarDefaultCollapseDesktopEnabled
-    ? "collapse"
-    : appSidebarDefaultMinimizeDesktopEnabled
-    ? "minimize"
-    : "";
+      ? "collapse"
+      : appSidebarDefaultMinimizeDesktopEnabled
+          ? "minimize"
+          : "";
   const toggleState = appSidebarDefaultMinimizeDesktopEnabled ? "active" : "";
   const appSidebarDefaultMinimizeDefault =
-    config.app?.sidebar?.default?.minimize?.desktop?.default;
+      config.app?.sidebar?.default?.minimize?.desktop?.default;
+  const [toggleInstance, setToggleInstance] = useAtom(sidebarToggleAtom);
 
   useEffect(() => {
     setTimeout(() => {
-      const toggleObj = ToggleComponent.getInstance(toggleRef.current!) as ToggleComponent | null
-
+      const toggleObj = ToggleComponent.getInstance(
+          toggleRef.current!
+      ) as ToggleComponent | null;
+      setToggleInstance(toggleObj);
       if (toggleObj === null) {
         return;
       }
@@ -49,54 +54,54 @@ const SidebarLogo = (props: PropsType) => {
   }, [toggleRef, props.sidebarRef]);
 
   return (
-    <div className="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-      <Link to="/dashboard">
-        {config.layoutType === "dark-sidebar" ? (
-          <img
-            alt="Logo"
-            src={toAbsoluteUrl("media/logos/technical-support.png")}
-            className="h-25px app-sidebar-logo-default"
-          />
-        ) : (
-          <>
-            <img
-              alt="Logo"
-              src={toAbsoluteUrl("media/logos/technical-support.png")}
-              className="h-25px app-sidebar-logo-default theme-light-show"
-            />
-            <img
-              alt="Logo"
-              src={toAbsoluteUrl("media/logos/technical-support.png")}
-              className="h-25px app-sidebar-logo-default theme-dark-show"
-            />
-          </>
-        )}
-
-        <img
-          alt="Logo"
-          src={toAbsoluteUrl("media/logos/default-small.svg")}
-          className="h-20px app-sidebar-logo-minimize"
-        />
-      </Link>
-
-      {(appSidebarDefaultMinimizeDesktopEnabled ||
-        appSidebarDefaultCollapseDesktopEnabled) && (
-        <div
-          ref={toggleRef}
-          id="kt_app_sidebar_toggle"
-          className={clsx(
-            "app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate",
-            { active: appSidebarDefaultMinimizeDefault }
+      <div className="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
+        <Link to="/dashboard">
+          {config.layoutType === "dark-sidebar" ? (
+              <img
+                  alt="Logo"
+                  src={toAbsoluteUrl("media/logos/technical-support.png")}
+                  className="h-25px app-sidebar-logo-default"
+              />
+          ) : (
+              <>
+                <img
+                    alt="Logo"
+                    src={toAbsoluteUrl("media/logos/technical-support.png")}
+                    className="h-25px app-sidebar-logo-default theme-light-show"
+                />
+                <img
+                    alt="Logo"
+                    src={toAbsoluteUrl("media/logos/technical-support.png")}
+                    className="h-25px app-sidebar-logo-default theme-dark-show"
+                />
+              </>
           )}
-          data-kt-toggle="true"
-          data-kt-toggle-state={toggleState}
-          data-kt-toggle-target="body"
-          data-kt-toggle-name={`app-sidebar-${toggleType}`}
-        >
-          <KTIcon iconName="black-left-line" className="fs-3 rotate-180 ms-1" />
-        </div>
-      )}
-    </div>
+
+          <img
+              alt="Logo"
+              src={toAbsoluteUrl("media/logos/default-small.svg")}
+              className="h-20px app-sidebar-logo-minimize"
+          />
+        </Link>
+
+        {(appSidebarDefaultMinimizeDesktopEnabled ||
+            appSidebarDefaultCollapseDesktopEnabled) && (
+            <div
+                ref={toggleRef}
+                id="kt_app_sidebar_toggle"
+                className={clsx(
+                    "app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate",
+                    { active: appSidebarDefaultMinimizeDefault }
+                )}
+                data-kt-toggle="true"
+                data-kt-toggle-state={toggleState}
+                data-kt-toggle-target="body"
+                data-kt-toggle-name={`app-sidebar-${toggleType}`}
+            >
+              <KTIcon iconName="black-left-line" className="fs-3 rotate-180 ms-1" />
+            </div>
+        )}
+      </div>
   );
 };
 

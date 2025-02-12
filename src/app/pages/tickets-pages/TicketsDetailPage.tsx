@@ -70,6 +70,10 @@ const TicketsDetailPage: React.FC = () => {
     return (
         <>
             <Content>
+                <button className="btn btn-sm btn-light"
+                        onClick={() => navigate('/tickets', {state: {from: 'details'}})}>
+                    <i className="fa fa-arrow-left me-2"></i> Back
+                </button>
                 <TicketCard
                     key={ticket.id}
                     id={ticket.id}
@@ -97,10 +101,7 @@ const TicketsDetailPage: React.FC = () => {
                     isDetailsPage={true}
                 />
 
-                <button className="btn btn-sm btn-light"
-                        onClick={() => navigate('/tickets', {state: {from: 'details'}})}>
-                    Back
-                </button>
+
                 <div className="updates-container">
                     <h1 className="updates-title">Updates</h1>
                     <div className="tabs">
@@ -189,8 +190,9 @@ const TicketsDetailPage: React.FC = () => {
                     </div>
                 </div>
             )}
+            <div className="reply-footer-controls ">
             {showReply && (
-                <div className="reply-footer-controls d-flex gap-3">
+                <div className="reply-footer-controls-content d-flex">
                     <button
                         className="btn btn-sm btn-primary btn-reply"
                         onClick={() => setShowReply(!showReply)}
@@ -203,10 +205,10 @@ const TicketsDetailPage: React.FC = () => {
 
                 <div className="reply-footer-controls-content  d-flex gap-3">
                     <div className="cancel-send d-flex align-items-between">
-                    <button className="btn btn-secondary mt-2" onClick={() => setShowReply(true)}>Cancel</button>
-                    <button className="btn btn-primary mt-2" onClick={() => alert(`Reply Sent: ${reply}`)}>Send</button></div>
+                    <button className="btn btn-sm btn-primary mt-2" onClick={() => setShowReply(true)}>Cancel</button>
+                    <button className="btn btn-sm btn-primary mt-2" onClick={() => alert(`Reply Sent: ${reply}`)}>Send</button></div>
                 </div>)}
-
+            </div>
 
         </>
     )

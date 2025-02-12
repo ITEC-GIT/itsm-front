@@ -14,7 +14,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { isAuthenticatedAtom, userAtom } from "../atoms/auth-atoms/authAtom";
 import { authChannel } from "../pages/login-page/authChannel";
 import { getSessionTokenFromCookie } from "../config/Config";
-import { GetStaticData, GetUsersBranch } from "../config/ApiCalls";
+import { GetStaticData,GetUsersAndAreas } from "../config/ApiCalls";
 import { loadFromIndexedDB, saveToIndexedDB } from "../indexDB/IndexDBConfig";
 import {
   isCurrentUserMasterAtom,
@@ -144,7 +144,7 @@ const RoutesContent: FC = () => {
     refetch,
   } = useQuery({
     queryKey: ["userBranches"], // Ensure you have a unique query key
-    queryFn: GetUsersBranch, // Directly pass the function reference
+    queryFn: GetUsersAndAreas, // Directly pass the function reference
     refetchOnWindowFocus: false, // Refetch when window regains focus
     refetchInterval: 180000, // Refetch every 3 minutes (in milliseconds)
     enabled: false, // Start fetching as soon as the component is mounted
@@ -188,7 +188,7 @@ const RoutesContent: FC = () => {
       const currentAssignee = userBranches.data.assignees.find(
         (assignee: { name: string; is_admin: number }) => assignee.name === currentUser
       );
-      fetchStaticData(currentUser);
+      // fetchStaticData(currentUser);
 
       const isAdmin = currentAssignee ? currentAssignee.is_admin === 1 : false;
       setIsCurrentUserMaster(isAdmin);

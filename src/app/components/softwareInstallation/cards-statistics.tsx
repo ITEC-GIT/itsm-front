@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from "jotai";
-import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { useEffect, useState } from "react";
 import { StaticDataType } from "../../types/filtersAtomType";
 
