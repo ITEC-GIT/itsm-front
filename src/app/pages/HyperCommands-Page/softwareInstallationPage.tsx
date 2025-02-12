@@ -441,7 +441,7 @@ const SoftwareInstallationPage = ({
         style={{
           transition: "margin 0.3s ease-in-out",
           marginRight: isSidebarOpen ? "15%" : "0",
-          width: isSidebarOpen ? "78%" : "100%",
+          width: isSidebarOpen ? "82%" : "100%",
         }}
       >
         <div className="row justify-content-center">

@@ -21,46 +21,12 @@ interface FilterSidebarProps {
   saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
 }
 
-// interface FiltersTitleProps {
-//   id: string;
-//   name: string;
-//   storeName: string;
-//   data: { value: string; label: string }[];
-//   atomName?: string;
-// }
 interface FiltersTitleProps {
   id: string;
   name: string;
   AtomKey: string;
   data: { value: string; label: string }[];
 }
-
-// const filtersOptions: FiltersTitleProps[] = [
-//   {
-//     id: "softwareStatusFilter",
-//     name: "Status",
-//     storeName: "SoftwareStatus",
-//     data: [],
-//   },
-//   {
-//     id: "userFilter",
-//     name: "User",
-//     storeName: "assignees",
-//     data: [],
-//   },
-//   {
-//     id: "computersFilter",
-//     name: "Computer",
-//     storeName: "Computers",
-//     data: [],
-//   },
-//   {
-//     id: "dateFilter",
-//     name: "Date Range",
-//     storeName: "",
-//     data: [],
-//   },
-// ];
 
 const filtersOptions: FiltersTitleProps[] = [
   {
@@ -245,19 +211,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
   const handleEditFilter = (index: number, name: string) => {
     if (editFilterIndex === index) {
-      // If the check icon is clicked, save the edited name
       handleSaveEditedFilter(index);
     } else {
-      // If the pen icon is clicked, enable editing mode
       setEditFilterIndex(index);
       setEditFilterName(name);
     }
   };
-
-  // const handleEditFilter = (index: number, name: string) => {
-  //   setEditFilterIndex(index);
-  //   setEditFilterName(name);
-  // };
 
   const handleSaveEditedFilter = async (index: number) => {
     if (!editFilterName.trim()) return;
@@ -317,30 +276,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     fetchData();
     loadSavedFilters();
   }, [staticData]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const newFilterData: Record<string, any> = {};
-  //     for (const filter of filtersOptions) {
-  //       if (activeFilters.includes(filter.id)) {
-  //         try {
-  //           if (filter.id === "dateFilter") continue;
-  //           newFilterData[filter.id] = await getData(
-  //             filter.storeName,
-  //             userId,
-  //             staticDbName
-  //           );
-  //         } catch (error) {
-  //           console.error(`Failed to fetch data for ${filter.id}:`, error);
-  //         }
-  //       }
-  //     }
-  //     setFilterData(newFilterData);
-  //   };
-
-  //   fetchData();
-  //   loadSavedFilters();
-  // }, [activeFilters]);
 
   return (
     <div
@@ -474,6 +409,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                         className={`bi bi-check2-circle save-filters-icon`}
                         style={{
                           color: "green",
+                          marginLeft: "5px",
+                          marginRight: "5px",
                         }}
                         onClick={() => handleSaveEditedFilter(index)}
                       ></i>
