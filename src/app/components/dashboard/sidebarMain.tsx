@@ -39,7 +39,7 @@ const SidebarMain = () => {
   }, [selectedComputerAtom]);
 
   return (
-    <div className="sidebar-main">
+    <div className="sidebar-main mt-3">
       {selectedComputerAtom ? (
         <div className="computer-info">
           <div className="computer-header">

@@ -132,27 +132,152 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   }, [userData]);
 
   return (
-    // <Content>
     <div
       className="container-fluid"
       style={{ paddingLeft: "30px", paddingRight: "30px" }}
     >
-      <div className="row justify-content-center">
-        <div className="col-md-12 col-lg-10 col-xl-12">
-          {!computerIdProp && (
-            <div className="d-flex justify-content-between">
-              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
-              <ActionIcons />
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-md-12 col-lg-10 col-xl-12">
+            {!computerIdProp && (
+              <div className="d-flex justify-content-between">
+                <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+                <ActionIcons />
+              </div>
+            )}
+            <div className="card p-5">
+              <div className="row">
+                <div className="col-md-6 mb-5">
+                  <label className="custom-label">Select Location</label>
+                  <Select
+                    className="custom-select"
+                    options={locationOptions}
+                    classNamePrefix="react-select"
+                    value={selectedBranch}
+                    onChange={(newValue) => setSelectedBranch(newValue)}
+                    placeholder="Select Branch"
+                    isClearable
+                  />
+                </div>
+                <div
+                  className="col-md-6 mb-5"
+                  // style={{
+                  //   borderRadius: "1rem",
+                  //   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  //   padding: "2rem",
+                  // }}
+                >
+                  <label className="custom-label">Username</label>
+                  <input
+                    type="text"
+                    className="form-control custom-input"
+                    value={userName}
+                    style={{ height: "47px" }}
+                    readOnly
+                  />
+                </div>
+                <div className="col-md-6 mb-5">
+                  <label className="custom-label">Select User</label>
+                  <Select
+                    className="custom-select"
+                    options={userOptions}
+                    classNamePrefix="react-select"
+                    value={selectedUser}
+                    onChange={(newValue) => setSelectedUser(newValue)}
+                    placeholder="Select Device"
+                    isClearable
+                  />
+                </div>
+                <div className="col-md-6 mb-5">
+                  <label className="custom-label required">Password</label>
+
+                  <input
+                    type="password"
+                    className="form-control custom-input"
+                    placeholder="Your password"
+                    onChange={(e) => setPass(e.target.value)}
+                    style={{ height: "47px" }}
+                    required
+                  />
+
+                  {passError && (
+                    <small
+                      className="text-danger"
+                      style={{ fontSize: "0.875rem" }}
+                    >
+                      Please enter your password.
+                    </small>
+                  )}
+                </div>
+                <div className="col-md-6 mb-5">
+                  <label className="custom-label required">Select Device</label>
+                  <Select
+                    className="custom-select"
+                    options={compOptions}
+                    classNamePrefix="react-select"
+                    value={selectedDevice}
+                    onChange={(newValue) => setSelectedDevice(newValue)}
+                    placeholder="Select Device"
+                    isClearable
+                  />
+
+                  {deviceError && (
+                    <small
+                      className="text-danger"
+                      style={{ fontSize: "0.875rem" }}
+                    >
+                      Please select a device.
+                    </small>
+                  )}
+                </div>
+                <div className="col-md-6 mb-5 d-flex justify-content-end align-items-end">
+                  <div
+                    className=" border rounded p-3 mb-4"
+                    style={{ width: "150px" }}
+                  >
+                    <label className="form-label text-start">
+                      <i className="bi bi-usb-symbol text-primary"></i>
+                      <span className="text-primary">Port</span>
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control custom-input"
+                      value={port}
+                      placeholder="Enter Port (e.g., 8080)"
+                      onChange={(e) => setPort(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-5 d-flex flex-column justify-content-around flex-sm-row gap-3">
+                <button
+                  type="button"
+                  className="btn hyper-reset-btn"
+                  onClick={handleReset}
+                  style={{ width: "150px" }}
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  className="btn hyper-connect-btn"
+                  onClick={handleConnect}
+                  style={{ width: "150px" }}
+                >
+                  Connect
+                </button>
+              </div>
             </div>
-          )}
-          <div className="row p-4 shadow-sm bg-light rounded mt-2 ">
+          </div>
+
+          {/* <div className="row p-4 shadow-sm bg-light rounded mt-2 ">
             <div className="d-flex justify-content-end">
               <div
                 className=" border rounded p-3 mb-4"
                 style={{ width: "150px" }}
               >
                 <label className="form-label text-start">
-                  <i className="bi bi-usb-symbol text-primary"></i>{" "}
+                  <i className="bi bi-usb-symbol text-primary"></i>
                   <span className="text-primary">Port</span>
                 </label>
                 <input
@@ -167,7 +292,9 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
 
             <div className="col-lg-6 ">
               <div className="mb-5">
-                <label className="form-label">Select Location</label>
+                <label className="block text-gray-700 font-bold">
+                  Select Location
+                </label>
                 <Select
                   className="custom-select"
                   options={locationOptions}
@@ -246,14 +373,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                   required
                 />
 
-                {passError && (
-                  <small
-                    className="text-danger"
-                    style={{ fontSize: "0.875rem" }}
-                  >
-                    Please enter your password.
-                  </small>
-                )}
               </div>
             </div>
 
@@ -276,12 +395,10 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                 Reset
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
-
-    // </Content>
   );
 };
 
