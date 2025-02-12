@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Select from "react-select";
 import { useAtom, useAtomValue } from "jotai";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useLayout } from "../../../core";
 import { staticDataAtom } from "../../../../../app/atoms/filters-atoms/filtersAtom";
 import { StaticDataType } from "../../../../../app/types/filtersAtomType";
@@ -24,58 +24,42 @@ const ToolbarMainDashboard = () => {
     null
   );
 
-  const depOptions = [
-    { value: 0, label: "All Branches" },
-    ...(staticData["Locations"]?.map((location) => ({
-      value: "id" in location ? Number(location?.id) : 0,
-      label: "name" in location ? String(location?.name) : "",
-    })) || []),
-  ];
+  const locationOptions = useMemo(
+    () => [
+      { value: 0, label: "All Branches" },
+      ...(staticData.Locations || []).map((location: any) => ({
+        value: location.id ? Number(location.id) : 0,
+        label: location.name || "",
+      })),
+    ],
+    [staticData]
+  );
 
-  const userOptions = (staticData["requesters"] || [])
-    // .filter((user) => !selectedBranch || user.branchid === selectedBranch.value)
-    .map((requester) => ({
-      value: "id" in requester ? Number(requester?.id) : 0,
-      label: "name" in requester ? String(requester?.name) : "",
-    }));
+  const userOptions = useMemo(() => {
+    return (
+      (staticData.requesters || [])
+        // .filter(
+        //   (device) => !selectedBranch || device.branchid === selectedBranch.value
+        // )
+        .map((device) => ({
+          value: device.id ? Number(device.id) : 0,
+          label: device.name || "",
+        }))
+    );
+  }, [staticData, selectedBranch]);
 
-  const filteredDevices = (staticData["Computers"] || []).filter((device) => {
-    if (selectedBranch && selectedUser) {
-      return (
-        device.branchid === selectedBranch.value
-        // &&
-        // device.requesterid === selectedUser.value
-      );
-    }
-    if (selectedBranch) {
-      return device.branchid === selectedBranch.value;
-    }
-    // if (selectedUser) {
-    //   return device.requesterid === selectedUser.value;
-    // }
-    return true;
-  });
-
-  const compOptions = filteredDevices.map((device) => ({
-    value: device.id,
-    label: device.name,
-  }));
-
-  const handleBranchChange = (newValue: selectValueType | null) => {
-    setSelectedBranch(newValue);
-    setSelectedUser(null);
-    setSelectedDevice(null);
-  };
-
-  const handleUserChange = (newValue: selectValueType | null) => {
-    setSelectedUser(newValue);
-    setSelectedDevice(null);
-  };
-
-  const handleDeviceChange = (newValue: selectValueType | null) => {
-    setSelectedDevice(newValue);
-    setSelectedDeviceAtom(Number(newValue?.value));
-  };
+  const compOptions = useMemo(() => {
+    return (staticData.Computers || [])
+      .filter(
+        (device) => !selectedBranch || device.branchid === selectedBranch.value
+        //&&
+        // device.requesterid === selectedUser?.value
+      )
+      .map((device) => ({
+        value: device.id ? Number(device.id) : 0,
+        label: device.name || "",
+      }));
+  }, [staticData, selectedBranch]);
 
   return (
     <div
@@ -86,9 +70,9 @@ const ToolbarMainDashboard = () => {
         <div>
           <Select
             className="select-dashboard"
-            options={depOptions}
+            options={locationOptions}
             value={selectedBranch}
-            onChange={handleBranchChange}
+            onChange={(newValue) => setSelectedBranch(newValue)}
             placeholder="Select Branch"
             isClearable
             styles={{
@@ -109,7 +93,7 @@ const ToolbarMainDashboard = () => {
             className="select-dashboard"
             options={userOptions}
             value={selectedUser}
-            onChange={handleUserChange}
+            onChange={(newValue) => setSelectedUser(newValue)}
             placeholder="Select User"
             isClearable
             styles={{
@@ -130,7 +114,7 @@ const ToolbarMainDashboard = () => {
             className="select-dashboard"
             options={compOptions}
             value={selectedDevice}
-            onChange={handleDeviceChange}
+            onChange={(newValue) => setSelectedDevice(newValue)}
             placeholder="Select Device"
             isClearable
             styles={{
