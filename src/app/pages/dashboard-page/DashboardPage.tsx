@@ -34,14 +34,7 @@ const DashboardPage: FC = () => {
     <>
       <ToolbarWrapper source={"dashboard"} />
 
-      {currentView === "main" ? (
-        <>
-          <MainDashboard />
-          {/* <StatisticsList data={data} /> */}
-        </>
-      ) : (
-        <AnalyticsDashboard />
-      )}
+      {currentView === "main" ? <MainDashboard /> : <AnalyticsDashboard />}
     </>
   );
 };
@@ -59,18 +52,3 @@ const DashboardWrapper: FC = () => {
 };
 
 export { DashboardWrapper };
-
-//   return (
-//     <Content>
-//       <ItsmToolbar
-//         branches={branchesOption}
-//         users={usersOption}
-//         setSelectedBranch={setSelectedBranch}
-//         setSelectedUser={setSelectedUser}
-//         setSearchString={setSearchString}
-//       />
-
-//       <StatisticsList data={data} />
-//     </Content>
-//   );
-// };

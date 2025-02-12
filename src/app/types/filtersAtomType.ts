@@ -24,11 +24,18 @@ type Computer = {
   branchid: number;
 };
 
+type Location = {
+  id: number;
+  name: string;
+  label: string;
+  value: string;
+};
+
 export interface StaticDataType {
   Computers: Computer[];
   Departments: {}[];
   "Initialized softwares": number;
-  Locations: {}[];
+  Locations: Location[];
   "Received softwares": number;
   SoftwareStatus: {}[];
   assignees: Assignee[];

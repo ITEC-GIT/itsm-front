@@ -7,13 +7,7 @@ import {
 } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { TicketsPage } from "../tickets-pages/TicketsPage";
 import { SoftwareInstallationPage } from "../HyperCommands-Page/softwareInstallationPage";
-
-const RemoteSSHView = () => (
-  <div className="remote-ssh-view">
-    <h2>Remote SSH</h2>
-    {/* Add SSH UI here */}
-  </div>
-);
+import { RemoteSSHPage } from "../HyperCommands-Page/remoteSSHPage";
 
 const RemoteConsoleiew = () => (
   <div className="remote-ssh-view">
@@ -59,19 +53,15 @@ const MainDashboard = () => {
     number | undefined
   >(selectedComputerDashboardAtom);
 
-  const SoftwareInstallationView = () => {
-    if (selctedDeviceAtom) {
-      return <SoftwareInstallationPage computerIdProp={selctedDeviceAtom} />;
-    }
-    return null;
-  };
-
   const renderActiveView = () => {
+    if (!selctedDeviceAtom) {
+      return <DashboardPlaceholder />;
+    }
     switch (activeView) {
       case "software-installation":
-        return <SoftwareInstallationView />;
+        return <SoftwareInstallationPage computerIdProp={selctedDeviceAtom} />;
       case "remote-ssh":
-        return <RemoteSSHView />;
+        return <RemoteSSHPage computerIdProp={selctedDeviceAtom} />;
       case "remote-console":
         return <RemoteConsoleiew />;
       case "performance":

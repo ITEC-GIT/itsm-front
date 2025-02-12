@@ -6,14 +6,18 @@ import { useLayout } from "../../../core";
 import { staticDataAtom } from "../../../../../app/atoms/filters-atoms/filtersAtom";
 import { StaticDataType } from "../../../../../app/types/filtersAtomType";
 import { selectValueType } from "../../../../../app/types/dashboard";
-import { selectedComputerDashboardAtom } from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
+import {
+  activeDashboardViewAtom,
+  selectedComputerDashboardAtom,
+} from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
 
 const ToolbarMainDashboard = () => {
   const { classes } = useLayout();
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
-  const [selctedDeviceAtom, setSelectedDeviceAtom] = useAtom(
+  const [selectedDeviceAtom, setSelectedDeviceAtom] = useAtom(
     selectedComputerDashboardAtom
   );
+  const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
   );
@@ -61,9 +65,16 @@ const ToolbarMainDashboard = () => {
       }));
   }, [staticData, selectedBranch]);
 
+  const handleBranchChange = (newValue: selectValueType | null) => {
+    setSelectedBranch(newValue);
+    setSelectedUser(null);
+    setSelectedDevice(null);
+  };
+
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
     setSelectedDeviceAtom(Number(newValue?.value));
+    setActiveView(null);
   };
 
   return (
@@ -77,7 +88,7 @@ const ToolbarMainDashboard = () => {
             className="select-dashboard"
             options={locationOptions}
             value={selectedBranch}
-            onChange={(newValue) => setSelectedBranch(newValue)}
+            onChange={handleBranchChange}
             placeholder="Select Branch"
             isClearable
             styles={{

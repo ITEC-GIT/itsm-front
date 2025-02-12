@@ -126,6 +126,28 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   };
 
   useEffect(() => {
+    if (computerIdProp) {
+      const computer = staticData.Computers.find(
+        (device) => device.id === computerIdProp
+      );
+      if (computer) {
+        const branch = staticData.Locations.find(
+          (loc) => loc.id === computer.branchid
+        );
+        // const user = staticData.requesters.find(
+        //   (req) => req.id === computer.requesterid
+        // );
+
+        setSelectedBranch(
+          branch ? { value: branch.id, label: branch.name } : null
+        );
+        // setSelectedUser(user ? { value: user.id, label: user.name } : null);
+        setSelectedDevice({ value: computer.id, label: computer.name });
+      }
+    }
+  }, [computerIdProp, staticData]);
+
+  useEffect(() => {
     if (userData?.session?.glpiname) {
       setUserName(userData.session.glpiname);
     }
@@ -136,15 +158,15 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       className="container-fluid"
       style={{ paddingLeft: "30px", paddingRight: "30px" }}
     >
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-md-12 col-lg-10 col-xl-12">
-            {!computerIdProp && (
-              <div className="d-flex justify-content-between">
-                <h2 className="text-center mb-4">🔐 Remote SSH</h2>
-                <ActionIcons />
-              </div>
-            )}
+      <div className="row justify-content-center">
+        <div className="col-md-12 col-lg-10 col-xl-12">
+          {!computerIdProp && (
+            <div className="d-flex justify-content-between">
+              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+              <ActionIcons />
+            </div>
+          )}
+          <div className="container">
             <div className="card p-5">
               <div className="row">
                 <div className="col-md-6 mb-5">
@@ -269,133 +291,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
               </div>
             </div>
           </div>
-
-          {/* <div className="row p-4 shadow-sm bg-light rounded mt-2 ">
-            <div className="d-flex justify-content-end">
-              <div
-                className=" border rounded p-3 mb-4"
-                style={{ width: "150px" }}
-              >
-                <label className="form-label text-start">
-                  <i className="bi bi-usb-symbol text-primary"></i>
-                  <span className="text-primary">Port</span>
-                </label>
-                <input
-                  type="number"
-                  className="form-control custom-input"
-                  value={port}
-                  placeholder="Enter Port (e.g., 8080)"
-                  onChange={(e) => setPort(Number(e.target.value))}
-                />
-              </div>
-            </div>
-
-            <div className="col-lg-6 ">
-              <div className="mb-5">
-                <label className="block text-gray-700 font-bold">
-                  Select Location
-                </label>
-                <Select
-                  className="custom-select"
-                  options={locationOptions}
-                  classNamePrefix="react-select"
-                  value={selectedBranch}
-                  onChange={(newValue) => setSelectedBranch(newValue)}
-                  placeholder="Select Branch"
-                  isClearable
-                />
-              </div>
-              <div className="mb-5">
-                <label className="form-label">Select User</label>
-                <Select
-                  className="custom-select"
-                  options={userOptions}
-                  classNamePrefix="react-select"
-                  value={selectedUser}
-                  onChange={(newValue) => setSelectedUser(newValue)}
-                  placeholder="Select Device"
-                  isClearable
-                />
-
-                {deviceError && (
-                  <small
-                    className="text-danger"
-                    style={{ fontSize: "0.875rem" }}
-                  >
-                    Please select a device.
-                  </small>
-                )}
-              </div>
-              <div className="mb-5">
-                <label className="form-label required">Select Device</label>
-                <Select
-                  className="custom-select"
-                  options={compOptions}
-                  classNamePrefix="react-select"
-                  value={selectedDevice}
-                  onChange={(newValue) => setSelectedDevice(newValue)}
-                  placeholder="Select Device"
-                  isClearable
-                />
-
-                {deviceError && (
-                  <small
-                    className="text-danger"
-                    style={{ fontSize: "0.875rem" }}
-                  >
-                    Please select a device.
-                  </small>
-                )}
-              </div>
-            </div>
-
-            <div className="col-lg-6">
-              <div className="mb-5">
-                <label className="form-label">Username</label>
-                <input
-                  type="text"
-                  className="form-control custom-input"
-                  value={userName}
-                  style={{ height: "48px" }}
-                  readOnly
-                />
-              </div>
-
-              <div className="mb-5">
-                <label className="form-label required">Password</label>
-                <input
-                  type="text"
-                  className="form-control custom-input"
-                  value={pass}
-                  placeholder="Your password"
-                  onChange={(e) => setPass(e.target.value)}
-                  style={{ height: "48px" }}
-                  required
-                />
-
-              </div>
-            </div>
-
-            <div className="d-flex flex-column justify-content-around flex-sm-row gap-3">
-              <button
-                type="button"
-                className="btn hyper-connect-btn"
-                onClick={handleConnect}
-                style={{ width: "150px" }}
-              >
-                Connect
-              </button>
-
-              <button
-                type="button"
-                className="btn hyper-reset-btn"
-                onClick={handleReset}
-                style={{ width: "150px" }}
-              >
-                Reset
-              </button>
-            </div>
-          </div> */}
         </div>
       </div>
     </div>
