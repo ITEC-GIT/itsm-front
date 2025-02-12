@@ -1,22 +1,63 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
+import { selectValueType } from "../../types/dashboard";
+import { useAtom, useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { StaticDataType } from "../../types/filtersAtomType";
 import Select from "react-select";
-import { Content } from "../../../_metronic/layout/components/content/Content";
+import { userAtom } from "../../atoms/auth-atoms/authAtom";
 
-const RemoteSSHPage = () => {
+const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [connected, setConnected] = useState<boolean>(false);
-  const [hostname, setHostname] = useState<string | null>(null);
-  const [port, setPort] = useState<number | string>("");
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertVariant, setAlertVariant] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
 
-  const computers = [
-    { label: "Computer A - 192.168.1.1", value: "192.168.1.1" },
-    { label: "Computer B - 192.168.1.2", value: "192.168.1.2" },
-    { label: "Computer C - 192.168.1.3", value: "192.168.1.3" },
-  ];
+  const userData = useAtomValue(userAtom);
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [port, setPort] = useState(22);
+  const [userName, setUserName] = useState("");
+  const [pass, setPass] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
+    null
+  );
+  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
+    null
+  );
+  const [deviceError, setDeviceError] = useState(false);
+  const [passError, setPassError] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (userData?.session?.glpiname) {
+      setUserName(userData.session.glpiname);
+    }
+  }, [userData]);
+
+  const locationOptions = useMemo(
+    () => [
+      { value: 0, label: "All Branches" },
+      ...(staticData.Locations || []).map((location: any) => ({
+        value: location.id ? Number(location.id) : 0,
+        label: location.name || "",
+      })),
+    ],
+    [staticData]
+  );
+
+  const compOptions = useMemo(() => {
+    return (staticData.Computers || [])
+      .filter(
+        (device) => !selectedBranch || device.branchid === selectedBranch.value
+      )
+      .map((device) => ({
+        value: device.id ? Number(device.id) : 0,
+        label: device.name || "",
+      }));
+  }, [staticData, selectedBranch]);
+
+  const handleDeviceChange = (newValue: selectValueType | null) => {
+    setSelectedDevice(newValue);
+  };
 
   const validateHostname = (hostname: string) => {
     const regex =
@@ -29,7 +70,7 @@ const RemoteSSHPage = () => {
   };
 
   const validateCredentials = () => {
-    if (!username || !password) {
+    if (!userName || !pass) {
       setAlertMessage("Please enter both username and password.");
       setAlertVariant("danger");
       return false;
@@ -38,164 +79,156 @@ const RemoteSSHPage = () => {
   };
 
   const handleConnect = () => {
-    if (!hostname || !port) {
-      setAlertMessage("Please provide both hostname and port.");
-      setAlertVariant("danger");
-      return;
-    }
-
-    if (!validateHostname(hostname as string)) {
-      setAlertMessage(
-        "Invalid hostname. Please enter a valid hostname or IP address."
-      );
-      setAlertVariant("danger");
-      return;
-    }
-
-    if (!validatePort(port)) {
-      setAlertMessage("Port must be a positive number.");
-      setAlertVariant("danger");
-      return;
-    }
-
-    if (!validateCredentials()) return;
-
-    setConnected(true);
-    setAlertMessage("Connected to server successfully!");
-    setAlertVariant("success");
+    // if (!hostname || !port) {
+    //   setAlertMessage("Please provide both hostname and port.");
+    //   setAlertVariant("danger");
+    //   return;
+    // }
+    // if (!validateHostname(hostname as string)) {
+    //   setAlertMessage(
+    //     "Invalid hostname. Please enter a valid hostname or IP address."
+    //   );
+    //   setAlertVariant("danger");
+    //   return;
+    // }
+    // if (!validatePort(port)) {
+    //   setAlertMessage("Port must be a positive number.");
+    //   setAlertVariant("danger");
+    //   return;
+    // }
+    // if (!validateCredentials()) return;
+    // setConnected(true);
+    // setAlertMessage("Connected to server successfully!");
+    // setAlertVariant("success");
   };
 
   const handleReset = () => {
-    setHostname(null);
-    setPort("");
-    setUsername("");
-    setPassword("");
+    setPort(22);
+    setUserName("");
+    setPass("");
     setAlertMessage("");
     setAlertVariant("");
     setConnected(false);
   };
 
   return (
-    <Content>
-      <div className="container mt-5">
-        <div className="row justify-content-center">
-          <div className="col-md-10 col-lg-10 col-xl-12">
-            <h2 className="text-center mb-4">🔐 Remote SSH</h2>
-            <ActionIcons />
-            <form className="p-4 shadow-sm bg-light rounded">
-              <div className="mb-3">
-                <label htmlFor="hostnameInput" className="form-label">
-                  Hostname/IP
-                </label>
+    // <Content>
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-10 col-lg-10 col-xl-12">
+          {!computerIdProp && (
+            <div className="d-flex justify-content-between">
+              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+              <ActionIcons />
+            </div>
+          )}
+          <form className="p-4 shadow-sm bg-light rounded">
+            <div className="d-flex flex-column mt-2">
+              <div className="d-flex justify-content-end">
+                <div
+                  className="border rounded p-3 mb-4"
+                  style={{ width: "150px" }}
+                >
+                  <label className="form-label text-start">
+                    <i className="bi bi-usb-symbol text-primary"></i>{" "}
+                    <span className="text-primary">Port</span>
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control custom-input"
+                    value={port}
+                    placeholder="Enter Port (e.g., 8080)"
+                    onChange={(e) => setPort(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div className="mb-4" style={{ height: "90px" }}>
+                <label className="form-label">Select Location</label>
                 <Select
-                  id="hostnameInput"
-                  options={computers}
-                  value={
-                    hostname
-                      ? { label: `${hostname} - ${hostname}`, value: hostname }
-                      : null
-                  }
-                  onChange={(selectedOption) =>
-                    setHostname(selectedOption?.value || null)
-                  }
-                  placeholder="Select a computer or enter IP"
+                  className="custom-select"
+                  options={locationOptions}
+                  classNamePrefix="react-select"
+                  value={selectedBranch}
+                  onChange={(newValue) => setSelectedBranch(newValue)}
+                  placeholder="Select Branch"
+                  isClearable
                 />
               </div>
-
-              <div className="mb-3">
-                <label htmlFor="portInput" className="form-label">
-                  Port
-                </label>
-                <input
-                  type="number"
-                  id="portInput"
-                  className="form-control"
-                  placeholder="e.g., 22"
-                  value={port}
-                  onChange={(e) => setPort(e.target.value)}
+              <div className="mb-4" style={{ height: "90px" }}>
+                <label className="form-label required">Select Device</label>
+                <Select
+                  className="custom-select"
+                  options={compOptions}
+                  classNamePrefix="react-select"
+                  value={selectedDevice}
+                  onChange={(newValue) => setSelectedDevice(newValue)}
+                  placeholder="Select Device"
+                  isClearable
                 />
-              </div>
 
-              <div className="mb-3">
-                <label htmlFor="usernameInput" className="form-label">
-                  Username
-                </label>
+                {deviceError && (
+                  <small
+                    className="text-danger"
+                    style={{ fontSize: "0.875rem" }}
+                  >
+                    Please select a device.
+                  </small>
+                )}
+              </div>
+              <div className="mb-4" style={{ height: "90px" }}>
+                <label className="form-label">Username</label>
                 <input
                   type="text"
-                  id="usernameInput"
-                  className="form-control"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  className="form-control custom-input"
+                  value={userName}
+                  readOnly
                 />
               </div>
 
-              <div className="mb-5">
-                <label htmlFor="passwordInput" className="form-label">
-                  Password
-                </label>
+              <div className="mb-4" style={{ height: "90px" }}>
+                <label className="form-label required">Password</label>
                 <input
-                  type="password"
-                  id="passwordInput"
-                  className="form-control"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  type="text"
+                  className="form-control custom-input"
+                  value={pass}
+                  placeholder="Your password"
+                  onChange={(e) => setPass(e.target.value)}
+                  required
                 />
-              </div>
 
-              <div className="d-flex flex-column flex-sm-row gap-3">
-                <button
-                  type="button"
-                  className="btn custom-btn-primary w-100 hyper-connect-btn"
-                  onClick={handleConnect}
-                >
-                  Connect
-                </button>
-                <button
-                  type="button"
-                  className="btn custom-btn-warning w-100 hyper-reset-btn"
-                  onClick={handleReset}
-                >
-                  Reset
-                </button>
+                {passError && (
+                  <small
+                    className="text-danger"
+                    style={{ fontSize: "0.875rem" }}
+                  >
+                    Please enter your password.
+                  </small>
+                )}
               </div>
-            </form>
+            </div>
 
-            {alertMessage && (
-              <div
-                className={`alert alert-${alertVariant} alert-dismissible fade show mt-4`}
-                role="alert"
+            <div className="d-flex flex-column flex-sm-row gap-3">
+              <button
+                type="button"
+                className="btn custom-btn-primary w-100 hyper-connect-btn"
+                onClick={handleConnect}
               >
-                <div className="d-flex justify-content-between">
-                  <span>{alertMessage}</span>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    aria-label="Close"
-                    onClick={() => setAlertMessage("")}
-                  ></button>
-                </div>
-              </div>
-            )}
-
-            {connected && (
-              <div className="alert alert-success mt-4" role="alert">
-                <div className="d-flex justify-content-between">
-                  <span>Connected to server!</span>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    aria-label="Close"
-                    onClick={() => setConnected(false)}
-                  ></button>
-                </div>
-              </div>
-            )}
-          </div>
+                Connect
+              </button>
+              <button
+                type="button"
+                className="btn custom-btn-warning w-100 hyper-reset-btn"
+                onClick={handleReset}
+              >
+                Reset
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </Content>
+    </div>
+
+    // </Content>
   );
 };
 
