@@ -20,18 +20,15 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
   );
+  const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
+    null
+  );
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
   const [deviceError, setDeviceError] = useState(false);
   const [passError, setPassError] = useState(false);
   const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (userData?.session?.glpiname) {
-      setUserName(userData.session.glpiname);
-    }
-  }, [userData]);
 
   const locationOptions = useMemo(
     () => [
@@ -44,10 +41,25 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     [staticData]
   );
 
+  const userOptions = useMemo(() => {
+    return (
+      (staticData.requesters || [])
+        // .filter(
+        //   (device) => !selectedBranch || device.branchid === selectedBranch.value
+        // )
+        .map((device) => ({
+          value: device.id ? Number(device.id) : 0,
+          label: device.name || "",
+        }))
+    );
+  }, [staticData, selectedBranch]);
+
   const compOptions = useMemo(() => {
     return (staticData.Computers || [])
       .filter(
         (device) => !selectedBranch || device.branchid === selectedBranch.value
+        //&&
+        // device.requesterid === selectedUser?.value
       )
       .map((device) => ({
         value: device.id ? Number(device.id) : 0,
@@ -104,45 +116,57 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
 
   const handleReset = () => {
     setPort(22);
-    setUserName("");
     setPass("");
+    setSelectedBranch(null);
+    setSelectedDevice(null);
+    setSelectedUser(null);
     setAlertMessage("");
     setAlertVariant("");
     setConnected(false);
   };
 
+  useEffect(() => {
+    if (userData?.session?.glpiname) {
+      setUserName(userData.session.glpiname);
+    }
+  }, [userData]);
+
   return (
     // <Content>
-    <div className="container mt-5">
+    <div
+      className="container-fluid"
+      style={{ paddingLeft: "30px", paddingRight: "30px" }}
+    >
       <div className="row justify-content-center">
-        <div className="col-md-10 col-lg-10 col-xl-12">
+        <div className="col-md-12 col-lg-10 col-xl-12">
           {!computerIdProp && (
             <div className="d-flex justify-content-between">
               <h2 className="text-center mb-4">🔐 Remote SSH</h2>
               <ActionIcons />
             </div>
           )}
-          <form className="p-4 shadow-sm bg-light rounded">
-            <div className="d-flex flex-column mt-2">
-              <div className="d-flex justify-content-end">
-                <div
-                  className="border rounded p-3 mb-4"
-                  style={{ width: "150px" }}
-                >
-                  <label className="form-label text-start">
-                    <i className="bi bi-usb-symbol text-primary"></i>{" "}
-                    <span className="text-primary">Port</span>
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control custom-input"
-                    value={port}
-                    placeholder="Enter Port (e.g., 8080)"
-                    onChange={(e) => setPort(Number(e.target.value))}
-                  />
-                </div>
+          <div className="row p-4 shadow-sm bg-light rounded mt-2 ">
+            <div className="d-flex justify-content-end">
+              <div
+                className=" border rounded p-3 mb-4"
+                style={{ width: "150px" }}
+              >
+                <label className="form-label text-start">
+                  <i className="bi bi-usb-symbol text-primary"></i>{" "}
+                  <span className="text-primary">Port</span>
+                </label>
+                <input
+                  type="number"
+                  className="form-control custom-input"
+                  value={port}
+                  placeholder="Enter Port (e.g., 8080)"
+                  onChange={(e) => setPort(Number(e.target.value))}
+                />
               </div>
-              <div className="mb-4" style={{ height: "90px" }}>
+            </div>
+
+            <div className="col-lg-6 ">
+              <div className="mb-5">
                 <label className="form-label">Select Location</label>
                 <Select
                   className="custom-select"
@@ -154,7 +178,28 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                   isClearable
                 />
               </div>
-              <div className="mb-4" style={{ height: "90px" }}>
+              <div className="mb-5">
+                <label className="form-label">Select User</label>
+                <Select
+                  className="custom-select"
+                  options={userOptions}
+                  classNamePrefix="react-select"
+                  value={selectedUser}
+                  onChange={(newValue) => setSelectedUser(newValue)}
+                  placeholder="Select Device"
+                  isClearable
+                />
+
+                {deviceError && (
+                  <small
+                    className="text-danger"
+                    style={{ fontSize: "0.875rem" }}
+                  >
+                    Please select a device.
+                  </small>
+                )}
+              </div>
+              <div className="mb-5">
                 <label className="form-label required">Select Device</label>
                 <Select
                   className="custom-select"
@@ -175,17 +220,21 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                   </small>
                 )}
               </div>
-              <div className="mb-4" style={{ height: "90px" }}>
+            </div>
+
+            <div className="col-lg-6">
+              <div className="mb-5">
                 <label className="form-label">Username</label>
                 <input
                   type="text"
                   className="form-control custom-input"
                   value={userName}
+                  style={{ height: "48px" }}
                   readOnly
                 />
               </div>
 
-              <div className="mb-4" style={{ height: "90px" }}>
+              <div className="mb-5">
                 <label className="form-label required">Password</label>
                 <input
                   type="text"
@@ -193,6 +242,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                   value={pass}
                   placeholder="Your password"
                   onChange={(e) => setPass(e.target.value)}
+                  style={{ height: "48px" }}
                   required
                 />
 
@@ -207,23 +257,26 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
               </div>
             </div>
 
-            <div className="d-flex flex-column flex-sm-row gap-3">
+            <div className="d-flex flex-column justify-content-around flex-sm-row gap-3">
               <button
                 type="button"
-                className="btn custom-btn-primary w-100 hyper-connect-btn"
+                className="btn hyper-connect-btn"
                 onClick={handleConnect}
+                style={{ width: "150px" }}
               >
                 Connect
               </button>
+
               <button
                 type="button"
-                className="btn custom-btn-warning w-100 hyper-reset-btn"
+                className="btn hyper-reset-btn"
                 onClick={handleReset}
+                style={{ width: "150px" }}
               >
                 Reset
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

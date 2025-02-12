@@ -7,8 +7,6 @@ import { PageTitleWrapperDashboard } from "./page-title/PageTitleWrapperDashboar
 import { ToolbarDashboard } from "./ToolbarDashboard";
 
 const ToolbarWrapper = ({ source }: { source?: string }) => {
-  console.log("source ==> ", source);
-
   const { config, classes } = useLayout();
   if (!config.app?.toolbar?.display) {
     return null;

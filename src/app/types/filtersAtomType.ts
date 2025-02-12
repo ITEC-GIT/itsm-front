@@ -7,6 +7,15 @@ type Assignee = {
   Department: string;
 };
 
+type Requester = {
+  id: number;
+  name: string;
+  firstname: string | null;
+  Avatar: string | null;
+  is_admin: 0 | 1;
+  Department: string;
+};
+
 type Computer = {
   id: number;
   name: string;
@@ -24,7 +33,7 @@ export interface StaticDataType {
   SoftwareStatus: {}[];
   assignees: Assignee[];
   priorityOptions: {}[];
-  requesters: {}[];
+  requesters: Requester[];
   statusOptions: {}[];
   typeOptions: {}[];
   urgencyOptions: {}[];

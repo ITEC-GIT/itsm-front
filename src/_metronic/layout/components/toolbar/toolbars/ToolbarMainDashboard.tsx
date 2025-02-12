@@ -61,6 +61,11 @@ const ToolbarMainDashboard = () => {
       }));
   }, [staticData, selectedBranch]);
 
+  const handleDeviceChange = (newValue: selectValueType | null) => {
+    setSelectedDevice(newValue);
+    setSelectedDeviceAtom(Number(newValue?.value));
+  };
+
   return (
     <div
       id="kt_app_toolbar_container"
@@ -78,11 +83,7 @@ const ToolbarMainDashboard = () => {
             styles={{
               menu: (base) => ({
                 ...base,
-                zIndex: 9999,
-              }),
-              container: (base) => ({
-                ...base,
-                zIndex: 9999,
+                zIndex: 3000,
               }),
             }}
           />
@@ -99,11 +100,7 @@ const ToolbarMainDashboard = () => {
             styles={{
               menu: (base) => ({
                 ...base,
-                zIndex: 9999,
-              }),
-              container: (base) => ({
-                ...base,
-                zIndex: 9999,
+                zIndex: 3000,
               }),
             }}
           />
@@ -114,17 +111,13 @@ const ToolbarMainDashboard = () => {
             className="select-dashboard"
             options={compOptions}
             value={selectedDevice}
-            onChange={(newValue) => setSelectedDevice(newValue)}
+            onChange={handleDeviceChange}
             placeholder="Select Device"
             isClearable
             styles={{
               menu: (base) => ({
                 ...base,
-                zIndex: 9999,
-              }),
-              container: (base) => ({
-                ...base,
-                zIndex: 9999,
+                zIndex: 3000,
               }),
             }}
           />
