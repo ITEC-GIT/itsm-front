@@ -5,6 +5,7 @@ type Assignee = {
   Avatar: string | null;
   is_admin: 0 | 1;
   Department: string;
+  branch_id: number;
 };
 
 type Requester = {
@@ -14,6 +15,7 @@ type Requester = {
   Avatar: string | null;
   is_admin: 0 | 1;
   Department: string;
+  branch_id: number;
 };
 
 type Computer = {

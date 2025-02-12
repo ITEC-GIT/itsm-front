@@ -31,27 +31,23 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [progress, setProgress] = useState(0);
 
   const locationOptions = useMemo(
-    () => [
-      { value: 0, label: "All Branches" },
-      ...(staticData.Locations || []).map((location: any) => ({
+    () =>
+      (staticData.Locations || []).map((location: any) => ({
         value: location.id ? Number(location.id) : 0,
         label: location.name || "",
       })),
-    ],
     [staticData]
   );
 
   const userOptions = useMemo(() => {
-    return (
-      (staticData.requesters || [])
-        // .filter(
-        //   (device) => !selectedBranch || device.branchid === selectedBranch.value
-        // )
-        .map((device) => ({
-          value: device.id ? Number(device.id) : 0,
-          label: device.name || "",
-        }))
-    );
+    return (staticData.requesters || [])
+      .filter(
+        (device) => !selectedBranch || device.branch_id === selectedBranch.value
+      )
+      .map((device) => ({
+        value: device.id ? Number(device.id) : 0,
+        label: device.name || "",
+      }));
   }, [staticData, selectedBranch]);
 
   const compOptions = useMemo(() => {
