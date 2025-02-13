@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ErrorResponse } from "../types/AuthTypes";
 import {
   CreateSoftInstRequestType,
@@ -112,6 +113,40 @@ async function GetBranches() {
 }
 
 /** *********************************************************************************************/
+/** ************************************** Remote SSH *******************************************/
+/** *********************************************************************************************/
+
+async function RemoteSSHConnect(
+  hostname: string,
+  port: number,
+  username: string,
+  pass: string
+) {
+  const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/`,
+      new URLSearchParams({
+        hostname: hostname,
+        port: port.toString(),
+        username: username,
+        password: pass,
+        // passphrase: "",
+        // totp: "",
+        // term: "",
+        // _xsrf: "",
+      }).toString(),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("SSH Connection Error:", error);
+    throw error;
+  }
+}
+/** *********************************************************************************************/
 /** ************************************** Software Installation ********************************/
 /** *********************************************************************************************/
 async function FetchAllSoftwareInstallations(
@@ -224,6 +259,7 @@ export {
   InitiateSoftwareInstallation,
   FetchAllSoftwareInstallations,
   CancelSoftwareInstallation,
+  RemoteSSHConnect,
   GetAllComputers,
   GetComputer,
   GetPrivateIPAddress,

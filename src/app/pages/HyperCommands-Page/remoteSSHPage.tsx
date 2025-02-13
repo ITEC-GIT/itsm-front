@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { selectValueType } from "../../types/dashboard";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
 import { StaticDataType } from "../../types/filtersAtomType";
 import Select from "react-select";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
-import { GetPrivateIPAddress } from "../../config/ApiCalls";
-import { DeviceIPAddressType } from "../../types/devicesTypes";
+import { GetPrivateIPAddress, RemoteSSHConnect } from "../../config/ApiCalls";
 
 const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertVariant, setAlertVariant] = useState<string>("");
-
   const userData = useAtomValue(userAtom);
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [ipAddress, setIpAddress] = useState("");
+  const [userInputIp, setUserInputIp] = useState("");
   const [port, setPort] = useState(22);
   const [userName, setUserName] = useState("");
   const [pass, setPass] = useState("");
@@ -29,7 +29,8 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   );
   const [deviceError, setDeviceError] = useState(false);
   const [passError, setPassError] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [ipError, setIpError] = useState(false);
+  const [hostname, setHostname] = useState("");
 
   const locationOptions = useMemo(
     () =>
@@ -55,8 +56,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     return (staticData.Computers || [])
       .filter(
         (device) => !selectedBranch || device.branchid === selectedBranch.value
-        //&&
-        // device.requesterid === selectedUser?.value
       )
       .map((device) => ({
         value: device.id ? Number(device.id) : 0,
@@ -70,25 +69,33 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     setSelectedDevice(null);
   };
 
-  const fetchIPAddress = async () => {
-    if (selectedDevice) {
-      const res = await GetPrivateIPAddress(selectedDevice.value);
-      const data: DeviceIPAddressType = res.data.data[0];
-      return data.private_ip_address;
-    }
-  };
-
   const handleConnect = async () => {
-    if (selectedDevice && userName && pass.trim()) {
-      const hostname = await fetchIPAddress();
-      if (!hostname) {
-        setAlertMessage(
-          "Unable to fetch IP address. Please check network connectivity, ensure the device is powered on and reachable."
-        );
-        setAlertVariant("danger");
-        return;
-      }
-      console.log("hostname ==>>", hostname);
+    if (!selectedDevice) {
+      setDeviceError(true);
+      return;
+    }
+    if (!pass) {
+      setPassError(true);
+      return;
+    }
+    if (!ipAddress && !userInputIp) {
+      setIpError(true);
+      return;
+    }
+
+    try {
+      const response = await RemoteSSHConnect(
+        hostname,
+        port,
+        userName,
+        btoa(pass)
+      );
+
+      const result = await response.json();
+      //add error handler bs kezim tetzabat men l backend in order to handle the error 
+      console.log("SSH connection response:", result);
+    } catch (error) {
+      console.error("Failed to connect:", error);
     }
   };
 
@@ -103,6 +110,28 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   };
 
   useEffect(() => {
+    if (selectedDevice) {
+      const fetchIPAddress = async () => {
+        try {
+          const res = await GetPrivateIPAddress(selectedDevice.value);
+          const data = res.data.data[0];
+          setIpAddress(data?.private_ip_address || "");
+        } catch (error) {
+          console.error("Error fetching IP:", error);
+          setIpAddress("");
+        }
+      };
+      fetchIPAddress();
+    } else {
+      setIpAddress("");
+    }
+  }, [selectedDevice]);
+
+  useEffect(() => {
+    setHostname(userInputIp || ipAddress);
+  }, [ipAddress, userInputIp]);
+
+  useEffect(() => {
     if (computerIdProp) {
       const computer = staticData.Computers.find(
         (device) => device.id === computerIdProp
@@ -111,14 +140,9 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
         const branch = staticData.Locations.find(
           (loc) => loc.id === computer.branchid
         );
-        // const user = staticData.requesters.find(
-        //   (req) => req.id === computer.requesterid
-        // );
-
         setSelectedBranch(
           branch ? { value: branch.id, label: branch.name } : null
         );
-        // setSelectedUser(user ? { value: user.id, label: user.name } : null);
         setSelectedDevice({ value: computer.id, label: computer.name });
       }
     }
@@ -146,6 +170,24 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
           <div className="container">
             <div className="card p-5">
               <div className="row">
+                <div className="col-md-12 mb-5 d-flex justify-content-end align-items-end">
+                  <div
+                    className="border rounded p-3 mb-4"
+                    style={{ width: "150px" }}
+                  >
+                    <label className="form-label text-start">
+                      <i className="bi bi-usb-symbol text-primary"></i>
+                      <span className="text-primary">Port</span>
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control custom-input"
+                      value={port}
+                      placeholder="Enter Port (e.g., 8080)"
+                      onChange={(e) => setPort(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
                 <div className="col-md-6 mb-5">
                   <label className="custom-label">Select Location</label>
                   <Select
@@ -182,7 +224,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                 </div>
                 <div className="col-md-6 mb-5">
                   <label className="custom-label required">Password</label>
-
                   <input
                     type="password"
                     className="form-control custom-input"
@@ -191,7 +232,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     style={{ height: "47px" }}
                     required
                   />
-
                   {passError && (
                     <small
                       className="text-danger"
@@ -212,7 +252,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     placeholder="Select Device"
                     isClearable
                   />
-
                   {deviceError && (
                     <small
                       className="text-danger"
@@ -222,24 +261,31 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     </small>
                   )}
                 </div>
-                <div className="col-md-6 mb-5 d-flex justify-content-end align-items-end">
-                  <div
-                    className=" border rounded p-3 mb-4"
-                    style={{ width: "150px" }}
-                  >
-                    <label className="form-label text-start">
-                      <i className="bi bi-usb-symbol text-primary"></i>
-                      <span className="text-primary">Port</span>
+                {selectedDevice && (
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label required">
+                      Device IP Address
                     </label>
                     <input
-                      type="number"
+                      type="text"
                       className="form-control custom-input"
-                      value={port}
-                      placeholder="Enter Port (e.g., 8080)"
-                      onChange={(e) => setPort(Number(e.target.value))}
+                      value={ipAddress || userInputIp}
+                      onChange={(e) => setUserInputIp(e.target.value)}
+                      placeholder="Enter IP Address"
+                      readOnly={!!ipAddress}
+                      required={!ipAddress}
+                      onFocus={() => setIpError(false)} // Reset error when editing
                     />
+                    {ipError && !ipAddress && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter the IP address.
+                      </small>
+                    )}
                   </div>
-                </div>
+                )}
               </div>
               <div className="mt-5 d-flex flex-column justify-content-around flex-sm-row gap-3">
                 <button
