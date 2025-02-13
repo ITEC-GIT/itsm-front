@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import "bootstrap/dist/css/bootstrap.min.css";
-import Sidebar from "../../components/dashboard/sidebarCharts";
-import { Content } from "../../../_metronic/layout/components/content";
 import { ChartDisplay } from "../../components/dashboard/chartDisplay";
 import { ChartType } from "../../types/dashboard";
 import {
@@ -10,6 +7,8 @@ import {
   saveToIndexedDB,
 } from "../../indexDB/Config";
 import Cookies from "js-cookie";
+import { SidebarAnalytic } from "../../components/dashboard/sidebarChartt";
+import Sidebar from "../../components/dashboard/sidebarCharts";
 
 const AnalyticsDashboard = () => {
   const [selectedCharts, setSelectedCharts] = useState<
@@ -50,84 +49,46 @@ const AnalyticsDashboard = () => {
   }, [userId]);
 
   return (
-    <Content>
-      <div className="container-fluid">
-        <div className="row">
-          <div
-            className={`col-md-4 bg-primary text-white position-fixed ${
-              isSidebarOpen ? "d-block" : "d-none d-md-block"
-            }`}
-            style={{
-              width: isSidebarOpen ? "80%" : "250px",
-              height: "100%",
-              maxHeight: "70%",
-              borderRadius: isSidebarOpen ? "0" : "10px",
-              boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
-              overflowY: "auto",
-              zIndex: 99,
-            }}
-          >
-            <Sidebar
-              selectedCharts={selectedCharts}
-              toggleChart={toggleChart}
-            />
-          </div>
-
-          <button
-            className="btn btn-primary position-fixed d-md-none"
-            style={{
-              width: "40px",
-              height: "100px",
-              borderRadius: " 0 50%  50% 0",
-              fontWeight: "bold",
-              top: "50%",
-              left: isSidebarOpen ? "84%" : "0",
-              transform: "translateY(-50%)",
-              writingMode: "vertical-rl",
-              textOrientation: "upright",
-
-              zIndex: 100,
-            }}
-            onClick={toggleSidebar}
-          >
-            {isSidebarOpen ? "Back" : "Menu"}
-          </button>
-
-          <div
-            // className={`col-md-8 offset-md-3 p-4 ${
-            //   isSidebarOpen ? "d-none" : ""
-            // } ms-0 ms-md-3`}
-            className={`col-md-8 offset-md-3 p-4 `}
-            style={{
-              maxHeight: "calc(100vh - 250px)",
-              overflowY: "auto",
-            }}
-            // style={{ marginLeft: "250px" }}
-            // style={{ marginLeft: "auto", marginRight: "auto" }}
-          >
-            <div className="row">
-              {selectedCharts.map(({ id, type }) => (
-                <div className="col-md-6 col-lg-6 mb-4" key={id}>
-                  <ChartDisplay chartType={type as ChartType} />
-                </div>
-              ))}
-            </div>
+    <div
+      className="container-fluid"
+      style={{ paddingLeft: "20px", backgroundColor: "#DDE2E6" }}
+    >
+      <div className="row">
+        <div className="col-sm-3 col-md-3 col-lg-3 col-xl-2">
+          <SidebarAnalytic
+            selectedCharts={selectedCharts}
+            toggleChart={toggleChart}
+          />
+        </div>
+        <div
+          className="col-sm-9 col-md-9 col-lg-9 col-xl-10 mt-3"
+          style={{
+            backgroundColor: "#f7f9fc",
+            borderRadius: "10px",
+            padding: "1.5rem 1rem",
+            flexGrow: "1",
+            overflowY: "auto",
+            height: "79vh",
+            maxHeight: "79vh",
+          }}
+        >
+          <div className="parent d-flex flex-wrap justify-content-start gap-2 p-3 bg-light">
+            {selectedCharts.map(({ id, type }) => (
+              <div
+                className="mb-4"
+                key={id}
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "6px",
+                }}
+              >
+                <ChartDisplay chartType={type as ChartType} />
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      <style>
-        {`
-    @media (min-width: 768px) and (max-width: 1246px) {
-      .container-fluid {
-        padding: 0;
-      }
-      .col-md-8 {
-        margin-left: 30% !important;
-      }
-    }
-  `}
-      </style>
-    </Content>
+    </div>
   );
 };
 

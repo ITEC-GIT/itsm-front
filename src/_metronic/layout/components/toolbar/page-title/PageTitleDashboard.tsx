@@ -51,7 +51,7 @@ const PageTitleDashboard = () => {
             Analytics Dashboard
           </h1>
         ) : (
-          <h1 className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center">
+          <h1 className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center text-nowrap">
             Main Dashboard
           </h1>
         )}

@@ -89,14 +89,7 @@ const MainDashboard = () => {
       style={{ paddingLeft: "20px", backgroundColor: "#DDE2E6" }}
     >
       <div className="row">
-        <div
-          className="col-sm-3 col-md-3 col-lg-3 col-xl-2"
-          // style={{
-          //   borderRadius: "10px",
-          //   boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
-          //   backgroundColor: "none",
-          // }}
-        >
+        <div className="col-sm-3 col-md-3 col-lg-3 col-xl-2">
           <SidebarMain />
         </div>
         <div
@@ -105,7 +98,6 @@ const MainDashboard = () => {
             backgroundColor: "white",
             borderRadius: "10px",
             padding: "1.5rem 1rem",
-            // boxShadow: "0 0 10px 0 rgba(100,100,100,0.1)",
             flexGrow: "1",
             overflowY: "auto",
             height: "79vh",
