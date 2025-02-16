@@ -10,14 +10,23 @@ export const ChartDisplay: React.FC<{ chartType: ChartType }> = ({
   return (
     <>
       <Chart
-        options={config.options}
+        options={{
+          ...config.options,
+          chart: {
+            ...config.options.chart,
+            width: "100%",
+            height: "100%",
+          },
+        }}
         series={config.series}
         type={config.options.chart.type}
       />
-      <style>{`.apexcharts-legend.apx-legend-position-right {
+      <style>{`
+        .apexcharts-legend.apx-legend-position-right {
           overflow: unset;
-        
-        }`}</style>
+          size: auto;
+        }
+      `}</style>
     </>
   );
 };
