@@ -13,14 +13,21 @@ const AnalyticsDashboard: React.FC = () => {
       type: string;
       x: number;
       y: number;
+      title: string;
       width: number;
       height: number;
     }[]
   >([]);
+  const [chartTitle, setChartTitle] = useState<string>("");
 
-  const toggleChart = (chartId: number, chartType: string) => {
+  const toggleChart = (
+    chartId: number,
+    chartType: string,
+    chartTitle: string
+  ) => {
     setSelectedCharts((prev) => {
       const isSelected = prev.some((chart) => chart.id === chartId);
+      setChartTitle(chartTitle);
       if (isSelected) {
         return prev.filter((chart) => chart.id !== chartId);
       }
@@ -34,6 +41,7 @@ const AnalyticsDashboard: React.FC = () => {
         y: Math.floor(prev.length / 3) * (chartHeight + 20),
         width: chartWidth,
         height: chartHeight,
+        title: chartTitle,
       };
       return [...prev, newChart];
     });
@@ -120,6 +128,13 @@ const AnalyticsDashboard: React.FC = () => {
     });
   };
 
+  const updateChartSize = (id: number, width: number, height: number) => {
+    setSelectedCharts((prev) =>
+      prev.map((chart) =>
+        chart.id === id ? { ...chart, width, height } : chart
+      )
+    );
+  };
   return (
     <div
       className="container-fluid"
@@ -147,37 +162,29 @@ const AnalyticsDashboard: React.FC = () => {
             className="parent d-flex flex-wrap gap-2 p-3 bg-light"
             style={{ position: "relative", height: "100%" }}
           >
-            {selectedCharts.map(({ id, type, x, y, width, height }, index) => (
-              <Rnd
-                key={id}
-                size={{ width, height }}
-                position={{ x, y }}
-                bounds="parent"
-                onDragStop={(e, d) => handleDragStop(index, d.x, d.y)}
-                onResizeStop={(e, direction, ref, delta, position) =>
-                  handleResizeStop(index, direction, ref, delta, position)
-                }
-                minWidth={150}
-                minHeight={100}
-                maxWidth={window.innerWidth * 0.75}
-                maxHeight={window.innerHeight * 0.79}
-              >
-                <div
-                  className="chart-box"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: "white",
-                    borderRadius: "6px",
-                    cursor: "move",
-                    border: "2px solid #007bff",
-                    overflow: "hidden",
-                  }}
+            {selectedCharts.map(
+              ({ id, type, x, y, width, height, title }, index) => (
+                <Rnd
+                  key={id}
+                  size={{ width, height }}
+                  position={{ x, y }}
+                  bounds="parent"
+                  onDragStop={(e, d) => handleDragStop(index, d.x, d.y)}
+                  onResizeStop={(e, direction, ref, delta, position) =>
+                    handleResizeStop(index, direction, ref, delta, position)
+                  }
+                  minWidth={350} //should be dynamic
+                  minHeight={350}
+                  maxWidth={window.innerWidth * 0.75}
+                  maxHeight={window.innerHeight * 0.7}
                 >
-                  <ChartDisplay chartType={type as ChartType} />
-                </div>
-              </Rnd>
-            ))}
+                  <ChartDisplay
+                    chartType={type as ChartType}
+                    chartTitle={title}
+                  />
+                </Rnd>
+              )
+            )}
           </div>
         </div>
       </div>
@@ -185,4 +192,4 @@ const AnalyticsDashboard: React.FC = () => {
   );
 };
 
-export { AnalyticsDashboard };
+export default AnalyticsDashboard;

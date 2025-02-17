@@ -1,3 +1,4 @@
+import { title } from "process";
 import { ChartType } from "../types/dashboard";
 
 export const chartSideBarItems = [
@@ -118,206 +119,29 @@ export const chartSideBarItems = [
 ];
 
 export const chartConfig: Record<ChartType, { options: any; series: any }> = {
-  // "Pie Chart": {
-  //   options: {
-  //     chart: { type: "donut" },
-  //     labels: ["High", "Medium", "Low", "Very Low"],
-  //     colors: ["#FF6384", "#36A2EB", "#FFCE56", "#FFCF76"],
-  //     width: 300,
-  //     height: 300,
-  //     // responsive: [
-  //     //   {
-  //     //     breakpoint: 2400,
-  //     //     options: {
-  //     //       chart: {
-  //     //         width: 400,
-  //     //       },
-  //     //       legend: {
-  //     //         position: "bottom",
-  //     //       },
-  //     //     },
-  //     //   },
-  //     //   {
-  //     //     breakpoint: 1600,
-  //     //     options: {
-  //     //       chart: {
-  //     //         width: 500,
-  //     //       },
-  //     //       legend: {
-  //     //         position: "bottom",
-  //     //       },
-  //     //     },
-  //     //   },
-  //     //   {
-  //     //     breakpoint: 1200,
-  //     //     options: {
-  //     //       chart: {
-  //     //         width: 200,
-  //     //         height: 250,
-  //     //       },
-  //     //       legend: {
-  //     //         position: "bottom",
-  //     //       },
-  //     //     },
-  //     //   },
-  //     //   {
-  //     //     breakpoint: 768,
-  //     //     options: {
-  //     //       chart: {
-  //     //         width: 400,
-  //     //       },
-  //     //       legend: {
-  //     //         position: "bottom",
-  //     //       },
-  //     //     },
-  //     //   },
-  //     //   {
-  //     //     breakpoint: 480,
-  //     //     options: {
-  //     //       chart: {
-  //     //         width: 250,
-  //     //       },
-  //     //       legend: {
-  //     //         position: "bottom",
-  //     //       },
-  //     //     },
-  //     //   },
-  //     // ],
-  //   },
-  //   series: [110, 80, 50, 10],
   "Pie Chart": {
     options: {
-      chart: { type: "donut" },
-      labels: ["High", "Medium", "Low", "Very Low"],
-      colors: ["#FF6384", "#36A2EB", "#FFCE56", "#FFCF76"],
-      // width: 300,
-      // height: 350,
-      responsive: [
-        {
-          breakpoint: 2400,
-          options: {
-            chart: {
-              width: 400,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-        {
-          breakpoint: 1600,
-          options: {
-            chart: {
-              width: 500,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-        {
-          breakpoint: 1200,
-          options: {
-            chart: {
-              width: 200,
-              height: 250,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-        {
-          breakpoint: 768,
-          options: {
-            chart: {
-              width: 400,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 250,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-      ],
-    },
-    series: [110, 80, 50, 10],
-  },
+      chart: { type: "donut", width: "450px", height: "350px" },
 
-  // "Pie Chart": {
-  //   // series: [44, 55, 41, 17, 15],
-  //   // options: {
-  //   //   chart: {
-  //   //     width: 380,
-  //   //     type: "donut",
-  //   //   },
-  //   //   plotOptions: {
-  //   //     pie: {
-  //   //       startAngle: -90,
-  //   //       endAngle: 270,
-  //   //     },
-  //   //   },
-  //   //   dataLabels: {
-  //   //     enabled: false,
-  //   //   },
-  //   //   fill: {
-  //   //     type: "gradient",
-  //   //   },
-  //   //   legend: {
-  //   //     formatter: function (val: string, opts: any) {
-  //   //       return val + " - " + opts.w.globals.series[opts.seriesIndex];
-  //   //     },
-  //   //   },
-  //   //   // title: {
-  //   //   //   text: "Gradient Donut with custom Start-angle",
-  //   //   // },
-  //   //   // responsive: [
-  //   //   //   {
-  //   //   //     breakpoint: 480,
-  //   //   //     options: {
-  //   //   //       chart: {
-  //   //   //         width: 200,
-  //   //   //       },
-  //   //   //       legend: {
-  //   //   //         position: "bottom",
-  //   //   //       },
-  //   //   //     },
-  //   //   //   },
-  //   //   // ],
-  //   // },
-  //   options: {
-  //     chart: { type: "donut" },
-  //     labels: ["High", "Medium", "Low"],
-  //     colors: ["#FF6384", "#36A2EB", "#FFCE56"],
-  //     responsive: [
-  //       {
-  //         breakpoint: 2400,
-  //         options: {
-  //           chart: {
-  //             width: 500,
-  //           },
-  //           legend: {
-  //             position: "bottom",
-  //           },
-  //         },
-  //       },
-  //     ],
-  //   },
-  //   series: [120, 80, 50],
-  // },
+      labels: [
+        "High",
+        "Medium",
+        "Low",
+        "Very Low",
+        "High",
+        "Medium",
+        "Low",
+        "Very Low",
+        "Medium",
+        "Very Low",
+      ],
+      colors: ["#FF6384", "#36A2EB", "#FFCE56", "#FFCF76"],
+    },
+    series: [110, 80, 50, 20, 150, 10, 110, 180, 45, 30],
+  },
   "Bar Chart": {
     options: {
-      chart: { type: "bar" },
+      chart: { type: "bar", width: "450px", height: "350px" },
       xaxis: {
         categories: [
           "Branch A",
@@ -330,20 +154,6 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
           "Branch B",
           "Branch C",
           "Branch A",
-          "Branch B",
-          "Branch C",
-          "Branch A",
-          "Branch B",
-          "Branch C",
-          "Branch A",
-          "Branch B",
-          "Branch C",
-          "Branch A",
-          "Branch B",
-          "Branch C",
-          "Branch A",
-          "Branch B",
-          "Branch C",
         ],
       },
       colors: [
@@ -360,83 +170,32 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
         "#FF6384",
         "#36A2EB",
       ],
-      // width: 300,
-      // height: 350,
-      // responsive: [
-      //   {
-      //     breakpoint: 2400,
-      //     options: {
-      //       chart: {
-      //         width: 400,
-      //         height: 300,
-      //       },
-      //       legend: {
-      //         position: "bottom",
-      //       },
-      //     },
-      //   },
-      //   {
-      //     breakpoint: 1600,
-      //     options: {
-      //       chart: {
-      //         width: 450,
-      //       },
-      //       legend: {
-      //         position: "bottom",
-      //       },
-      //     },
-      //   },
-      //   {
-      //     breakpoint: 1200,
-      //     options: {
-      //       chart: {
-      //         width: 200,
-      //         height: 235,
-      //       },
-      //       legend: {
-      //         position: "bottom",
-      //       },
-      //     },
-      //   },
-      //   {
-      //     breakpoint: 768,
-      //     options: {
-      //       chart: {
-      //         width: 200,
-      //       },
-      //       legend: {
-      //         position: "bottom",
-      //       },
-      //     },
-      //   },
-      //   {
-      //     breakpoint: 480,
-      //     options: {
-      //       chart: {
-      //         width: 250,
-      //       },
-      //       legend: {
-      //         position: "bottom",
-      //       },
-      //     },
-      //   },
-      // ],
     },
 
     series: [
       {
         name: "Assets",
-        data: [
-          120, 200, 150, 120, 200, 150, 120, 200, 150, 120, 200, 150, 120, 200,
-          150, 120, 200, 150, 120, 200, 150, 120, 200, 150,
-        ],
+        data: [120, 200, 150, 120, 200, 150, 120, 200, 150, 120],
       },
     ],
   },
   "Line Chart": {
     options: {
-      chart: { type: "line" },
-      xaxis: { categories: ["Jan", "Feb", "Mar", "Apr", "May"] },
+      chart: { type: "line", width: "430px", height: "350px" },
+      xaxis: {
+        categories: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+        ],
+      },
       stroke: { curve: "smooth" },
       colors: ["#FF6384"],
       width: 300,
@@ -445,26 +204,37 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
     series: [
       {
         name: "Tickets Over Time",
-        data: [50, 75, 100, 150, 200],
+        data: [50, 75, 100, 150, 200, 50, 175, 300, 150, 200],
       },
     ],
   },
   "Stacked Bar Chart": {
     options: {
-      chart: { type: "bar", stacked: true },
-      xaxis: { categories: ["Branch A", "Branch B", "Branch C"] },
+      chart: { type: "bar", stacked: true, width: "525px", height: "350px" },
+      xaxis: {
+        categories: [
+          "Branch A",
+          "Branch B",
+          "Branch C",
+          "Branch A",
+          "Branch B",
+          "Branch C",
+          "Branch A",
+          "Branch B",
+          "Branch C",
+          "Branch X",
+        ],
+      },
       colors: ["#36A2EB", "#FFCE56", "#FF6384"],
-      width: 300,
-      height: 350,
     },
     series: [
       {
         name: "Open Tickets",
-        data: [30, 50, 20],
+        data: [30, 50, 20, 30, 50, 80, 35, 45, 20, 60],
       },
       {
         name: "Resolved Tickets",
-        data: [60, 100, 80],
+        data: [60, 100, 80, 60, 130, 55, 160, 100, 180, 120],
       },
     ],
   },
@@ -487,9 +257,7 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
   },
   "Heatmap Chart": {
     options: {
-      width: 300,
-      height: 350,
-      chart: { type: "heatmap" },
+      chart: { type: "heatmap", width: "530px", height: "350px" },
       plotOptions: {
         heatmap: {
           shadeIntensity: 0.5,
@@ -503,47 +271,48 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
           },
         },
       },
-      xaxis: { categories: ["Jan", "Feb", "Mar", "Apr", "May"] },
+      xaxis: {
+        categories: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+        ],
+      },
     },
     series: [
       {
         name: "Metric A",
-        data: [30, 70, 100, 90, 120],
+        data: [30, 170, 100, 190, 120, 130, 70, 100, 80, 120],
       },
       {
         name: "Metric B",
-        data: [60, 80, 120, 110, 150],
+        data: [60, 20, 120, 110, 70, 60, 80, 120, 10, 150],
       },
     ],
   },
 
   "Polar Area Chart": {
-    series: [14, 23, 21, 17, 15, 10, 12, 17, 21],
+    series: [14, 23, 21, 17, 15, 10, 12, 17, 21, 25],
     options: {
       chart: {
         type: "polarArea",
+        width: "430px",
+        height: "350px",
       },
+
       stroke: {
         colors: ["#fff"],
       },
       fill: {
         opacity: 0.8,
       },
-      // width: 300,
-      // height: 350,
-      // responsive: [
-      //   {
-      //     breakpoint: 480,
-      //     options: {
-      //       chart: {
-      //         width: 200,
-      //       },
-      //       legend: {
-      //         position: "bottom",
-      //       },
-      //     },
-      //   },
-      // ],
     },
   },
 };

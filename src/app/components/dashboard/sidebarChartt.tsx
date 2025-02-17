@@ -2,7 +2,7 @@ import React from "react";
 import { chartSideBarItems } from "../../data/dashboard";
 
 interface SidebarProps {
-  toggleChart: (chartId: number, chartType: string) => void;
+  toggleChart: (chartId: number, chartType: string, chartTitle: string) => void;
   selectedCharts: { id: number; type: string }[];
 }
 
@@ -32,7 +32,13 @@ const SidebarAnalytic: React.FC<SidebarProps> = ({
                   <button
                     key={chart.id}
                     className={`${btnClassName}`}
-                    onClick={() => toggleChart(chart.id, chart.type)}
+                    onClick={() =>
+                      toggleChart(
+                        chart.id,
+                        chart.type,
+                        `${category.title} : ${chart.title}`
+                      )
+                    }
                   >
                     {/* <i className="bi bi-pie-chart"></i> */}
                     <span>{chart.title}</span>
