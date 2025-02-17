@@ -3,7 +3,9 @@ import { atom } from 'jotai';
 
 import {atomWithIndexedDB} from '../atomWithIndexDB';
 
-
+// Atom to store the page number the user is paginated in
+export const currentTicketsPageAtom = atom(1);
+currentTicketsPageAtom.debugLabel = "currentTicketsPageAtom";
 // Atom to store the total tickets specified by the user in the 'toolbarTickets' for the all Tickets page
 export const totalTicketsNavigationAtom = atom(1);
 totalTicketsNavigationAtom.debugLabel = "ticketsTotalTicketsNavigationAtom";

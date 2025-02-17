@@ -29,7 +29,7 @@ import {
     initialFetchedTicketsAtom,
     initialFetchedTicketsTotalAtom,
     newTicketsAvailableCount,
-    totalTicketsFetchedAtom, fetchActionAtom,
+    totalTicketsFetchedAtom, fetchActionAtom, currentTicketsPageAtom,
 } from "../../atoms/tickets-page-atom/ticketsPageAtom";
 import {toolbarTicketsFrontFiltersAtom} from "../../atoms/toolbar-atoms/toolbarTicketsAtom";
 import {userAtom} from "../../atoms/auth-atoms/authAtom";
@@ -61,7 +61,7 @@ import {string} from "yup";
 
 const TicketsPage: React.FC = () => {
     // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
-    const [currentTicketsPage, setCurrentTicketsPage] = useState<number>(1);
+    const [currentTicketsPage, setCurrentTicketsPage] = useAtom(currentTicketsPageAtom)
     const toolbarSearch = useAtomValue(toolbarTicketsSearchAtom);
     const navigate = useNavigate();
     const location = useLocation();
@@ -142,33 +142,14 @@ const TicketsPage: React.FC = () => {
         }
     };
 
-    const filterBackendMutation = useMutation<any, Error, ApiRequestBody>({
-        mutationFn: FetchFilteredTickets,
-        onSuccess: (response) => {
-            const responseData = response.data;
-            setMaxTotalTickets(response.totalcount);
-            setTickets(responseData);
-            setCurrentTotalTicketsAccumulation(responseData.length);
-            setIsTicketsFetch(true);
-            setIsDataLoading(false);
-            console.log("response", response);
-            setCurrentTicketsPage(1);
-
-            const message = "success";
-        },
-        onError: (error) => {
-            alert("There was an error: " + error.message);
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ["create"]}); // Updated invalidateQueries syntax
-        },
-    });
     const [
         automaticRefetchLengthMismatchFlag,
         setAutomaticRefetchLengthMismatchFlag,
     ] = useState(false);
     const [mismatchCount, setMismatchCount] = useAtom(newTicketsAvailableCount);
-
+    useEffect(() => {
+        console.log("this changed , currentTicketsPage: ", currentTicketsPage);
+    }, [currentTicketsPage]);
     const GetTicketsMutation = useMutation<
         any,
         Error,
@@ -830,6 +811,19 @@ const TicketsPage: React.FC = () => {
     const handleTicketClick = (ticket: any) => {
         navigate(`/ticket/${ticket.id}`, {state: {ticket}});
     };
+    const handleMouseDown = (event: React.MouseEvent, ticket: any) => {
+        // if (event.button === 1) { // Middle mouse button
+        //     event.preventDefault();
+        //     window.open(`/ticket/${ticket.id}`, "_blank");
+        // } else if (event.button === 0) { // Left click (normal navigation)
+        //     navigate(`/ticket/${ticket.id}`, {state: {ticket}});
+        // }
+        const ticketUrl = `/ticket/${ticket.id}`;
+        if (event.button === 1) { // Middle mouse button
+            event.preventDefault();
+            window.open(ticketUrl, "_blank");
+        }
+    };
 
     const changePriority = (id: number) => {
         console.log(`Change priority for ticket ID: ${id}`);
@@ -863,8 +857,23 @@ const TicketsPage: React.FC = () => {
     // useEffect(() => {
     //   updatePaginatedTickets();
     // }, [currentTicketsPage, ticketsSearchFiltered, frontFilter, pinnedTicketIds]);
+
+    const hasEmptyFrontFilterValue = (
+        filterObj: Record<string, { value: string; label: string }>
+    ) => {
+        return Object.values(filterObj).some(
+            (filter) => filter.label.trim() === ""
+        );
+    };
+
     useEffect(() => {
-        setCurrentTicketsPage(1);
+        if (toolbarSearch.trim() !== "" ||
+            (frontFilter &&
+                !hasEmptyFrontFilterValue(
+                    frontFilter as Record<string, { value: string; label: string }>
+                ))) {
+            setCurrentTicketsPage(1);
+        }
     }, [toolbarSearch, frontFilter]);
 
     useEffect(() => {
@@ -1155,11 +1164,40 @@ const TicketsPage: React.FC = () => {
         };
 
     }, [setMismatchCount]);
+    useEffect(() => {
+        if (location.state?.from === "details" && tickets.length > 0) {
+            console.log("Navigated back from details; skipping changing currentpage");
+            return;
+        }
+        return () => {
+            // this is to unmount the component but not unmount data if navigating to details of any card
+            const isTicketFormat = (input: string): boolean => {
+                if (!input.startsWith("/ticket/")) return false;
+
+                const parts = input.split("/");
+                const lastPart = parts[2];
+
+                return lastPart !== undefined && !isNaN(Number(lastPart));
+            };
+            const toDetailsRoute = isTicketFormat(window.location.pathname);
+            if (!toDetailsRoute) {
+                setCurrentTicketsPage(1);
+            }
+        };
+
+    }, [setCurrentTicketsPage]);
     // const [selectedAssignees] = useAtom(selectedAssigneesAtom);
     const [ticketChangeAssigneenOn, setChangeAssigneeOn] = useAtom(
         ticketPerformingActionOnAtom
     );
+    useEffect(() => {
 
+        return () => {
+            setChangeAssigneeOn(null);
+
+        }
+
+    }, [setChangeAssigneeOn]);
     useEffect(() => {
         if (ticketChangeAssigneenOn) {
             console.log("Ticket performing action on:", ticketChangeAssigneenOn.ticketId);
@@ -1202,6 +1240,25 @@ const TicketsPage: React.FC = () => {
         }
     }, [ticketChangeAssigneenOn]);
 
+    const decodeHtml = (encodedHtml: string): string => {
+        const textArea = document.createElement("textarea");
+        textArea.innerHTML = encodedHtml;
+        return textArea.value;
+    };
+
+    const getMaxWords = (encodedHtml: string, maxWords: number = 40): string => {
+        // Step 1: Decode HTML entities
+        const decodedHtml = decodeHtml(encodedHtml);
+
+        // Step 2: Strip HTML tags using regex
+        const textOnly = decodedHtml.replace(/<\/?[^>]+(>|$)/g, "");
+
+        // Step 3: Extract words (tokens) using regex
+        const words = textOnly.match(/\b\w+\b/g) || [];
+
+        // Step 4: Return up to maxWords (12 by default)
+        return words.slice(0, maxWords).join(" ");
+    };
     return (
         <>
             <ToolbarWrapper source={"tickets"}/>
@@ -1228,7 +1285,7 @@ const TicketsPage: React.FC = () => {
                                         date={ticket.date}
                                         title={ticket.name}
                                         description={
-                                            ticket.content ||
+                                            getMaxWords(ticket.content) ||
                                             "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
                                         }
                                         assignedTo={{
@@ -1249,6 +1306,8 @@ const TicketsPage: React.FC = () => {
                                         onStarred={handleStarringTicket} // Pass the handlePinTicket function
                                         isCurrentUserMaster={isCurrentUserMaster}
                                         assignees={assignees}
+                                        onMouseDown={(event) => handleMouseDown(event, ticket)}
+
                                     />
                                 );
                             })

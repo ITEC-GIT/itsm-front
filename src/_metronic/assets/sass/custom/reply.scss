@@ -9,16 +9,11 @@
 
 }
 .reply-footer-controls-content {
-
+  width: 100% !important;
   background-color: #f8f9fa; // Optional: Background color for better visibility
   border-top: 1px solid #ddd; // Optional: Adds a separator line
   justify-content: left; // Centers the navigation horizontally
-  gap: 10px;
-  top: 0 !important;
-  left: 0; // Aligns it to the container's left edge
-  right: 0; // Aligns it to the container's right edge
-  display: flex; // Allows child elements to be flexibly positioned
-  margin: auto; // Ensures it's centered with padding around it
+
   margin-left: 30px !important;
   margin-right: 30px !important;
   border-radius: 8px;
@@ -45,31 +40,58 @@
   max-height: 90% !important;
 
 }
-
 .relative-container {
-  position: relative;
+  position: sticky;
+  bottom: 0;
   width: 100%;
   height: 40%;
   background: #DDE2E6;
-  overflow: hidden;
+  /* Removed z-index to avoid creating a stacking context */
+  display: flex;
+  align-items: flex-end;
+  overflow: visible;
+
 }
 
 .custom-offcanvas {
-  position: absolute !important;  /* Keeps it inside the parent */
-  top: 10px !important;         /* Adds right margin */
-  width: auto !important;
+  position: sticky !important;
+  width: 100% !important;
   max-width: calc(100% - 60px) !important;
-  bottom: 20px !important;        /* Adds bottom margin */
-  max-height: 95% !important;     /* Prevents it from taking full height */
-  border-radius: 10px;            /* Optional rounded edges */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow */
-  background-color: #f8f9fa; // Off-white background color
-  border: 2px solid #ccc; // Light grey border
-  boxShadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Subtle shadow for 2D effect
-  zIndex: 1000;
+  max-height: 95% !important;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin:auto;
+  background-color: #f8f9fa;
+  border: 2px solid #ccc;
   left: 30px !important;
   right: 30px !important;
+  z-index: 999; /* Now relative to the root, ensuring it's above other elements */
 }
+//
+//.relative-container {
+//  position: relative;
+//  width: 100%;
+//  height: 40%;
+//  background: #DDE2E6;
+//  overflow: hidden;
+//}
+//
+//.custom-offcanvas {
+//  position: absolute !important;  /* Keeps it inside the parent */
+//  top: 10px !important;         /* Adds right margin */
+//  width: auto !important;
+//  max-width: calc(100% - 60px) !important;
+//  bottom: 20px !important;        /* Adds bottom margin */
+//  max-height: 95% !important;     /* Prevents it from taking full height */
+//  border-radius: 10px;            /* Optional rounded edges */
+//  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow */
+//  background-color: #f8f9fa; // Off-white background color
+//  border: 2px solid #ccc; // Light grey border
+//  boxShadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Subtle shadow for 2D effect
+//  zIndex: 1000;
+//  left: 30px !important;
+//  right: 30px !important;
+//}
 .offcanvas-backdrop {
   background: none !important; /* Removes background overlay */
 }

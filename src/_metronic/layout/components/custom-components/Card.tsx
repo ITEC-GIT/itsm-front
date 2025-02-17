@@ -34,6 +34,7 @@ interface CardProps {
   isCurrentUserMaster: boolean;
   assignees: Assignee[];
   isDetailsPage?: boolean;
+  onMouseDown?: (event: React.MouseEvent, id: string) => void; // Add onMouseDown prop
 }
 
 const TicketCard: React.FC<CardProps> = ({
@@ -56,7 +57,7 @@ const TicketCard: React.FC<CardProps> = ({
                                            isCurrentUserMaster,
                                            assignees,
                                            isDetailsPage = false,
-
+                                             onMouseDown
                                          }) => {
   const [isRadioSelected, setIsRadioSelected] = useState(false);
   const [iconColors, setIconColors] = useState({
@@ -184,6 +185,8 @@ const TicketCard: React.FC<CardProps> = ({
                   ? "0 4px 8px rgba(0, 0, 0, 0.2)"
                   : "none";
             }}
+            onMouseDown={(event) => onMouseDown && onMouseDown(event, id)}
+
             onClick={handleCardClick} // Add onClick event to toggle focus and underline
         >
           <div className="card-content">
