@@ -15,68 +15,68 @@ export function getSessionTokenFromCookie() {
   return match ? match[1] : null;
 }
 
-// PrivateApiCall.interceptors.request.use(
-//   (req: any) => {
-//     const sessionToken = getSessionTokenFromCookie();
-//     const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
-//     if (sessionToken) {
-//       req.headers["Session-Token"] = sessionToken;
-//     }
-//     if (appToken) {
-//       req.headers["App-Token"] = appToken;
-//     }
-//     req.headers["Content-Range"] = "bytes 0-499/10000";
+PrivateApiCall.interceptors.request.use(
+  (req: any) => {
+    const sessionToken = getSessionTokenFromCookie();
+    const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+    if (sessionToken) {
+      req.headers["Session-Token"] = sessionToken;
+    }
+    if (appToken) {
+      req.headers["App-Token"] = appToken;
+    }
+    req.headers["Content-Range"] = "bytes 0-499/10000";
 
-//     return req;
-//   },
-//   (err: any) => {
-//     throw err;
-//   }
-// );
+    return req;
+  },
+  (err: any) => {
+    throw err;
+  }
+);
 
-// PrivateApiCall.interceptors.response.use(
-//   (res: any) => {
-//     return res;
-//   },
-//   (error: any) => {
-//     if (error.response?.status === 401) {
-//       window.location.href = "/pulsar/itsm/auth/login";
-//       Cookies.set("isAuthenticated", "false");
-//       Cookies.remove("session_token");
-//     }
-//     throw error;
-//   }
-// );
+PrivateApiCall.interceptors.response.use(
+  (res: any) => {
+    return res;
+  },
+  (error: any) => {
+    if (error.response?.status === 401) {
+      window.location.href = "/pulsar/itsm/auth/login";
+      Cookies.set("isAuthenticated", "false");
+      Cookies.remove("session_token");
+    }
+    throw error;
+  }
+);
 
-// PublicApiCall.interceptors.request.use(
-//   (req: any) => {
-//     const sessionToken = getSessionTokenFromCookie();
-//     const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
-//     if (sessionToken) {
-//       req.headers["Session-Token"] = sessionToken;
-//     }
-//     if (appToken) {
-//       req.headers["App-Token"] = appToken;
-//     }
-//     req.headers["Content-Range"] = "bytes 0-499/10000";
+PublicApiCall.interceptors.request.use(
+  (req: any) => {
+    const sessionToken = getSessionTokenFromCookie();
+    const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+    if (sessionToken) {
+      req.headers["Session-Token"] = sessionToken;
+    }
+    if (appToken) {
+      req.headers["App-Token"] = appToken;
+    }
+    req.headers["Content-Range"] = "bytes 0-499/10000";
 
-//     return req;
-//   },
-//   (err: any) => {
-//     throw err;
-//   }
-// );
+    return req;
+  },
+  (err: any) => {
+    throw err;
+  }
+);
 
-// PublicApiCall.interceptors.response.use(
-//   (res: any) => {
-//     return res;
-//   },
-//   (error: any) => {
-//     if (error.response?.status === 401) {
-//       // window.location.href = "/pulsar/itsm/auth/login";
-//       Cookies.set("isAuthenticated", "false");
-//       Cookies.remove("session_token");
-//     }
-//     throw error;
-//   }
-// );
+PublicApiCall.interceptors.response.use(
+  (res: any) => {
+    return res;
+  },
+  (error: any) => {
+    if (error.response?.status === 401) {
+      // window.location.href = "/pulsar/itsm/auth/login";
+      Cookies.set("isAuthenticated", "false");
+      Cookies.remove("session_token");
+    }
+    throw error;
+  }
+);
