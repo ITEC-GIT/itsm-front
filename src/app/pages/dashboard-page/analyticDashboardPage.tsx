@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
-import { loadFromIndexedDB } from "../../indexDB/Config";
+import {
+  loadFromIndexedDB,
+  removeFromIndexedDB,
+  saveToIndexedDB,
+} from "../../indexDB/Config";
 import { Rnd } from "react-rnd";
 import { SidebarAnalytic } from "../../components/dashboard/sidebarChartt";
 import { ChartType } from "../../types/dashboard";
 import { ChartDisplay } from "../../components/dashboard/chartDisplay";
+import { chartConfig } from "../../data/dashboard";
 
 const AnalyticsDashboard: React.FC = () => {
+  const userId = Number(Cookies.get("user"));
+  const parentRef = useRef<HTMLDivElement>(null);
+
   const [selectedCharts, setSelectedCharts] = useState<
     {
       id: number;
@@ -18,7 +26,6 @@ const AnalyticsDashboard: React.FC = () => {
       height: number;
     }[]
   >([]);
-  const [chartTitle, setChartTitle] = useState<string>("");
 
   const toggleChart = (
     chartId: number,
@@ -27,44 +34,66 @@ const AnalyticsDashboard: React.FC = () => {
   ) => {
     setSelectedCharts((prev) => {
       const isSelected = prev.some((chart) => chart.id === chartId);
-      setChartTitle(chartTitle);
+
+      // If the chart is already selected, remove it
       if (isSelected) {
-        return prev.filter((chart) => chart.id !== chartId);
+        // Remove from state
+        const updatedCharts = prev.filter((chart) => chart.id !== chartId);
+
+        // Also remove from IndexedDB
+        removeFromIndexedDB(userId, "analyticsDashboard", "charts", chartId)
+          .then(() =>
+            console.log(`Chart with ID ${chartId} removed from IndexedDB`)
+          )
+          .catch((error) =>
+            console.error("Error removing from IndexedDB:", error)
+          );
+
+        return updatedCharts;
       }
-      const parentWidth = window.innerWidth * 0.75;
-      const chartWidth = parentWidth / 4;
-      const chartHeight = chartWidth * 0.75;
+
+      const config = chartConfig[chartType as ChartType];
+      const chartWidth = parseInt(config.options.chart.width, 10);
+      const chartHeight = parseInt(config.options.chart.height, 10);
+
+      const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
+      const gap = 20;
+
+      let currentX = 0;
+      let currentY = 0;
+      let rowHeight = 0;
+
+      if (prev.length > 0) {
+        const lastChart = prev[prev.length - 1];
+        currentX = lastChart.x + lastChart.width + gap;
+        currentY = lastChart.y;
+        rowHeight = lastChart.height;
+
+        // Move to the next row if the new chart doesn't fit
+        if (currentX + chartWidth > parentWidth) {
+          currentX = 0;
+          currentY = currentY + rowHeight + gap;
+        }
+      }
+
       const newChart = {
         id: chartId,
         type: chartType,
-        x: (prev.length % 3) * (chartWidth + 20),
-        y: Math.floor(prev.length / 3) * (chartHeight + 20),
+        x: currentX,
+        y: currentY,
         width: chartWidth,
         height: chartHeight,
         title: chartTitle,
       };
+
+      // Save to IndexedDB
+      saveToIndexedDB(userId, "analyticsDashboard", "charts", newChart)
+        .then(() => console.log("Chart saved to IndexedDB"))
+        .catch((error) => console.error("Error saving to IndexedDB:", error));
+
       return [...prev, newChart];
     });
   };
-
-  useEffect(() => {
-    const userId = Number(Cookies.get("user"));
-    if (userId) {
-      loadFromIndexedDB(userId, "ChartsDB", "charts").then((data) => {
-        const parentWidth = window.innerWidth * 0.75;
-        const chartWidth = parentWidth / 4;
-        const chartHeight = chartWidth * 0.75;
-        const chartsWithPositions = data.map((chart: any, index: number) => ({
-          ...chart,
-          x: (index % 3) * (chartWidth + 20),
-          y: Math.floor(index / 3) * (chartHeight + 20),
-          width: chartWidth,
-          height: chartHeight,
-        }));
-        setSelectedCharts(chartsWithPositions);
-      });
-    }
-  }, []);
 
   const handleDragStop = (index: number, x: number, y: number) => {
     if (
@@ -79,6 +108,16 @@ const AnalyticsDashboard: React.FC = () => {
       const updatedCharts = [...selectedCharts];
       updatedCharts[index] = { ...updatedCharts[index], x, y };
       setSelectedCharts(updatedCharts);
+
+      // Save updated chart dimensions to IndexedDB
+      saveToIndexedDB(
+        userId,
+        "analyticsDashboard",
+        "charts",
+        updatedCharts[index]
+      )
+        .then(() => console.log("Updated chart saved to IndexedDB"))
+        .catch((error) => console.error("Error saving updated chart:", error));
     }
   };
 
@@ -97,6 +136,7 @@ const AnalyticsDashboard: React.FC = () => {
       parseInt(ref.style.height, 10),
       window.innerHeight * 0.79 - position.y
     );
+
     if (!checkCollision(position.x, position.y, newWidth, newHeight, index)) {
       const updatedCharts = [...selectedCharts];
       updatedCharts[index] = {
@@ -107,6 +147,16 @@ const AnalyticsDashboard: React.FC = () => {
         height: newHeight,
       };
       setSelectedCharts(updatedCharts);
+
+      // Save updated chart dimensions to IndexedDB
+      saveToIndexedDB(
+        userId,
+        "analyticsDashboard",
+        "charts",
+        updatedCharts[index]
+      )
+        .then(() => console.log("Updated chart saved to IndexedDB"))
+        .catch((error) => console.error("Error saving updated chart:", error));
     }
   };
 
@@ -128,13 +178,18 @@ const AnalyticsDashboard: React.FC = () => {
     });
   };
 
-  const updateChartSize = (id: number, width: number, height: number) => {
-    setSelectedCharts((prev) =>
-      prev.map((chart) =>
-        chart.id === id ? { ...chart, width, height } : chart
-      )
-    );
-  };
+  useEffect(() => {
+    if (userId) {
+      loadFromIndexedDB(userId, "analyticsDashboard", "charts")
+        .then((storedCharts) => {
+          setSelectedCharts(storedCharts);
+        })
+        .catch((error) =>
+          console.error("Error loading from IndexedDB:", error)
+        );
+    }
+  }, [userId]);
+
   return (
     <div
       className="container-fluid"
@@ -159,6 +214,7 @@ const AnalyticsDashboard: React.FC = () => {
           }}
         >
           <div
+            ref={parentRef}
             className="parent d-flex flex-wrap gap-2 p-3 bg-light"
             style={{ position: "relative", height: "100%" }}
           >
