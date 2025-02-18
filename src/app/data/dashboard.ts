@@ -210,7 +210,7 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
   },
   "Stacked Bar Chart": {
     options: {
-      chart: { type: "bar", stacked: true, width: "525px", height: "350px" },
+      chart: { type: "bar", stacked: true, width: "490px", height: "350px" },
       xaxis: {
         categories: [
           "Branch A",
@@ -257,7 +257,7 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
   },
   "Heatmap Chart": {
     options: {
-      chart: { type: "heatmap", width: "530px", height: "350px" },
+      chart: { type: "heatmap", width: "450px", height: "350px" },
       plotOptions: {
         heatmap: {
           shadeIntensity: 0.5,
@@ -297,7 +297,6 @@ export const chartConfig: Record<ChartType, { options: any; series: any }> = {
       },
     ],
   },
-
   "Polar Area Chart": {
     series: [14, 23, 21, 17, 15, 10, 12, 17, 21, 25],
     options: {

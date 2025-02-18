@@ -303,6 +303,17 @@
   }
 }
 
+///chart box
+.chart-box {
+  flex-direction: column !important;
+  background-color: white !important;
+  border-radius: 6px !important;
+  cursor: move !important;
+  border: 2px solid #dde2e6 !important;
+  box-shadow: 1px 1px 10px #dde2e6 !important;
+  overflow: hidden !important;
+}
+
 ///chart title
 .chart-title {
   color: #333 !important;

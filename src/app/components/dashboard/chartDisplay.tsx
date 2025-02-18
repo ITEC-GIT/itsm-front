@@ -11,18 +11,7 @@ export const ChartDisplay: React.FC<{
   const [categoryTitle, chartTitleText] = chartTitle.split(" : ");
 
   return (
-    <div
-      style={{
-        width: config.options.chart.width,
-        height: config.options.chart.height,
-        backgroundColor: "white",
-        borderRadius: "6px",
-        cursor: "move",
-        border: "2px solid #DDE2E6",
-        boxShadow: "1px 1px 10px #DDE2E6",
-        overflow: "hidden",
-      }}
-    >
+    <div className="chart-box" style={{ width: "100%", height: "100%" }}>
       {chartTitle && (
         <div className="chart-title">
           <span className="category-title">{categoryTitle}</span>

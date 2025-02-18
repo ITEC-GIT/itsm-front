@@ -34,13 +34,9 @@ const AnalyticsDashboard: React.FC = () => {
   ) => {
     setSelectedCharts((prev) => {
       const isSelected = prev.some((chart) => chart.id === chartId);
-
-      // If the chart is already selected, remove it
       if (isSelected) {
-        // Remove from state
         const updatedCharts = prev.filter((chart) => chart.id !== chartId);
 
-        // Also remove from IndexedDB
         removeFromIndexedDB(userId, "analyticsDashboard", "charts", chartId)
           .then(() =>
             console.log(`Chart with ID ${chartId} removed from IndexedDB`)
@@ -51,7 +47,6 @@ const AnalyticsDashboard: React.FC = () => {
 
         return updatedCharts;
       }
-
       const config = chartConfig[chartType as ChartType];
       const chartWidth = parseInt(config.options.chart.width, 10);
       const chartHeight = parseInt(config.options.chart.height, 10);
@@ -59,20 +54,36 @@ const AnalyticsDashboard: React.FC = () => {
       const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
       const gap = 20;
 
+      const isOverlapping = (
+        x: number,
+        y: number,
+        width: number,
+        height: number
+      ) => {
+        return prev.some((chart) => {
+          return (
+            x < chart.x + chart.width + gap &&
+            x + width + gap > chart.x &&
+            y < chart.y + chart.height + gap &&
+            y + height + gap > chart.y
+          );
+        });
+      };
+
       let currentX = 0;
       let currentY = 0;
-      let rowHeight = 0;
+      let foundPosition = false;
 
-      if (prev.length > 0) {
-        const lastChart = prev[prev.length - 1];
-        currentX = lastChart.x + lastChart.width + gap;
-        currentY = lastChart.y;
-        rowHeight = lastChart.height;
+      while (!foundPosition) {
+        if (!isOverlapping(currentX, currentY, chartWidth, chartHeight)) {
+          foundPosition = true;
+        } else {
+          currentX += chartWidth + gap;
 
-        // Move to the next row if the new chart doesn't fit
-        if (currentX + chartWidth > parentWidth) {
-          currentX = 0;
-          currentY = currentY + rowHeight + gap;
+          if (currentX + chartWidth > parentWidth) {
+            currentX = 0;
+            currentY += chartHeight + gap;
+          }
         }
       }
 
@@ -86,7 +97,6 @@ const AnalyticsDashboard: React.FC = () => {
         title: chartTitle,
       };
 
-      // Save to IndexedDB
       saveToIndexedDB(userId, "analyticsDashboard", "charts", newChart)
         .then(() => console.log("Chart saved to IndexedDB"))
         .catch((error) => console.error("Error saving to IndexedDB:", error));
@@ -95,21 +105,88 @@ const AnalyticsDashboard: React.FC = () => {
     });
   };
 
+  // const toggleChart = (
+  //   chartId: number,
+  //   chartType: string,
+  //   chartTitle: string
+  // ) => {
+  //   setSelectedCharts((prev) => {
+  //     const isSelected = prev.some((chart) => chart.id === chartId);
+
+  //     if (isSelected) {
+  //       const updatedCharts = prev.filter((chart) => chart.id !== chartId);
+
+  //       removeFromIndexedDB(userId, "analyticsDashboard", "charts", chartId)
+  //         .then(() =>
+  //           console.log(`Chart with ID ${chartId} removed from IndexedDB`)
+  //         )
+  //         .catch((error) =>
+  //           console.error("Error removing from IndexedDB:", error)
+  //         );
+
+  //       return updatedCharts;
+  //     }
+
+  //     const config = chartConfig[chartType as ChartType];
+  //     const chartWidth = parseInt(config.options.chart.width, 10);
+  //     const chartHeight = parseInt(config.options.chart.height, 10);
+
+  //     const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
+  //     const gap = 20;
+
+  //     let currentX = 0;
+  //     let currentY = 0;
+  //     let rowHeight = 0;
+
+  //     if (prev.length > 0) {
+  //       const lastChart = prev.reduce(
+  //         (max, chart) =>
+  //           chart.y + chart.height > max.y + max.height ? chart : max,
+  //         prev[0]
+  //       );
+  //       currentX = lastChart.x + lastChart.width + gap;
+  //       currentY = lastChart.y;
+  //       rowHeight = lastChart.height;
+
+  //       if (currentX + chartWidth > parentWidth) {
+  //         currentX = 0;
+  //         currentY = currentY + rowHeight + gap;
+  //       }
+  //     }
+
+  //     const newChart = {
+  //       id: chartId,
+  //       type: chartType,
+  //       x: currentX,
+  //       y: currentY,
+  //       width: chartWidth,
+  //       height: chartHeight,
+  //       title: chartTitle,
+  //     };
+
+  //     saveToIndexedDB(userId, "analyticsDashboard", "charts", newChart)
+  //       .then(() => console.log("Chart saved to IndexedDB"))
+  //       .catch((error) => console.error("Error saving to IndexedDB:", error));
+
+  //     return [...prev, newChart];
+  //   });
+  // };
+
   const handleDragStop = (index: number, x: number, y: number) => {
-    if (
-      !checkCollision(
-        x,
-        y,
-        selectedCharts[index].width,
-        selectedCharts[index].height,
-        index
-      )
-    ) {
+    const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
+    const chart = selectedCharts[index];
+
+    if (x > parentWidth - chart.width || x < 0 || y < 0) {
+      console.log("Invalid drop position, reverting to previous location");
+      setSelectedCharts((prev) => prev);
+      return;
+    }
+
+    if (!checkCollision(x, y, chart.width, chart.height, index)) {
       const updatedCharts = [...selectedCharts];
-      updatedCharts[index] = { ...updatedCharts[index], x, y };
+      updatedCharts[index] = { ...chart, x, y };
       setSelectedCharts(updatedCharts);
 
-      // Save updated chart dimensions to IndexedDB
       saveToIndexedDB(
         userId,
         "analyticsDashboard",
@@ -120,6 +197,31 @@ const AnalyticsDashboard: React.FC = () => {
         .catch((error) => console.error("Error saving updated chart:", error));
     }
   };
+
+  // const handleDragStop = (index: number, x: number, y: number) => {
+  //   if (
+  //     !checkCollision(
+  //       x,
+  //       y,
+  //       selectedCharts[index].width,
+  //       selectedCharts[index].height,
+  //       index
+  //     )
+  //   ) {
+  //     const updatedCharts = [...selectedCharts];
+  //     updatedCharts[index] = { ...updatedCharts[index], x, y };
+  //     setSelectedCharts(updatedCharts);
+
+  //     saveToIndexedDB(
+  //       userId,
+  //       "analyticsDashboard",
+  //       "charts",
+  //       updatedCharts[index]
+  //     )
+  //       .then(() => console.log("Updated chart saved to IndexedDB"))
+  //       .catch((error) => console.error("Error saving updated chart:", error));
+  //   }
+  // };
 
   const handleResizeStop = (
     index: number,
@@ -134,7 +236,7 @@ const AnalyticsDashboard: React.FC = () => {
     );
     const newHeight = Math.min(
       parseInt(ref.style.height, 10),
-      window.innerHeight * 0.79 - position.y
+      window.innerHeight * 0.9 - position.y
     );
 
     if (!checkCollision(position.x, position.y, newWidth, newHeight, index)) {
@@ -148,7 +250,6 @@ const AnalyticsDashboard: React.FC = () => {
       };
       setSelectedCharts(updatedCharts);
 
-      // Save updated chart dimensions to IndexedDB
       saveToIndexedDB(
         userId,
         "analyticsDashboard",
@@ -191,10 +292,7 @@ const AnalyticsDashboard: React.FC = () => {
   }, [userId]);
 
   return (
-    <div
-      className="container-fluid"
-      style={{ paddingLeft: "20px", backgroundColor: "#DDE2E6" }}
-    >
+    <div className="container-fluid" style={{ backgroundColor: "#DDE2E6" }}>
       <div className="row">
         <div className="col-sm-3 col-md-3 col-lg-3 col-xl-2">
           <SidebarAnalytic
@@ -210,36 +308,47 @@ const AnalyticsDashboard: React.FC = () => {
             padding: "1.5rem 1rem",
             height: "79vh",
             overflowY: "auto",
+            // overflowX: "hidden",
             position: "relative",
           }}
         >
           <div
             ref={parentRef}
             className="parent d-flex flex-wrap gap-2 p-3 bg-light"
-            style={{ position: "relative", height: "100%" }}
+            style={{ position: "relative", minHeight: "100%", width: "100%" }}
           >
             {selectedCharts.map(
-              ({ id, type, x, y, width, height, title }, index) => (
-                <Rnd
-                  key={id}
-                  size={{ width, height }}
-                  position={{ x, y }}
-                  bounds="parent"
-                  onDragStop={(e, d) => handleDragStop(index, d.x, d.y)}
-                  onResizeStop={(e, direction, ref, delta, position) =>
-                    handleResizeStop(index, direction, ref, delta, position)
-                  }
-                  minWidth={350} //should be dynamic
-                  minHeight={350}
-                  maxWidth={window.innerWidth * 0.75}
-                  maxHeight={window.innerHeight * 0.7}
-                >
-                  <ChartDisplay
-                    chartType={type as ChartType}
-                    chartTitle={title}
-                  />
-                </Rnd>
-              )
+              ({ id, type, x, y, width, height, title }, index) => {
+                const config = chartConfig[type as ChartType];
+
+                const chartWidth = parseInt(config.options.chart.width, 10);
+                const chartHeight = parseInt(config.options.chart.height, 10);
+                return (
+                  <Rnd
+                    key={id}
+                    size={{ width, height }}
+                    position={{ x, y }}
+                    onDragStop={(e, d) => handleDragStop(index, d.x, d.y)}
+                    onResizeStop={(e, direction, ref, delta, position) =>
+                      handleResizeStop(index, direction, ref, delta, position)
+                    }
+                    minWidth={chartWidth}
+                    minHeight={chartHeight}
+                    maxWidth={window.innerWidth * 0.75}
+                    enableResizing={{
+                      top: true,
+                      right: true,
+                      bottom: true,
+                      left: true,
+                    }}
+                  >
+                    <ChartDisplay
+                      chartType={type as ChartType}
+                      chartTitle={title}
+                    />
+                  </Rnd>
+                );
+              }
             )}
           </div>
         </div>
