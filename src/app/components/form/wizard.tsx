@@ -351,13 +351,13 @@ const Wizard = ({
                         location.id.toString() === selectedOption.value
                     );
                     setSelectedLocation(selectedLocationDetails || null);
-                    setSelectedDevices([]); // Reset selected devices when location changes
+                    setSelectedDevices([]);
                   } else {
                     setSelectedLocation(null);
-                    setSelectedDevices([]); // Show all devices again
+                    setSelectedDevices([]);
                   }
                 }}
-                isClearable // Allow user to clear selection
+                isClearable
               />
             </div>
             <div className="mb-4" style={{ height: "90px" }}>
@@ -378,6 +378,7 @@ const Wizard = ({
                   label: device.name,
                 }))}
                 onChange={(selectedOptions) => {
+                  setDeviceError(false);
                   const selectedDevicesDetails = selectedOptions
                     ? selectedOptions.map((option) =>
                         deviceOptions.find(
@@ -414,7 +415,10 @@ const Wizard = ({
               name="destination"
               value={destination}
               placeholder="e.g., /user/local/software"
-              onChange={(e) => setDestination(e.target.value)}
+              onChange={(e) => {
+                setDestinationError(false);
+                setDestination(e.target.value);
+              }}
               required
             />
             {destinationError && (
@@ -623,13 +627,12 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
       <div className="d-flex justify-content-center align-items-center">
         {steps.map((step, index) => (
           <React.Fragment key={step.id}>
-            {/* Step Circle */}
             <StepNavigationStep
               step={step}
               isActive={step.id === currentStep}
               isComplete={step.id < currentStep}
             />
-            {/* Line between circles */}
+
             {index < steps.length - 1 && (
               <div
                 className={`step-line ${

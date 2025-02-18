@@ -92,7 +92,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       );
 
       const result = await response.json();
-      //add error handler bs kezim tetzabat men l backend in order to handle the error 
+      //add error handler bs lezim tetzabat men l backend in order to handle the error
       console.log("SSH connection response:", result);
     } catch (error) {
       console.error("Failed to connect:", error);
@@ -228,7 +228,10 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     type="password"
                     className="form-control custom-input"
                     placeholder="Your password"
-                    onChange={(e) => setPass(e.target.value)}
+                    onChange={(e) => {
+                      setPassError(false);
+                      setPass(e.target.value);
+                    }}
                     style={{ height: "47px" }}
                     required
                   />
@@ -248,7 +251,10 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     options={compOptions}
                     classNamePrefix="react-select"
                     value={selectedDevice}
-                    onChange={(newValue) => setSelectedDevice(newValue)}
+                    onChange={(newValue) => {
+                      setDeviceError(false);
+                      setSelectedDevice(newValue);
+                    }}
                     placeholder="Select Device"
                     isClearable
                   />
@@ -270,11 +276,15 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                       type="text"
                       className="form-control custom-input"
                       value={ipAddress || userInputIp}
-                      onChange={(e) => setUserInputIp(e.target.value)}
+                      onChange={(e) => {
+                        setIpError(false);
+                        setUserInputIp(e.target.value);
+                      }}
                       placeholder="Enter IP Address"
                       readOnly={!!ipAddress}
                       required={!ipAddress}
-                      onFocus={() => setIpError(false)} // Reset error when editing
+                      style={{ height: "47px" }}
+                      onFocus={() => setIpError(false)}
                     />
                     {ipError && !ipAddress && (
                       <small
