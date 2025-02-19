@@ -102,7 +102,7 @@
 }
 
 .hyper-console-disabled-card {
-  background-color: #faf5ff !important;
+  background-color: $content-background-color !important;
   color: #6c757d;
   pointer-events: none;
   opacity: 0.6;

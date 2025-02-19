@@ -1,17 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { devicesVNC } from "../../data/hyperCommands";
 import { SelectDeviceType } from "../../types/devicesTypes";
+import { useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { StaticDataType } from "../../types/filtersAtomType";
 
 interface props {
   setSelectedDevice: any;
   closeModal: any;
 }
 
-const SelectAssetsModal = ({ setSelectedDevice, closeModal }: props) => {
-  //temporary until api call
-  const [data, setData] = useState<any[]>(devicesVNC.slice(0, 10));
-  const [allDevices, setAllDevices] = useState<any[]>(devicesVNC);
-
+const ComputersListModal = ({ setSelectedDevice, closeModal }: props) => {
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const allDevices = useMemo(
+    () =>
+      (staticData.Computers || []).map((device: any) => ({
+        id: device.id ? Number(device.id) : 0,
+        name: device.name || "",
+      })),
+    [staticData]
+  );
+  const [data, setData] = useState<any[]>(allDevices.slice(0, 10));
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loadMoreDevices = () => {
@@ -75,7 +84,8 @@ const SelectAssetsModal = ({ setSelectedDevice, closeModal }: props) => {
                   className="list-group-item d-flex justify-content-between align-items-center"
                 >
                   <div>
-                    <strong>{device.name}</strong> - {device.hostname}
+                    <strong>{device.name}</strong>
+                    {/* - {device.hostname} */}
                   </div>
                   <button
                     className="btn btn-primary"
@@ -105,4 +115,4 @@ const SelectAssetsModal = ({ setSelectedDevice, closeModal }: props) => {
   );
 };
 
-export { SelectAssetsModal };
+export { ComputersListModal };
