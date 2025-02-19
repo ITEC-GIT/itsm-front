@@ -69,7 +69,7 @@ const RemoteConsolePage = ({ computerIdProp }: { computerIdProp?: number }) => {
         <div className="col-12">
           {!computerIdProp && (
             <div className="d-flex justify-content-between">
-              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+              <h2 className="text-center mb-4">🖥️ Remote Console</h2>
               <ActionIcons />
             </div>
           )}
