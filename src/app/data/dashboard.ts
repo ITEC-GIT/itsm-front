@@ -1,4 +1,3 @@
-import { title } from "process";
 import { ChartType } from "../types/dashboard";
 
 export const chartSideBarItems = [
@@ -24,11 +23,6 @@ export const chartSideBarItems = [
     charts: [
       {
         id: 3,
-        title: "Number of tickets created over time",
-        type: "Line Chart",
-      },
-      {
-        id: 4,
         title: "Number of tickets created over time",
         type: "Line Chart",
       },
