@@ -47,44 +47,35 @@ const AnalyticsDashboard: React.FC = () => {
 
         return updatedCharts;
       }
+
       const config = chartConfig[chartType as ChartType];
+
+      if (!config) {
+        console.error(`Invalid chart type: ${chartType}`);
+        return prev;
+      }
+
       const chartWidth = parseInt(config.options.chart.width, 10);
       const chartHeight = parseInt(config.options.chart.height, 10);
-
       const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
       const gap = 20;
 
-      const isOverlapping = (
-        x: number,
-        y: number,
-        width: number,
-        height: number
-      ) => {
-        return prev.some((chart) => {
-          return (
-            x < chart.x + chart.width + gap &&
-            x + width + gap > chart.x &&
-            y < chart.y + chart.height + gap &&
-            y + height + gap > chart.y
-          );
-        });
-      };
+      const maxY = Math.max(...prev.map((chart) => chart.y), 0);
+      const maxYCharts = prev.filter((chart) => chart.y === maxY);
 
-      let currentX = 0;
-      let currentY = 0;
-      let foundPosition = false;
+      const maxXChart =
+        maxYCharts.length > 0
+          ? maxYCharts.reduce((maxChart, chart) =>
+              chart.x > maxChart.x ? chart : maxChart
+            )
+          : null;
 
-      while (!foundPosition) {
-        if (!isOverlapping(currentX, currentY, chartWidth, chartHeight)) {
-          foundPosition = true;
-        } else {
-          currentX += chartWidth + gap;
+      let currentX = maxXChart ? maxXChart.x + maxXChart.width + gap : 0;
+      let currentY = maxXChart ? maxXChart.y : 0;
 
-          if (currentX + chartWidth > parentWidth) {
-            currentX = 0;
-            currentY += chartHeight + gap;
-          }
-        }
+      if (currentX + chartWidth > parentWidth) {
+        currentX = 0;
+        currentY += chartHeight + gap;
       }
 
       const newChart = {
@@ -104,6 +95,86 @@ const AnalyticsDashboard: React.FC = () => {
       return [...prev, newChart];
     });
   };
+
+  // const toggleChart = (
+  //   chartId: number,
+  //   chartType: string,
+  //   chartTitle: string
+  // ) => {
+  //   setSelectedCharts((prev) => {
+  //     const isSelected = prev.some((chart) => chart.id === chartId);
+  //     if (isSelected) {
+  //       const updatedCharts = prev.filter((chart) => chart.id !== chartId);
+
+  //       removeFromIndexedDB(userId, "analyticsDashboard", "charts", chartId)
+  //         .then(() =>
+  //           console.log(`Chart with ID ${chartId} removed from IndexedDB`)
+  //         )
+  //         .catch((error) =>
+  //           console.error("Error removing from IndexedDB:", error)
+  //         );
+
+  //       return updatedCharts;
+  //     }
+  //     const config = chartConfig[chartType as ChartType];
+  //     const chartWidth = parseInt(config.options.chart.width, 10);
+  //     const chartHeight = parseInt(config.options.chart.height, 10);
+
+  //     const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
+  //     const gap = 20;
+
+  //     const isOverlapping = (
+  //       x: number,
+  //       y: number,
+  //       width: number,
+  //       height: number
+  //     ) => {
+  //       return prev.some((chart) => {
+  //         return (
+  //           x < chart.x + chart.width + gap &&
+  //           x + width + gap > chart.x &&
+  //           y < chart.y + chart.height + gap &&
+  //           y + height + gap > chart.y
+  //         );
+  //       });
+  //     };
+
+  //     let currentX = 0;
+  //     let currentY = 0;
+  //     let foundPosition = false;
+
+  //     while (!foundPosition) {
+  //       if (!isOverlapping(currentX, currentY, chartWidth, chartHeight)) {
+  //         foundPosition = true;
+  //       } else {
+  //         currentX += chartWidth + gap;
+
+  //         if (currentX + chartWidth > parentWidth) {
+  //           currentX = 0;
+  //           currentY += chartHeight + gap;
+  //         }
+  //       }
+  //     }
+
+  //     const newChart = {
+  //       id: chartId,
+  //       type: chartType,
+  //       x: currentX,
+  //       y: currentY,
+  //       width: chartWidth,
+  //       height: chartHeight,
+  //       title: chartTitle,
+  //     };
+
+  //     saveToIndexedDB(userId, "analyticsDashboard", "charts", newChart)
+  //       .then(() => console.log("Chart saved to IndexedDB"))
+  //       .catch((error) => console.error("Error saving to IndexedDB:", error));
+
+  //     return [...prev, newChart];
+  //   });
+  // };
+
+  const l = 0;
 
   // const toggleChart = (
   //   chartId: number,
