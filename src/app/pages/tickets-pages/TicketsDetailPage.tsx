@@ -11,81 +11,10 @@ import ReactQuill, {Quill} from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import TicketCardExpanded from "../../../_metronic/layout/components/custom-components/CardExpanded.tsx";
 import {string} from "yup";
+import {CustomQuill, getMaxWords, HeadlessQuillViewer} from "./TicketUtils.tsx";
+import Cookies from "js-cookie";
+import {mastersAtom} from "../../atoms/app-routes-global-atoms/globalFetchedAtoms.ts";
 
-const HeadlessQuillViewer: React.FC<{ content: string }> = ({content}) => {
-    const quillRef = useRef<HTMLDivElement>(null);
-    const quillInstanceRef = useRef<any>(null);
-
-    const decodeHtml = (encodedHtml: string): string => {
-        const textArea = document.createElement("textarea");
-        textArea.innerHTML = encodedHtml;
-        return textArea.value;
-    };
-
-    useEffect(() => {
-        if (quillRef.current) {
-            // Initialize Quill only once
-            if (!quillInstanceRef.current) {
-                quillInstanceRef.current = new Quill(quillRef.current, {
-                    readOnly: true,
-                    theme: "bubble", // Minimal UI
-                    modules: {toolbar: false}, // No toolbar for viewing
-                });
-            }
-
-            const quillInstance = quillInstanceRef.current;
-            const rawHtml =decodeHtml(content);
-            // Use Quill's clipboard module to paste content correctly
-            const delta = quillInstance.clipboard.convert(rawHtml);
-            quillInstance.setContents(delta);
-            setTimeout(() => {
-                if (quillRef.current) {
-                    quillRef.current.style.minHeight = "unset"; // Removes min-height
-                }
-            }, 0);
-        }
-    }, [content]);
-
-    return <div ref={quillRef} className="quill-content quill-content-important  " style={{ overflow: 'hidden',minHeight:'unset' }} />;
-};
-
-const CustomQuill = forwardRef<ReactQuill, any>((props, ref) => {
-    const quillRef = useRef<ReactQuill | null>(null);
-
-    // Expose the Quill instance via ref
-    useImperativeHandle(ref, () => quillRef.current as ReactQuill);
-
-    useEffect(() => {
-        if (!quillRef.current) return;
-        const quill = quillRef.current.getEditor();
-
-        const handlePaste = (event: ClipboardEvent) => {
-            if (!event.clipboardData) return;
-
-            const items = event.clipboardData.items;
-            for (const item of items) {
-                if (item.type.startsWith("image")) {
-                    event.preventDefault();
-                    const file = item.getAsFile();
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const base64Image = e.target?.result as string;
-                            const range = quill.getSelection();
-                            quill.insertEmbed(range?.index || 0, "image", base64Image);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                }
-            }
-        };
-
-        quill.root.addEventListener("paste", handlePaste);
-        return () => quill.root.removeEventListener("paste", handlePaste);
-    }, []);
-
-    return <ReactQuill ref={quillRef} {...props} />;
-});
 const TicketsDetailPage: React.FC = () => {
     const location = useLocation()
     // const {ticket} = location.state || {}
@@ -132,16 +61,23 @@ const TicketsDetailPage: React.FC = () => {
         setHtmlContent(sampleHtml);
     }, []);
     const navigate = useNavigate()
+
+    function getUserNameFromCookie() {
+        const match = Cookies.get('username');
+        return match ? match : null;
+    }
+
+    const userName = getUserNameFromCookie();
     const [reply, setReply] = useState("");
     const [showReply, setShowReply] = useState(true);
     const [isITReply, setIsITReply] = useState(true);
     //83 and 82 from tickets
     const [activeTab, setActiveTab] = useState("ticket-body");
-    const [replyCount,setReplyCount]=useState(0);
+    const [replyCount, setReplyCount] = useState(0);
     useEffect(() => {
         const ticketReplies = JSON.parse(ticket?.replies || "[]");
         if (ticketReplies.length > 0) {
-            setReplyCount(ticketReplies.length );
+            setReplyCount(ticketReplies.length);
             setActiveTab("messages");
         } else {
             setReplyCount(0);
@@ -149,31 +85,16 @@ const TicketsDetailPage: React.FC = () => {
             setActiveTab("ticket-body");
         }
     }, [ticket]);
+    const otherAssignees = assignees.filter(
+        assignee => assignee.name !== userName && Object.values(assignee).some(value => value !== null)
+    );
     if (!ticket) {
         return <div>No ticket data available</div>
     }
 
-    const decodeHtml = (encodedHtml: string): string => {
-        const textArea = document.createElement("textarea");
-        textArea.innerHTML = encodedHtml;
-        return textArea.value;
-    };
 
-    const getMaxWords = (encodedHtml: string, maxWords: number = 40): string => {
-        // Step 1: Decode HTML entities
-        const decodedHtml = decodeHtml(encodedHtml);
-
-        // Step 2: Strip HTML tags using regex
-        const textOnly = decodedHtml.replace(/<\/?[^>]+(>|$)/g, "");
-
-        // Step 3: Extract words (tokens) using regex
-        const words = textOnly.match(/\b\w+\b/g) || [];
-
-        // Step 4: Return up to maxWords (12 by default)
-        return words.slice(0, maxWords).join(" ");
-    };
-    const testReplyData=`   <p>Hi,</p>
-                                        <p>ggggggggggggggOur sales team is using AcmeWidgets to manage tasks and our team also uses
+    const testReplyData = `   <p>Hi,</p>
+                                        <p>Our sales team is using AcmeWidgets to manage tasks and our team also uses
                                             accounting software to manage business operations, we now need a workflow
                                             where in we need to integrate the two apps so that we can access the
                                             Accounting related tasks on AcmeWidgets.</p>
@@ -282,8 +203,47 @@ const TicketsDetailPage: React.FC = () => {
                                         <HeadlessQuillViewer content={testReplyData}/>
                                     </div>
                                     <div
-                                        className="footer text-muted small mt-3 pt-2 border-top d-flex justify-content-between">
-                                        <span>Other Recipients <span>none</span></span>
+                                        className="footer   mt-3 pt-2 border-top d-flex justify-content-between">
+                                        <div className='d-flex gap-2 align-content-center'>
+                                            {otherAssignees.length > 0 && (
+                                                <button
+                                                    className="btn d-flex align-items-center px-3 py-2 border-0"
+                                                    style={{
+                                                        minWidth: "auto",
+                                                        maxWidth: "250px",
+                                                        borderRadius: "0",
+                                                        backgroundColor: "transparent"
+                                                    }}
+                                                >
+                                                  <span
+                                                      className="d-flex align-items-center gap-2"
+                                                      style={{color: "#575757", fontWeight: "bold"}}
+                                                  >
+                                                   Other Recipients
+                                                  </span>
+                                                </button>
+                                                // <span className='d-flex align-self-center text-muted bold-large'>Other Recipients</span>
+                                                )}
+                                            {otherAssignees?.map(assignee => (
+                                                <button
+                                                    key={assignee.id}
+                                                    className="btn d-flex align-items-center px-3 py-2 border-0"
+                                                    style={{
+                                                        minWidth: "auto",
+                                                        maxWidth: "250px",
+                                                        borderRadius: "0",
+                                                        backgroundColor: "#575757"
+                                                    }}
+                                                >
+                                                  <span
+                                                      className="d-flex align-items-center gap-2"
+                                                      style={{color: "white", fontWeight: "bold"}}
+                                                  >
+                                                    {assignee.name}
+                                                  </span>
+                                                </button>
+                                            ))}
+                                        </div>
                                         <button className="btn btn-link p-0">Show more</button>
                                     </div>
                                 </div>

@@ -29,7 +29,10 @@ import {
     initialFetchedTicketsAtom,
     initialFetchedTicketsTotalAtom,
     newTicketsAvailableCount,
-    totalTicketsFetchedAtom, fetchActionAtom, currentTicketsPageAtom,
+    totalTicketsFetchedAtom,
+    fetchActionAtom,
+    currentTicketsPageAtom,
+    ticketIdsWithReplyUnreadAtom,
 } from "../../atoms/tickets-page-atom/ticketsPageAtom";
 import {toolbarTicketsFrontFiltersAtom} from "../../atoms/toolbar-atoms/toolbarTicketsAtom";
 import {userAtom} from "../../atoms/auth-atoms/authAtom";
@@ -44,9 +47,9 @@ import TicketCard from "../../../_metronic/layout/components/custom-components/C
 import {Content} from "../../../_metronic/layout/components/content";
 import {Link, useNavigate, useLocation} from "react-router-dom";
 import {
-    addPinnedTicketId,
-    removePinnedTicketId,
-    getPinnedTicketIds,
+    addItem,
+    removeItem,
+    getItems, itemExists, addCommentItem, getCommentsItems, updateCommentsItem,
 } from "../../../utils/indexDB";
 import {QueryClient, useMutation} from "@tanstack/react-query";
 import {ApiRequestBody} from "../../config/ApiTypes";
@@ -58,6 +61,7 @@ import {Assignee, TicketResponse} from "../../types/TicketTypes";
 import {selectedAssigneesAtom} from "../../atoms/assignee-atoms/assigneeAtoms";
 import {transformStaticData} from "../../../utils/dataTransformUtils.ts";
 import {string} from "yup";
+import {getMaxWords} from "./TicketUtils.tsx";
 
 const TicketsPage: React.FC = () => {
     // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -87,7 +91,7 @@ const TicketsPage: React.FC = () => {
     const setFetchLessPagesFlag = useSetAtom(fetchLessPagesFlagAtom);
     const [fetchAction, setFetchAction] = useAtom(fetchActionAtom);
     const [totalPagesFetched, setTotalPagesFetched] = useState<number>(1);
-
+    const [ticketIdsWithReplyUnread,setTicketIdsWithReplyUnread]=useState<any[]>([]);
     const [currentTotalTicketsAccumulation, setCurrentTotalTicketsAccumulation] =
         useAtom(totalTicketsAccumultionAtom); // Set the total tickets per query of fetched in this instance only
     const [totalTicketsFetched, setTotalTicketsFetchedAtom] =
@@ -131,8 +135,8 @@ const TicketsPage: React.FC = () => {
                         (initialTicket: any) => initialTicket.id === intervalTicket.id
                     );
                     return (
-                        initialTicket &&
-                        initialTicket.users_lastupdater !== intervalTicket.users_lastupdater
+                        initialTicket &&  intervalTicket.last_reply_date!=null &&
+                        initialTicket.last_reply_date !== intervalTicket.last_reply_date
                     );
                 }
             );
@@ -147,6 +151,12 @@ const TicketsPage: React.FC = () => {
         setAutomaticRefetchLengthMismatchFlag,
     ] = useState(false);
     const [mismatchCount, setMismatchCount] = useAtom(newTicketsAvailableCount);
+    const fetchUnreadReplies = async () => {
+        const repliesIds = await getItems('DynamicTicketsUnread');
+       return repliesIds
+    };
+
+
     useEffect(() => {
         console.log("this changed , currentTicketsPage: ", currentTicketsPage);
     }, [currentTicketsPage]);
@@ -238,10 +248,58 @@ const TicketsPage: React.FC = () => {
                         intervalFetchedTicketsRes &&
                         intervalFetchedTicketsRes.data.length > 0
                     ) {
-                        const updatedTickets = getUpdatedRepliesTickets(
+
+                        const updatedTicketsIds = getUpdatedRepliesTickets(
                             initialFetchedTickets,
                             intervalFetchedTicketsRes.data
                         );
+                        // must make if ticket is clicked , then make it read and not show it, if 'read' and new item is added with same id , then delete old one with same id when adding
+                        const filterNewTickets = async () => {
+                            const newTickets: any[] = [];
+                            const transformTickets = (tickets: any[]): any[] => {
+                                return tickets.map(ticket => ({
+                                    id: ticket.id,
+                                    last_reply_date: ticket.last_reply_date,
+                                    is_read: "unread", // Always setting is_read as "unread"
+                                }));
+                            };
+                            for (const ticket of transformTickets(updatedTicketsIds)) {
+                                const exists = await itemExists('DynamicTicketsUnread', ticket.id, ticket.last_reply_date);
+
+                                if (!exists) {
+                                    newTickets.push(ticket);
+                                }
+                            }
+
+                            return newTickets;
+                        };
+
+                        filterNewTickets().then((newTickets) => {
+                            if (newTickets.length > 0) {
+                                setTicketIdsWithReplyUnread(prevIds => [...prevIds, ...newTickets]);
+
+                                // Store in IndexedDB to prevent future duplicates
+                                newTickets.forEach(ticket => {
+
+                                    addCommentItem('DynamicTicketsUnread', { id: ticket.id, last_reply_date: ticket.last_reply_date ,is_read:'unread'});
+                                });
+                            }
+                        });
+                        // must make it that it is not stored in the index db before, so i keep the date reply with the ticket id, if the combination exists before then i dont add it
+                        // const newTicketIds: string[] = [];
+                        // for (const combination of updatedTicketsIds) {
+                        //     // Await the check for each combination.
+                        //     if (!(await isCombinationStored(combination))) {
+                        //         newTicketIds.push(combination);
+                        //     }
+                        // if (updatedTicketsIds.length > 0) {
+                        //
+                        //     setTicketIdsWithReplyUnread(prevIds => [...prevIds, ...updatedTicketsIds]);
+                        // }
+                        // // addItem('DynamicTicketsUnread', '12' )
+                        //
+                        // updatedTicketsIds.forEach((id: string) => addItem('DynamicTicketsUnread', id ));
+                        //                         const replyx=0
                     }
 
                     const x = 0;
@@ -389,8 +447,7 @@ const TicketsPage: React.FC = () => {
     // }, [GetTicketsMutation, numOfRecordsToFetch]);
     const [ticketPerformingActionOn, setTicketPerformingActionOn] = useAtom(
         ticketPerformingActionOnAtom
-    );
-    useEffect(() => {
+    );    useEffect(() => {
         if (ticketPerformingActionOn) {
             console.log("Ticket performing action on:", ticketPerformingActionOn);
             const updatedTicket = tickets.find(
@@ -456,10 +513,10 @@ const TicketsPage: React.FC = () => {
     const handlePinTicket = async (id: string) => {
         setPinnedTicketIds((prevPinned) => {
             if (prevPinned.includes(id)) {
-                removePinnedTicketId(id);
+                removeItem('DynamicTicketsPinned',id);
                 return prevPinned.filter((ticketId) => ticketId !== id);
             } else {
-                addPinnedTicketId(id);
+                addItem('DynamicTicketsPinned',id);
                 return [...prevPinned, id];
             }
         });
@@ -809,6 +866,13 @@ const TicketsPage: React.FC = () => {
     ]);
 
     const handleTicketClick = (ticket: any) => {
+
+        updateCommentsItem('DynamicTicketsUnread', ticket.id);
+
+        // setTicketIdsWithReplyUnread((prevUnreadReplies:any) => {
+        //     if (prevUnreadReplies.includes(`${ticket.id}|${ticket.last_reply_date}`)) {
+        //         return prevUnreadReplies.filter((ticketId:string) => ticketId !== `${ticket.id}|${ticket.last_reply_date}`);}});
+
         navigate(`/ticket/${ticket.id}`, {state: {ticket}});
     };
     const handleMouseDown = (event: React.MouseEvent, ticket: any) => {
@@ -1055,8 +1119,19 @@ const TicketsPage: React.FC = () => {
     const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
     const xx = 0;
     useEffect(() => {
+
+        const fetchUnreadReplies = async () => {
+            const repliesIds = await getCommentsItems('DynamicTicketsUnread');
+            setTicketIdsWithReplyUnread(repliesIds);
+        };
+        fetchUnreadReplies();
+
+
+
+    }, []);
+    useEffect(() => {
         const fetchPinnedTicketIds = async () => {
-            const pinnedIds = await getPinnedTicketIds();
+            const pinnedIds = await getItems('DynamicTicketsPinned');
             setPinnedTicketIds(pinnedIds);
         };
         fetchPinnedTicketIds();
@@ -1240,25 +1315,7 @@ const TicketsPage: React.FC = () => {
         }
     }, [ticketChangeAssigneenOn]);
 
-    const decodeHtml = (encodedHtml: string): string => {
-        const textArea = document.createElement("textarea");
-        textArea.innerHTML = encodedHtml;
-        return textArea.value;
-    };
 
-    const getMaxWords = (encodedHtml: string, maxWords: number = 40): string => {
-        // Step 1: Decode HTML entities
-        const decodedHtml = decodeHtml(encodedHtml);
-
-        // Step 2: Strip HTML tags using regex
-        const textOnly = decodedHtml.replace(/<\/?[^>]+(>|$)/g, "");
-
-        // Step 3: Extract words (tokens) using regex
-        const words = textOnly.match(/\b\w+\b/g) || [];
-
-        // Step 4: Return up to maxWords (12 by default)
-        return words.slice(0, maxWords).join(" ");
-    };
     return (
         <>
             <ToolbarWrapper source={"tickets"}/>
@@ -1282,6 +1339,7 @@ const TicketsPage: React.FC = () => {
                                         key={ticket.id}
                                         id={ticket.id}
                                         status={ticket.status_label}
+                                        reply_unread={ticketIdsWithReplyUnread?.some(item => item.id === ticket.id && item.is_read === "unread") || false}
                                         date={ticket.date}
                                         title={ticket.name}
                                         description={

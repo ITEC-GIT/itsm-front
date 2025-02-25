@@ -206,3 +206,12 @@
   border-right: 1px solid #ddd !important; // Add right border to each column
 
 }
+.badge-reply-custom {
+  position: absolute;
+  top: -4px;
+  right: 10px;
+  color: white;
+  font-size: 14px;
+  padding-top: 0px;
+  border-radius: 0px;
+}

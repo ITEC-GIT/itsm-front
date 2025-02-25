@@ -79,3 +79,7 @@ fetchActionAtom.debugLabel = "fetchActionAtom";
 // the number of tickets that are new for this user in the tickets page
 export const newTicketsAvailableCount = atom(0);
 newTicketsAvailableCount.debugLabel = "newTicketsAvailableCount";
+
+// the ids of tickets that has replies that are unread
+export const ticketIdsWithReplyUnreadAtom = atom<string[]>([]);
+ticketIdsWithReplyUnreadAtom.debugLabel = "ticketIdsWithReplyUnreadAtom";
