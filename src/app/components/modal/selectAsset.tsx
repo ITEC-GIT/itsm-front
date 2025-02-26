@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { devicesVNC } from "../../data/hyperCommands";
-import { DeviceType } from "../../types/HyperCommandsTypes";
+import { SelectDeviceType } from "../../types/devicesTypes";
 
 interface props {
   setSelectedDevice: any;
@@ -43,7 +43,7 @@ const SelectAssetsModal = ({ setSelectedDevice, closeModal }: props) => {
     return () => modalBody?.removeEventListener("scroll", handleScroll);
   }, [isLoading, data]);
 
-  const handleSelectDevice = (device: DeviceType) => {
+  const handleSelectDevice = (device: SelectDeviceType) => {
     setSelectedDevice(device);
     closeModal();
   };
