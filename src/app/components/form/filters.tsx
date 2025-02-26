@@ -431,7 +431,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           <span className="hyper-btn-text">Apply</span>
         </button>
         <button
-          className="toggle-btn p-3 filter-btn-action"
+          className="toggle-btn p-3 filter-btn-action save-action"
           onClick={handleSaveFilter}
         >
           <span className="hyper-btn-text">Save</span>
