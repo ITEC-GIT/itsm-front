@@ -3,3 +3,7 @@ export interface PaginatedResponse<T> {
   totalCount: number;
   data: T[];
 }
+
+export interface ColumnVisibility {
+  [key: string]: boolean;
+}
