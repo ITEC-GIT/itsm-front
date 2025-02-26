@@ -419,19 +419,19 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
       <div className="d-flex justify-content-between mt-3 p-3">
         <button
-          className="toggle-btn p-3 hyper-connect-btn"
+          className="toggle-btn p-3 filter-btn-action"
           onClick={handleClearFilters}
         >
           <span className="hyper-btn-text">Clear</span>
         </button>
         <button
-          className="toggle-btn p-3 hyper-connect-btn"
+          className="toggle-btn p-3 filter-btn-action"
           onClick={handleApplyFilters}
         >
           <span className="hyper-btn-text">Apply</span>
         </button>
         <button
-          className="toggle-btn p-3 hyper-connect-btn"
+          className="toggle-btn p-3 filter-btn-action"
           onClick={handleSaveFilter}
         >
           <span className="hyper-btn-text">Save</span>
