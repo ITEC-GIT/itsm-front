@@ -364,10 +364,11 @@ const AssetsPage = () => {
       id: "status",
       cell: (row) => {
         const isOnline = row.status.toLowerCase() === "online";
-        const lightGreen = "#98FB98";
+        // const lightGreen = "#98FB98";
+        const lightBlue = "#bbdefb";
         // const lightRed = "#f08080";
         const lightGray = "#e0e0e0";
-        const backgroundColor = isOnline ? lightGreen : lightGray;
+        const backgroundColor = isOnline ? lightBlue : lightGray;
         const textColor = "#333";
         const fontWeight = "bold";
         return (

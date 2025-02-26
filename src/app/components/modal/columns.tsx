@@ -1,4 +1,3 @@
-// ColumnModal.tsx
 import React, { useState, useEffect } from "react";
 import { TableColumn } from "react-data-table-component";
 
@@ -34,13 +33,21 @@ const ColumnModal = <T,>({
     }));
   };
 
+  const toggleSelectAll = () => {
+    const allSelected = Object.values(columnVisibility).every(
+      (visibility) => visibility
+    );
+    const newVisibility = columns.reduce((acc, col) => {
+      acc[col.id as string] = !allSelected;
+      return acc;
+    }, {} as Record<string, boolean>);
+    setColumnVisibility(newVisibility);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div
-      className="dropdown-menu p-4 show column-modal-dropdown"
-      style={{ top: "120%", left: 200, width: "300px" }}
-    >
+    <div className="dropdown-menu p-4 show column-modal-dropdown">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="text-dark fw-bold mb-0">Columns Visibility</h5>
         <button
@@ -54,17 +61,33 @@ const ColumnModal = <T,>({
         <hr className="dropdown-divider" />
       </div>
       <div className="d-flex flex-column">
-        {columns.map((col) => (
-          <label key={col.id} className="column-modal-dropdown-item">
-            <input
-              type="checkbox"
-              checked={columnVisibility[col.id as string]}
-              onChange={() => toggleColumnVisibility(col.id as string)}
-              className="column-modal-dropdown-checkbox"
-            />
-            <span className="column-modal-dropdown-label">{col.name}</span>
-          </label>
-        ))}
+        <label className="column-modal-dropdown-item">
+          <input
+            type="checkbox"
+            checked={Object.values(columnVisibility).every(
+              (visibility) => visibility
+            )}
+            onChange={toggleSelectAll}
+            className="column-modal-dropdown-checkbox"
+          />
+          <span className="column-modal-dropdown-label">Select All</span>
+        </label>
+        <div className="mb-3">
+          <hr className="dropdown-divider" />
+        </div>
+        <div className="column-modal-list">
+          {columns.map((col) => (
+            <label key={col.id} className="column-modal-dropdown-item">
+              <input
+                type="checkbox"
+                checked={columnVisibility[col.id as string]}
+                onChange={() => toggleColumnVisibility(col.id as string)}
+                className="column-modal-dropdown-checkbox"
+              />
+              <span className="column-modal-dropdown-label">{col.name}</span>
+            </label>
+          ))}
+        </div>
       </div>
     </div>
   );

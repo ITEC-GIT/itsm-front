@@ -6,6 +6,8 @@
   padding: 1rem !important;
   width: 300px !important;
   overflow: hidden !important;
+  top: 120% !important;
+  left: 200 !important;
 }
 
 .column-modal-dropdown h5 {
@@ -80,4 +82,11 @@
 
 .dropdown-menu:hover.column-modal-dropdown {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.column-modal-list {
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
