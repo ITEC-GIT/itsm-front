@@ -5,18 +5,36 @@ import { useAtomValue } from "jotai";
 import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
 import { StaticDataType } from "../../types/filtersAtomType";
 import Select from "react-select";
-import { userAtom } from "../../atoms/auth-atoms/authAtom";
-import { GetPrivateIPAddress, RemoteSSHConnect } from "../../config/ApiCalls";
+import Cookies from "js-cookie";
+import {
+  fetchXSRFToken,
+  GetPrivateIPAddress,
+  RemoteSSHConnect,
+} from "../../config/ApiCalls";
+import SSHClient from "../../components/Remote SSH/SSHClient";
+
+const AlertModal = ({ onClose }: { onClose: () => void }) => (
+  <div className="alert-overlay">
+    <div className="alert-box">
+      <h6>
+        🚀 The selected device does not have the required agent installed.
+      </h6>
+      <div className="alert-button-container">
+        <button className="btn btn-danger alert-button" onClick={onClose}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertVariant, setAlertVariant] = useState<string>("");
-  const userData = useAtomValue(userAtom);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [openSSH, setOpenSSH] = useState<boolean>(false);
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
   const [ipAddress, setIpAddress] = useState("");
-  const [userInputIp, setUserInputIp] = useState("");
   const [port, setPort] = useState(22);
-  const [userName, setUserName] = useState("");
+  const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
@@ -29,8 +47,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   );
   const [deviceError, setDeviceError] = useState(false);
   const [passError, setPassError] = useState(false);
-  const [ipError, setIpError] = useState(false);
-  const [hostname, setHostname] = useState("");
+  const [usrnameError, setUsrnameError] = useState(false);
 
   const locationOptions = useMemo(
     () =>
@@ -74,26 +91,22 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       setDeviceError(true);
       return;
     }
+    if (!username) {
+      setUsrnameError(true);
+      return;
+    }
     if (!pass) {
       setPassError(true);
       return;
     }
-    if (!ipAddress && !userInputIp) {
-      setIpError(true);
-      return;
-    }
-
+    setOpenSSH(true);
+    const passParams = btoa(pass); //for query params which is not needed in our case
     try {
-      const response = await RemoteSSHConnect(
-        hostname,
-        port,
-        userName,
-        btoa(pass)
-      );
-
-      const result = await response.json();
-      //add error handler bs lezim tetzabat men l backend in order to handle the error
-      console.log("SSH connection response:", result);
+      // const response = await fetchXSRFToken();
+      // console.log("response >>", response);
+      // Cookies.set("_xsrf", response);
+      const res = await RemoteSSHConnect(ipAddress, port, username, pass);
+      console.log("res >>", res);
     } catch (error) {
       console.error("Failed to connect:", error);
     }
@@ -105,8 +118,11 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     setSelectedBranch(null);
     setSelectedDevice(null);
     setSelectedUser(null);
-    setAlertMessage("");
-    setAlertVariant("");
+  };
+
+  const handleCloseAlert = () => {
+    setAlertVisible(false);
+    setSelectedDevice(null);
   };
 
   useEffect(() => {
@@ -115,21 +131,20 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
         try {
           const res = await GetPrivateIPAddress(selectedDevice.value);
           const data = res.data.data[0];
-          setIpAddress(data?.private_ip_address || "");
+          const ip = data?.private_ip_address || "";
+          setIpAddress(ip);
+          if (!ip) setAlertVisible(true);
         } catch (error) {
           console.error("Error fetching IP:", error);
-          setIpAddress("");
+          setIpAddress(" ");
+          setAlertVisible(true);
         }
       };
       fetchIPAddress();
     } else {
-      setIpAddress("");
+      setIpAddress(" ");
     }
   }, [selectedDevice]);
-
-  useEffect(() => {
-    setHostname(userInputIp || ipAddress);
-  }, [ipAddress, userInputIp]);
 
   useEffect(() => {
     if (computerIdProp) {
@@ -147,179 +162,189 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       }
     }
   }, [computerIdProp, staticData]);
-
-  useEffect(() => {
-    if (userData?.session?.glpiname) {
-      setUserName(userData.session.glpiname);
-    }
-  }, [userData]);
-
+  const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
   return (
-    <div
-      className="container-fluid"
-      style={{ paddingLeft: "30px", paddingRight: "30px" }}
-    >
-      <div className="row justify-content-center">
-        <div className="col-md-12 col-lg-10 col-xl-12">
-          {!computerIdProp && (
-            <div className="d-flex justify-content-between">
-              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
-              <ActionIcons />
-            </div>
-          )}
-          <div className="container">
-            <div className="card p-5">
-              <div className="row">
-                <div className="col-md-12 mb-5 d-flex justify-content-end align-items-end">
-                  <div
-                    className="border rounded p-3 mb-4"
-                    style={{ width: "150px" }}
-                  >
-                    <label className="form-label text-start">
-                      <i className="bi bi-usb-symbol text-primary"></i>
-                      <span className="text-primary">Port</span>
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control custom-input"
-                      value={port}
-                      placeholder="Enter Port (e.g., 8080)"
-                      onChange={(e) => setPort(Number(e.target.value))}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6 mb-5">
-                  <label className="custom-label">Select Location</label>
-                  <Select
-                    className="custom-select"
-                    options={locationOptions}
-                    classNamePrefix="react-select"
-                    value={selectedBranch}
-                    onChange={handleBranchChange}
-                    placeholder="Select Branch"
-                    isClearable
-                  />
-                </div>
-                <div className="col-md-6 mb-5">
-                  <label className="custom-label">Username</label>
-                  <input
-                    type="text"
-                    className="form-control custom-input"
-                    value={userName}
-                    style={{ height: "47px" }}
-                    readOnly
-                  />
-                </div>
-                <div className="col-md-6 mb-5">
-                  <label className="custom-label">Select User</label>
-                  <Select
-                    className="custom-select"
-                    options={userOptions}
-                    classNamePrefix="react-select"
-                    value={selectedUser}
-                    onChange={(newValue) => setSelectedUser(newValue)}
-                    placeholder="Select Device"
-                    isClearable
-                  />
-                </div>
-                <div className="col-md-6 mb-5">
-                  <label className="custom-label required">Password</label>
-                  <input
-                    type="password"
-                    className="form-control custom-input"
-                    placeholder="Your password"
-                    onChange={(e) => {
-                      setPassError(false);
-                      setPass(e.target.value);
-                    }}
-                    style={{ height: "47px" }}
-                    required
-                  />
-                  {passError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      Please enter your password.
-                    </small>
-                  )}
-                </div>
-                <div className="col-md-6 mb-5">
-                  <label className="custom-label required">Select Device</label>
-                  <Select
-                    className="custom-select"
-                    options={compOptions}
-                    classNamePrefix="react-select"
-                    value={selectedDevice}
-                    onChange={(newValue) => {
-                      setDeviceError(false);
-                      setSelectedDevice(newValue);
-                    }}
-                    placeholder="Select Device"
-                    isClearable
-                  />
-                  {deviceError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      Please select a device.
-                    </small>
-                  )}
-                </div>
-                {selectedDevice && (
-                  <div className="col-md-6 mb-5">
-                    <label className="custom-label required">
-                      Device IP Address
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control custom-input"
-                      value={ipAddress || userInputIp}
-                      onChange={(e) => {
-                        setIpError(false);
-                        setUserInputIp(e.target.value);
-                      }}
-                      placeholder="Enter IP Address"
-                      readOnly={!!ipAddress}
-                      required={!ipAddress}
-                      style={{ height: "47px" }}
-                      onFocus={() => setIpError(false)}
-                    />
-                    {ipError && !ipAddress && (
-                      <small
-                        className="text-danger"
-                        style={{ fontSize: "0.875rem" }}
-                      >
-                        Please enter the IP address.
-                      </small>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="mt-5 d-flex flex-column justify-content-around flex-sm-row gap-3">
-                <button
-                  type="button"
-                  className="btn hyper-reset-btn"
-                  onClick={handleReset}
-                  style={{ width: "150px" }}
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  className="btn hyper-connect-btn"
-                  onClick={handleConnect}
-                  style={{ width: "150px" }}
-                >
-                  Connect
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <>
+      <iframe src={BASE_URL} width="800" height="600"></iframe>
+      <div></div>
+    </>
+
+    // <div
+    //   className="container-fluid"
+    //   style={{ paddingLeft: "30px", paddingRight: "30px" }}
+    // >
+    //   <div className="row justify-content-center">
+    //     <div className="col-md-12 col-lg-10 col-xl-12">
+    //       {!computerIdProp && (
+    //         <div className="d-flex justify-content-between">
+    //           <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+    //           <ActionIcons />
+    //         </div>
+    //       )}
+
+    //       {openSSH === true ? (
+    //         <SSHClient
+    //           hostname={ipAddress}
+    //           credentials={{
+    //             username: username,
+    //             password: pass,
+    //           }}
+    //         />
+    //       ) : (
+    //         <div className="container">
+    //           <div className="card p-5">
+    //             <div className="row">
+    //               <div className="col-md-12 mb-5 d-flex justify-content-end align-items-end">
+    //                 <div
+    //                   className="border rounded p-3 mb-4"
+    //                   style={{ width: "150px" }}
+    //                 >
+    //                   <label className="form-label text-start">
+    //                     <i className="bi bi-usb-symbol text-primary"></i>
+    //                     <span className="text-primary">Port</span>
+    //                   </label>
+    //                   <input
+    //                     type="number"
+    //                     className="form-control custom-input"
+    //                     value={port}
+    //                     placeholder="Enter Port (e.g., 8080)"
+    //                     onChange={(e) => setPort(Number(e.target.value))}
+    //                   />
+    //                 </div>
+    //               </div>
+    //               <div className="col-md-6 mb-5">
+    //                 <label className="custom-label">Select Location</label>
+    //                 <Select
+    //                   className="custom-select"
+    //                   options={locationOptions}
+    //                   classNamePrefix="react-select"
+    //                   value={selectedBranch}
+    //                   onChange={handleBranchChange}
+    //                   placeholder="Select Branch"
+    //                   isClearable
+    //                 />
+    //               </div>
+    //               <div className="col-md-6 mb-5">
+    //                 <label className="custom-label">Username</label>
+    //                 <input
+    //                   type="text"
+    //                   className="form-control custom-input"
+    //                   placeholder="Username"
+    //                   onChange={(e) => {
+    //                     setUsrnameError(false);
+    //                     setUsername(e.target.value);
+    //                   }}
+    //                   style={{ height: "47px" }}
+    //                   required
+    //                 />
+    //                 {usrnameError && (
+    //                   <small
+    //                     className="text-danger"
+    //                     style={{ fontSize: "0.875rem" }}
+    //                   >
+    //                     Please enter your username.
+    //                   </small>
+    //                 )}
+    //               </div>
+    //               <div className="col-md-6 mb-5">
+    //                 <label className="custom-label">Select User</label>
+    //                 <Select
+    //                   className="custom-select"
+    //                   options={userOptions}
+    //                   classNamePrefix="react-select"
+    //                   value={selectedUser}
+    //                   onChange={(newValue) => setSelectedUser(newValue)}
+    //                   placeholder="Select User"
+    //                   isClearable
+    //                 />
+    //               </div>
+    //               <div className="col-md-6 mb-5">
+    //                 <label className="custom-label required">Password</label>
+    //                 <input
+    //                   type="password"
+    //                   className="form-control custom-input"
+    //                   placeholder="Your password"
+    //                   onChange={(e) => {
+    //                     setPassError(false);
+    //                     setPass(e.target.value);
+    //                   }}
+    //                   style={{ height: "47px" }}
+    //                   required
+    //                 />
+    //                 {passError && (
+    //                   <small
+    //                     className="text-danger"
+    //                     style={{ fontSize: "0.875rem" }}
+    //                   >
+    //                     Please enter your password.
+    //                   </small>
+    //                 )}
+    //               </div>
+    //               <div className="col-md-6 mb-5">
+    //                 <label className="custom-label required">
+    //                   Select Device
+    //                 </label>
+    //                 <Select
+    //                   className="custom-select"
+    //                   options={compOptions}
+    //                   classNamePrefix="react-select"
+    //                   value={selectedDevice}
+    //                   onChange={(newValue) => {
+    //                     setDeviceError(false);
+    //                     setSelectedDevice(newValue);
+    //                   }}
+    //                   placeholder="Select Device"
+    //                   isClearable
+    //                 />
+    //                 {deviceError && (
+    //                   <small
+    //                     className="text-danger"
+    //                     style={{ fontSize: "0.875rem" }}
+    //                   >
+    //                     Please select a device.
+    //                   </small>
+    //                 )}
+    //               </div>
+    //               {selectedDevice && (
+    //                 <div className="col-md-6 mb-5">
+    //                   <label className="custom-label required">
+    //                     Device IP Address
+    //                   </label>
+    //                   <input
+    //                     type="text"
+    //                     className="form-control custom-input"
+    //                     value={ipAddress}
+    //                     readOnly
+    //                     style={{ height: "47px" }}
+    //                   />
+    //                 </div>
+    //               )}
+    //             </div>
+    //             <div className="mt-5 d-flex flex-column justify-content-around flex-sm-row gap-3">
+    //               <button
+    //                 type="button"
+    //                 className="btn hyper-reset-btn"
+    //                 onClick={handleReset}
+    //                 style={{ width: "150px" }}
+    //               >
+    //                 Reset
+    //               </button>
+    //               <button
+    //                 type="button"
+    //                 className="btn hyper-connect-btn"
+    //                 onClick={handleConnect}
+    //                 style={{ width: "150px" }}
+    //               >
+    //                 Connect
+    //               </button>
+    //             </div>
+    //           </div>
+    //         </div>
+    //       )}
+    //     </div>
+    //   </div>
+    //   {alertVisible && <AlertModal onClose={handleCloseAlert} />}
+    // </div>
   );
 };
 
