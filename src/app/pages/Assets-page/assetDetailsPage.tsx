@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AssetDetails } from "../../types/assetsTypes";
 import { AssetInfoComponent } from "../../components/assets-details/assetInfo";
-import AssetTabsComponent from "../../components/assets-details/assetTabs";
+import { AssetTabsComponent } from "../../components/assets-details/assetTabs";
 
 const mockAssetDetailsData: { [key: string]: AssetDetails } = {
   "7": {

@@ -92,4 +92,4 @@ const AssetTabsComponent = () => {
   );
 };
 
-export default AssetTabsComponent;
+export { AssetTabsComponent };
