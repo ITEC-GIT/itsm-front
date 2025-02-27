@@ -1,5 +1,6 @@
 import { AssetsHistoryType } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
+import { Link, useNavigate } from "react-router-dom";
 
 const columnXLargeWidth = "150px";
 const columnLargeWidth = "120px";
@@ -27,9 +28,13 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     sortable: true,
     width: columnLargeWidth,
     cell: (row: AssetsHistoryType) => (
-      <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.name}>
+      <Link
+        to={`/assets/${row.id}`}
+        title={row.name}
+        style={{ color: "blue", textDecoration: "none" }}
+      >
         {row.name}
-      </span>
+      </Link>
     ),
     id: "name",
   },

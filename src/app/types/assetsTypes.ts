@@ -27,3 +27,23 @@ export type GetAllAssetsRequestType = {
   range?: string;
   idgt?: number;
 };
+
+export type AssetDetails = {
+  id: string;
+  name: string;
+  entity: string;
+  serial_number: string;
+  model: string;
+  location: string;
+  component_processor: string;
+  last_update: string;
+  type: "Server" | "Laptop" | string;
+  project: string;
+  address: string;
+  inventory_number: string;
+  alternate_username_number: string;
+  status: "Active" | "Inactive" | string; // Adjust status types
+  public_ip: string;
+  tags: string[];
+  history: { date: string; action: string; user: string }[];
+};

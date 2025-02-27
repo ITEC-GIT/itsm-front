@@ -1,9 +1,7 @@
-// Button group styles
 .btn-group {
   .action-btn {
     transition: all 0.3s ease !important;
     i {
-      //   color: black !important;
       font-size: 1.5rem !important;
     }
 
@@ -17,4 +15,110 @@
       }
     }
   }
+}
+
+//asset's details
+
+.type-icon {
+  font-size: 4rem !important;
+  color: #003092 !important;
+}
+
+.location-icon {
+  color: #003092 !important;
+  margin-right: 5px !important;
+}
+
+.location-text {
+  font-family: Georgia, serif !important;
+}
+
+.status-badge {
+  color: white !important;
+  padding: 8px !important;
+  font-size: 1rem !important;
+  letter-spacing: 1px !important;
+}
+
+.sync-date {
+  font-size: 0.8rem !important;
+  color: lightgray !important;
+  font-style: italic !important;
+  margin-left: 10px !important;
+}
+
+.asset-action-btn {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: box-shadow 0.3s ease !important;
+  padding: 5px !important;
+  width: 120px !important;
+  margin-right: 10px !important;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+.asset-action-btn i {
+  font-size: 1.5rem !important;
+}
+
+.asset-dropdown-divider {
+  border-top: 1px solid #dfcaca !important;
+  margin: 0.5rem 0 !important;
+}
+
+//cards
+
+.icon-element {
+  border-radius: 50% !important;
+  background-color: rgb(227 229 231) !important;
+  padding: 20px !important;
+  margin-bottom: 10px !important;
+}
+
+.icon-green {
+  font-size: 3rem !important;
+  color: #00a86b !important;
+}
+
+.muted-icon-size {
+  font-size: 3rem !important;
+}
+
+.icon-status {
+  font-weight: bold !important;
+}
+
+.patch-status-icon-green {
+  font-size: 4rem !important;
+  color: #00a86b !important;
+}
+
+.patch-status-text {
+  color: #212529 !important;
+  font-weight: bold !important;
+}
+
+.vertical-scroll {
+  overflow-y: auto !important;
+  max-height: 470px !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+//tabs
+.nav-link.active {
+  border-bottom: 1px solid black !important;
+}
+
+.nav-link:hover {
+  color: #848884 !important;
+  border-bottom: 1px solid #848884 !important;
+}
+
+.tab-text {
+  color: #848884 !important;
+  // font-family: Georgia, serif !important;
+  font-size: 1.2rem !important;
 }
