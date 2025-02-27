@@ -45,6 +45,7 @@ const AssetsPage = () => {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false);
+  const [isAddAssetOpen, setIsAddAssetOpen] = useState<boolean>(false);
 
   const toggleColumnModal = () => {
     setIsColumnModalOpen((prevState) => !prevState);
@@ -123,7 +124,7 @@ const AssetsPage = () => {
         <div className="d-flex justify-content-between mb-3">
           <h2 className="text-center mb-4">🛠️ Assets</h2>
         </div>
-        <div className="d-flex justify-content-between gap-3 p-3 rounded shadow-sm bg-white">
+        <div className="d-flex justify-content-between p-3 rounded shadow-sm bg-white">
           <div className="btn-group">
             <button className="action-btn btn btn-outline-primary rounded-pill hover-scale">
               <i className="bi bi-cloud-download me-1"></i> Download
@@ -142,6 +143,19 @@ const AssetsPage = () => {
                 }`}
               ></i>
               Columns
+            </button>
+            <button
+              className={`action-btn btn rounded-pill hover-scale ${
+                isAddAssetOpen ? "bg-primary text-white" : "btn-outline-primary"
+              }`}
+              // onClick={}
+            >
+              <i
+                className={`bi bi-plus-circle me-1 ${
+                  isAddAssetOpen ? "text-white" : "text-dark"
+                }`}
+              ></i>
+              Asset
             </button>
             <ColumnModal
               isOpen={isColumnModalOpen}

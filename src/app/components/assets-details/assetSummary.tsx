@@ -47,14 +47,24 @@ const AssetSummaryComponent = () => {
       <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
         <StatCard
           leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Antivirus</i>`}
-          center={` <div class='d-flex flex-column align-items-center'>
-                        <div class='icon-element'>
-                          <i class='bi bi-shield-shaded icon-green'></i>
-                        </div>
-                        <span class='icon-label'>Window Defender</span>
-                        <span class='icon-status'>Active - UP TO DATE</span>
-                      </div>
-                   `}
+          center={` <div class="d-flex align-items-center mb-3">
+                <div class="net-traffic-element rounded-circle download" >
+                    <i class="bi bi-arrow-down text-white "></i>
+                </div>
+                <div>
+                    <strong class="fs-5">236.024 Kbps</strong>
+                    <small class="text-muted d-block">DOWNLOAD</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="net-traffic-element rounded-circle upload">
+                    <i class="bi bi-arrow-up text-white"></i>
+                </div>
+                <div>
+                    <strong class="fs-5">1.092 Mbps</strong>
+                    <small class="text-muted d-block">UPLOAD</small>
+                </div>
+            </div>`}
         />
       </div>
       <div className="col-md-5 col-lg-4 col-xl-4 mb-3">

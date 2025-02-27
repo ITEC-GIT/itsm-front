@@ -1,5 +1,16 @@
+import { AssetDetailsComponent } from "./assetDetails";
 import { AssetHistoryComponent } from "./assetHistory";
 import { AssetSummaryComponent } from "./assetSummary";
+
+const asset = {
+  name: "Laptop",
+  description: "Dell XPS 13",
+  serialNumber: "ABC123XYZ",
+  model: "XPS 13",
+  location: "Office",
+  purchaseDate: "2023-10-26",
+  value: 1200,
+};
 
 const AssetTabsComponent = () => {
   return (
@@ -70,7 +81,7 @@ const AssetTabsComponent = () => {
               <AssetSummaryComponent />
             </div>
             <div className="tab-pane fade" id="details" role="tabpanel">
-              Details Content
+              <AssetDetailsComponent asset={asset} />
             </div>
             <div className="tab-pane fade" id="apps" role="tabpanel">
               Apps Content
