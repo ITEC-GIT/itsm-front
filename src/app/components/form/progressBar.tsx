@@ -1,4 +1,12 @@
-const ProgressBar = ({ used, total }: { used: number; total: number }) => {
+const ProgressBar = ({
+  used,
+  total,
+  gradientColor,
+}: {
+  used: number;
+  total: number;
+  gradientColor: string;
+}) => {
   const percentage = (((total - used) / total) * 100).toFixed(2);
 
   return (
@@ -9,10 +17,11 @@ const ProgressBar = ({ used, total }: { used: number; total: number }) => {
       </div>
       <div className="progress mt-1" style={{ height: "10px", width: "100%" }}>
         <div
-          className="progress-bar bg-success"
+          className="progress-bar"
           role="progressbar"
           style={{
             width: `${percentage}%`,
+            background: gradientColor,
           }}
           aria-valuenow={parseFloat(percentage)}
           aria-valuemin={0}
@@ -22,5 +31,4 @@ const ProgressBar = ({ used, total }: { used: number; total: number }) => {
     </div>
   );
 };
-
 export { ProgressBar };
