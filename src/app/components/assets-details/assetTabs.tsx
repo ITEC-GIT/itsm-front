@@ -1,3 +1,4 @@
+import TicketPageWrapper from "../../pages/tickets-pages/TicketPageWrapper";
 import { AssetDetailsComponent } from "./assetDetails";
 import { AssetHistoryComponent } from "./assetHistory";
 import { AssetSummaryComponent } from "./assetSummary";
@@ -23,49 +24,66 @@ const AssetTabsComponent = () => {
       >
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link  tab-text active text-active-dark me-6"
+            className="nav-link text-gray tab-text active text-active-bold me-6"
             id="tab-summary"
             data-bs-toggle="tab"
             data-bs-target="#summary"
             type="button"
             role="tab"
           >
+            <i className="bi bi-journal-text me-2"></i>
             Summary
           </button>
         </li>
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link tab-text text-active-dark me-6"
+            className="nav-link tab-text text-gray text-active-bold me-6"
             id="tab-details"
             data-bs-toggle="tab"
             data-bs-target="#details"
             type="button"
             role="tab"
           >
+            <i className="bi bi-journals me-2"></i>
             Details
           </button>
         </li>
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link tab-text text-active-dark me-6"
+            className="nav-link text-gray tab-text text-active-bold me-6"
+            id="tab-ticket"
+            data-bs-toggle="tab"
+            data-bs-target="#tickets"
+            type="button"
+            role="tab"
+          >
+            <i className="bi bi-ticket-perforated me-2"></i>
+            Tickets
+          </button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button
+            className="nav-link text-gray tab-text text-active-bold me-6"
             id="tab-apps"
             data-bs-toggle="tab"
             data-bs-target="#apps"
             type="button"
             role="tab"
           >
+            <i className="bi bi-window-stack me-2"></i>
             Apps
           </button>
         </li>
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link tab-text text-active-dark me-6"
+            className="nav-link text-gray tab-text text-active-bold me-6"
             id="tab-policies"
             data-bs-toggle="tab"
             data-bs-target="#policies"
             type="button"
             role="tab"
           >
+            <i className="bi bi-window-x me-2"></i>
             Policies
           </button>
         </li>
@@ -83,8 +101,13 @@ const AssetTabsComponent = () => {
             <div className="tab-pane fade" id="details" role="tabpanel">
               <AssetDetailsComponent asset={asset} />
             </div>
+            <div className="tab-pane fade" id="tickets" role="tabpanel">
+              <div className="row vertical-scroll">
+                <TicketPageWrapper />
+              </div>
+            </div>
             <div className="tab-pane fade" id="apps" role="tabpanel">
-              Apps Content
+              Apps
             </div>
             <div className="tab-pane fade" id="policies" role="tabpanel">
               Policies Content

@@ -70,6 +70,48 @@ const logs: LogItem[] = [
     time: "12:27",
     date: "01/23/2025",
   },
+  {
+    icon: "bi bi-download",
+    title: "4K Video Downloader (Install)",
+    status: "Success",
+    time: "12:33",
+    date: "01/23/2025",
+  },
+  {
+    icon: "bi bi-box",
+    title: "Dropbox",
+    status: "Triggered",
+    time: "12:27",
+    date: "01/23/2025",
+  },
+  {
+    icon: "bi bi-box",
+    title: "Dropbox",
+    status: "Triggered",
+    time: "12:27",
+    date: "01/23/2025",
+  },
+  {
+    icon: "bi bi-shield-exclamation",
+    title: "OpenVPN Connect v3",
+    status: "Failure",
+    time: "12:32",
+    date: "01/23/2025",
+  },
+  {
+    icon: "bi bi-box",
+    title: "Dropbox",
+    status: "Triggered",
+    time: "12:27",
+    date: "01/23/2025",
+  },
+  {
+    icon: "bi bi-box",
+    title: "Dropbox",
+    status: "Triggered",
+    time: "12:27",
+    date: "01/23/2025",
+  },
 ];
 
 const getStatusBadge = (status?: string) => {

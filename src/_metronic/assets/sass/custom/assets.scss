@@ -103,7 +103,7 @@
 
 .vertical-scroll {
   overflow-y: auto !important;
-  max-height: 470px !important;
+  max-height: 68vh !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
@@ -129,18 +129,13 @@
   background: rgb(107, 107, 250) !important;
 }
 
-//tabs
-.nav-link.active {
-  border-bottom: 1px solid black !important;
-}
-
-.nav-link:hover {
-  color: #848884 !important;
-  border-bottom: 1px solid #848884 !important;
-}
-
 .tab-text {
-  color: #848884 !important;
-  // font-family: Georgia, serif !important;
+  padding: 10px 20px !important;
+  font-weight: unset !important;
+  font-size: 16px !important;
   font-size: 1.2rem !important;
+}
+
+.tab-text i {
+  font-size: 1.5rem !important;
 }

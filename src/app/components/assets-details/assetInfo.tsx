@@ -10,9 +10,15 @@ const AssetInfoComponent = () => {
             <span className="sync-date ">last sync 2 minutes ago</span>
           </div>
 
-          <div>
-            <i className="bi bi-geo-alt-fill location-icon"></i>
-            <span className="location-text">Lebanon - Beirut</span>
+          <div className="d-flex align-items-center gap-5">
+            <div>
+              <i className="bi bi-geo-alt-fill location-icon"></i>
+              <span className="location-text">Lebanon - Beirut</span>
+            </div>
+            <div>
+              <i className="bi bi-buildings location-icon"></i>
+              <span className="location-text">Hara</span>
+            </div>
           </div>
         </div>
       </div>

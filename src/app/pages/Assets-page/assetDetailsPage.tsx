@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { AssetDetails } from "../../types/assetsTypes";
 import { AssetInfoComponent } from "../../components/assets-details/assetInfo";
 import { AssetTabsComponent } from "../../components/assets-details/assetTabs";
+import { BackButton } from "../../components/form/backButton";
 
 const mockAssetDetailsData: { [key: string]: AssetDetails } = {
   "7": {
@@ -83,14 +84,13 @@ const AssetDetailsPage: React.FC = () => {
 
   return (
     <div className="container-fluid">
-      <div className="row">
+      <BackButton navigateFrom={`assets/${id}`} navigateTo={"assets"} />
+      <div className="row mt-2">
         <div className="col-md-12">
           <div className="card shadow-sm">
             <div className="card-body d-flex flex-column">
               <AssetInfoComponent />
-              <div className="mb-1">
-                <hr className="asset-dropdown-divider" />
-              </div>
+
               <AssetTabsComponent />
             </div>
           </div>
