@@ -147,9 +147,33 @@
   padding: 15px 15px 15px 5px;
   border-radius: 4px;
 }
+.truncate-text {
+  max-height: 100px; /* Set max height */
+  overflow: hidden;
+  position: relative;
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* Number of lines before truncating */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
 
+.reply-card {
+  @extend .card; // Inherit Bootstrap card styles
+
+  img {
+    max-width: 640px !important; // Set maximum width to 640px
+    max-height: 640px !important; // Set maximum height to 640px
+    width: auto !important;  // Ensures it scales correctly
+    height: auto !important; // Maintains aspect ratio
+    object-fit: contain;     // Ensures the image fits within the constraints
+    display: block;          // Removes inline image spacing issues
+  }
+}
 
 .message-card {
+  height: auto;
+  overflow: visible;
   max-width: 98%;
   border-radius: 10px;
   box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.25),
@@ -160,7 +184,7 @@
   }
 
   &.user-ticket {
-    background-color: #F5F5F5; // Light Gray for User Tickets
+    background-color:#EBEBEB; // Light Gray for User Tickets
   }
   &:hover {
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.3),

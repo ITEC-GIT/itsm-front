@@ -8,4 +8,15 @@ interface Assignee {
     name: string;
     avatar?: string;
   }
-export type { TicketResponse, Assignee };
+interface ImageUploadData {
+    base64: string;
+    url?: string; // Optional, as it will be assigned after upload
+}
+interface ImageUploadResponse {
+    url: string;           // Full URL of the uploaded image
+    saved_file: string;    // The filename stored on the server
+    hash: string;          // Unique hash of the file
+    size: number;          // Size of the file in bytes
+}
+
+export type { TicketResponse, Assignee ,ImageUploadData,ImageUploadResponse};

@@ -2,6 +2,10 @@
 .quill-content-important {
     overflow: hidden !important;
     min-height: unset !important;
+   .img{
+     height: 100% !important;
+     width: 100% !important;
+   }
   }
 .bold-large {
   font-weight: bold;

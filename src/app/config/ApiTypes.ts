@@ -1,4 +1,4 @@
-export type ApiRequestBody = {
+export interface ApiRequestBody {
   status?: string;
   urgency?: string;
   priority?: string;
@@ -15,14 +15,20 @@ export type ApiRequestBody = {
     from?: string;
     to?: string;
   };
-};
-export type UpdateTicketRequestBody = {
+}
+
+export interface UpdateTicketRequestBody {
   id: number;
   status?: number;
   urgency?: number;
   priority?: number;
   type?: number;
   due_date?: string;
-  assignee_id?: [number];
-};
-//     "assignee_id":[1,2,3]
+  assignee_id?: number[]; // Changed from `[number]` to `number[]` for correct array syntax
+}
+
+export interface UpdateTicketReplyRequestBody {
+  itemtype: string;
+  items_id: number;
+  content: string;
+}
