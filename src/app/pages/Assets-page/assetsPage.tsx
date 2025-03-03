@@ -125,31 +125,18 @@ const AssetsPage = () => {
           <h2 className="text-center mb-4">🛠️ Assets</h2>
         </div>
         <div className="d-flex justify-content-between p-3 rounded shadow-sm bg-white">
-          <div className="btn-group">
-            <button className="action-btn btn btn-outline-primary rounded-pill hover-scale">
-              <i className="bi bi-cloud-download me-1"></i> Download
+          <div className="asset-btn-group">
+            <button className="btn asset-action-btn">
+              <i className="bi bi-cloud-download me-1 text-dark"></i> Download
             </button>
             <button
-              className={`action-btn btn rounded-pill hover-scale ${
-                isColumnModalOpen
-                  ? "bg-primary text-white"
-                  : "btn-outline-primary"
-              }`}
+              className={`btn asset-action-btn `}
               onClick={toggleColumnModal}
             >
-              <i
-                className={`bi bi-layout-split me-1 ${
-                  isColumnModalOpen ? "text-white" : "text-dark"
-                }`}
-              ></i>
+              <i className={`bi bi-layout-split me-1 text-dark`}></i>
               Columns
             </button>
-            <button
-              className={`action-btn btn rounded-pill hover-scale ${
-                isAddAssetOpen ? "bg-primary text-white" : "btn-outline-primary"
-              }`}
-              // onClick={}
-            >
+            <button className="btn add-asset-action-btn ">
               <i
                 className={`bi bi-plus-circle me-1 ${
                   isAddAssetOpen ? "text-white" : "text-dark"

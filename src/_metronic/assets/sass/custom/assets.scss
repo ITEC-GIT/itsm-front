@@ -60,6 +60,25 @@
   }
 }
 
+.add-asset-action-btn {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: box-shadow 0.3s ease !important;
+  padding: 5px !important;
+  width: 120px !important;
+  margin-right: 10px !important;
+  background-color: #303232 !important;
+  color: white !important;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+.add-asset-action-btn i {
+  color: white !important;
+  font-size: 1.5rem !important;
+}
+
 .asset-action-btn i {
   font-size: 1.5rem !important;
 }
