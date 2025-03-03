@@ -7,14 +7,9 @@
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   height: 79vh !important;
-  // width: 100% !important;
-  // width: 350px !important;
-  // overflow-y: auto;
   padding: 0 5px !important;
-  // background: var(--background);
   display: flex;
   flex-direction: column;
-  // gap: 1.5rem;
   scrollbar-width: none;
 }
 
@@ -34,7 +29,6 @@
   display: flex;
   flex-direction: column;
   height: 100% !important;
-  // gap: 1.5rem;
 }
 
 .computer-header {
@@ -266,7 +260,7 @@
   white-space: normal !important;
 }
 
-/* Search Input */
+/// search input
 .search-input-wrapper {
   position: relative;
   flex-grow: 1;
