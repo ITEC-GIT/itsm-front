@@ -96,153 +96,6 @@ const AnalyticsDashboard: React.FC = () => {
     });
   };
 
-  // const toggleChart = (
-  //   chartId: number,
-  //   chartType: string,
-  //   chartTitle: string
-  // ) => {
-  //   setSelectedCharts((prev) => {
-  //     const isSelected = prev.some((chart) => chart.id === chartId);
-  //     if (isSelected) {
-  //       const updatedCharts = prev.filter((chart) => chart.id !== chartId);
-
-  //       removeFromIndexedDB(userId, "analyticsDashboard", "charts", chartId)
-  //         .then(() =>
-  //           console.log(`Chart with ID ${chartId} removed from IndexedDB`)
-  //         )
-  //         .catch((error) =>
-  //           console.error("Error removing from IndexedDB:", error)
-  //         );
-
-  //       return updatedCharts;
-  //     }
-  //     const config = chartConfig[chartType as ChartType];
-  //     const chartWidth = parseInt(config.options.chart.width, 10);
-  //     const chartHeight = parseInt(config.options.chart.height, 10);
-
-  //     const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
-  //     const gap = 20;
-
-  //     const isOverlapping = (
-  //       x: number,
-  //       y: number,
-  //       width: number,
-  //       height: number
-  //     ) => {
-  //       return prev.some((chart) => {
-  //         return (
-  //           x < chart.x + chart.width + gap &&
-  //           x + width + gap > chart.x &&
-  //           y < chart.y + chart.height + gap &&
-  //           y + height + gap > chart.y
-  //         );
-  //       });
-  //     };
-
-  //     let currentX = 0;
-  //     let currentY = 0;
-  //     let foundPosition = false;
-
-  //     while (!foundPosition) {
-  //       if (!isOverlapping(currentX, currentY, chartWidth, chartHeight)) {
-  //         foundPosition = true;
-  //       } else {
-  //         currentX += chartWidth + gap;
-
-  //         if (currentX + chartWidth > parentWidth) {
-  //           currentX = 0;
-  //           currentY += chartHeight + gap;
-  //         }
-  //       }
-  //     }
-
-  //     const newChart = {
-  //       id: chartId,
-  //       type: chartType,
-  //       x: currentX,
-  //       y: currentY,
-  //       width: chartWidth,
-  //       height: chartHeight,
-  //       title: chartTitle,
-  //     };
-
-  //     saveToIndexedDB(userId, "analyticsDashboard", "charts", newChart)
-  //       .then(() => console.log("Chart saved to IndexedDB"))
-  //       .catch((error) => console.error("Error saving to IndexedDB:", error));
-
-  //     return [...prev, newChart];
-  //   });
-  // };
-
-  const l = 0;
-
-  // const toggleChart = (
-  //   chartId: number,
-  //   chartType: string,
-  //   chartTitle: string
-  // ) => {
-  //   setSelectedCharts((prev) => {
-  //     const isSelected = prev.some((chart) => chart.id === chartId);
-
-  //     if (isSelected) {
-  //       const updatedCharts = prev.filter((chart) => chart.id !== chartId);
-
-  //       removeFromIndexedDB(userId, "analyticsDashboard", "charts", chartId)
-  //         .then(() =>
-  //           console.log(`Chart with ID ${chartId} removed from IndexedDB`)
-  //         )
-  //         .catch((error) =>
-  //           console.error("Error removing from IndexedDB:", error)
-  //         );
-
-  //       return updatedCharts;
-  //     }
-
-  //     const config = chartConfig[chartType as ChartType];
-  //     const chartWidth = parseInt(config.options.chart.width, 10);
-  //     const chartHeight = parseInt(config.options.chart.height, 10);
-
-  //     const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
-  //     const gap = 20;
-
-  //     let currentX = 0;
-  //     let currentY = 0;
-  //     let rowHeight = 0;
-
-  //     if (prev.length > 0) {
-  //       const lastChart = prev.reduce(
-  //         (max, chart) =>
-  //           chart.y + chart.height > max.y + max.height ? chart : max,
-  //         prev[0]
-  //       );
-  //       currentX = lastChart.x + lastChart.width + gap;
-  //       currentY = lastChart.y;
-  //       rowHeight = lastChart.height;
-
-  //       if (currentX + chartWidth > parentWidth) {
-  //         currentX = 0;
-  //         currentY = currentY + rowHeight + gap;
-  //       }
-  //     }
-
-  //     const newChart = {
-  //       id: chartId,
-  //       type: chartType,
-  //       x: currentX,
-  //       y: currentY,
-  //       width: chartWidth,
-  //       height: chartHeight,
-  //       title: chartTitle,
-  //     };
-
-  //     saveToIndexedDB(userId, "analyticsDashboard", "charts", newChart)
-  //       .then(() => console.log("Chart saved to IndexedDB"))
-  //       .catch((error) => console.error("Error saving to IndexedDB:", error));
-
-  //     return [...prev, newChart];
-  //   });
-  // };
-
   const handleDragStop = (index: number, x: number, y: number) => {
     const parentWidth = parentRef.current ? parentRef.current.offsetWidth : 0;
     const chart = selectedCharts[index];
@@ -268,31 +121,6 @@ const AnalyticsDashboard: React.FC = () => {
         .catch((error) => console.error("Error saving updated chart:", error));
     }
   };
-
-  // const handleDragStop = (index: number, x: number, y: number) => {
-  //   if (
-  //     !checkCollision(
-  //       x,
-  //       y,
-  //       selectedCharts[index].width,
-  //       selectedCharts[index].height,
-  //       index
-  //     )
-  //   ) {
-  //     const updatedCharts = [...selectedCharts];
-  //     updatedCharts[index] = { ...updatedCharts[index], x, y };
-  //     setSelectedCharts(updatedCharts);
-
-  //     saveToIndexedDB(
-  //       userId,
-  //       "analyticsDashboard",
-  //       "charts",
-  //       updatedCharts[index]
-  //     )
-  //       .then(() => console.log("Updated chart saved to IndexedDB"))
-  //       .catch((error) => console.error("Error saving updated chart:", error));
-  //   }
-  // };
 
   const handleResizeStop = (
     index: number,
@@ -399,8 +227,16 @@ const AnalyticsDashboard: React.FC = () => {
                     key={id}
                     size={{ width, height }}
                     position={{ x, y }}
-                    onDragStop={(e, d) => handleDragStop(index, d.x, d.y)}
-                    onResizeStop={(e, direction, ref, delta, position) =>
+                    onDragStop={(e: any, d: { x: number; y: number }) =>
+                      handleDragStop(index, d.x, d.y)
+                    }
+                    onResizeStop={(
+                      e: any,
+                      direction: any,
+                      ref: HTMLElement,
+                      delta: { width: number; height: number },
+                      position: { x: number; y: number }
+                    ) =>
                       handleResizeStop(index, direction, ref, delta, position)
                     }
                     minWidth={chartWidth}
