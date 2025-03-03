@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { SearchComponent } from "../../components/form/search";
-import DataTable from "react-data-table-component";
+import DataTable, { TableColumn } from "react-data-table-component";
 import { useAtom } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
-import { GetAllAssetsRequestType as FilterType } from "../../types/assetsTypes";
+import {
+  AssetsHistoryType,
+  GetAllAssetsRequestType as FilterType,
+} from "../../types/assetsTypes";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { debounce } from "lodash";
 import { FilterSidebar } from "../../components/form/filters";

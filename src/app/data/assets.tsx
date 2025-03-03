@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { AssetsHistoryType } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const columnXLargeWidth = "150px";
 const columnLargeWidth = "120px";
 const columnMediumWidth = "100px";
 const columnSmallWidth = "50px";
+
 export const columns: TableColumn<AssetsHistoryType>[] = [
   {
     name: "#",
@@ -192,8 +194,111 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
   {
     name: "Action",
     width: columnMediumWidth,
-    selector: (row: AssetsHistoryType) => row.action,
-    sortable: true,
+    cell: (row: AssetsHistoryType) => {
+      const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+      const handleDeleteClick = () => {
+        setShowDeleteModal(true);
+      };
+
+      const confirmDelete = () => {
+        console.log("Deleting row:", row);
+        setShowDeleteModal(false);
+      };
+
+      const cancelDelete = () => {
+        setShowDeleteModal(false);
+      };
+
+      return (
+        <div className="d-flex align-items-start">
+          <button
+            className="table-btn-action"
+            onClick={() => {
+              console.log("Edit clicked for row:", row);
+            }}
+          >
+            <i
+              className="bi bi-pencil-square fs-2"
+              style={{ color: "blue" }}
+            ></i>
+          </button>
+          <button className="table-btn-action" onClick={handleDeleteClick}>
+            <i className="bi bi-trash fs-2 text-danger"></i>
+          </button>
+
+          {showDeleteModal && (
+            <div
+              className={`modal fade ${showDeleteModal ? "show d-block" : ""}`}
+              tabIndex={-1}
+              role="dialog"
+              aria-hidden={!showDeleteModal}
+              style={{
+                background: showDeleteModal ? "rgba(0,0,0,0.5)" : "transparent",
+                width: "100%",
+              }}
+            >
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content p-5">
+                  <div className="d-flex justify-content-start align-items-center mb-5">
+                    <div
+                      style={{
+                        backgroundColor: "#FF9800",
+                        borderRadius: "50%",
+                        padding: "10px",
+                        marginRight: "15px",
+                      }}
+                    >
+                      <i
+                        className="bi bi-exclamation"
+                        style={{ color: "white", fontSize: "3rem" }}
+                      ></i>
+                    </div>
+                    <div className="d-flex flex-column">
+                      <h3>Delete assets</h3>
+                      <p>
+                        Are you sure you want to delete the selected assets?
+                      </p>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end mt-5">
+                    <button
+                      onClick={cancelDelete}
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "none",
+                        padding: "8px 15px",
+                        cursor: "pointer",
+                        marginRight: "10px",
+                        fontSize: "1rem",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={confirmDelete}
+                      style={{
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 15px",
+                        cursor: "pointer",
+                        borderRadius: "5px",
+                        fontSize: "1rem",
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    },
+
+    sortable: false,
     id: "action",
   },
 ];
@@ -206,96 +311,6 @@ export const activeFilters = [
 ];
 
 export const mockData = [
-  // {
-  //   id: 1,
-  //   name: "Device 1",
-  //   entity: "Entity A",
-  //   serial_number: "SN123456",
-  //   model: "Model X",
-  //   location: "New York",
-  //   last_update: "2023-10-01",
-  //   component_processor: "Intel i7",
-  //   type: "Laptop",
-  //   project: "Project Alpha",
-  //   address: "123 Main St",
-  //   inventory_number: "INV001",
-  //   alternate_username_number: "AU001",
-  //   action: "Active",
-  //   status: "Online", // New property
-  //   public_ip: "225.225.225.225", // New property
-  // },
-  // {
-  //   id: 2,
-  //   name: "Device 2",
-  //   entity: "Entity B",
-  //   serial_number: "SN654321",
-  //   model: "Model Y",
-  //   location: "San Francisco",
-  //   last_update: "2023-09-25",
-  //   component_processor: "AMD Ryzen 5",
-  //   type: "Desktop",
-  //   project: "Project Beta",
-  //   address: "456 Elm St",
-  //   inventory_number: "INV002",
-  //   alternate_username_number: "AU002",
-  //   action: "Inactive",
-  //   status: "Offline", // New property
-  //   public_ip: "192.168.1.2", // New property
-  // },
-  // {
-  //   id: 3,
-  //   name: "Device 3",
-  //   entity: "Entity C",
-  //   serial_number: "SN789012",
-  //   model: "Model Z",
-  //   location: "Chicago",
-  //   last_update: "2023-10-05",
-  //   component_processor: "Intel i5",
-  //   type: "Tablet",
-  //   project: "Project Gamma",
-  //   address: "789 Oak St",
-  //   inventory_number: "INV003",
-  //   alternate_username_number: "AU003",
-  //   action: "Active",
-  //   status: "Online", // New property
-  //   public_ip: "192.168.1.3", // New property
-  // },
-  // {
-  //   id: 4,
-  //   name: "Device 4",
-  //   entity: "Entity D",
-  //   serial_number: "SN345678",
-  //   model: "Model A",
-  //   location: "Los Angeles",
-  //   last_update: "2023-09-30",
-  //   component_processor: "AMD Ryzen 7",
-  //   type: "Server",
-  //   project: "Project Delta",
-  //   address: "101 Pine St",
-  //   inventory_number: "INV004",
-  //   alternate_username_number: "AU004",
-  //   action: "Active",
-  //   status: "Online", // New property
-  //   public_ip: "192.168.1.4", // New property
-  // },
-  // {
-  //   id: 5,
-  //   name: "Device 5",
-  //   entity: "Entity E",
-  //   serial_number: "SN901234",
-  //   model: "Model B",
-  //   location: "Houston",
-  //   last_update: "2023-10-02",
-  //   component_processor: "Intel i9",
-  //   type: "Workstation",
-  //   project: "Project Epsilon",
-  //   address: "202 Maple St",
-  //   inventory_number: "INV005",
-  //   alternate_username_number: "AU005",
-  //   action: "Inactive",
-  //   status: "Offline", // New property
-  //   public_ip: "192.168.1.5", // New property
-  // },
   // {
   //   id: 6,
   //   name: "Device 6",
