@@ -47,3 +47,12 @@ export type AssetDetails = {
   tags: string[];
   history: { date: string; action: string; user: string }[];
 };
+
+export const AppButtons = [
+  { id: 1, text: "Windows Service", icon: "bi-gear" },
+  { id: 2, text: "All Processes", icon: "bi-list" },
+  { id: 3, text: "Software", icon: "bi-window" },
+  { id: 4, text: "Managed Software", icon: "bi-code-slash" },
+  { id: 5, text: "Registry Editor", icon: "bi-box" },
+  { id: 6, text: "File Explorer", icon: "bi-folder" },
+];

@@ -1,6 +1,8 @@
-import TicketPageWrapper from "../../pages/tickets-pages/TicketPageWrapper";
-import { AssetDetailsComponent } from "./assetDetails";
+import React, { useState } from "react";
 import { AssetHistoryComponent } from "./assetHistory";
+import TicketPageWrapper from "../../pages/tickets-pages/TicketPageWrapper";
+import { AssetAppsComponent } from "./assetApps";
+import { AssetDetailsComponent } from "./assetDetails";
 import { AssetSummaryComponent } from "./assetSummary";
 
 const asset = {
@@ -12,8 +14,13 @@ const asset = {
   purchaseDate: "2023-10-26",
   value: 1200,
 };
-
 const AssetTabsComponent = () => {
+  const [selectedTab, setSelectedTab] = useState("summary");
+
+  const handleTabClick = (tab: string) => {
+    setSelectedTab(tab);
+  };
+
   return (
     <>
       <ul
@@ -24,12 +31,15 @@ const AssetTabsComponent = () => {
       >
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link text-gray tab-text active text-active-bold me-6"
+            className={`nav-link text-gray tab-text ${
+              selectedTab === "summary" ? "active text-active-bold" : ""
+            } me-6`}
             id="tab-summary"
             data-bs-toggle="tab"
             data-bs-target="#summary"
             type="button"
             role="tab"
+            onClick={() => handleTabClick("summary")}
           >
             <i className="bi bi-journal-text me-2"></i>
             Summary
@@ -37,12 +47,15 @@ const AssetTabsComponent = () => {
         </li>
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link tab-text text-gray text-active-bold me-6"
+            className={`nav-link tab-text text-gray ${
+              selectedTab === "details" ? "active text-active-bold" : ""
+            } me-6`}
             id="tab-details"
             data-bs-toggle="tab"
             data-bs-target="#details"
             type="button"
             role="tab"
+            onClick={() => handleTabClick("details")}
           >
             <i className="bi bi-journals me-2"></i>
             Details
@@ -50,12 +63,15 @@ const AssetTabsComponent = () => {
         </li>
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link text-gray tab-text text-active-bold me-6"
+            className={`nav-link text-gray tab-text ${
+              selectedTab === "tickets" ? "active text-active-bold" : ""
+            } me-6`}
             id="tab-ticket"
             data-bs-toggle="tab"
             data-bs-target="#tickets"
             type="button"
             role="tab"
+            onClick={() => handleTabClick("tickets")}
           >
             <i className="bi bi-ticket-perforated me-2"></i>
             Tickets
@@ -63,12 +79,15 @@ const AssetTabsComponent = () => {
         </li>
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link text-gray tab-text text-active-bold me-6"
+            className={`nav-link text-gray tab-text ${
+              selectedTab === "apps" ? "active text-active-bold" : ""
+            } me-6`}
             id="tab-apps"
             data-bs-toggle="tab"
             data-bs-target="#apps"
             type="button"
             role="tab"
+            onClick={() => handleTabClick("apps")}
           >
             <i className="bi bi-window-stack me-2"></i>
             Apps
@@ -76,12 +95,15 @@ const AssetTabsComponent = () => {
         </li>
         <li className="nav-item" role="presentation">
           <button
-            className="nav-link text-gray tab-text text-active-bold me-6"
+            className={`nav-link text-gray tab-text ${
+              selectedTab === "policies" ? "active text-active-bold" : ""
+            } me-6`}
             id="tab-policies"
             data-bs-toggle="tab"
             data-bs-target="#policies"
             type="button"
             role="tab"
+            onClick={() => handleTabClick("policies")}
           >
             <i className="bi bi-window-x me-2"></i>
             Policies
@@ -89,38 +111,66 @@ const AssetTabsComponent = () => {
         </li>
       </ul>
       <div className="row">
-        <div className="col-8">
+        <div className={selectedTab !== "apps" ? "col-8" : "col-12"}>
           <div className="tab-content mt-3">
             <div
-              className="tab-pane fade show active "
+              className={`tab-pane fade ${
+                selectedTab === "summary" ? "show active" : ""
+              }`}
               id="summary"
               role="tabpanel"
             >
               <AssetSummaryComponent />
             </div>
-            <div className="tab-pane fade" id="details" role="tabpanel">
+            <div
+              className={`tab-pane fade ${
+                selectedTab === "details" ? "show active" : ""
+              }`}
+              id="details"
+              role="tabpanel"
+            >
               <AssetDetailsComponent asset={asset} />
             </div>
-            <div className="tab-pane fade" id="tickets" role="tabpanel">
+            <div
+              className={`tab-pane fade ${
+                selectedTab === "tickets" ? "show active" : ""
+              }`}
+              id="tickets"
+              role="tabpanel"
+            >
               <div className="row vertical-scroll">
                 <TicketPageWrapper />
               </div>
             </div>
-            <div className="tab-pane fade" id="apps" role="tabpanel">
-              Apps
+            <div
+              className={`tab-pane fade ${
+                selectedTab === "apps" ? "show active" : ""
+              }`}
+              id="apps"
+              role="tabpanel"
+            >
+              <AssetAppsComponent />
             </div>
-            <div className="tab-pane fade" id="policies" role="tabpanel">
+            <div
+              className={`tab-pane fade ${
+                selectedTab === "policies" ? "show active" : ""
+              }`}
+              id="policies"
+              role="tabpanel"
+            >
               Policies Content
             </div>
           </div>
         </div>
 
-        <div
-          className="col-4 "
-          style={{ backgroundColor: "rgba(246,248,251,255)" }}
-        >
-          <AssetHistoryComponent />
-        </div>
+        {selectedTab === "summary" && (
+          <div
+            className="col-4"
+            style={{ backgroundColor: "rgba(246,248,251,255)" }}
+          >
+            <AssetHistoryComponent />
+          </div>
+        )}
       </div>
     </>
   );
