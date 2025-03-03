@@ -5,7 +5,7 @@ import { Sidebar } from "./assetSidebar";
 const AssetAppsComponent = () => {
   const [selectedButton, setSelectedButton] = useState<number>(1);
   let renderComponent = <></>;
-//   swicth
+  //   swicth
   return (
     <div className="row app-row p-2">
       <div className="col-2 bg-light border-end p-3">
@@ -16,7 +16,7 @@ const AssetAppsComponent = () => {
         />
       </div>
 
-      <div className="col-8 p-4">
+      <div className="col-10 p-4">
         <h4>File Explorer</h4>
         <div className="d-flex flex-column align-items-center justify-content-center h-75">
           <img
