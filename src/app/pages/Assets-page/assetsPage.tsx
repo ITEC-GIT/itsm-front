@@ -11,6 +11,7 @@ import { ColumnVisibility } from "../../types/common";
 import ColumnModal from "../../components/modal/columns";
 import clsx from "clsx";
 import { activeFilters, columns, mockData } from "../../data/assets";
+import { AddAssetModal } from "../../components/modal/addAsset";
 
 const AssetsPage = () => {
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
@@ -60,6 +61,10 @@ const AssetsPage = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
     handleToggle();
+  };
+
+  const toggleAddAssetModal = () => {
+    setIsAddAssetOpen((prevState) => !prevState);
   };
 
   const visibleColumns = columns.filter(
@@ -136,7 +141,10 @@ const AssetsPage = () => {
               <i className={`bi bi-layout-split me-1 text-dark`}></i>
               Columns
             </button>
-            <button className="btn add-asset-action-btn ">
+            <button
+              className="btn add-asset-action-btn "
+              onClick={toggleAddAssetModal}
+            >
               <i
                 className={`bi bi-plus-circle me-1 ${
                   isAddAssetOpen ? "text-white" : "text-dark"
@@ -249,6 +257,9 @@ const AssetsPage = () => {
           saveFilters={setFilters}
         />
       </div>
+      {isAddAssetOpen && (
+        <AddAssetModal isOpen={isAddAssetOpen} onClose={toggleAddAssetModal} />
+      )}
     </div>
   );
 };
