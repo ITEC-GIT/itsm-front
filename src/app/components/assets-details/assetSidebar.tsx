@@ -18,18 +18,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <ul className="nav flex-column">
       {buttons.map((button) => (
-        <li className="nav-item" key={button.id}>
+        <li className="nav-item nav-item-li mb-3" key={button.id}>
           <button
-            className={`nav-link text-dark ${
-              button.id === selectedId ? "active bg-secondary text-white" : ""
+            className={`nav-link nav-link-btn text-dark ${
+              button.id === selectedId ? "active" : ""
             }`}
             onClick={() => onButtonClick(button.id)}
-            style={{
-              border: "none",
-              background: "none",
-              width: "100%",
-              textAlign: "left",
-            }}
           >
             <i className={`bi ${button.icon} text-dark`}></i> {button.text}
           </button>

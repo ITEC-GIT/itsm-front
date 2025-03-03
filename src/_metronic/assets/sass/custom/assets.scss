@@ -144,3 +144,32 @@
 .app-row {
   height: 68vh !important;
 }
+
+//nav
+
+.nav-link-btn i {
+  margin-right: 7px !important;
+  font-size: 1.5rem !important;
+}
+
+.nav-link-btn {
+  display: flex !important;
+  border: none !important;
+  background: none !important;
+  width: 100% !important;
+  text-align: left !important;
+  padding: 10px 15px !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease, color 0.3s ease !important;
+}
+
+.nav-link-btn.active {
+  background-color: #e4e5e6 !important;
+  color: black !important;
+  font-weight: bold !important;
+  border-left: 3px solid #1b84ff !important;
+}
+
+.nav-link-btn:hover {
+  background-color: #e9ecef !important; //ask rida
+}

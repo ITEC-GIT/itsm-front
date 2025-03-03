@@ -4,6 +4,7 @@ import TicketPageWrapper from "../../pages/tickets-pages/TicketPageWrapper";
 import { AssetAppsComponent } from "./assetApps";
 import { AssetDetailsComponent } from "./assetDetails";
 import { AssetSummaryComponent } from "./assetSummary";
+import { AssetPoliciesComponent } from "./assetPolicies";
 
 const asset = {
   name: "Laptop",
@@ -111,7 +112,7 @@ const AssetTabsComponent = () => {
         </li>
       </ul>
       <div className="row">
-        <div className={selectedTab !== "apps" ? "col-8" : "col-12"}>
+        <div className={selectedTab === "summary" ? "col-8" : "col-12"}>
           <div className="tab-content mt-3">
             <div
               className={`tab-pane fade ${
@@ -158,7 +159,7 @@ const AssetTabsComponent = () => {
               id="policies"
               role="tabpanel"
             >
-              Policies Content
+              <AssetPoliciesComponent />
             </div>
           </div>
         </div>
