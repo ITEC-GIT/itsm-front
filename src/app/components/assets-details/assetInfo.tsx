@@ -1,16 +1,18 @@
+import { AvatarComponent } from "../form/avatar";
+
 const AssetInfoComponent = () => {
   return (
     <div className="d-flex justify-content-between mb-4">
       <div className="d-flex align-items-center gap-2">
         <i className="bi bi-hdd me-2 type-icon"></i>
         <div className="d-flex flex-column">
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-5">
             <h3>DESKTOP-1FEPMGR</h3>
             <span className="badge bg-success status-badge">ONLINE</span>
             <span className="sync-date ">last sync 2 minutes ago</span>
           </div>
 
-          <div className="d-flex align-items-center gap-5">
+          <div className="d-flex align-items-center gap-5 mt-2">
             <div>
               <i className="bi bi-geo-alt-fill location-icon"></i>
               <span className="location-text">Lebanon - Beirut</span>
@@ -18,6 +20,14 @@ const AssetInfoComponent = () => {
             <div>
               <i className="bi bi-buildings location-icon"></i>
               <span className="location-text">Hara</span>
+            </div>
+            <div>
+              <AvatarComponent
+                user={{
+                  id: 15,
+                  name: "John Doe",
+                }}
+              />
             </div>
           </div>
         </div>

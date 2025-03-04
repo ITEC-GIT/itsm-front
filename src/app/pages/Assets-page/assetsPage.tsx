@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { SearchComponent } from "../../components/form/search";
-import DataTable, { TableColumn } from "react-data-table-component";
+import DataTable from "react-data-table-component";
 import { useAtom } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
-import {
-  AssetsHistoryType,
-  GetAllAssetsRequestType as FilterType,
-} from "../../types/assetsTypes";
+import { GetAllAssetsRequestType as FilterType } from "../../types/assetsTypes";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { debounce } from "lodash";
 import { FilterSidebar } from "../../components/form/filters";
@@ -14,7 +11,7 @@ import { ColumnVisibility } from "../../types/common";
 import ColumnModal from "../../components/modal/columns";
 import clsx from "clsx";
 import { activeFilters, columns, mockData } from "../../data/assets";
-import { AddAssetModal } from "../../components/modal/addAsset";
+import { useNavigate } from "react-router-dom";
 
 const AssetsPage = () => {
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
@@ -49,7 +46,8 @@ const AssetsPage = () => {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false);
-  const [isAddAssetOpen, setIsAddAssetOpen] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const toggleColumnModal = () => {
     setIsColumnModalOpen((prevState) => !prevState);
@@ -67,7 +65,8 @@ const AssetsPage = () => {
   };
 
   const toggleAddAssetModal = () => {
-    setIsAddAssetOpen((prevState) => !prevState);
+    setIsColumnModalOpen(false);
+    navigate("/assets/new");
   };
 
   const visibleColumns = columns.filter(
@@ -148,11 +147,7 @@ const AssetsPage = () => {
               className="btn add-asset-action-btn "
               onClick={toggleAddAssetModal}
             >
-              <i
-                className={`bi bi-plus-circle me-1 ${
-                  isAddAssetOpen ? "text-white" : "text-dark"
-                }`}
-              ></i>
+              <i className={`bi bi-plus-circle me-1 text-white`}></i>
               Asset
             </button>
             <ColumnModal
@@ -260,9 +255,6 @@ const AssetsPage = () => {
           saveFilters={setFilters}
         />
       </div>
-      {isAddAssetOpen && (
-        <AddAssetModal isOpen={isAddAssetOpen} onClose={toggleAddAssetModal} />
-      )}
     </div>
   );
 };

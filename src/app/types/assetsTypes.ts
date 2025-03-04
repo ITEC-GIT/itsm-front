@@ -47,25 +47,3 @@ export type AssetDetails = {
   tags: string[];
   history: { date: string; action: string; user: string }[];
 };
-
-export const AppButtons = [
-  { id: 1, text: "Windows Service", icon: "bi-gear" },
-  { id: 2, text: "All Processes", icon: "bi-list" },
-  { id: 3, text: "Software", icon: "bi-window" },
-  { id: 4, text: "Managed Software", icon: "bi-code-slash" },
-  { id: 5, text: "Registry Editor", icon: "bi-box" },
-  { id: 6, text: "File Explorer", icon: "bi-folder" },
-];
-
-export const PoliciesButtons = [
-  { id: 1, text: "Intelligent Alerting", icon: "bi-stars" },
-  { id: 2, text: "Alert Management", icon: "bi-exclamation-diamond" },
-  { id: 3, text: "Patch Management", icon: "bi-bandaid" },
-  { id: 4, text: "Scheduled Actions", icon: "bi-code-slash" },
-  { id: 5, text: "Antivirus", icon: "bi-shield-x" },
-  { id: 6, text: "Software Management", icon: "bi-folder" },
-  { id: 7, text: "Remote Desktop", icon: "bi-window" },
-  { id: 8, text: "System Tray", icon: "bi-window-desktop" },
-  { id: 9, text: "Asset Onboarding", icon: "bi-collection" },
-  { id: 10, text: "Maintenance Mode", icon: "bi-cone-striped" },
-];

@@ -130,7 +130,7 @@ const AssetTabsComponent = () => {
               id="details"
               role="tabpanel"
             >
-              <AssetDetailsComponent asset={asset} />
+              <AssetDetailsComponent />
             </div>
             <div
               className={`tab-pane fade ${

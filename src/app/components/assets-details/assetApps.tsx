@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Sidebar } from "./assetSidebar";
-import { AppButtons } from "../../types/assetsTypes";
+import { AppButtons } from "../../data/assets";
 
 const WindowsServiceComponent = () => <div>Windows Service Content</div>;
 const AllProcessesComponent = () => <div>All Processes Content</div>;

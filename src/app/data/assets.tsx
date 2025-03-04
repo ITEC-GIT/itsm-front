@@ -474,3 +474,100 @@ export const mockData = [
     public_ip: "192.168.1.14", // New property
   },
 ];
+
+export const AppButtons = [
+  { id: 1, text: "Windows Service", icon: "bi-gear" },
+  { id: 2, text: "All Processes", icon: "bi-list" },
+  { id: 3, text: "Software", icon: "bi-window" },
+  { id: 4, text: "Managed Software", icon: "bi-code-slash" },
+  { id: 5, text: "Registry Editor", icon: "bi-box" },
+  { id: 6, text: "File Explorer", icon: "bi-folder" },
+];
+
+export const PoliciesButtons = [
+  { id: 1, text: "Antivirus", icon: "bi-shield-x" },
+  { id: 2, text: "Software Management", icon: "bi-folder" },
+  { id: 3, text: "Remote Desktop", icon: "bi-window" },
+];
+
+export const DetailsButtons = [
+  { id: 1, text: "CPU", icon: "bi bi-cpu" },
+  { id: 2, text: "Memory", icon: "bi bi-memory" },
+  { id: 3, text: "Disk volume", icon: "bi bi-hdd-stack" },
+  { id: 4, text: "Open ports", icon: "bi bi-box-seam" },
+  { id: 5, text: "User log", icon: "bi bi-person-lines-fill" },
+  { id: 6, text: "Event log", icon: "bi bi-calendar-event" },
+  { id: 7, text: "Network adapters", icon: "bi bi-ethernet" },
+  { id: 8, text: "Hardware & misc", icon: "bi bi-gear" },
+  { id: 9, text: "Video card", icon: "bi bi-display" },
+  { id: 10, text: "Sound card", icon: "bi bi-speaker" },
+];
+
+export const AssetCategoryFields = {
+  computer: [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 15, 17, 19, 29],
+  mouse: [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 15, 17, 19, 29],
+  printer: [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 15, 17, 19, 29],
+};
+
+export const AssetFields = [
+  { id: 1, key: "name", type: "input", label: "Name" },
+  { id: 2, key: "location", type: "select", label: "Location" },
+  {
+    id: 3,
+    key: "technicianInCharge",
+    type: "select",
+    label: "Technician in charge",
+  },
+  { id: 4, key: "groupInCharge", type: "select", label: "Group in charge" },
+  {
+    id: 5,
+    key: "alternateUsernameNumber",
+    type: "input",
+    label: "Alternate username number",
+  },
+  {
+    id: 6,
+    key: "alternateUsername",
+    type: "input",
+    label: "Alternate username",
+  },
+  { id: 7, key: "serialNumber", type: "input", label: "Serial number" },
+  { id: 8, key: "inventoryNumber", type: "input", label: "Inventory number" },
+  { id: 9, key: "brand", type: "input", label: "Brand" },
+  { id: 10, key: "user", type: "select", label: "User" },
+  { id: 11, key: "group", type: "select", label: "Group" },
+  { id: 12, key: "comments", type: "textarea", label: "Comments" },
+  { id: 13, key: "status", type: "select", label: "Status" },
+  { id: 14, key: "managementType", type: "select", label: "Management type" },
+  { id: 15, key: "uuid", type: "input", label: "UUID" },
+  { id: 16, key: "snmpCredential", type: "select", label: "SNMP credential" },
+  { id: 17, key: "manufacturer", type: "select", label: "Manufacturer" },
+  { id: 18, key: "sysdescr", type: "input", label: "Sysdescr" },
+  { id: 19, key: "network", type: "select", label: "Network" },
+  { id: 20, key: "memory", type: "number", label: "Memory" },
+  {
+    id: 21,
+    key: "initialPageCounter",
+    type: "number",
+    label: "Initial page counter",
+  },
+  {
+    id: 22,
+    key: "currentPageCounter",
+    type: "number",
+    label: "Current counter of pages",
+  },
+  { id: 23, key: "numberOfLines", type: "number", label: "Number of lines" },
+  {
+    id: 24,
+    key: "phonePowerSupplyType",
+    type: "select",
+    label: "Phone power supply type",
+  },
+  { id: 25, key: "pictures", type: "upload", label: "Pictures" },
+  { id: 26, key: "stockTarget", type: "number", label: "Stock target" },
+  { id: 27, key: "alertThreshold", type: "number", label: "Alert threshold" },
+  { id: 28, key: "reference", type: "input", label: "Reference" },
+  { id: 29, key: "computer-model", type: "select", label: "Model" },
+  { id: 30, key: "computer-type", type: "select", label: "Type" },
+];

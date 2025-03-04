@@ -1,118 +1,61 @@
-const AssetDetailsComponent = ({ asset }: { asset: any }) => {
+import React, { useState } from "react";
+import { Sidebar } from "./assetSidebar";
+import { DetailsButtons } from "../../data/assets";
+
+const WindowsServiceComponent = () => <div>Windows Service Content</div>;
+const AllProcessesComponent = () => <div>All Processes Content</div>;
+const SoftwareComponent = () => <div>Software Content</div>;
+const ManagedSoftwareComponent = () => <div>Managed Software Content</div>;
+const RegistryEditorComponent = () => <div>Registry Editor Content</div>;
+const FileExplorerComponent = () => <div>File Explorer Content</div>;
+
+const AssetDetailsComponent = () => {
+  const [selectedButton, setSelectedButton] = useState<number>(1);
+  let renderComponent: JSX.Element;
+
+  switch (selectedButton) {
+    case 1:
+      renderComponent = <WindowsServiceComponent />;
+      break;
+    case 2:
+      renderComponent = <AllProcessesComponent />;
+      break;
+    case 3:
+      renderComponent = <SoftwareComponent />;
+      break;
+    case 4:
+      renderComponent = <ManagedSoftwareComponent />;
+      break;
+    case 5:
+      renderComponent = <RegistryEditorComponent />;
+      break;
+    case 6:
+      renderComponent = <FileExplorerComponent />;
+      break;
+    default:
+      renderComponent = <WindowsServiceComponent />;
+  }
+
   return (
-    <div className="row justify-content-center vertical-scroll p-2">
-      <div className="col-md-12">
-        <div className="row rounded shadow-sm me-2 p-4">
-          <div className="col-md-4">
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Serial Number:</strong>
-              <span>{asset.serialNumber || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Location:</strong>
-              <span>{asset.location || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Purchase Date:</strong>
-              <span>{asset.purchaseDate || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Serial Number:</strong>
-              <span>{asset.serialNumber || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Location:</strong>
-              <span>{asset.location || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Purchase Date:</strong>
-              <span>{asset.purchaseDate || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Serial Number:</strong>
-              <span>{asset.serialNumber || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Location:</strong>
-              <span>{asset.location || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Purchase Date:</strong>
-              <span>{asset.purchaseDate || "N/A"}</span>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Serial Number:</strong>
-              <span>{asset.serialNumber || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Location:</strong>
-              <span>{asset.location || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Purchase Date:</strong>
-              <span>{asset.purchaseDate || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Value:</strong>
-              <span>${asset.value || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Description:</strong>
-              <span className="text-wrap">
-                {asset.description || "No description available."}
-              </span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Serial Number:</strong>
-              <span>{asset.serialNumber || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Location:</strong>
-              <span>{asset.location || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Purchase Date:</strong>
-              <span>{asset.purchaseDate || "N/A"}</span>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Serial Number:</strong>
-              <span>{asset.serialNumber || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Location:</strong>
-              <span>{asset.location || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Purchase Date:</strong>
-              <span>{asset.purchaseDate || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Value:</strong>
-              <span>${asset.value || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Description:</strong>
-              <span className="text-wrap">
-                {asset.description || "No description available."}
-              </span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Serial Number:</strong>
-              <span>{asset.serialNumber || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Location:</strong>
-              <span>{asset.location || "N/A"}</span>
-            </div>
-            <div className="detail-item mb-3">
-              <strong className="d-block text-muted">Purchase Date:</strong>
-              <span>{asset.purchaseDate || "N/A"}</span>
-            </div>
-          </div>
+    <div className="row app-row p-2">
+      <div className="col-2 bg-light border-end p-3">
+        <Sidebar
+          buttons={DetailsButtons}
+          selectedId={selectedButton}
+          onButtonClick={setSelectedButton}
+        />
+      </div>
+
+      <div className="col-10 p-4">
+        <span
+          style={{ fontSize: "1.5rem", fontWeight: "500" }}
+          className="mb-3"
+        >
+          {DetailsButtons.find((button) => button.id === selectedButton)
+            ?.text || "CPU"}
+        </span>
+        <div className="d-flex flex-column align-items-center justify-content-center h-75">
+          {renderComponent}
         </div>
       </div>
     </div>
