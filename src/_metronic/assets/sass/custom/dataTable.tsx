@@ -1,57 +1,26 @@
 export const customStyles = {
-  headRow: {
-    style: {
-      background: "#1b84ff", //"var(--blue-gradient)",
-      color: "white",
-      fontWeight: "bold",
-      fontSize: "16px",
-      paddingLeft: "5px",
-    },
-  },
-
-  headCells: {
-    style: {
-      paddingLeft: "5px",
-      paddingRight: "5px",
-    },
-  },
-
   rows: {
     style: {
-      minHeight: "50px",
-      paddingLeft: "5px",
+      fontSize: "14px",
+      minHeight: "48px",
+    },
+  },
+  headCells: {
+    style: {
+      color: "rgba(0, 0, 0, 0.6)",
+      fontSize: "14px",
+      fontWeight: "500",
+      padding: "5px 5px",
+      borderBottom: "1px solid rgb(222, 222, 222)",
+      paddingLeft: "24px",
+      borderTop: "1px solid rgb(222, 222, 222)",
     },
   },
 
   cells: {
     style: {
-      paddingLeft: "5px",
-      paddingRight: "5px",
-    },
-  },
-
-  pagination: {
-    style: {
-      background: "var(--blue-gradient)",
-      color: "white",
-      borderTop: "1px solid #e0e0e0",
-    },
-    pageButtonsStyle: {
-      color: "white",
-      fill: "white",
-      background: "transparent",
-      border: "1px solid white",
-      borderRadius: "50%",
-      height: "40px",
-      width: "40px",
-      margin: "0 5px",
-      "&:hover:not(:disabled)": {
-        cursor: "pointer",
-        background: "rgba(255, 255, 255, 0.2)",
-      },
-      "&:focus": {
-        outline: "none",
-      },
+      paddingLeft: "8px",
+      paddingRight: "8px",
     },
   },
 };

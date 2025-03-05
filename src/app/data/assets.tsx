@@ -2,30 +2,77 @@ import { useState } from "react";
 import { AssetsHistoryType } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
 import { Link } from "react-router-dom";
+import { getBackgroundColor } from "../../utils/custom";
 
+const columnXXXLargeWidth = "210px";
+const columnXXLargeWidth = "180px";
 const columnXLargeWidth = "150px";
 const columnLargeWidth = "120px";
 const columnMediumWidth = "100px";
-const columnSmallWidth = "50px";
+
+const categories = [
+  "Computer",
+  "Monitor",
+  "Network device",
+  "Devices",
+  "Printer",
+  "Cartridge",
+  "Consumable",
+  "Mouse",
+  "Phone",
+  "Rack",
+  "Enclosure",
+  "Passive device",
+  "Simcard",
+];
+const colors = [
+  "#f7c1c1",
+  "#f7c1c1",
+  "#fadcbf",
+  "#fadcbf",
+  "#fae4ae",
+  "#fae4ae",
+  "#e0e0e0",
+  "#e0e0e0",
+  "#fde9b3",
+  "#fde9b3",
+  "#d9d3cb",
+  "#d9d3cb",
+  "#f7c1c1",
+];
 
 export const columns: TableColumn<AssetsHistoryType>[] = [
   {
     name: "#",
     sortable: false,
-    width: columnSmallWidth,
-    cell: (row: AssetsHistoryType) => (
-      <span
-        data-bs-toggle="tooltip"
-        data-bs-placement="top"
-        title={row.id.toString()}
-      >
-        {row.id}
-      </span>
-    ),
+    width: columnMediumWidth,
+    cell: (row: AssetsHistoryType) => {
+      const backgroundColor = getBackgroundColor(
+        row.category,
+        categories,
+        colors
+      );
+      return (
+        <span
+          style={{
+            backgroundColor: backgroundColor,
+            padding: "5px",
+            borderRadius: "3px",
+          }}
+        >
+          {row.id}
+        </span>
+      );
+    },
+
     id: "id",
   },
   {
-    name: "Device",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Device
+      </span>
+    ),
     selector: (row: AssetsHistoryType) => row.name,
     sortable: true,
     width: columnLargeWidth,
@@ -41,26 +88,22 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     id: "name",
   },
   {
-    name: "Status",
-    width: columnMediumWidth,
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Status
+      </span>
+    ),
+    width: columnLargeWidth,
     selector: (row: AssetsHistoryType) => row.status,
     sortable: true,
     id: "status",
     cell: (row: AssetsHistoryType) => {
-      const isOnline = row.status.toLowerCase() === "online";
-      // const lightGreen = "#98FB98";
-      const lightBlue = "#bbdefb";
-      // const lightRed = "#f08080";
-      const lightGray = "#e0e0e0";
-      const backgroundColor = isOnline ? lightBlue : lightGray;
-      const textColor = "#333";
-      const fontWeight = "bold";
       return (
         <span
           style={{
-            backgroundColor: backgroundColor,
-            color: textColor,
-            fontWeight: fontWeight,
+            backgroundColor: "#e3edff",
+            color: "#333",
+            fontWeight: "500",
             padding: "5px",
             borderRadius: "3px",
           }}
@@ -71,16 +114,24 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     },
   },
   {
-    name: "Public IP",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Public IP
+      </span>
+    ),
     width: columnLargeWidth,
     selector: (row: AssetsHistoryType) => row.public_ip,
     sortable: true,
     id: "public_ip",
   },
   {
-    name: "Entity",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Entity
+      </span>
+    ),
     selector: (row: AssetsHistoryType) => row.entity,
-    width: columnMediumWidth,
+    width: columnLargeWidth,
     cell: (row: AssetsHistoryType) => (
       <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.entity}>
         {row.entity}
@@ -90,8 +141,12 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     id: "entity",
   },
   {
-    name: "serial number",
-    width: columnXLargeWidth,
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Serial Number
+      </span>
+    ),
+    width: columnXXLargeWidth,
     selector: (row: AssetsHistoryType) => row.serial_number,
     sortable: true,
     cell: (row: AssetsHistoryType) => (
@@ -107,7 +162,11 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     id: "serial_number",
   },
   {
-    name: "model",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Model
+      </span>
+    ),
     width: columnLargeWidth,
     selector: (row: AssetsHistoryType) => row.model,
     sortable: true,
@@ -119,7 +178,11 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     id: "model",
   },
   {
-    name: "location",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Location
+      </span>
+    ),
     width: columnLargeWidth,
     selector: (row: AssetsHistoryType) => row.location,
     sortable: true,
@@ -135,14 +198,22 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     id: "location",
   },
   {
-    name: "component processor",
-    width: columnXLargeWidth,
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Component Processor
+      </span>
+    ),
+    width: columnXXXLargeWidth,
     selector: (row: AssetsHistoryType) => row.component_processor,
     sortable: true,
     id: "component_processor",
   },
   {
-    name: "last update",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Last Updated
+      </span>
+    ),
     width: columnXLargeWidth,
     selector: (row: AssetsHistoryType) => {
       const date = new Date(row.last_update);
@@ -157,42 +228,66 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     id: "last_update",
   },
   {
-    name: "type",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Type
+      </span>
+    ),
     width: columnLargeWidth,
     selector: (row: AssetsHistoryType) => row.type,
     sortable: true,
     id: "type",
   },
   {
-    name: "project",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Project
+      </span>
+    ),
     width: columnXLargeWidth,
     selector: (row: AssetsHistoryType) => row.project,
     sortable: true,
     id: "project",
   },
   {
-    name: "Address",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Address
+      </span>
+    ),
     width: columnXLargeWidth,
     selector: (row: AssetsHistoryType) => row.address,
     sortable: true,
     id: "address",
   },
   {
-    name: "Inventory NB",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Inventory NB
+      </span>
+    ),
     width: columnXLargeWidth,
     selector: (row: AssetsHistoryType) => row.inventory_number,
     sortable: true,
     id: "inventory_number",
   },
   {
-    name: "alternate username_number",
-    width: columnXLargeWidth,
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Username NB
+      </span>
+    ),
+    width: columnXXLargeWidth,
     selector: (row: AssetsHistoryType) => row.alternate_username_number,
     sortable: true,
     id: "alternate_username_number",
   },
   {
-    name: "Action",
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Action
+      </span>
+    ),
     width: columnMediumWidth,
     cell: (row: AssetsHistoryType) => {
       const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -311,26 +406,27 @@ export const activeFilters = [
 ];
 
 export const mockData = [
-  // {
-  //   id: 6,
-  //   name: "Device 6",
-  //   entity: "Entity F",
-  //   serial_number: "SN567890",
-  //   model: "Model C",
-  //   location: "Miami",
-  //   last_update: "2023-09-28",
-  //   component_processor: "AMD Ryzen 9",
-  //   type: "Laptop",
-  //   project: "Project Zeta",
-  //   address: "303 Cedar St",
-  //   inventory_number: "INV006",
-  //   alternate_username_number: "AU006",
-  //   action: "Active",
-  //   status: "Online", // New property
-  //   public_ip: "192.168.1.6", // New property
-  // },
   {
-    id: 7,
+    id: 6,
+    name: "Device 6",
+    entity: "Entity F",
+    serial_number: "SN567890",
+    model: "Model C",
+    location: "Miami",
+    last_update: "2023-09-28",
+    component_processor: "AMD Ryzen 9",
+    type: "Laptop",
+    project: "Project Zeta",
+    address: "303 Cedar St",
+    inventory_number: "INV006",
+    alternate_username_number: "AU006",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.6",
+    category: "Computer",
+  },
+  {
+    id: 7777,
     name: "Device 7",
     entity: "Entity G",
     serial_number: "SN234567",
@@ -344,8 +440,9 @@ export const mockData = [
     inventory_number: "INV007",
     alternate_username_number: "AU007",
     action: "Active",
-    status: "Online", // New property
-    public_ip: "192.168.1.7", // New property
+    status: "Online",
+    public_ip: "192.168.1.7",
+    category: "Monitor",
   },
   {
     id: 8,
@@ -362,8 +459,9 @@ export const mockData = [
     inventory_number: "INV008",
     alternate_username_number: "AU008",
     action: "Inactive",
-    status: "Offline", // New property
-    public_ip: "192.168.1.8", // New property
+    status: "Offline",
+    public_ip: "192.168.1.8",
+    category: "Printer",
   },
   {
     id: 9,
@@ -380,8 +478,9 @@ export const mockData = [
     inventory_number: "INV009",
     alternate_username_number: "AU009",
     action: "Active",
-    status: "Online", // New property
-    public_ip: "192.168.1.9", // New property
+    status: "Online",
+    public_ip: "192.168.1.9",
+    category: "Mouse",
   },
   {
     id: 10,
@@ -398,8 +497,9 @@ export const mockData = [
     inventory_number: "INV010",
     alternate_username_number: "AU010",
     action: "Active",
-    status: "Online", // New property
-    public_ip: "192.168.1.10", // New property
+    status: "Online",
+    public_ip: "192.168.1.10",
+    category: "Network device",
   },
   {
     id: 11,
@@ -416,8 +516,9 @@ export const mockData = [
     inventory_number: "INV011",
     alternate_username_number: "AU011",
     action: "Inactive",
-    status: "Offline", // New property
-    public_ip: "192.168.1.11", // New property
+    status: "Offline",
+    public_ip: "192.168.1.11",
+    category: "Rack",
   },
   {
     id: 12,
@@ -434,8 +535,9 @@ export const mockData = [
     inventory_number: "INV012",
     alternate_username_number: "AU012",
     action: "Active",
-    status: "Online", // New property
-    public_ip: "192.168.1.12", // New property
+    status: "Online",
+    public_ip: "192.168.1.12",
+    category: "Devices",
   },
   {
     id: 13,
@@ -452,8 +554,9 @@ export const mockData = [
     inventory_number: "INV012",
     alternate_username_number: "AU012",
     action: "Active",
-    status: "Online", // New property
-    public_ip: "192.168.1.13", // New property
+    status: "Online",
+    public_ip: "192.168.1.13",
+    category: "Enclouser",
   },
   {
     id: 14,
@@ -470,8 +573,9 @@ export const mockData = [
     inventory_number: "INV012",
     alternate_username_number: "AU012",
     action: "Active",
-    status: "Online", // New property
-    public_ip: "192.168.1.14", // New property
+    status: "Online",
+    public_ip: "192.168.1.14",
+    category: "Computer",
   },
 ];
 

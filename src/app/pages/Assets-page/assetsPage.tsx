@@ -115,6 +115,7 @@ const AssetsPage = () => {
     setCurrentHistoryPage((prev) => Math.min(prev + 1, totalPages));
     handlePageChange(currentHistorysPage + 1);
   };
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
   const handleLastPage = () => setCurrentHistoryPage(totalPages);
 
@@ -182,20 +183,13 @@ const AssetsPage = () => {
           </div>
         </div>
         <DataTable
-          customStyles={customStyles}
           columns={visibleColumns}
           data={mockData}
           responsive
           highlightOnHover
-          progressPending={isLoadingMore}
-          progressComponent={
-            <div className="d-flex justify-content-center my-3">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          }
+          customStyles={customStyles}
         />
+
         <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
           <button
             className="btn btn-sm btn-light me-2"

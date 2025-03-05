@@ -15,6 +15,7 @@ export type AssetsHistoryType = {
   action: string;
   status: string;
   public_ip: string;
+  category: string;
 };
 
 export type GetAllAssetsRequestType = {

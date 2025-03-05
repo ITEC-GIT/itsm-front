@@ -62,3 +62,15 @@ export const formatDate = (date: Date | null) => {
 export const deepEqual = (obj1: any, obj2: any): boolean => {
   return JSON.stringify(obj1) === JSON.stringify(obj2);
 };
+
+export const getBackgroundColor = (
+  category: string,
+  categories: string[],
+  colors: string[]
+): string => {
+  const index = categories.indexOf(category);
+  if (index !== -1) {
+    return colors[index];
+  }
+  return "#e8e9e9";
+};
