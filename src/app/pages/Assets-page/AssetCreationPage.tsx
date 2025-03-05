@@ -159,6 +159,9 @@ const AssetCreationPage = () => {
     <div className="container-fluid p-5">
       <BackButton navigateFrom={`assets/new`} navigateTo={"assets"} />
       <div className="card p-5 mt-3">
+        <div className="d-flex justify-content-between mb-3">
+          <h2 className="text-center mb-4">➕ Asset Creation</h2>
+        </div>
         <div className="row mt-3 row-add-asset-form">
           <div className="col-md-3 col-lg-4 mb-5">
             <label className="form-label d-flex align-items-center">
