@@ -128,8 +128,8 @@ const AssetsPage = () => {
           width: isSidebarOpen ? "78%" : "100%",
         }}
       >
-        <div className="d-flex justify-content-between mb-3">
-          <h2 className="text-center mb-4">🛠️ Assets</h2>
+        <div className="d-flex mb-3">
+          <h2 className="mb-4">🛠️ Assets</h2>
         </div>
         <div className="d-flex justify-content-between p-3 rounded shadow-sm bg-white">
           <div className="asset-btn-group">
