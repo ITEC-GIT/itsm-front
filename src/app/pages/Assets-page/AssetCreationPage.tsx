@@ -8,6 +8,7 @@ import {
 import { AssetFields, Steps } from "../../data/assets";
 import { StepNavigation } from "../../components/form/wizard";
 import { ModalComponent } from "../../components/modal/ModalComponent";
+import { BackButton } from "../../components/form/backButton";
 
 const AssetCreationPage = () => {
   const [selectedCategory, setSelectedCategory] =
@@ -156,7 +157,8 @@ const AssetCreationPage = () => {
 
   return (
     <div className="container-fluid p-5">
-      <div className="card p-5">
+      <BackButton navigateFrom={`assets/new`} navigateTo={"assets"} />
+      <div className="card p-5 mt-3">
         <div className="row mt-3 row-add-asset-form">
           <div className="col-md-3 col-lg-4 mb-5">
             <label className="form-label d-flex align-items-center">
