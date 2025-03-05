@@ -44,6 +44,10 @@ const AssetCreationPage = () => {
     setShowModal(true);
   };
 
+  const handleCancelCategoryChange = () => {
+    setShowModal(false);
+  };
+
   const handleConfirmCategoryChange = () => {
     setSelectedCategory(null);
     setIsCategorySelected(false);
@@ -51,8 +55,6 @@ const AssetCreationPage = () => {
     setFieldValues({});
     setCurrentStep(1);
   };
-
-  const handleCancelCategoryChange = () => {};
 
   const togglePasswordVisibility = (id: number) => {
     setPasswordVisible({
@@ -178,8 +180,6 @@ const AssetCreationPage = () => {
               <>
                 <button
                   className="btn btn-secondary mt-2"
-                  data-bs-toggle="modal"
-                  data-bs-target="#alert-modal" //
                   onClick={handleChangeCategoryClick}
                 >
                   Change Category
