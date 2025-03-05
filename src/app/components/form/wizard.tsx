@@ -12,7 +12,7 @@ import { SelectDeviceType } from "../../types/devicesTypes";
 import { SelectLocationType } from "../../types/locationsTypes";
 import { formatName } from "../../../utils/custom";
 
-interface Step {
+export interface Step {
   id: number;
   title: string;
   iconClass: string;
@@ -29,7 +29,7 @@ interface StepNavigationStepProps {
   isComplete: boolean;
 }
 
-const Wizard = ({
+export const Wizard = ({
   steps,
   add,
   idgt,
@@ -351,13 +351,13 @@ const Wizard = ({
                         location.id.toString() === selectedOption.value
                     );
                     setSelectedLocation(selectedLocationDetails || null);
-                    setSelectedDevices([]); // Reset selected devices when location changes
+                    setSelectedDevices([]);
                   } else {
                     setSelectedLocation(null);
-                    setSelectedDevices([]); // Show all devices again
+                    setSelectedDevices([]);
                   }
                 }}
-                isClearable // Allow user to clear selection
+                isClearable
               />
             </div>
             <div className="mb-4" style={{ height: "90px" }}>
@@ -614,7 +614,7 @@ const Wizard = ({
   );
 };
 
-const StepNavigation: React.FC<StepNavigationProps> = ({
+export const StepNavigation: React.FC<StepNavigationProps> = ({
   steps,
   currentStep,
 }) => {
@@ -623,13 +623,11 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
       <div className="d-flex justify-content-center align-items-center">
         {steps.map((step, index) => (
           <React.Fragment key={step.id}>
-            {/* Step Circle */}
             <StepNavigationStep
               step={step}
               isActive={step.id === currentStep}
               isComplete={step.id < currentStep}
             />
-            {/* Line between circles */}
             {index < steps.length - 1 && (
               <div
                 className={`step-line ${
@@ -652,7 +650,7 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
   );
 };
 
-const StepNavigationStep: React.FC<StepNavigationStepProps> = ({
+export const StepNavigationStep: React.FC<StepNavigationStepProps> = ({
   step,
   isActive,
   isComplete,
@@ -677,7 +675,7 @@ const StepNavigationStep: React.FC<StepNavigationStepProps> = ({
   );
 };
 
-const Step: React.FC<{ title: string; children: React.ReactNode }> = ({
+export const Step: React.FC<{ title: string; children: React.ReactNode }> = ({
   title,
   children,
 }) => {
@@ -688,5 +686,3 @@ const Step: React.FC<{ title: string; children: React.ReactNode }> = ({
     </div>
   );
 };
-
-export { Wizard };

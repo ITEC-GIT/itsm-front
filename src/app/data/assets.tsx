@@ -510,7 +510,7 @@ export const AssetFields = [
     type: "input",
     label: "Name",
     category: ["General"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 2,
@@ -518,7 +518,7 @@ export const AssetFields = [
     type: "select",
     label: "Location",
     category: ["General"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 3,
@@ -558,7 +558,7 @@ export const AssetFields = [
     type: "input",
     label: "Serial number",
     category: ["General"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 8,
@@ -566,7 +566,7 @@ export const AssetFields = [
     type: "input",
     label: "Inventory number",
     category: ["General"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 9,
@@ -574,7 +574,7 @@ export const AssetFields = [
     type: "input",
     label: "Brand",
     category: ["Devices"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 10,
@@ -590,7 +590,7 @@ export const AssetFields = [
     type: "select",
     label: "Group",
     category: ["General"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 12,
@@ -598,7 +598,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Monitor"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 13,
@@ -606,7 +606,7 @@ export const AssetFields = [
     type: "select",
     label: "Status",
     category: ["General"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 14,
@@ -614,7 +614,7 @@ export const AssetFields = [
     type: "select",
     label: "Management type",
     category: ["Computer", "Monitor", "Devices", "Printer", "Phone"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 15,
@@ -622,7 +622,7 @@ export const AssetFields = [
     type: "input",
     label: "UUID",
     category: ["General"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 16,
@@ -630,7 +630,7 @@ export const AssetFields = [
     type: "select",
     label: "SNMP credential",
     category: ["Network device", "Printer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 17,
@@ -638,7 +638,7 @@ export const AssetFields = [
     type: "select",
     label: "Manufacturer",
     category: ["General"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 18,
@@ -646,7 +646,7 @@ export const AssetFields = [
     type: "input",
     label: "Sysdescr",
     category: ["Network device", "Printer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 19,
@@ -654,7 +654,7 @@ export const AssetFields = [
     type: "select",
     label: "Network",
     category: ["Computer", "Printer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 20,
@@ -662,7 +662,7 @@ export const AssetFields = [
     type: "number",
     label: "Memory",
     category: ["Printer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 21,
@@ -670,7 +670,7 @@ export const AssetFields = [
     type: "number",
     label: "Initial page counter",
     category: ["Pinter"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 22,
@@ -678,7 +678,7 @@ export const AssetFields = [
     type: "number",
     label: "Current counter of pages",
     category: ["Computer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 23,
@@ -686,7 +686,7 @@ export const AssetFields = [
     type: "number",
     label: "Number of lines",
     category: ["Phone"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 24,
@@ -694,7 +694,7 @@ export const AssetFields = [
     type: "select",
     label: "Phone power supply type",
     category: ["Phone"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 25,
@@ -702,7 +702,7 @@ export const AssetFields = [
     type: "upload",
     label: "Pictures",
     category: ["Monitor", "Software", "Cartridge", "Consumable"],
-    group: "Upload",
+    group: "Uploads",
   },
   {
     id: 26,
@@ -710,7 +710,7 @@ export const AssetFields = [
     type: "number",
     label: "Stock target",
     category: ["Computer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 27,
@@ -718,7 +718,7 @@ export const AssetFields = [
     type: "number",
     label: "Alert threshold",
     category: ["Computer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 28,
@@ -726,7 +726,7 @@ export const AssetFields = [
     type: "input",
     label: "Reference",
     category: ["Cartridge", "Consumable"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 29,
@@ -734,7 +734,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Computer"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 30,
@@ -742,7 +742,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Computer"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 31,
@@ -750,7 +750,7 @@ export const AssetFields = [
     type: "number",
     label: "Size",
     category: ["Monitor"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 32,
@@ -772,7 +772,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Monitor"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 34,
@@ -780,7 +780,7 @@ export const AssetFields = [
     type: "select",
     label: "Publisher",
     category: ["Software"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 35,
@@ -788,7 +788,7 @@ export const AssetFields = [
     type: "select",
     label: "Software category",
     category: ["Software"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 36,
@@ -804,7 +804,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Network device"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 38,
@@ -812,7 +812,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Network device"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 39,
@@ -820,7 +820,7 @@ export const AssetFields = [
     type: "select",
     label: "Network",
     category: ["Network device"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 40,
@@ -828,7 +828,7 @@ export const AssetFields = [
     type: "select",
     label: "Memory (Mio)",
     category: ["Network device"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 41,
@@ -836,7 +836,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Devices"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 41,
@@ -844,7 +844,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Devices"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 42,
@@ -852,7 +852,7 @@ export const AssetFields = [
     type: "number",
     label: "Current counter of pages",
     category: ["Printer"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 43,
@@ -875,7 +875,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Printer"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 45,
@@ -883,7 +883,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Printer"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 46,
@@ -891,7 +891,7 @@ export const AssetFields = [
     type: "number",
     label: "Alert threshold",
     category: ["Cartridge", "Consumable"],
-    group: "MoreInfo",
+    group: "More Information",
   },
   {
     id: 47,
@@ -899,7 +899,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Cartridge"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 48,
@@ -907,7 +907,7 @@ export const AssetFields = [
     type: "number",
     label: "Stock target",
     category: ["Cartridge", "Consumable"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 49,
@@ -915,7 +915,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Consumable"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 50,
@@ -935,7 +935,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Phone"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 52,
@@ -943,7 +943,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Phone"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 53,
@@ -951,7 +951,7 @@ export const AssetFields = [
     type: "select",
     label: "Brand",
     category: ["Phone"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 54,
@@ -959,7 +959,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Rack"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 55,
@@ -967,7 +967,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Rack"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 56,
@@ -975,7 +975,7 @@ export const AssetFields = [
     type: "select",
     label: "Server Room",
     category: ["Rack"],
-    group: "Room",
+    group: "Room Details",
   },
   {
     id: 58,
@@ -983,7 +983,7 @@ export const AssetFields = [
     type: "select",
     label: "Door orientation in room",
     category: ["Rack"],
-    group: "Room",
+    group: "Room Details",
     options: [
       { label: "North", value: "North" },
       { label: "South", value: "South" },
@@ -998,7 +998,7 @@ export const AssetFields = [
     type: "input",
     label: "Position in room",
     category: ["Rack"],
-    group: "Room",
+    group: "Room Details",
   },
   {
     id: 59,
@@ -1006,7 +1006,7 @@ export const AssetFields = [
     type: "input",
     label: "Position in room",
     category: ["Rack"],
-    group: "Room",
+    group: "Room Details",
   },
   {
     id: 61,
@@ -1078,7 +1078,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Enclosure"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 70,
@@ -1086,7 +1086,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["PDU"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 71,
@@ -1094,7 +1094,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["PDU"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 72,
@@ -1102,7 +1102,7 @@ export const AssetFields = [
     type: "select",
     label: "Model",
     category: ["Passive device"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 73,
@@ -1110,7 +1110,7 @@ export const AssetFields = [
     type: "select",
     label: "Type",
     category: ["Passive device"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 74,
@@ -1150,7 +1150,7 @@ export const AssetFields = [
     type: "select",
     label: "Line",
     category: ["Simcard"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 79,
@@ -1158,7 +1158,7 @@ export const AssetFields = [
     type: "input",
     label: "Type",
     category: ["Simcard"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 80,
@@ -1166,7 +1166,7 @@ export const AssetFields = [
     type: "select",
     label: "Component",
     category: ["Simcard"],
-    group: "BasicInfo",
+    group: "Basic Information",
   },
   {
     id: 81,
@@ -1174,7 +1174,53 @@ export const AssetFields = [
     type: "input",
     label: "Mobile Subscriber Identification Number",
     category: ["Simcard"],
-    group: "BasicInfo",
+    group: "Basic Information",
     note: "MSIN is the least 8 or 10 digits og IMSI ",
   },
+];
+
+export const Steps = [
+  {
+    id: 1,
+    title: "Ownership",
+    iconClass: "bi bi-person-badge",
+  },
+
+  {
+    id: 2,
+    title: "Basic Information",
+    iconClass: "bi bi-info-circle",
+  },
+
+  {
+    id: 3,
+    title: "More Information",
+    iconClass: "bi bi-file-earmark-text",
+  },
+  {
+    id: 4,
+    title: "Connectivity",
+    iconClass: "bi bi-wifi",
+  },
+  {
+    id: 5,
+    title: "Uploads",
+    iconClass: "bi bi-upload",
+  },
+  {
+    id: 6,
+    title: "Room Details",
+    iconClass: "bi bi-house",
+  },
+  {
+    id: 7,
+    title: "Asset Metrics",
+    iconClass: "bi bi-graph-up",
+  },
+  {
+    id: 8,
+    title: "Credentials",
+    iconClass: "bi bi-graph-up",
+  },
+  { id: 9, title: "Submission", iconClass: "fa fa-check-circle" },
 ];

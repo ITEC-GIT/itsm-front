@@ -133,18 +133,18 @@ const AssetsPage = () => {
         </div>
         <div className="d-flex justify-content-between p-3 rounded shadow-sm bg-white">
           <div className="asset-btn-group">
-            <button className="btn asset-action-btn">
+            <button className="btn asset-action-btn mb-3">
               <i className="bi bi-cloud-download me-1 text-dark"></i> Download
             </button>
             <button
-              className={`btn asset-action-btn `}
+              className={`btn asset-action-btn mb-3`}
               onClick={toggleColumnModal}
             >
               <i className={`bi bi-layout-split me-1 text-dark`}></i>
               Columns
             </button>
             <button
-              className="btn add-asset-action-btn "
+              className="btn add-asset-action-btn mb-3"
               onClick={toggleAddAssetModal}
             >
               <i className={`bi bi-plus-circle me-1 text-white`}></i>
