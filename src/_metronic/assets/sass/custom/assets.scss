@@ -212,3 +212,109 @@
   background: none !important;
   cursor: pointer !important;
 }
+
+//check-box
+
+.checkbox-group {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.checkbox-item {
+  margin-bottom: 5px !important;
+}
+
+.custom-checkbox-label {
+  display: flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  position: relative !important;
+}
+
+.custom-checkbox-input {
+  position: absolute !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+.custom-checkbox-visual {
+  position: relative !important;
+  height: 20px !important;
+  width: 20px !important;
+  background-color: #eee !important;
+  border-radius: 50% !important;
+  border: 1px solid #ccc !important;
+  margin-right: 8px !important;
+}
+
+.custom-checkbox-input:checked + .custom-checkbox-visual {
+  background-color: #2196f3 !important;
+}
+
+//note
+.note-icon-container {
+  position: relative !important;
+  display: inline-block !important;
+  margin-left: 5px !important;
+}
+
+.note-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background-color: #ccc !important;
+  color: #fff !important;
+  font-size: 0.8rem !important;
+  cursor: pointer !important;
+}
+
+.note-tooltip {
+  visibility: hidden !important;
+  width: 200px !important;
+  background-color: #333 !important;
+  color: #fff !important;
+  text-align: center !important;
+  border-radius: 6px !important;
+  padding: 5px !important;
+  position: absolute !important;
+  z-index: 1 !important;
+  bottom: 125% !important;
+  left: 50% !important;
+  margin-left: -100px !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s !important;
+}
+
+.note-icon-container:hover .note-tooltip {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.note-tooltip::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 100% !important;
+  left: 50% !important;
+  margin-left: -5px !important;
+  border-width: 5px !important;
+  border-style: solid !important;
+  border-color: #333 transparent transparent transparent !important;
+}
+
+//password
+.password-input-container {
+  position: relative !important;
+}
+
+.password-toggle-icon {
+  position: absolute !important;
+  top: 50% !important;
+  right: 10px !important;
+  transform: translateY(-50%) !important;
+  cursor: pointer !important;
+}

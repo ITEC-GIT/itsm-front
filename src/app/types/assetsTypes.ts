@@ -42,8 +42,27 @@ export type AssetDetails = {
   address: string;
   inventory_number: string;
   alternate_username_number: string;
-  status: "Active" | "Inactive" | string; // Adjust status types
+  status: "Active" | "Inactive" | string;
   public_ip: string;
   tags: string[];
   history: { date: string; action: string; user: string }[];
 };
+
+export interface CategoryOption {
+  value: string;
+  label: string;
+}
+export interface AssetsField {
+  id: number;
+  key: string;
+  type: string; //"input" | "select" |  "number" | "upload";
+  label: string;
+  category: string[];
+  group: string;
+  options?: CategoryOption[];
+  note?: string;
+}
+
+export interface FieldValues {
+  [key: number]: any;
+}

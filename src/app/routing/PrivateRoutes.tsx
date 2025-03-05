@@ -14,7 +14,7 @@ import { RemoteConsolePage } from "../pages/HyperCommands-Page/remoteConsolePage
 import { PerformanceMonitoringPage } from "../pages/HyperCommands-Page/performanceMonitoringPage";
 import { AssetsPageWrapper } from "../pages/Assets-page/assetsPage";
 import { AssetDetailsPage } from "../pages/Assets-page/assetDetailsPage";
-// import { AssetCreationPage } from "../pages/Assets-page/AssetCreationPage";
+import { AssetCreationPage } from "../pages/Assets-page/AssetCreationPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -49,7 +49,7 @@ const PrivateRoutes = () => {
         />
         <Route path="assets" element={<AssetsPageWrapper />} />
         <Route path="assets/:id" element={<AssetDetailsPage />} />
-        {/* <Route path="assets/new" element={<AssetCreationPage />} /> */}
+        <Route path="assets/new" element={<AssetCreationPage />} />
         <Route path="tickets" element={<TicketPageWrapper />} />
         <Route path="/ticket/:id" element={<TicketsDetailPage />} />
         {/* 
