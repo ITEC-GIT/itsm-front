@@ -64,9 +64,11 @@ export const getColumns = (
               backgroundColor: backgroundColor,
               padding: "5px",
               borderRadius: "3px",
+              width: "62px",
+              textAlign: "center",
             }}
           >
-            {row.id}
+            <span>{row.id}</span>
           </span>
         );
       },

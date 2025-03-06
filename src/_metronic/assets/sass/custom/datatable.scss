@@ -9,3 +9,17 @@
 .rdt_TableHeadRow {
   border-bottom-style: none !important;
 }
+
+.sticky-pagination {
+  position: sticky !important;
+  bottom: 0 !important;
+  background-color: white !important;
+  padding: 10px 0 !important;
+  z-index: 100 !important;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1) !important; //ask rida
+}
+
+.pagination-controls {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}

@@ -228,6 +228,7 @@ const AssetsPage = () => {
         <div className="d-flex mb-3">
           <h2 className="mb-4">🛠️ Assets</h2>
         </div>
+
         <div className="d-flex justify-content-between p-3 rounded shadow-sm bg-white">
           <div className="custom-btn-group">
             <button className="btn custom-btn mb-3">
@@ -279,6 +280,7 @@ const AssetsPage = () => {
             </button>
           </div>
         </div>
+
         <div ref={tableContainerRef}>
           <DataTable
             columns={visibleColumns.map((col) => ({
@@ -296,50 +298,52 @@ const AssetsPage = () => {
           />
         </div>
 
-        <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
-          <button
-            className="btn btn-sm btn-light me-2"
-            onClick={handleFirstPage}
-            disabled={currentHistorysPage === 1}
-          >
-            First
-          </button>
-          <button
-            className="btn btn-sm btn-light me-2"
-            onClick={handlePreviousPage}
-            disabled={currentHistorysPage === 1}
-          >
-            Previous
-          </button>
-          {Array.from(
-            { length: endPage - startPage + 1 },
-            (_, index) => startPage + index
-          ).map((page) => (
+        <div className="sticky-pagination">
+          <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
             <button
-              key={page}
-              className={clsx("btn btn-sm me-2", {
-                "btn-primary": currentHistorysPage === page,
-                "btn-light": currentHistorysPage !== page,
-              })}
-              onClick={() => handlePageChange(page)}
+              className="btn btn-sm btn-light me-2"
+              onClick={handleFirstPage}
+              disabled={currentHistorysPage === 1}
             >
-              {page}
+              First
             </button>
-          ))}
-          <button
-            className="btn btn-sm btn-light me-2"
-            onClick={handleNextPage}
-            disabled={currentHistorysPage === totalPages}
-          >
-            Next
-          </button>
-          <button
-            className="btn btn-sm btn-light"
-            onClick={handleLastPage}
-            disabled={currentHistorysPage === totalPages}
-          >
-            Last
-          </button>
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handlePreviousPage}
+              disabled={currentHistorysPage === 1}
+            >
+              Previous
+            </button>
+            {Array.from(
+              { length: endPage - startPage + 1 },
+              (_, index) => startPage + index
+            ).map((page) => (
+              <button
+                key={page}
+                className={clsx("btn btn-sm me-2", {
+                  "btn-primary": currentHistorysPage === page,
+                  "btn-light": currentHistorysPage !== page,
+                })}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handleNextPage}
+              disabled={currentHistorysPage === totalPages}
+            >
+              Next
+            </button>
+            <button
+              className="btn btn-sm btn-light"
+              onClick={handleLastPage}
+              disabled={currentHistorysPage === totalPages}
+            >
+              Last
+            </button>
+          </div>
         </div>
       </div>
 
