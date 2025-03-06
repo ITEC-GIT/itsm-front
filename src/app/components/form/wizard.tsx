@@ -330,7 +330,6 @@ export const Wizard = ({
               </label>
               <Select
                 id="locationSelect"
-                className="custom-select"
                 classNamePrefix="react-select"
                 options={locationOptions.map((location) => ({
                   value: location.id.toString(),
@@ -366,7 +365,6 @@ export const Wizard = ({
               </label>
               <Select
                 id="deviceSelect"
-                className="custom-select"
                 classNamePrefix="react-select"
                 isMulti
                 options={filteredDevices.map((device) => ({
@@ -409,7 +407,7 @@ export const Wizard = ({
             </label>
             <input
               type="text"
-              className="form-control custom-input"
+              className="form-control form-control-solid"
               id="destinationInput"
               name="destination"
               value={destination}
@@ -434,7 +432,7 @@ export const Wizard = ({
                   setSoftwareNameError(false);
                   setSoftwareName(e.target.value);
                 }}
-                className="form-control custom-input"
+                className="form-control form-control-solid"
                 placeholder="Enter the software name"
               />
             </div>
@@ -491,7 +489,7 @@ export const Wizard = ({
                     setSoftwareUrlError(false);
                     setSoftwareUrl(e.target.value);
                   }}
-                  className="form-control custom-input"
+                  className="form-control form-control-solid"
                   placeholder="Enter the software URL"
                 />
                 {softwareUrlError && (
@@ -513,7 +511,7 @@ export const Wizard = ({
                       setFile(e.target.files[0]);
                     }
                   }}
-                  className="form-control custom-input"
+                  className="form-control form-control-solid"
                 />
                 {file && <p>Selected file: {file.name}</p>}
                 {softwareUrlError && (
@@ -536,7 +534,7 @@ export const Wizard = ({
             <input
               type="text"
               id="argumentsInput"
-              className="form-control custom-input"
+              className="form-control form-control-solid"
               placeholder="e.g., /a /b arg1=value1 arg2=value2"
               value={variables}
               onChange={(e) => setVariables(e.target.value)}

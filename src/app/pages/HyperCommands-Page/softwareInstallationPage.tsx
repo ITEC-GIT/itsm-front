@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { debounce, range } from "lodash";
+import { debounce } from "lodash";
 import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
-import { Content } from "../../../_metronic/layout/components/content/Content";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
 import { Wizard } from "../../components/form/wizard";
-import { steps } from "../../data/softwareInstallation";
+import { activeFilters, steps } from "../../data/softwareInstallation";
 import {
   CancelSoftwareInstallation,
-  FetchAllSoftwareInstallations,
   GetAllSoftwareInstallations,
 } from "../../config/ApiCalls";
 import {
@@ -28,6 +26,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters";
 import { useAtom } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
+import { FilterButton } from "../../components/form/filterButton";
 
 const SoftwareInstallationPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -380,15 +379,7 @@ const SoftwareInstallationPage = () => {
 
   const handleAlertClose = () => setShowUpdateAlert(false);
 
-  const activeFilters = [
-    "softwareStatusFilter",
-    "userFilter",
-    "computersFilter",
-    "dateFilter",
-  ];
-
   return (
-    //<Content>
     <div
       className="container-fluid d-flex"
       style={{ paddingLeft: "30px", paddingRight: "30px" }}
@@ -411,7 +402,7 @@ const SoftwareInstallationPage = () => {
             <CardsStat />
             <button
               type="button"
-              className="btn btn-primary hyper-connect-btn mb-3"
+              className="btn custom-btn mb-3"
               onClick={() => setShowForm((prev) => !prev)}
             >
               {showForm ? (
@@ -441,12 +432,7 @@ const SoftwareInstallationPage = () => {
                     handleSearchChange(e.target.value)
                   }
                 />
-                <button
-                  className="btn btn-primary hyper-connect-btn mb-4"
-                  onClick={toggleSidebar}
-                >
-                  Add Filters
-                </button>
+                <FilterButton toggleSidebar={toggleSidebar} />
               </div>
             </div>
             <div className="row mt-5 mb-5 d-flex justify-content-between">

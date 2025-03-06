@@ -5,3 +5,10 @@ export const steps = [
   { id: 4, title: "Variables", iconClass: "fa fa-sliders-h" },
   { id: 5, title: "Submission", iconClass: "fa fa-check-circle" },
 ];
+
+export const activeFilters = [
+  "softwareStatusFilter",
+  "userFilter",
+  "computersFilter",
+  "dateFilter",
+];
