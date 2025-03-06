@@ -262,7 +262,7 @@ const AssetsPage = () => {
             />
           </div>
           <div className="d-flex align-items-center gap-2">
-            <div className="position-relative">
+            <div>
               <SearchComponent
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -278,8 +278,8 @@ const AssetsPage = () => {
                 </button>
               )}
             </div>
-            <button className="filter-button" onClick={toggleSidebar}>
-              <i className="bi bi-funnel me-1 filter-button-icon"></i>
+            <button className="btn custom-btn" onClick={toggleSidebar}>
+              <i className="bi bi-funnel me-1 custom-btn-icon"></i>
               Filters
             </button>
           </div>
