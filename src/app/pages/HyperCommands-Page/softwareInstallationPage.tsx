@@ -286,7 +286,6 @@ const SoftwareInstallationPage = () => {
   }, 100);
 
   const filteredHistory = useMemo(() => {
-    console.log("came to here");
     if (!paginatedHistory || !searchQuery.trim()) return paginatedHistory || [];
     const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
     return softwareHistory.data.filter((entry: SoftwareHistoryType) => {
@@ -311,15 +310,10 @@ const SoftwareInstallationPage = () => {
     const totalFetchedPages = Math.ceil(
       filteredHistory.length / SoftwarePerPage
     );
-    console.log("totalFetchedPages", totalFetchedPages);
-    console.log("page", page);
-    console.log("hasMore", hasMore);
-
     if (page > totalFetchedPages && hasMore) {
       setIsLoadingMore(true);
       fetchData(filters).then((newData) => {
         setPaginatedHistory((prevHistory) => [...prevHistory, ...newData.data]);
-        console.log();
         setHasMore(newData.totalCount > paginatedHistory.length);
         setIsLoadingMore(false);
       });
@@ -366,7 +360,6 @@ const SoftwareInstallationPage = () => {
           `Installation history updated. ${diff} software items are being initialized.`
         );
       }
-      console.log("paginatedHistory =>>", paginatedHistory);
       setHasMore(softwareHistory.count < totalcount);
     }
 
@@ -377,7 +370,6 @@ const SoftwareInstallationPage = () => {
 
   useEffect(() => {
     if (filters) {
-      console.log("filters ==>>", filters);
       setCurrentHistoryPage(1);
       fetchData(filters).then((newData) => {
         setPaginatedHistory(newData.data);

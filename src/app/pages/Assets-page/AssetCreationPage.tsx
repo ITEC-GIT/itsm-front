@@ -134,7 +134,6 @@ const AssetCreationPage = () => {
 
     const allFields = [...commonFields, ...filteredFields];
     const groupedFields = groupFieldsByGroup(allFields);
-    console.log("grouped ==>>", groupedFields);
     setGroupedFields(groupedFields);
   }, [selectedCategory]);
 
@@ -148,7 +147,6 @@ const AssetCreationPage = () => {
       filteredSteps = [...filteredSteps, submissionStep];
     }
 
-    console.log("filteredSteps ==>>", filteredSteps);
     setCreationSteps(filteredSteps);
   }, [groupedFields]);
 

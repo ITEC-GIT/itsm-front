@@ -112,11 +112,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const filtersStoreName = "softwareFilters";
 
   const handleApplyFilters = () => {
-    console.log("hii");
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
       return;
     const filtersSelection: Record<string, any> = {};
-    console.log("selectedFilters ==>>", selectedFilters);
     if (Object.keys(selectedFilters).length !== 0) {
       Object.entries(selectedFilters).forEach(([key, value]) => {
         const filterConfig = filtersOptions.find((option) => option.id === key);
@@ -152,7 +150,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       ...initialFilters,
       ...filtersSelection,
     };
-    console.log("wholeFilter ==>>", wholeFilter);
     saveFilters(wholeFilter);
     // handleClearFilters();
 
@@ -305,7 +302,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                       : "Unnamed",
                 }))
               : [];
-            console.log("newFilterData ==>>", newFilterData);
           } catch (error) {
             console.error(`Failed to fetch data for ${filter.id}:`, error);
           }
