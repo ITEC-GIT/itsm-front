@@ -169,7 +169,7 @@ const AssetsPage = () => {
               console.log("pixelWidth", pixelWidth);
 
               if (!isNaN(pixelWidth)) {
-                const columnPercentageWidth = Math.ceil(
+                const columnPercentageWidth = Math.round(
                   (pixelWidth / containerWidth) * 100
                 );
                 console.log("columnPercentageWidth", columnPercentageWidth);
@@ -207,6 +207,7 @@ const AssetsPage = () => {
       observer.disconnect();
     };
   }, [visibleColumns]);
+
   const handleMouseEnter = () => {
     setShowActionColumn(true);
   };
@@ -216,37 +217,40 @@ const AssetsPage = () => {
   };
 
   return (
-    <div className="container-fluid d-flex mt-4">
+    <div className="container-fluid d-flex mt-4" style={{ height: "100%" }}>
       <div
         className="content-container"
         style={{
+          position: "relative",
+          height: "100%",
+
           transition: "margin 0.3s ease-in-out",
           marginRight: isSidebarOpen ? "15%" : "0",
           width: isSidebarOpen ? "78%" : "100%",
         }}
       >
-        <div className="d-flex mb-3">
+        {/* <div className="d-flex mb-3">
           <h2 className="mb-4">🛠️ Assets</h2>
-        </div>
+        </div> */}
 
-        <div className="d-flex justify-content-between p-3 rounded shadow-sm bg-white">
+        <div
+          className="d-flex justify-content-between p-3 rounded shadow-sm bg-white"
+          style={{ height: "10%" }}
+        >
           <div className="custom-btn-group">
             <button className="btn custom-btn mb-3">
               <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
               <span className="custom-btn-text">Download</span>
             </button>
-            <button
-              className={`btn custom-btn mb-3`}
-              onClick={toggleColumnModal}
-            >
-              <i className={`bi bi-layout-split text-dark custom-btn-icon`}></i>
+            <button className="btn custom-btn mb-3" onClick={toggleColumnModal}>
+              <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
               <span className="custom-btn-text">Columns</span>
             </button>
             <button
               className="btn custom-btn mb-3"
               onClick={toggleAddAssetModal}
             >
-              <i className={`bi bi-plus-square text-dark custom-btn-icon`}></i>
+              <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
               <span className="custom-btn-text">Asset</span>
             </button>
             <ColumnModal
@@ -281,7 +285,7 @@ const AssetsPage = () => {
           </div>
         </div>
 
-        <div ref={tableContainerRef}>
+        <div ref={tableContainerRef} style={{ height: "80%" }}>
           <DataTable
             columns={visibleColumns.map((col) => ({
               ...col,
@@ -298,7 +302,7 @@ const AssetsPage = () => {
           />
         </div>
 
-        <div className="sticky-pagination">
+        <div className="sticky-pagination" style={{ height: "10%" }}>
           <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
             <button
               className="btn btn-sm btn-light me-2"
