@@ -104,7 +104,6 @@ const AssetsPage = () => {
       setIsLoadingMore(true);
       // fetchData(filters).then((newData) => {
       //   setPaginatedHistory((prevHistory) => [...prevHistory, ...newData.data]);
-      //   console.log();
       //   setHasMore(newData.totalCount > paginatedHistory.length);
       //   setIsLoadingMore(false);
       // });
@@ -161,19 +160,16 @@ const AssetsPage = () => {
 
         if (tableContainerRef.current) {
           const containerWidth = tableContainerRef.current.clientWidth;
-          console.log("containerWidth ==>>>", containerWidth);
 
           visibleColumns.forEach((col: TableColumn<AssetsHistoryType>) => {
             if (col.width) {
               const pixelWidth = parseInt(col.width, 10);
-              console.log("pixelWidth", pixelWidth);
 
               if (!isNaN(pixelWidth)) {
                 const columnPercentageWidth = Math.round(
                   (pixelWidth / containerWidth) * 100
                 );
-                console.log("columnPercentageWidth", columnPercentageWidth);
-                console.log("baseWidthPercentage", baseWidthPercentage);
+
                 if (columnPercentageWidth < baseWidthPercentage) {
                   newWidths[col.id as string] = `${baseWidthPercentage}%`;
                 } else {
@@ -185,10 +181,6 @@ const AssetsPage = () => {
             } else {
               newWidths[col.id as string] = `${baseWidthPercentage}%`;
             }
-            console.log(
-              "newWidths[col.id as string]",
-              newWidths[col.id as string]
-            );
           });
         }
       }
@@ -234,21 +226,26 @@ const AssetsPage = () => {
         </div> */}
 
         <div
-          className="d-flex justify-content-between p-3 rounded shadow-sm bg-white"
-          style={{ height: "10%" }}
+          className="row justify-content-around  p-3 rounded shadow-sm bg-white"
+          style={{ height: "15%" }}
         >
-          <div className="custom-btn-group">
-            <button className="btn custom-btn mb-3">
+          <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
+            <button className="btn custom-btn" title="Download">
               <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
               <span className="custom-btn-text">Download</span>
             </button>
-            <button className="btn custom-btn mb-3" onClick={toggleColumnModal}>
+            <button
+              className="btn custom-btn"
+              onClick={toggleColumnModal}
+              title="Columns"
+            >
               <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
               <span className="custom-btn-text">Columns</span>
             </button>
             <button
-              className="btn custom-btn mb-3"
+              className="btn custom-btn"
               onClick={toggleAddAssetModal}
+              title="Add Asset"
             >
               <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
               <span className="custom-btn-text">Asset</span>
@@ -261,31 +258,27 @@ const AssetsPage = () => {
               onVisibilityChange={handleVisibilityChange}
             />
           </div>
-          <div className="d-flex align-items-center gap-2">
-            <div>
-              <SearchComponent
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleSearchChange(e.target.value)
-                }
-              />
-              {searchQuery && (
-                <button
-                  className="btn position-absolute top-50 end-0 translate-middle-y"
-                  onClick={() => handleSearchChange("")}
-                >
-                  <i className="bi bi-x-circle"></i>
-                </button>
-              )}
-            </div>
-            <button className="btn custom-btn" onClick={toggleSidebar}>
-              <i className="bi bi-funnel me-1 custom-btn-icon"></i>
+
+          <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
+            <SearchComponent
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleSearchChange(e.target.value)
+              }
+            />
+
+            <button
+              className="btn custom-btn"
+              onClick={toggleSidebar}
+              title="Filters"
+            >
+              <i className="bi bi-funnel custom-btn-icon"></i>
               Filters
             </button>
           </div>
         </div>
 
-        <div ref={tableContainerRef} style={{ height: "80%" }}>
+        <div ref={tableContainerRef} style={{ height: "75%" }}>
           <DataTable
             columns={visibleColumns.map((col) => ({
               ...col,

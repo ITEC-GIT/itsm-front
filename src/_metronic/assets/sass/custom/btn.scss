@@ -2,8 +2,8 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  min-height: 3.6rem !important;
-  min-width: 3.6rem !important;
+  height: 40px !important;
+  max-width: 9rem !important;
   margin: 0 !important;
   padding: 0.8rem 1.6rem !important;
   background: rgba(255, 255, 255, 1) !important;
@@ -43,4 +43,8 @@
 .custom-btn:hover {
   background-color: rgba(11, 1, 20, 0.1) !important;
 }
-// ;rgba(242, 242, 242, 1)
+
+///colors:
+.blue-bg-btn {
+  background: #e3edff !important;
+}
