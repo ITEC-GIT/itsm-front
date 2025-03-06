@@ -1,9 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchComponent } from "../../components/form/search";
-import DataTable, { SortOrder } from "react-data-table-component";
+import DataTable, { SortOrder, TableColumn } from "react-data-table-component";
 import { useAtom } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
-import { GetAllAssetsRequestType as FilterType } from "../../types/assetsTypes";
+import {
+  AssetsHistoryType,
+  GetAllAssetsRequestType as FilterType,
+} from "../../types/assetsTypes";
 import {
   customStyles,
   sortIcon,
@@ -78,9 +81,9 @@ const AssetsPage = () => {
     navigate("/assets/new");
   };
 
-  const visibleColumns = columns.filter(
-    (col) => columnVisibility[col.id as string]
-  );
+  // const visibleColumns = columns.filter(
+  //   (col) => columnVisibility[col.id as string]
+  // );
 
   const handleSearchChange = debounce((query: string) => {
     //  setCurrentHistoryPage(1);
@@ -126,7 +129,84 @@ const AssetsPage = () => {
   const handleVisibilityChange = (newVisibility: ColumnVisibility) => {
     setColumnVisibility(newVisibility);
   };
+  const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
+  const [visibleColumns, setVisibleColumns] = useState<
+    TableColumn<AssetsHistoryType>[]
+  >([]);
 
+  const memoizedColumns = useMemo(() => {
+    return getColumns(ShowActionColumn);
+  }, [ShowActionColumn]);
+
+  useEffect(() => {
+    const filteredColumns = memoizedColumns.filter(
+      (col) => columnVisibility[col.id as string]
+    );
+    setVisibleColumns(filteredColumns);
+  }, [columnVisibility, memoizedColumns]);
+
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const calculateWidths = () => {
+      const visibleCount = visibleColumns.length;
+      const newWidths: Record<string, string> = {};
+
+      if (visibleCount === 2) {
+        visibleColumns.forEach((col: TableColumn<AssetsHistoryType>) => {
+          newWidths[col.id as string] = "50%";
+        });
+      } else if (visibleCount > 2) {
+        const baseWidthPercentage = Math.ceil(100 / visibleCount);
+
+        if (tableContainerRef.current) {
+          const containerWidth = tableContainerRef.current.clientWidth;
+          console.log("containerWidth ==>>>", containerWidth);
+
+          visibleColumns.forEach((col: TableColumn<AssetsHistoryType>) => {
+            if (col.width) {
+              const pixelWidth = parseInt(col.width, 10);
+              console.log("pixelWidth", pixelWidth);
+
+              if (!isNaN(pixelWidth)) {
+                const columnPercentageWidth = Math.ceil(
+                  (pixelWidth / containerWidth) * 100
+                );
+                console.log("columnPercentageWidth", columnPercentageWidth);
+                console.log("baseWidthPercentage", baseWidthPercentage);
+                if (columnPercentageWidth < baseWidthPercentage) {
+                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                } else {
+                  newWidths[col.id as string] = col.width;
+                }
+              } else {
+                newWidths[col.id as string] = `${baseWidthPercentage}%`;
+              }
+            } else {
+              newWidths[col.id as string] = `${baseWidthPercentage}%`;
+            }
+            console.log(
+              "newWidths[col.id as string]",
+              newWidths[col.id as string]
+            );
+          });
+        }
+      }
+
+      setColumnWidths(newWidths);
+    };
+
+    calculateWidths();
+
+    const observer = new ResizeObserver(calculateWidths);
+    if (tableContainerRef.current) {
+      observer.observe(tableContainerRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [visibleColumns]);
   const handleMouseEnter = () => {
     setShowActionColumn(true);
   };
@@ -199,19 +279,22 @@ const AssetsPage = () => {
             </button>
           </div>
         </div>
-        <DataTable
-          columns={getColumns(ShowActionColumn).filter(
-            (col) => columnVisibility[col.id as string]
-          )}
-          data={mockData}
-          persistTableHead={true}
-          responsive
-          highlightOnHover
-          customStyles={customStyles}
-          sortIcon={sortIcon}
-          onRowMouseEnter={handleMouseEnter}
-          onRowMouseLeave={handleMouseLeave}
-        />
+        <div ref={tableContainerRef}>
+          <DataTable
+            columns={visibleColumns.map((col) => ({
+              ...col,
+              width: columnWidths[col.id as string],
+            }))}
+            data={mockData}
+            persistTableHead={true}
+            responsive
+            highlightOnHover
+            customStyles={customStyles}
+            sortIcon={sortIcon}
+            onRowMouseEnter={handleMouseEnter}
+            onRowMouseLeave={handleMouseLeave}
+          />
+        </div>
 
         <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
           <button
