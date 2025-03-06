@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { TableColumn } from "react-data-table-component";
 
 interface ColumnModalProps<T> {
@@ -17,6 +17,7 @@ const ColumnModal = <T,>({
   onVisibilityChange,
 }: ColumnModalProps<T>) => {
   const [columnVisibility, setColumnVisibility] = useState(initialVisibility);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setColumnVisibility(initialVisibility);
@@ -44,10 +45,32 @@ const ColumnModal = <T,>({
     setColumnVisibility(newVisibility);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="dropdown-menu p-4 show column-modal-dropdown">
+    <div
+      ref={modalRef}
+      className="dropdown-menu p-4 show column-modal-dropdown"
+    >
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="text-dark fw-bold mb-0">Columns Visibility</h5>
         <button
