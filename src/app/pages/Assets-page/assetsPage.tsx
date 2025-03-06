@@ -1,21 +1,30 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SearchComponent } from "../../components/form/search";
-import DataTable from "react-data-table-component";
+import DataTable, { SortOrder } from "react-data-table-component";
 import { useAtom } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import { GetAllAssetsRequestType as FilterType } from "../../types/assetsTypes";
-import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
+import {
+  customStyles,
+  sortIcon,
+} from "../../../_metronic/assets/sass/custom/dataTable";
 import { debounce } from "lodash";
 import { FilterSidebar } from "../../components/form/filters";
 import { ColumnVisibility } from "../../types/common";
 import ColumnModal from "../../components/modal/columns";
 import clsx from "clsx";
-import { activeFilters, columns, mockData } from "../../data/assets";
+import {
+  activeFilters,
+  columns,
+  getColumns,
+  mockData,
+} from "../../data/assets";
 import { useNavigate } from "react-router-dom";
+import { showActionColumnAtom } from "../../atoms/table-atom/tableAtom";
 
 const AssetsPage = () => {
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
-
+  const [ShowActionColumn, setShowActionColumn] = useAtom(showActionColumnAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filters, setFilters] = useState<FilterType>({
     range: "0-50",
@@ -34,11 +43,11 @@ const AssetsPage = () => {
     type: true,
     project: false,
     address: false,
-    inventory_number: true,
+    inventory_number: false,
     alternate_username_number: false,
-    action: true,
     status: true,
     public_ip: true,
+    action: true,
   });
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -72,10 +81,6 @@ const AssetsPage = () => {
   const visibleColumns = columns.filter(
     (col) => columnVisibility[col.id as string]
   );
-
-  const handleVisibilityChange = (newVisibility: ColumnVisibility) => {
-    setColumnVisibility(newVisibility);
-  };
 
   const handleSearchChange = debounce((query: string) => {
     //  setCurrentHistoryPage(1);
@@ -115,9 +120,20 @@ const AssetsPage = () => {
     setCurrentHistoryPage((prev) => Math.min(prev + 1, totalPages));
     handlePageChange(currentHistorysPage + 1);
   };
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
   const handleLastPage = () => setCurrentHistoryPage(totalPages);
+
+  const handleVisibilityChange = (newVisibility: ColumnVisibility) => {
+    setColumnVisibility(newVisibility);
+  };
+
+  const handleMouseEnter = () => {
+    setShowActionColumn(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowActionColumn(false);
+  };
 
   return (
     <div className="container-fluid d-flex mt-4">
@@ -133,23 +149,24 @@ const AssetsPage = () => {
           <h2 className="mb-4">🛠️ Assets</h2>
         </div>
         <div className="d-flex justify-content-between p-3 rounded shadow-sm bg-white">
-          <div className="asset-btn-group">
-            <button className="btn asset-action-btn mb-3">
-              <i className="bi bi-cloud-download me-1 text-dark"></i> Download
+          <div className="custom-btn-group">
+            <button className="btn custom-btn mb-3">
+              <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
+              <span className="custom-btn-text">Download</span>
             </button>
             <button
-              className={`btn asset-action-btn mb-3`}
+              className={`btn custom-btn mb-3`}
               onClick={toggleColumnModal}
             >
-              <i className={`bi bi-layout-split me-1 text-dark`}></i>
-              Columns
+              <i className={`bi bi-layout-split text-dark custom-btn-icon`}></i>
+              <span className="custom-btn-text">Columns</span>
             </button>
             <button
-              className="btn add-asset-action-btn mb-3"
+              className="btn custom-btn mb-3"
               onClick={toggleAddAssetModal}
             >
-              <i className={`bi bi-plus-circle me-1 text-white`}></i>
-              Asset
+              <i className={`bi bi-plus-square text-dark custom-btn-icon`}></i>
+              <span className="custom-btn-text">Asset</span>
             </button>
             <ColumnModal
               isOpen={isColumnModalOpen}
@@ -183,11 +200,17 @@ const AssetsPage = () => {
           </div>
         </div>
         <DataTable
-          columns={visibleColumns}
+          columns={getColumns(ShowActionColumn).filter(
+            (col) => columnVisibility[col.id as string]
+          )}
           data={mockData}
+          persistTableHead={true}
           responsive
           highlightOnHover
           customStyles={customStyles}
+          sortIcon={sortIcon}
+          onRowMouseEnter={handleMouseEnter}
+          onRowMouseLeave={handleMouseLeave}
         />
 
         <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">

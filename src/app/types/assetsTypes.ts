@@ -65,5 +65,5 @@ export interface AssetsField {
 }
 
 export interface FieldValues {
-  [key: number]: any;
+  [key: string]: boolean;
 }

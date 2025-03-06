@@ -1,8 +1,20 @@
+export const sortIcon = (
+  <i
+    className="fa-solid fa-arrow-up-wide-short"
+    style={{
+      fontSize: "1rem",
+      marginLeft: "5px",
+      color: "rgba(0, 0, 0, 0.6)",
+    }}
+  ></i>
+);
+
 export const customStyles = {
   rows: {
     style: {
       fontSize: "14px",
       minHeight: "48px",
+      borderBottom: "none",
     },
   },
   headCells: {
@@ -21,6 +33,7 @@ export const customStyles = {
     style: {
       paddingLeft: "8px",
       paddingRight: "8px",
+      borderBottom: "1px solid transparent",
     },
   },
 };

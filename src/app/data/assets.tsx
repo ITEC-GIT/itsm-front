@@ -3,10 +3,12 @@ import { AssetsHistoryType } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
 import { Link } from "react-router-dom";
 import { getBackgroundColor } from "../../utils/custom";
+import { useAtom } from "jotai";
+import { showActionColumnAtom } from "../atoms/table-atom/tableAtom";
 
 const columnXXXLargeWidth = "210px";
 const columnXXLargeWidth = "180px";
-const columnXLargeWidth = "150px";
+const columnXLargeWidth = "140px";
 const columnLargeWidth = "120px";
 const columnMediumWidth = "100px";
 
@@ -41,10 +43,394 @@ const colors = [
   "#f7c1c1",
 ];
 
+export const getColumns = (
+  ShowActionColumn: boolean
+): TableColumn<AssetsHistoryType>[] =>
+  [
+    {
+      name: "#",
+      sortable: true,
+
+      width: columnMediumWidth,
+      cell: (row: AssetsHistoryType) => {
+        const backgroundColor = getBackgroundColor(
+          row.category,
+          categories,
+          colors
+        );
+        return (
+          <span
+            style={{
+              backgroundColor: backgroundColor,
+              padding: "5px",
+              borderRadius: "3px",
+            }}
+          >
+            {row.id}
+          </span>
+        );
+      },
+
+      id: "id",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Device
+        </span>
+      ),
+      selector: (row: AssetsHistoryType) => row.name,
+      sortable: true,
+      width: columnLargeWidth,
+      cell: (row: AssetsHistoryType) => (
+        <Link
+          to={`/assets/${row.id}`}
+          title={row.name}
+          style={{ color: "blue", textDecoration: "none" }}
+        >
+          {row.name}
+        </Link>
+      ),
+      id: "name",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Status
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetsHistoryType) => row.status,
+      sortable: true,
+      id: "status",
+      cell: (row: AssetsHistoryType) => {
+        return (
+          <span
+            style={{
+              backgroundColor: "#e3edff",
+              color: "#333",
+              fontWeight: "500",
+              padding: "5px",
+              borderRadius: "3px",
+            }}
+          >
+            {row.status}
+          </span>
+        );
+      },
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Public IP
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetsHistoryType) => row.public_ip,
+      sortable: true,
+      id: "public_ip",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Entity
+        </span>
+      ),
+      selector: (row: AssetsHistoryType) => row.entity,
+      width: columnLargeWidth,
+      cell: (row: AssetsHistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.entity}
+        >
+          {row.entity}
+        </span>
+      ),
+      sortable: true,
+      id: "entity",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Serial Number
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.serial_number,
+      sortable: true,
+      cell: (row: AssetsHistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.serial_number}
+          className="url-cell"
+        >
+          {row.serial_number}
+        </span>
+      ),
+      id: "serial_number",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Model
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetsHistoryType) => row.model,
+      sortable: true,
+      cell: (row: AssetsHistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.model}
+        >
+          {row.model}
+        </span>
+      ),
+      id: "model",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Location
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetsHistoryType) => row.location,
+      sortable: true,
+      cell: (row: AssetsHistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.location}
+        >
+          {row.location}
+        </span>
+      ),
+      id: "location",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Component Processor
+        </span>
+      ),
+      width: columnXXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.component_processor,
+      sortable: true,
+      id: "component_processor",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Last Updated
+        </span>
+      ),
+      width: columnXLargeWidth,
+      selector: (row: AssetsHistoryType) => {
+        const date = new Date(row.last_update);
+        const options: Intl.DateTimeFormatOptions = {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        };
+        return date.toLocaleDateString("en-US", options);
+      },
+      sortable: true,
+      id: "last_update",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Type
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetsHistoryType) => row.type,
+      sortable: true,
+      id: "type",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Project
+        </span>
+      ),
+      width: columnXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.project,
+      sortable: true,
+      id: "project",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Address
+        </span>
+      ),
+      width: columnXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.address,
+      sortable: true,
+      id: "address",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Inventory NB
+        </span>
+      ),
+      width: columnXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.inventory_number,
+      sortable: true,
+      id: "inventory_number",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Username NB
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.alternate_username_number,
+      sortable: true,
+      id: "alternate_username_number",
+    },
+    ShowActionColumn
+      ? {
+          name: (
+            <span>
+              <span style={{ color: "#f0f0f0" }}>|</span> Action
+            </span>
+          ),
+          width: columnMediumWidth,
+          cell: (row: AssetsHistoryType) => {
+            const [showDeleteModal, setShowDeleteModal] = useState(false);
+            const [showActionColumn] = useAtom(showActionColumnAtom);
+
+            const handleDeleteClick = () => {
+              setShowDeleteModal(true);
+            };
+
+            const confirmDelete = () => {
+              console.log("Deleting row:", row);
+              setShowDeleteModal(false);
+            };
+
+            const cancelDelete = () => {
+              setShowDeleteModal(false);
+            };
+
+            return (
+              <div
+                className={`d-flex align-items-start ${
+                  showActionColumn ? "show" : "hide"
+                }`}
+              >
+                <button
+                  className="table-btn-action"
+                  onClick={() => {
+                    console.log("Edit clicked for row:", row);
+                  }}
+                >
+                  <i
+                    className="bi bi-pencil-square fs-2"
+                    style={{ color: "blue" }}
+                  ></i>
+                </button>
+                <button
+                  className="table-btn-action"
+                  onClick={handleDeleteClick}
+                >
+                  <i className="bi bi-trash fs-2 text-danger"></i>
+                </button>
+
+                {showDeleteModal && (
+                  <div
+                    className={`modal fade ${
+                      showDeleteModal ? "show d-block" : ""
+                    }`}
+                    tabIndex={-1}
+                    role="dialog"
+                    aria-hidden={!showDeleteModal}
+                    style={{
+                      background: showDeleteModal
+                        ? "rgba(0,0,0,0.5)"
+                        : "transparent",
+                      width: "100%",
+                    }}
+                  >
+                    <div className="modal-dialog modal-dialog-centered">
+                      <div className="modal-content p-5">
+                        <div className="d-flex justify-content-start align-items-center mb-5">
+                          <div
+                            style={{
+                              backgroundColor: "#FF9800",
+                              borderRadius: "50%",
+                              padding: "10px",
+                              marginRight: "15px",
+                            }}
+                          >
+                            <i
+                              className="bi bi-exclamation"
+                              style={{ color: "white", fontSize: "3rem" }}
+                            ></i>
+                          </div>
+                          <div className="d-flex flex-column">
+                            <h3>Delete assets</h3>
+                            <p>
+                              Are you sure you want to delete the selected
+                              assets?
+                            </p>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-end mt-5">
+                          <button
+                            onClick={cancelDelete}
+                            style={{
+                              backgroundColor: "transparent",
+                              border: "none",
+                              padding: "8px 15px",
+                              cursor: "pointer",
+                              marginRight: "10px",
+                              fontSize: "1rem",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={confirmDelete}
+                            style={{
+                              backgroundColor: "#dc3545",
+                              color: "white",
+                              border: "none",
+                              padding: "8px 15px",
+                              cursor: "pointer",
+                              borderRadius: "5px",
+                              fontSize: "1rem",
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          },
+          sortable: false,
+          id: "action",
+        }
+      : null,
+  ].filter(Boolean) as TableColumn<AssetsHistoryType>[];
+
 export const columns: TableColumn<AssetsHistoryType>[] = [
   {
     name: "#",
-    sortable: false,
+    sortable: true,
+
     width: columnMediumWidth,
     cell: (row: AssetsHistoryType) => {
       const backgroundColor = getBackgroundColor(
@@ -291,6 +677,7 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     width: columnMediumWidth,
     cell: (row: AssetsHistoryType) => {
       const [showDeleteModal, setShowDeleteModal] = useState(false);
+      const [showActionColumn] = useAtom(showActionColumnAtom);
 
       const handleDeleteClick = () => {
         setShowDeleteModal(true);
@@ -306,7 +693,11 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
       };
 
       return (
-        <div className="d-flex align-items-start">
+        <div
+          className={`d-flex align-items-start ${
+            showActionColumn ? "show" : "hide"
+          }`}
+        >
           <button
             className="table-btn-action"
             onClick={() => {
@@ -406,25 +797,25 @@ export const activeFilters = [
 ];
 
 export const mockData = [
-  {
-    id: 6,
-    name: "Device 6",
-    entity: "Entity F",
-    serial_number: "SN567890",
-    model: "Model C",
-    location: "Miami",
-    last_update: "2023-09-28",
-    component_processor: "AMD Ryzen 9",
-    type: "Laptop",
-    project: "Project Zeta",
-    address: "303 Cedar St",
-    inventory_number: "INV006",
-    alternate_username_number: "AU006",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.6",
-    category: "Computer",
-  },
+  // {
+  //   id: 6,
+  //   name: "Device 6",
+  //   entity: "Entity F",
+  //   serial_number: "SN567890",
+  //   model: "Model C",
+  //   location: "Miami",
+  //   last_update: "2023-09-28",
+  //   component_processor: "AMD Ryzen 9",
+  //   type: "Laptop",
+  //   project: "Project Zeta",
+  //   address: "303 Cedar St",
+  //   inventory_number: "INV006",
+  //   alternate_username_number: "AU006",
+  //   action: "Active",
+  //   status: "Online",
+  //   public_ip: "192.168.1.6",
+  //   category: "Computer",
+  // },
   {
     id: 7777,
     name: "Device 7",
