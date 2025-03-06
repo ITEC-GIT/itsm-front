@@ -229,7 +229,9 @@ const AssetCreationPage = () => {
                                       type="text"
                                       className="form-control form-control-solid"
                                       placeholder={field.label}
-                                      value={fieldValues[field.id] || ""}
+                                      value={String(
+                                        fieldValues[field.id] || ""
+                                      )}
                                       onChange={(e) =>
                                         handleFieldChange(
                                           field.id,
@@ -243,7 +245,9 @@ const AssetCreationPage = () => {
                                       type="number"
                                       className="form-control form-control-solid"
                                       placeholder={field.label}
-                                      value={fieldValues[field.id] || ""}
+                                      value={String(
+                                        fieldValues[field.id] || ""
+                                      )}
                                       onChange={(e) =>
                                         handleFieldChange(
                                           field.id,
@@ -255,7 +259,9 @@ const AssetCreationPage = () => {
                                   {field.type === "select" && (
                                     <select
                                       className="form-select form-select-white"
-                                      value={fieldValues[field.id]}
+                                      value={String(
+                                        fieldValues[field.id] || ""
+                                      )}
                                       onChange={(selectedOption) =>
                                         handleFieldChange(
                                           field.id,
@@ -314,7 +320,9 @@ const AssetCreationPage = () => {
                                         }
                                         className="form-control custom-bottom-border"
                                         placeholder={field.label}
-                                        value={fieldValues[field.id] || ""}
+                                        value={String(
+                                          fieldValues[field.id] || ""
+                                        )}
                                         onChange={(e) =>
                                           handleFieldChange(
                                             field.id,
