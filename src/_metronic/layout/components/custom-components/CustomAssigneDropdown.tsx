@@ -8,7 +8,6 @@ import { UpdateTicket } from "../../../../app/config/ApiCalls";
 import { Assignee } from "../../../../app/types/TicketTypes";
 import { selectedAssigneesAtom } from "../../../../app/atoms/assignee-atoms/assigneeAtoms";
 import { ticketPerformingActionOnAtom } from "../../../../app/atoms/tickets-page-atom/ticketsActionsAtom";
-import detective from "./detective.svg";
 
 interface CustomAssigneeDropDownPropos {
   ticketId: string;
@@ -92,7 +91,7 @@ const CustomAssigneeDropDown: React.FC<CustomAssigneeDropDownPropos> = ({
       ).map((item) => ({
         id: item.id,
         name: item.name,
-        avatar: item.avatar || detective,
+        avatar: item.Avatar,
       }));
 
       const assigneeChangedInfo = {

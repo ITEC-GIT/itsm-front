@@ -15,6 +15,7 @@ export interface ApiRequestBody {
     from?: string;
     to?: string;
   };
+  starred?: number;
 }
 
 export interface UpdateTicketRequestBody {

@@ -62,6 +62,7 @@ import {selectedAssigneesAtom} from "../../atoms/assignee-atoms/assigneeAtoms";
 import {transformStaticData} from "../../../utils/dataTransformUtils.ts";
 import {string} from "yup";
 import {getMaxWords} from "./TicketUtils.tsx";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 const TicketsPage: React.FC = () => {
     // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -232,6 +233,7 @@ const TicketsPage: React.FC = () => {
                     const intervalFetchedTicketsRes: TicketResponse = response;
 
                     setIntervalFetchedTicketsResponse(intervalFetchedTicketsRes);
+
                     // need data to be added by me maybe using pulsar , or local database
                     // must set the setTotaltickets in a way
                     if (response.totalcount !== initialFetchedTicketsTotal) {
@@ -285,6 +287,10 @@ const TicketsPage: React.FC = () => {
                                 });
                             }
                         });
+                        setInitialFetchedTickets(intervalFetchedTicketsRes.data);
+                        setInitialFetchedTicketsTotal(
+                            intervalFetchedTicketsRes.totalcount
+                        );
                         // must make it that it is not stored in the index db before, so i keep the date reply with the ticket id, if the combination exists before then i dont add it
                         // const newTicketIds: string[] = [];
                         // for (const combination of updatedTicketsIds) {
@@ -616,6 +622,8 @@ const TicketsPage: React.FC = () => {
             if (backendFilter.from)
                 filterBody.opening_date.from = backendFilter.from.value;
             if (backendFilter.to) filterBody.opening_date.to = backendFilter.to.value;
+            if (backendFilter.isStarred) filterBody.starred = backendFilter.isStarred.value==="true"?1:0;
+
             setIsTicketsFetch(true);
 
             GetTicketsMutation.mutate({
@@ -1172,6 +1180,7 @@ const TicketsPage: React.FC = () => {
                     assignee: {value: "", label: ""},
                     from: {value: "", label: ""},
                     to: {value: "", label: ""},
+                    isStarred: { value: "", label:""},
                 });
             }
         };
@@ -1187,10 +1196,7 @@ const TicketsPage: React.FC = () => {
     useEffect(() => {
         if (toolbarNewTickets) {
             if (intervalFetchedTicketsResponse) {
-                setInitialFetchedTickets(intervalFetchedTicketsResponse.data);
-                setInitialFetchedTicketsTotal(
-                    intervalFetchedTicketsResponse.totalcount
-                );
+
                 setMaxTotalTickets(intervalFetchedTicketsResponse.totalcount);
                 setCurrentTotalTicketsAccumulation(intervalFetchedTicketsResponse.data.length);
                 setTickets(intervalFetchedTicketsResponse.data);
@@ -1319,6 +1325,8 @@ const TicketsPage: React.FC = () => {
     return (
         <>
             <ToolbarWrapper source={"tickets"}/>
+            <AnimatedRouteWrapper>
+
             <Content>
                 <div className="tickets-component-container align-self-stretch">
                     <div className="d-flex flex-column justify-content-between">
@@ -1333,7 +1341,12 @@ const TicketsPage: React.FC = () => {
                             </div>
                         ) : (
                             paginatedTickets.map((ticket) => {
-                                const assignees: Assignee[] = JSON.parse(ticket?.assignees || "[]");
+                                const parsedAssignees: Assignee[] = JSON.parse(ticket?.assignees || "[]");
+                                const isEmptyAssignees = parsedAssignees.every(
+                                    (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
+                                );
+                                // If the array is empty or contains only null-valued objects, set it to an empty array
+                                const assignees: Assignee[] = isEmptyAssignees ? [] : parsedAssignees;
                                 return (
                                     <TicketCard
                                         key={ticket.id}
@@ -1418,6 +1431,7 @@ const TicketsPage: React.FC = () => {
                     Last
                 </button>
             </div>
+            </AnimatedRouteWrapper>
             {/* <TicketCard
           id="#HFCS00117299"
           date ="01-10-2024"

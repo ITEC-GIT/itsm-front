@@ -7,9 +7,12 @@ import {ticketPerformingActionOnAtom} from "../../../../app/atoms/tickets-page-a
 import {useAtom} from "jotai";
 import {mastersAtom} from "../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
 import {Assignee} from "../../../../app/types/TicketTypes";
-import detective from "./detective.svg";
+import detective from "./spy_32.png";
 import replybadge from "./bookmark64.png"
 import { motion } from "framer-motion";
+import AvatarGroup from "./AvatarGroup.tsx";
+import AssigneeAvatars from "./AvatarGroup.tsx";
+import AssigneeAvatarsCard from "./AvatarGroup.tsx";
 
 interface CardProps {
     id: string;
@@ -162,6 +165,7 @@ const TicketCard: React.FC<CardProps> = ({
 
         // Call onClick prop}
     };
+    const profilesRoute = import.meta.env.VITE_APP_ITSM_GLPI_API_BASE_PROFILES_URL;
 
     return (
         <div className="position-relative mt-4" style={{width: "100%"}}>
@@ -326,35 +330,47 @@ const TicketCard: React.FC<CardProps> = ({
                                 )}
                             </div>
                         </div>
+
                         <div
-                            className="col-md-auto col-md-2 d-flex align-items-start  ps-2 border-end other-info card-column-border-right position-relative"
+                            className="col-md-auto col-md-2 d-flex align-items-center ps-2 border-end other-info card-column-border-right position-relative"
                             onClick={(e) => handleAssignToClick("assign", e)}
                         >
-                            {assignees.map((assignee, index) => (
-                                <div
-                                    key={index}
-                                    className="d-flex align-items-center mb-2 align-self-center"
-                                    style={{
-                                        borderRight:
-                                            index !== assignees.length - 1
-                                                ? "1px solid #ccc"
-                                                : "none",
-                                        paddingRight: index !== assignees.length - 1 ? "10px" : "0",
-                                        paddingLeft: index !== 0 ? "10px" : "0",
-                                    }}
-                                >
-                                    <img
-                                        src={assignee.avatar || detective}
-                                        alt="Assigned Profile"
-                                        className="rounded-circle me-2"
-                                        style={{width: "30px", height: "30px"}}
-                                    />
-                                    <div>
-                                        <small className="text-muted">assigned to</small>
-                                        <p className="mb-0">{assignee.name}</p>
-                                    </div>
-                                </div>
-                            ))}
+
+
+                            {/*{assignees.length>0 && assignees.map((assignee, index) => (*/}
+                            {/*    <div*/}
+                            {/*        key={index}*/}
+                            {/*        className="d-flex align-items-center mb-2 align-self-center"*/}
+                            {/*        style={{*/}
+                            {/*            borderRight:*/}
+                            {/*                index !== assignees.length - 1*/}
+                            {/*                    ? "1px solid #ccc"*/}
+                            {/*                    : "none",*/}
+                            {/*            paddingRight: index !== assignees.length - 1 ? "10px" : "0",*/}
+                            {/*            paddingLeft: index !== 0 ? "10px" : "0",*/}
+                            {/*        }}*/}
+                            {/*    >*/}
+                            {/*        <img*/}
+
+                            {/*            src={`${profilesRoute}/${assignee.avatar}` || detective}*/}
+                            {/*            alt="Assigned Profile"*/}
+                            {/*            className="rounded-circle me-2"*/}
+                            {/*            style={{width: "30px", height: "30px"}}*/}
+                            {/*            onError={(e) => {*/}
+                            {/*                const target = e.target as HTMLImageElement;*/}
+                            {/*                target.src = detective; // Set the fallback/default image*/}
+                            {/*                target.onerror = null; // Prevent infinite loop in case the fallback also fails*/}
+                            {/*            }}*/}
+                            {/*        />*/}
+                            {/*        <div>*/}
+                            {/*            <small className="text-muted">assigned to</small>*/}
+                            {/*            <p className="mb-0">{assignee.name}</p>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*))}*/}
+                            <AssigneeAvatarsCard assignees={assignees} maxCount={3} />
+                            {/*<AssigneeAvatars assignees={assignees} profilesRoute={profilesRoute} detective={detective} max={2} />*/}
+
                             {isAssigneeDropdownOpen && (
                                 <CustomAssigneeDropDown
                                     assignees={assignees}
@@ -403,7 +419,7 @@ const TicketCard: React.FC<CardProps> = ({
                 {reply_unread ? (
                     <motion.span
                         className="badge-reply-custom"
-                        initial={{ opacity: 0, y: -10, scale: 0.8 }}
+                        initial={{opacity: 0, y: -10, scale: 0.8}}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
                     >

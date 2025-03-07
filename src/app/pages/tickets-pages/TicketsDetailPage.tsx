@@ -1,4 +1,4 @@
-import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import parse from 'html-react-parser';
 import {useNavigate, useLocation} from 'react-router-dom'
 import TicketCard from "../../../_metronic/layout/components/custom-components/Card.tsx";
@@ -8,15 +8,26 @@ import {Assignee} from "../../types/TicketTypes.ts";
 import {Content} from "../../../_metronic/layout/components/content";
 import {Editor} from "@tinymce/tinymce-react";
 import clsx from "clsx";
-import ReactQuill, {Quill} from "react-quill-new";
+import ReactQuill, {Quill} from "react-quill";
 import TicketCardExpanded from "../../../_metronic/layout/components/custom-components/CardExpanded.tsx";
 import {string} from "yup";
 import {CustomQuill, CustomQuillImageClipboard, getMaxWords, HeadlessQuillViewer} from "./TicketUtils.tsx";
 import Cookies from "js-cookie";
 import {mastersAtom} from "../../atoms/app-routes-global-atoms/globalFetchedAtoms.ts";
-import {bulkDeleteImages, GetTicketWithReplies, GetUsersAndAreas, SendRepliesAsync} from "../../config/ApiCalls.ts";
+import {
+    bulkDeleteImages,
+    GetTicketWithReplies,
+    GetUsersAndAreas,
+    SendRepliesAsync,
+    GetTicketAttachments
+} from "../../config/ApiCalls.ts";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {HtmlContentViewer, HtmlReplyViewer} from "../../components/custom-components/HtmlViewer.tsx";
+
+import 'react-quill/dist/quill.snow.css';
+import Attachments from "./Attachments.tsx";
+import AssigneeAvatars from "../../components/custom-components/AssigneeAvatars.tsx";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 
 const TicketsDetailPage: React.FC = () => {
@@ -43,7 +54,7 @@ const TicketsDetailPage: React.FC = () => {
     const {
         data: ticketWithReplies,
         error,
-        isLoading,
+        isLoading:repliesLoading,
     } = useQuery({
         queryKey: ["GetTicketWithReplies", ticket.id], // Ensure you have a unique query key
         queryFn: () => GetTicketWithReplies(ticket.id), // Wrap in an anonymous function
@@ -52,6 +63,27 @@ const TicketsDetailPage: React.FC = () => {
         enabled: true, // Start fetching as soon as the component is mounted
         retry: true,
     });
+    const {
+        data: ticketAttachments,
+        error: errorAttachments,
+        isLoading: isLoadingAttachments,
+    } = useQuery({
+        queryKey: ["GetTicketAttachments", ticket.id], // Ensure you have a unique query key
+        queryFn: () => GetTicketAttachments(ticket.id), // Wrap in an anonymous function
+        refetchOnWindowFocus: false, // Refetch when window regains focus
+        refetchInterval: 180000, // Refetch every 3 minutes (in milliseconds)
+        enabled: true, // Start fetching as soon as the component is mounted
+        retry: true,
+    });
+    const [ticketAttachmentsData, setTicketAttachmentsData] = useState<any>([]);
+    useEffect(() => {
+        const x = 0;
+        if (ticketAttachments == undefined || ticketAttachments.data == undefined) {
+            return;
+        }
+        setTicketAttachmentsData(ticketAttachments.data.data)
+        console.log(ticketAttachments)
+    }, [ticketAttachments]);
     useEffect(() => {
         const x = 0;
         if (ticketWithReplies == undefined || ticketWithReplies.data == undefined) {
@@ -126,6 +158,9 @@ const TicketsDetailPage: React.FC = () => {
     const [editorModifiedContent, setEditorModifiedContent] = useState('');
 
     const handleSendClick = async () => {
+        if(editorContent.trim() === '') {
+            return
+        }
         const deletedImages = imageClipboardMap.filter(item =>
             !imageMapOnAccumulated.some(existingItem => existingItem.hash === item.hash)
         );
@@ -147,6 +182,7 @@ const TicketsDetailPage: React.FC = () => {
 
             return item; // If no match found, return the item as is
         });
+
         let updatedEditorContent = editorContent;
 
         const parseHtml = (html: string, imageMap: { base64: string; url: string }[]) => {
@@ -183,6 +219,7 @@ const TicketsDetailPage: React.FC = () => {
         setImageMapOnAccumulated([]);
         setImageClipboardMap([]);
         setEditorContent('');
+        setShowReply(true);
     };
 
     const [expandedReplies, setExpandedReplies] = useState<{ [key: number]: boolean }>({});
@@ -230,9 +267,13 @@ const TicketsDetailPage: React.FC = () => {
     // };
     const [overflowStates, setOverflowStates] = useState<{ [key: string]: boolean }>({});
 
-    const handleOverflowDetected = (id: string, isOverflowing: boolean) => {
-        setOverflowStates(prev => ({...prev, [id]: isOverflowing}));
-    };
+    const handleOverflowDetected = useCallback((id: string, isOverflowing: boolean) => {
+        setOverflowStates(prev => {
+            if (prev[id] === isOverflowing) return prev; // Prevent unnecessary state updates
+            return { ...prev, [id]: isOverflowing };
+        });
+    }, []);
+
     const [overLimitMap, setOverLimitMap] = useState<Record<string, boolean>>({});
 
     if (!ticket) {
@@ -252,8 +293,15 @@ const TicketsDetailPage: React.FC = () => {
         textArea.innerHTML = encodedHtml;
         return textArea.value;
     };
+
+    const isEmptyAssignees = assignees.every(
+        (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
+    );
+    const assigneesFiltered: Assignee[] = isEmptyAssignees ? [] : assignees;
     return (
         <>
+            <AnimatedRouteWrapper>
+
             <Content>
                 <button className="btn btn-sm btn-light"
                         onClick={() => navigate('/tickets', {state: {from: 'details'}})}>
@@ -282,7 +330,7 @@ const TicketsDetailPage: React.FC = () => {
                     lastUpdate={ticket.date_mod}
                     isStarred={ticket.starred} // Pass the pinned status
                     isCurrentUserMaster={isCurrentUserMaster}
-                    assignees={assignees}
+                    assignees={assigneesFiltered}
                     isDetailsPage={true}
                 />
 
@@ -306,7 +354,7 @@ const TicketsDetailPage: React.FC = () => {
                             className={`tab-item ${activeTab === "attachments" ? "active" : ""}`}
                             onClick={() => setActiveTab("attachments")}
                         >
-                            Attachments (2)
+                            Attachments ({ticketAttachmentsData.length})
                         </button>
                     </div>
                     <div className="tab-content">
@@ -314,105 +362,24 @@ const TicketsDetailPage: React.FC = () => {
                             <div>
                                 <HtmlContentViewer htmlContent={decodeHtml(ticket.content)} truncate={false}/>
 
-                                {/*<HeadlessQuillViewer content={ticket.content}/>;*/}
-                                {/*<TicketCardExpanded*/}
-                                {/*    key={ticket.id}*/}
-                                {/*    id={ticket.id}*/}
-                                {/*    status={ticket.status_label}*/}
-                                {/*    date={ticket.date}*/}
-                                {/*    title={ticket.name}*/}
-                                {/*    description={*/}
-                                {/*        ticket.content ||*/}
-                                {/*        "Lorem Ipsum is simply dummy text of the printing and typesetting industry."*/}
-                                {/*    }*/}
-                                {/*    assignedTo={{*/}
-                                {/*        name: ticket.users_recipient,*/}
-                                {/*    }} // Placeholder avatar*/}
-                                {/*    raisedBy={{*/}
-                                {/*        name: ticket.users_recipient,*/}
-                                {/*        initials: ticket?.users_recipient?.charAt(0),*/}
-                                {/*    }}*/}
-                                {/*    priority={ticket.priority_label}*/}
-                                {/*    type={ticket.type_label}*/}
-                                {/*    urgency={ticket.urgency_label}*/}
-                                {/*    lastUpdate={ticket.date_mod}*/}
-                                {/*    isStarred={ticket.starred} // Pass the pinned status*/}
-                                {/*    isCurrentUserMaster={isCurrentUserMaster}*/}
-                                {/*    assignees={assignees}*/}
-                                {/*    isDetailsPage={true}*/}
-                                {/*/>*/}
+
                             </div>
                         )}
-                        {/*{activeTab === "messages" && (*/}
-                        {/*    <div>*/}
-                        {/*        /!* Iterate over the array of messages *!/*/}
-                        {/*        {ticketReplies.map((reply:any) => (*/}
-                        {/*        <div key={reply.id} className={`card message-card ${isITReply ? "it-reply" : "user-ticket"}`}>*/}
-                        {/*                <div className="card-body">*/}
-                        {/*                    <div className="header d-flex align-items-center">*/}
-                        {/*                        <div className="avatar-circle me-2">M</div>*/}
-                        {/*                        <div>*/}
-                        {/*                            <h6 className="name mb-0">Matt</h6>*/}
-                        {/*                            <p className="time text-muted small">1 hour ago</p>*/}
-                        {/*                        </div>*/}
-                        {/*                    </div>*/}
-                        {/*                    <div className="message-content mt-3">*/}
-                        {/*                        <HeadlessQuillViewer content={testReplyData}/>*/}
-                        {/*                    </div>*/}
-                        {/*                    <div*/}
-                        {/*                        className="footer   mt-3 pt-2 border-top d-flex justify-content-between">*/}
-                        {/*                        <div className='d-flex gap-2 align-content-center'>*/}
-                        {/*                            {otherAssignees.length > 0 && (*/}
-                        {/*                                <button*/}
-                        {/*                                    className="btn d-flex align-items-center px-3 py-2 border-0"*/}
-                        {/*                                    style={{*/}
-                        {/*                                        minWidth: "auto",*/}
-                        {/*                                        maxWidth: "250px",*/}
-                        {/*                                        borderRadius: "0",*/}
-                        {/*                                        backgroundColor: "transparent"*/}
-                        {/*                                    }}*/}
-                        {/*                                >*/}
-                        {/*                          <span*/}
-                        {/*                              className="d-flex align-items-center gap-2"*/}
-                        {/*                              style={{color: "#575757", fontWeight: "bold"}}*/}
-                        {/*                          >*/}
-                        {/*                           Other Recipients*/}
-                        {/*                          </span>*/}
-                        {/*                                </button>*/}
-                        {/*                                // <span className='d-flex align-self-center text-muted bold-large'>Other Recipients</span>*/}
-                        {/*                            )}*/}
-                        {/*                            {otherAssignees?.map(assignee => (*/}
-                        {/*                                <button*/}
-                        {/*                                    key={assignee.id}*/}
-                        {/*                                    className="btn d-flex align-items-center px-3 py-2 border-0"*/}
-                        {/*                                    style={{*/}
-                        {/*                                        minWidth: "auto",*/}
-                        {/*                                        maxWidth: "250px",*/}
-                        {/*                                        borderRadius: "0",*/}
-                        {/*                                        backgroundColor: "#575757"*/}
-                        {/*                                    }}*/}
-                        {/*                                >*/}
-                        {/*                          <span*/}
-                        {/*                              className="d-flex align-items-center gap-2"*/}
-                        {/*                              style={{color: "white", fontWeight: "bold"}}*/}
-                        {/*                          >*/}
-                        {/*                            {assignee.name}*/}
-                        {/*                          </span>*/}
-                        {/*                                </button>*/}
-                        {/*                            ))}*/}
-                        {/*                        </div>*/}
-                        {/*                        <button className="btn btn-link p-0">Show more</button>*/}
-                        {/*                    </div>*/}
-                        {/*                </div>*/}
-                        {/*            </div>*/}
 
-                        {/*        ))}*/}
-                        {/*    </div>*/}
-                        {/*)}*/}
                         {activeTab === "messages" && (
                             <div className='d-flex flex-column gap-3'>
                                 {/* Iterate over the array of tickets */}
-                                {ticketReplies?.map((reply: any, index: number) => {
+                                {repliesLoading ? (
+                                    <div className="spinner-wrapper">
+                                        <div
+                                            className="spinner-border spinner-loading-data"
+                                            role="status"
+                                        >
+                                            <span className="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                ticketReplies?.map((reply: any, index: number) => {
                                     const isExpanded = expandedReplies[reply.id] || index === 0; // First reply is always expanded
 
                                     return (
@@ -447,63 +414,10 @@ const TicketsDetailPage: React.FC = () => {
                                                 </div>
                                                 {/* Footer */}
                                                 <div
-                                                    className="footer mt-3 pt-2 border-top d-flex justify-content-between">
+                                                    className="footer mt-3  border-top d-flex justify-content-between">
                                                     <div className="d-flex gap-2 align-content-center">
-                                                        {/* Other Assignees (if any) */}
-                                                        {/*                    {ticket.otherAssignees?.length > 0 && (*/}
-                                                        {/*                        <button*/}
-                                                        {/*                            className="btn d-flex align-items-center px-3 py-2 border-0"*/}
-                                                        {/*                            style={{*/}
-                                                        {/*                                minWidth: "auto",*/}
-                                                        {/*                                maxWidth: "250px",*/}
-                                                        {/*                                borderRadius: "0",*/}
-                                                        {/*                                backgroundColor: "transparent",*/}
-                                                        {/*                            }}*/}
-                                                        {/*                        >*/}
-                                                        {/*<span*/}
-                                                        {/*    className="d-flex align-items-center gap-2"*/}
-                                                        {/*    style={{color: "#575757", fontWeight: "bold"}}*/}
-                                                        {/*>*/}
-                                                        {/*    Other Recipients*/}
-                                                        {/*</span>*/}
-                                                        {/*                        </button>*/}
-                                                        {/*                    )}*/}
-                                                        {/* Render Buttons for Each Assignee */}
-                                                        {otherAssignees.length > 0 && (<button
-                                                            className="btn d-flex align-items-center px-3 py-2 border-0"
-                                                            style={{
-                                                                minWidth: "auto",
-                                                                maxWidth: "250px",
-                                                                borderRadius: "0",
-                                                                backgroundColor: "transparent",
-                                                            }}
-                                                        >
-                                    <span
-                                        className="d-flex align-items-center gap-2"
-                                        style={{color: "#0d6efd", fontWeight: "bold"}}
-                                    >
-                                        Other Recipients
-                                    </span>
-                                                        </button>)}
-                                                        {otherAssignees?.map(assignee => (
-                                                            <button
-                                                                key={assignee.id}
-                                                                className="btn d-flex align-items-center px-3 py-2 border-0"
-                                                                style={{
-                                                                    minWidth: "auto",
-                                                                    maxWidth: "250px",
-                                                                    borderRadius: "0",
-                                                                    backgroundColor: "#0d6efd"
-                                                                }}
-                                                            >
-                                                  <span
-                                                      className="d-flex align-items-center gap-2"
-                                                      style={{color: "white", fontWeight: "bold"}}
-                                                  >
-                                                    {assignee.name}
-                                                  </span>
-                                                            </button>
-                                                        ))}
+
+                                                        <AssigneeAvatars assignees={otherAssignees}/>
                                                     </div>
                                                     {/* Show More Button */}
                                                     {isExpanded && (
@@ -526,26 +440,18 @@ const TicketsDetailPage: React.FC = () => {
                                                     >
                                                         Show more
                                                     </button>) : ""}
-                                                    {/*{overLimitMap[reply.id] && (<button*/}
-                                                    {/*    className="btn btn-link p-0 mt-2"*/}
-                                                    {/*    onClick={(e) => {*/}
-                                                    {/*        e.stopPropagation(); // Prevent expanding when clicking "Show less"*/}
-                                                    {/*        expandReply(reply.id);*/}
-                                                    {/*    }}*/}
-                                                    {/*>*/}
-                                                    {/*    Show more*/}
-                                                    {/*</button>)}*/}
                                                 </div>
                                             </div>
                                         </div>
                                     );
-                                })}
+                                }))}
                             </div>
                         )}
                         {activeTab === "attachments" && (
                             <div>
-                                <h5>Attachments</h5>
-                                <p>Here are your attachments...</p>
+
+                                <Attachments attachments={ticketAttachmentsData}/>
+
                             </div>
                         )}
                     </div>
@@ -585,12 +491,7 @@ const TicketsDetailPage: React.FC = () => {
                                                                ["clean"], // Clear Formatting
                                                            ]
                                                        }}/>
-                            {/* Buttons */}
-                            {/*<div className="mt-3 d-flex justify-content-start align-content-between">*/}
-                            {/*    <button className="btn btn-secondary" onClick={() => setShowReply(true)}>Cancel</button>*/}
-                            {/*    <button className="btn btn-primary" onClick={() => alert(`Reply Sent: ${reply}`)}>Send*/}
-                            {/*    </button>*/}
-                            {/*</div>*/}
+
                         </div>
                         <div className="  d-flex gap-3">
                             <div className="cancel-send d-flex align-items-between">
@@ -619,26 +520,9 @@ const TicketsDetailPage: React.FC = () => {
 
                     </div>)}
             </div>
+                </AnimatedRouteWrapper>
 
-            {/*<div className="reply-footer-controls ">*/}
-            {/*{showReply && (*/}
-            {/*    <div className="reply-footer-controls-content d-flex">*/}
-            {/*        <button*/}
-            {/*            className="btn btn-sm btn-primary btn-reply"*/}
-            {/*            onClick={() => setShowReply(!showReply)}*/}
-            {/*        >*/}
-            {/*            Reply*/}
-            {/*        </button>*/}
-            {/*    </div>*/}
-            {/*)}*/}
-            {/*{!showReply && (*/}
 
-            {/*    <div className="reply-footer-controls-content  d-flex gap-3">*/}
-            {/*        <div className="cancel-send d-flex align-items-between">*/}
-            {/*        <button className="btn btn-sm btn-primary mt-2" onClick={() => setShowReply(true)}>Cancel</button>*/}
-            {/*        <button className="btn btn-sm btn-primary mt-2" onClick={() => alert(`Reply Sent: ${reply}`)}>Send</button></div>*/}
-            {/*    </div>)}*/}
-            {/*</div>*/}
 
         </>
     )

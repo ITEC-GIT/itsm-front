@@ -18,6 +18,7 @@ import {
   mastersAtom,
   slavesAtom,
 } from "../../../../../app/atoms/app-routes-global-atoms/globalFetchedAtoms";
+import StarredToggle from "../../custom-components/StaredSwitch.tsx";
 interface CustomFilterBackendDataDropdownProps {
   setIsFilterDatabaseDropdownOpen: (isOpen: boolean) => void;
 }
@@ -102,6 +103,22 @@ const CustomFilterBackendDataDropdown: React.FC<
   );
 
   const handleApply = () => {
+    const checkingFilters = {
+      status: status?.value,
+      urgency: urgency?.value,
+      priority: priority?.value,
+      type: type?.value,
+      requester: requester?.value,
+      branch: branch?.value,
+      assignee: assignee?.value,
+      from: formattedFromdDate,
+      to: formattedTodDate,
+      isStarred: isStarred.toString() === "false" ? "" : isStarred.toString(),
+    };
+    // const allEmpty = Object.values(checkingFilters).every(val => val === "" || val === null || val === undefined);
+    //
+    // if (allEmpty) return;
+
     setBackendFilters({
       status: { value: status.value, label: status.label },
       urgency: { value: urgency.value, label: urgency.label },
@@ -112,6 +129,8 @@ const CustomFilterBackendDataDropdown: React.FC<
       assignee: { value: assignee.value, label: assignee.label },
       from: { value: formattedFromdDate, label: formattedFromdDate },
       to: { value: formattedTodDate, label: formattedTodDate },
+      isStarred: { value: (isStarred.toString()==="false"?"":isStarred.toString()), label: (isStarred.toString()==="false"?"":isStarred.toString()) },
+
     });
     setIsFilterDatabaseDropdownOpen(false);
 
@@ -130,6 +149,7 @@ const CustomFilterBackendDataDropdown: React.FC<
     if (assignee.value) filterBody.assignee = assignee.value;
     if (formattedFromdDate) filterBody.opening_date.from = formattedFromdDate;
     if (formattedTodDate) filterBody.opening_date.to = formattedTodDate;
+    if(isStarred)filterBody.starred = Number(isStarred);
     // filterBody.opening_date={"from":formattedFromdDate,"to":formattedTodDate}
     // filterBackendMutation.mutate(filterBody);
 
@@ -145,6 +165,7 @@ const CustomFilterBackendDataDropdown: React.FC<
     setAssignee({ value: "", label: "" });
     setFromDateTime("");
     setToDateTime("");
+    setIsStarred(false);
     setBackendFilters({
       status: { value: "", label: "" },
       urgency: { value: "", label: "" },
@@ -155,6 +176,8 @@ const CustomFilterBackendDataDropdown: React.FC<
       assignee: { value: "", label: "" },
       from: { value: "", label: "" },
       to: { value: "", label: "" },
+      isStarred: { value: '', label:''},
+
     });
     setIsFilterDatabaseDropdownOpen(false);
   };
@@ -168,6 +191,13 @@ const CustomFilterBackendDataDropdown: React.FC<
     setAssignee({ value: backendFilter.assignee.value, label: backendFilter.assignee.label });
     setFromDateTime(backendFilter.from.value);
     setToDateTime(backendFilter.to.value);
+    setIsStarred(
+        backendFilter.isStarred.value === 'true'
+            ? true
+            : backendFilter.isStarred.value === 'false'
+                ? false
+                : false // or any default value for an empty string ''
+    );
   }, [backendFilter]);
   const handleWindowFocus = useCallback(
     debounce(() => {
@@ -253,6 +283,8 @@ const CustomFilterBackendDataDropdown: React.FC<
       queryClient.invalidateQueries({ queryKey: ["create"] }); // Updated invalidateQueries syntax
     },
   });
+  const [isStarred, setIsStarred] = useState(false); // State in parent
+
   return (
     <div
       className="dropdown-menu p-4 show"
@@ -381,7 +413,7 @@ const CustomFilterBackendDataDropdown: React.FC<
         </div>
       </div>
 
-      <div className="d-flex mb-3">
+      <div className="d-flex mb-3 gap-2">
         <div className="flex-fill">
           <label className="form-label fw-bold">Assignee:</label>
           <select
@@ -397,6 +429,11 @@ const CustomFilterBackendDataDropdown: React.FC<
             ))}
           </select>
         </div>
+        <div className='d-flex align-self-end'>
+          <StarredToggle isStarred={isStarred} onToggle={setIsStarred} />
+        </div>
+
+
       </div>
 
       <div className="d-flex justify-content-end">

@@ -22,7 +22,7 @@ const ImageWithDimensions: React.FC<{ src: string }> = ({ src }) => {
     }, [src]);
 
     if (!dimensions) {
-        return <p>Loading image...</p>; // Temporary placeholder
+        return <div>Loading image...</div>; // Temporary placeholder
     }
 
     return <ZoomableImage src={src} width={dimensions.width} height={dimensions.height} />;
@@ -66,17 +66,21 @@ const HtmlReplyViewer: React.FC<HtmlReplyViewerProps> = ({ htmlContent, truncate
     };
     const [isOverflowing, setIsOverflowing] = useState(false);
 
+
     useEffect(() => {
         if (contentRef.current) {
             const lineHeight = parseFloat(getComputedStyle(contentRef.current).lineHeight);
             const maxHeight = 5 * lineHeight;
-            const isOverflowing = contentRef.current.scrollHeight > maxHeight;
+            const newIsOverflowing = contentRef.current.scrollHeight > maxHeight;
 
-            if (onOverflowDetected) {
-                onOverflowDetected(id, isOverflowing);
+            if (newIsOverflowing !== isOverflowing) {
+                setIsOverflowing(newIsOverflowing);
+                if (onOverflowDetected) {
+                    onOverflowDetected(id, newIsOverflowing);
+                }
             }
         }
-    }, [htmlContent, onOverflowDetected, id]);
+    }, [htmlContent, id]); // Removed onOverflowDetected from dependencies
 
     return (
         <div   ref={contentRef} className={`prose max-w-none ${truncate ? "truncate-text" : ""}`}>

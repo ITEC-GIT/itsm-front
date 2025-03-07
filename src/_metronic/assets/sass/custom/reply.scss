@@ -169,6 +169,13 @@
     object-fit: contain;     // Ensures the image fits within the constraints
     display: block;          // Removes inline image spacing issues
   }
+  .special-assignee-child img {
+    max-width: 32px !important;
+    max-height: 32px !important;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover;
+  }
 }
 
 .message-card {
@@ -224,5 +231,32 @@
     color: gray;
     border-top: 1px solid #eee;
     padding-top: 5px;
+    .img{
+      max-width: 32px !important;
+      max-height: 32px !important;
+
+    }
   }
+}
+.attachments-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+}
+
+.attachment-card {
+  width: 150px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+.reply-details-assignees{
+  max-width: 32px !important;
+  max-height: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
 }

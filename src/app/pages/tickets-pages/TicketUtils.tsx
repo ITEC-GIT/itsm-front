@@ -1,11 +1,13 @@
 import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {string} from "yup";
-import ReactQuill, {Quill} from "react-quill-new";
+import ReactQuill, {Quill} from "react-quill";
 import { md5 } from 'js-md5';
 import {PostReplyImages} from "../../config/ApiCalls.ts";
 import {ImageUploadResponse} from "../../types/TicketTypes.ts";
 import {isEqual} from "lodash";
+import 'react-quill/dist/quill.snow.css';
 
+//https://quilljs.com/playground/react replace with this
 export const decodeHtml = (encodedHtml: string): string => {
     const textArea = document.createElement("textarea");
     textArea.innerHTML = encodedHtml;

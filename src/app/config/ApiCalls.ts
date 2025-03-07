@@ -52,7 +52,9 @@ const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
             range: body.range,
             order: body.order,
         };
-
+        if(body.starred===1){
+            const asd=0
+        }
         if (body.idgt !== undefined) {
             params.idgt = body.idgt;
         }
@@ -326,6 +328,11 @@ async function GetTicketWithReplies(ticketId: number) {
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
+async function GetTicketAttachments(ticketId: number) {
+    return await PrivateApiCall.get(`/Ticket/${ticketId}/Document/`)
+.then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
 async function PostReplyImages(formData: any) {
     try {
 
@@ -373,7 +380,43 @@ async function bulkDeleteImages(urlsToDelete: any) {
     }
 }
 
+const fetchAndOpenFile = async (url: string) => {
+    if (!url || url === "#") return;
 
+    try {
+        // const response = await fetch(url, {
+        //     method: "GET",
+        //     headers: {
+        //         Authorization: "Bearer YOUR_AUTH_TOKEN", // Replace with your actual token
+        //         "Content-Type": "application/pdf", // Adjust based on file type
+        //     },
+        // });
+        const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+        const sessionToken = getSessionTokenFromCookie();
+        const attachmentFiles = import.meta.env.VITE_APP_ITSM_GLPI_API_BASE_ATTACHMENT_FILES;
+
+        const attachmentSent=`${attachmentFiles}/${url}`
+        const response = await fetch(attachmentSent, {
+            method: "GET",
+            headers: {
+                "App-Token": appToken,
+                "Session-Token": sessionToken || '',
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (response.status!=200) {
+            throw new Error(`Failed to fetch file: ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        window.open(blobUrl, "_blank");
+    } catch (error) {
+        console.error("Error fetching the file:", error);
+    }
+};
 export {
     LoginApi,
     GetUserProfile,
@@ -393,5 +436,5 @@ export {
     UpdateTicket,
     PostReplyImages,
     bulkDeleteImages,
-    SendRepliesAsync,GetTicketWithReplies
+    SendRepliesAsync,GetTicketWithReplies,GetTicketAttachments,fetchAndOpenFile
 };

@@ -36,5 +36,6 @@ export const toolbarTicketsBackendFiltersAtom = atom({
     assignee: { value: '', label: '' },
     from: { value: '', label: '' },
     to: { value: '', label: '' },
+    isStarred: { value: '', label: '' },
   });
 toolbarTicketsBackendFiltersAtom.debugLabel = "toolbarTicketsBackendFiltersAtom";
