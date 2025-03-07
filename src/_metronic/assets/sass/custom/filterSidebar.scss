@@ -2,8 +2,8 @@
   position: fixed !important;
   right: 0 !important;
   top: 5 !important;
-  border-left: 10px solid #1b84ff !important;
-  border-right: 10px solid #1b84ff !important;
+  // border-left: 6px solid #1b84ff !important;
+  // border-right: 6px solid #1b84ff !important;
   border-radius: 10px !important;
   width: 300px !important;
   height: 100% !important;
@@ -14,6 +14,7 @@
   // padding-right: 20px !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
+  box-shadow: -6px 0 6px rgba(0, 0, 0, 0.1), 6px 0 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .sidebar-closed {
@@ -23,10 +24,6 @@
 
 .sidebar-open {
   transform: translateX(0) !important;
-}
-
-.content-container {
-  transition: margin-left 0.3s ease-in-out !important;
 }
 
 .close-filter-btn {
@@ -68,7 +65,7 @@
 //input and save
 
 .custom-input-save {
-  border: 2px solid #0d6efd !important;
+  border: 1px solid #3b82f6 !important;
   padding: 0.5rem !important;
   transition: box-shadow 0.2s !important;
 }
@@ -93,7 +90,7 @@
 }
 
 .custom-input-save.save-span {
-  background-color: #0d6efd;
+  background-color: #3b82f6;
 }
 
 .save-icon {
@@ -105,4 +102,42 @@
 .save-filters-icon {
   font-size: 18px !important;
   cursor: pointer;
+}
+
+// .filter-button {
+//   background: #1b84ff !important;
+//   color: white !important;
+//   font-weight: bold !important;
+//   border-radius: 25px !important;
+//   padding: 8px 16px !important;
+//   border: none !important;
+//   font-size: 1.3rem !important;
+//   cursor: pointer !important;
+//   transition: box-shadow 0.3s ease !important;
+// }
+
+// .filter-button:hover {
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+// }
+
+// .filter-button-icon {
+//   font-size: 1.5rem !important;
+//   line-height: 1 !important;
+//   color: white !important;
+// }
+
+// .filter-btn-action {
+//   background: #1b84ff !important; //linear-gradient(90deg, #007bff, #0056b3);
+//   color: #fff !important;
+//   font-weight: bold !important;
+//   border: none !important;
+//   border-radius: 15px !important;
+//   transition: transform 0.2s ease, background 0.3s ease !important;
+//   display: flex !important;
+//   justify-content: center !important;
+//   align-items: center !important;
+// }
+
+.save-action {
+  background: #769fcd !important; //ff9a00
 }

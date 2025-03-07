@@ -1,21 +1,12 @@
-import clsx from 'clsx'
-import { ToolbarType, useLayout } from '../../core'
-import { Toolbar } from './Toolbar'
+import clsx from "clsx";
+import { ToolbarType, useLayout } from "../../core";
+import { Toolbar } from "./Toolbar";
 import { PageTitleWrapper } from "./page-title";
 import { PageTitleWrapperTickets } from "./page-title";
+import { PageTitleWrapperDashboard } from "./page-title/PageTitleWrapperDashboard";
+import { ToolbarDashboard } from "./ToolbarDashboard";
 
-import { useState } from "react";
-
-const ToolbarWrapper = ({
-  setDashboardView,
-  source,
-}: {
-  setDashboardView?: React.Dispatch<React.SetStateAction<"main" | "analytics">>;
-  source?:string;
-}) => {
-  console.log("source ==> ", source)
-  const [currentView, setCurrentView] = useState<"main" | "analytics">("main");
-
+const ToolbarWrapper = ({ source }: { source?: string }) => {
   const { config, classes } = useLayout();
   if (!config.app?.toolbar?.display) {
     return null;
@@ -23,84 +14,66 @@ const ToolbarWrapper = ({
   const isPageTitleVisible = showPageTitle(
     config.app?.toolbar?.layout,
     config.app?.pageTitle?.display
-  )
-  const handleToggleView = () => {
-    if (setDashboardView) {
-      const newView = currentView === "main" ? "analytics" : "main";
-      setCurrentView(newView);
-      setDashboardView(newView);
-    }
-  };
+  );
+
   return (
     <div
-      id='kt_app_toolbar'
-      className={clsx('app-toolbar', classes.toolbar.join(' '), config?.app?.toolbar?.class)}
+      id="kt_app_toolbar"
+      className={clsx(
+        "app-toolbar",
+        classes.toolbar.join(" "),
+        config?.app?.toolbar?.class
+      )}
     >
-   
       <div
-        id='kt_app_toolbar_container'
+        id="kt_app_toolbar_container"
         className={clsx(
-          'app-container',
-          classes.toolbarContainer.join(' '),
+          "app-container",
+          classes.toolbarContainer.join(" "),
           config.app?.toolbar?.containerClass,
-          config.app?.toolbar?.minimize?.enabled ? 'app-toolbar-minimize' : '',
+          config.app?.toolbar?.minimize?.enabled ? "app-toolbar-minimize" : "",
           {
-            'container-fluid': config.app?.toolbar?.container === 'fluid',
-            'container-xxl': config.app?.toolbar?.container === 'fixed',
+            "container-fluid": config.app?.toolbar?.container === "fluid",
+            "container-xxl": config.app?.toolbar?.container === "fixed",
           }
         )}
       >
-       {isPageTitleVisible && setDashboardView ? (
-          <div
-            className="d-flex align-items-center gap-2"
-            onClick={handleToggleView}
-            style={{ cursor: "pointer" }}
-          >
-            <i
-              className={
-                currentView === "main"
-                  ? "bi bi-box"
-                  : currentView === "analytics"
-                  ? "bi bi-bar-chart"
-                  : ""
-              }
-              style={{
-                color: "black",
-                fontSize: "medium",
-                backgroundColor: "#f0f0f0",
-                borderRadius: "5px",
-                padding: "5px",
-              }}
-            ></i>
-            {currentView === "analytics" ? (
-              <h1 className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center">
-                Analytics
-              </h1>
-            ) : (
-              ""
-            )}
+        {isPageTitleVisible && source && source === "tickets" ? (
+          <>
+            <PageTitleWrapperTickets />
+            <Toolbar />
+          </>
+        ) : source === "dashboard" ? (
+          <>
+            <PageTitleWrapperDashboard />
+            <ToolbarDashboard />
+          </>
+        ) : (
+          <>
             <PageTitleWrapper />
-          </div>
-        ): source && source === 'tickets' ?  (<><PageTitleWrapperTickets /><Toolbar /> </>) : ( <><PageTitleWrapper /></> 
+          </>
         )}
-      
-          
       </div>
     </div>
-  )
-}
+  );
+};
 
-const showPageTitle = (appToolbarLayout?: ToolbarType, appPageTitleDisplay?: boolean): boolean => {
-  const viewsWithPageTitles = ['classic', 'reports', 'saas']
+const showPageTitle = (
+  appToolbarLayout?: ToolbarType,
+  appPageTitleDisplay?: boolean
+): boolean => {
+  const viewsWithPageTitles = ["classic", "reports", "saas"];
   if (!appToolbarLayout || !appPageTitleDisplay) {
-    return false
+    return false;
   }
 
-  return appPageTitleDisplay && viewsWithPageTitles.some((t) => t === appToolbarLayout)
-}
+  return (
+    appPageTitleDisplay &&
+    viewsWithPageTitles.some((t) => t === appToolbarLayout)
+  );
+};
 
-export { ToolbarWrapper }
-
+export { ToolbarWrapper };
 
 // const ToolbarWrapper = ({
 //   setDashboardView,
@@ -131,7 +104,7 @@ export { ToolbarWrapper }
 //       id='kt_app_toolbar'
 //       className={clsx('app-toolbar', classes.toolbar.join(' '), config?.app?.toolbar?.class)}
 //     >
-   
+
 //       <div
 //         id='kt_app_toolbar_container'
 //         className={clsx(
@@ -177,7 +150,7 @@ export { ToolbarWrapper }
 //             <PageTitleWrapper />
 //           </div>
 //         ) : null}
-        
+
 //         {isTicketPage && (<>       {isPageTitleVisible && <PageTitleWrapperTickets />}
 //           <Toolbar /></> )  }
 //       </div>

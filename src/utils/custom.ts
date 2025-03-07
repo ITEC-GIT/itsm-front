@@ -2,10 +2,10 @@ import { loadFromIndexedDB } from "../app/indexDB/Config";
 
 export const getStatusClass = (status: string) => {
   switch (status.toLowerCase()) {
-    case "initialized":
-      return "status-initialized";
     case "received":
       return "status-received";
+    case "initialized":
+      return "status-initialized";
     case "canceled":
       return "status-canceled";
     default:
@@ -15,14 +15,14 @@ export const getStatusClass = (status: string) => {
 
 export const getCircleColor = (status: string) => {
   switch (status.toLowerCase()) {
-    case "initialized":
-      return "orange";
     case "received":
-      return "green";
-    case "canceled":
-      return "red";
+      return "#e46363";
+    case "cancelled":
+      return "#9e9e9e";
+    case "initialized":
+      return "#e6a933";
     default:
-      return "gray";
+      return "#f5cc6d";
   }
 };
 
@@ -61,4 +61,16 @@ export const formatDate = (date: Date | null) => {
 
 export const deepEqual = (obj1: any, obj2: any): boolean => {
   return JSON.stringify(obj1) === JSON.stringify(obj2);
+};
+
+export const getBackgroundColor = (
+  category: string,
+  categories: string[],
+  colors: string[]
+): string => {
+  const index = categories.indexOf(category);
+  if (index !== -1) {
+    return colors[index];
+  }
+  return "#e8e9e9";
 };

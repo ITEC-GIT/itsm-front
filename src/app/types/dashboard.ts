@@ -19,4 +19,10 @@ export type ChartType =
   | "Line Chart"
   | "Stacked Bar Chart"
   | "Gauge Chart"
-  | "Heatmap Chart";
+  | "Heatmap Chart"
+  | "Polar Area Chart";
+
+export type selectValueType = {
+  value: number;
+  label: string;
+};

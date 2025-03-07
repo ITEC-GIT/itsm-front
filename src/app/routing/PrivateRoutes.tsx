@@ -2,7 +2,7 @@ import { lazy, FC, Suspense } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { MasterLayout } from "../../_metronic/layout/MasterLayout";
 import TopBarProgress from "react-topbar-progress-indicator";
-import { DashboardWrapper } from "../pages/dashboard-page/DashboardPage";
+import { DashboardWrapper } from "../pages/Dashboard-page/DashboardPage";
 import { getCSSVariableValue } from "../../_metronic/assets/ts/_utils";
 import { WithChildren } from "../../_metronic/helpers";
 import TicketPageWrapper from "../pages/tickets-pages/TicketPageWrapper";
@@ -12,6 +12,9 @@ import { SoftwareInstallationPage } from "../pages/HyperCommands-Page/softwareIn
 import { RemoteSSHPage } from "../pages/HyperCommands-Page/remoteSSHPage";
 import { RemoteConsolePage } from "../pages/HyperCommands-Page/remoteConsolePage";
 import { PerformanceMonitoringPage } from "../pages/HyperCommands-Page/performanceMonitoringPage";
+import { AssetsPageWrapper } from "../pages/Assets-page/assetsPage";
+import { AssetDetailsPage } from "../pages/Assets-page/assetDetailsPage";
+import { AssetCreationPage } from "../pages/Assets-page/AssetCreationPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -32,7 +35,7 @@ const PrivateRoutes = () => {
         <Route path="dashboard" element={<DashboardWrapper />} />
         <Route path="hyper-commands" element={<HyperCommandsWrapper />} />
         <Route
-          path="hyper-commands/software-installation"
+          path="hyper-commands/software-installation/:userId?"
           element={<SoftwareInstallationPage />}
         />
         <Route path="hyper-commands/remote-ssh" element={<RemoteSSHPage />} />
@@ -44,6 +47,9 @@ const PrivateRoutes = () => {
           path="hyper-commands/performance-monitoring"
           element={<PerformanceMonitoringPage />}
         />
+        <Route path="assets" element={<AssetsPageWrapper />} />
+        <Route path="assets/:id" element={<AssetDetailsPage />} />
+        <Route path="assets/new" element={<AssetCreationPage />} />
         <Route path="tickets" element={<TicketPageWrapper />} />
         <Route path="/ticket/:id" element={<TicketsDetailPage />} />
         {/* 

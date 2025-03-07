@@ -1,0 +1,31 @@
+.react-data-table-container:hover {
+  overflow-x: auto !important;
+}
+
+.sc-fkSzgi.kmvUTK {
+  height: 100% !important;
+}
+
+.dMhKqS:not(:last-of-type) {
+  border-bottom-style: none !important;
+}
+
+.rdt_TableHeadRow {
+  border-bottom-style: none !important;
+}
+
+.sticky-pagination {
+  position: sticky !important;
+  bottom: 0 !important;
+  // top: 89vh !important;
+  background-color: unset !important;
+  // background-color: white !important;
+  padding: 10px 0 !important;
+  z-index: 90 !important;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1) !important; //ask rida
+}
+
+.pagination-controls {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}

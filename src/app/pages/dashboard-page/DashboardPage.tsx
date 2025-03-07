@@ -3,23 +3,16 @@ import { useIntl } from "react-intl";
 import { PageTitle } from "../../../_metronic/layout/core";
 import { ToolbarWrapper } from "../../../_metronic/layout/components/toolbar";
 import { Content } from "../../../_metronic/layout/components/content/Content";
-import { StatisticsList } from "../../components/dashboard/statisticsList";
-import ItsmToolbar from "../../components/dashboard/ItsmToolbar";
 import { DashboardAnalyticsType } from "../../types/dashboard";
-import { GetDashboardAnalytics } from "../../config/ApiCalls";
+
 import AnalyticsDashboard from "./analyticDashboardPage";
+import { useAtom } from "jotai";
+import { dashboardViewAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
+import MainDashboard from "./mainDashbaord";
+import { GetDashboardAnalytics } from "../../config/ApiCalls";
 
 const DashboardPage: FC = () => {
-  const [dashboardView, setDashboardView] = useState<"main" | "analytics">(
-    "main"
-  );
-
-  const [branchesOption, setBranchesOption] = useState([]);
-  const [usersOption, setUsersOption] = useState([]);
-
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
-  const [selectedUser, setSelectedUser] = useState<string>("");
-  const [searchString, setSearchString] = useState<string>("");
+  const [currentView] = useAtom(dashboardViewAtom);
   const [data, setData] = useState<Partial<DashboardAnalyticsType>>({});
 
   const fetchStatisticData = async () => {
@@ -27,8 +20,6 @@ const DashboardPage: FC = () => {
 
     if (res.status === 200) {
       setData(res.data.Statistics);
-      setBranchesOption(res.data.Departments);
-      setUsersOption(res.data.users);
     } else {
       //add loading
       return;
@@ -41,26 +32,9 @@ const DashboardPage: FC = () => {
 
   return (
     <>
-      <ToolbarWrapper
-        setDashboardView={setDashboardView}
-        source={"dashboard"}
-      />
+      <ToolbarWrapper source={"dashboard"} />
 
-      {dashboardView === "main" ? (
-        <Content>
-          <ItsmToolbar
-            branches={branchesOption}
-            users={usersOption}
-            setSelectedBranch={setSelectedBranch}
-            setSelectedUser={setSelectedUser}
-            setSearchString={setSearchString}
-          />
-
-          <StatisticsList data={data} />
-        </Content>
-      ) : (
-        <AnalyticsDashboard />
-      )}
+      {currentView === "main" ? <MainDashboard /> : <AnalyticsDashboard />}
     </>
   );
 };
@@ -78,18 +52,3 @@ const DashboardWrapper: FC = () => {
 };
 
 export { DashboardWrapper };
-
-//   return (
-//     <Content>
-//       <ItsmToolbar
-//         branches={branchesOption}
-//         users={usersOption}
-//         setSelectedBranch={setSelectedBranch}
-//         setSelectedUser={setSelectedUser}
-//         setSearchString={setSearchString}
-//       />
-
-//       <StatisticsList data={data} />
-//     </Content>
-//   );
-// };

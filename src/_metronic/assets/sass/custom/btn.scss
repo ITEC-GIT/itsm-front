@@ -1,0 +1,118 @@
+.custom-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  max-width: 9rem !important;
+  margin: 0 !important;
+  padding: 0.8rem 1.6rem !important;
+  background: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.102874) !important;
+  border-radius: 0.5rem !important;
+  // color: rgba(32, 34, 35, 1) !important;
+  border: 1px solid #f0f0f0 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  text-decoration: none !important;
+}
+
+.custom-btn-group {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 0.8rem !important;
+}
+
+.custom-btn-icon {
+  font-size: 1.4rem !important;
+}
+
+.custom-btn-text {
+  color: rgba(27, 27, 27, 1) !important; //#202223 !important;
+  font-size: 14px;
+  // font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI,
+  //   Roboto, Helvetica Neue, sans-serif !important;
+  padding: 2px 0 !important;
+  margin-left: 0.4rem !important;
+  line-height: 1.6rem !important;
+}
+
+.custom-btn:hover {
+  background-color: rgba(11, 1, 20, 0.1) !important;
+}
+
+///colors:
+.blue-bg-btn {
+  background: #e3edff !important;
+}
+
+.content-container {
+  position: relative !important;
+  height: 100% !important;
+  // transition: margin 0.3s ease-in-out",
+  transition: margin 0.3s ease-in-out !important;
+}
+
+.form-control-solid {
+  height: 40px !important;
+}
+
+//select
+.custom-react-select {
+  z-index: 100 !important;
+}
+
+//nav link
+
+.custom-nav-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  max-width: 18rem !important;
+  margin: 0 !important;
+  padding: 0.8rem 1.6rem !important;
+  background: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.102874) !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid #f0f0f0 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  text-decoration: none !important;
+}
+
+.table-icon {
+  font-size: 1.5rem !important;
+  padding: 0 !important;
+}
+
+.custom-action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  margin: 0 !important;
+  padding: 0.8rem 1.6rem !important;
+  background: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.102874) !important;
+  border-radius: 0.5rem !important;
+  // color: rgba(32, 34, 35, 1) !important;
+  border: 1px solid #f0f0f0 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  text-decoration: none !important;
+  width: auto !important;
+}
+
+.custom-action-btn:hover {
+  background-color: rgba(11, 1, 20, 0.1) !important;
+}

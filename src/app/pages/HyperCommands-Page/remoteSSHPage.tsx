@@ -1,201 +1,347 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
+import { selectValueType } from "../../types/dashboard";
+import { useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { StaticDataType } from "../../types/filtersAtomType";
 import Select from "react-select";
-import { Content } from "../../../_metronic/layout/components/content/Content";
+import Cookies from "js-cookie";
+import {
+  fetchXSRFToken,
+  GetPrivateIPAddress,
+  RemoteSSHConnect,
+} from "../../config/ApiCalls";
+import SSHClient from "../../components/Remote SSH/SSHClient";
 
-const RemoteSSHPage = () => {
-  const [connected, setConnected] = useState<boolean>(false);
-  const [hostname, setHostname] = useState<string | null>(null);
-  const [port, setPort] = useState<number | string>("");
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertVariant, setAlertVariant] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+const AlertModal = ({ onClose }: { onClose: () => void }) => (
+  <div className="alert-overlay">
+    <div className="alert-box">
+      <h6>
+        🚀 The selected device does not have the required agent installed.
+      </h6>
+      <div className="alert-button-container">
+        <button className="btn btn-danger alert-button" onClick={onClose}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
-  const computers = [
-    { label: "Computer A - 192.168.1.1", value: "192.168.1.1" },
-    { label: "Computer B - 192.168.1.2", value: "192.168.1.2" },
-    { label: "Computer C - 192.168.1.3", value: "192.168.1.3" },
-  ];
+const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [openSSH, setOpenSSH] = useState<boolean>(false);
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [ipAddress, setIpAddress] = useState("");
+  const [port, setPort] = useState(22);
+  const [username, setUsername] = useState("");
+  const [pass, setPass] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
+    null
+  );
+  const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
+    null
+  );
+  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
+    null
+  );
+  const [deviceError, setDeviceError] = useState(false);
+  const [passError, setPassError] = useState(false);
+  const [usrnameError, setUsrnameError] = useState(false);
 
-  const validateHostname = (hostname: string) => {
-    const regex =
-      /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$|^([0-9]{1,3}\.){3}[0-9]{1,3}$/;
-    return regex.test(hostname);
+  const locationOptions = useMemo(
+    () =>
+      (staticData.Locations || []).map((location: any) => ({
+        value: location.id ? Number(location.id) : 0,
+        label: location.name || "",
+      })),
+    [staticData]
+  );
+
+  const userOptions = useMemo(() => {
+    return (staticData.requesters || [])
+      .filter(
+        (device) => !selectedBranch || device.branch_id === selectedBranch.value
+      )
+      .map((device) => ({
+        value: device.id ? Number(device.id) : 0,
+        label: device.name || "",
+      }));
+  }, [staticData, selectedBranch]);
+
+  const compOptions = useMemo(() => {
+    return (staticData.Computers || [])
+      .filter(
+        (device) => !selectedBranch || device.branchid === selectedBranch.value
+      )
+      .map((device) => ({
+        value: device.id ? Number(device.id) : 0,
+        label: device.name || "",
+      }));
+  }, [staticData, selectedBranch]);
+
+  const handleBranchChange = (newValue: selectValueType | null) => {
+    setSelectedBranch(newValue);
+    setSelectedUser(null);
+    setSelectedDevice(null);
   };
 
-  const validatePort = (port: string | number) => {
-    return Number(port) > 0;
-  };
-
-  const validateCredentials = () => {
-    if (!username || !password) {
-      setAlertMessage("Please enter both username and password.");
-      setAlertVariant("danger");
-      return false;
-    }
-    return true;
-  };
-
-  const handleConnect = () => {
-    if (!hostname || !port) {
-      setAlertMessage("Please provide both hostname and port.");
-      setAlertVariant("danger");
+  const handleConnect = async () => {
+    if (!selectedDevice) {
+      setDeviceError(true);
       return;
     }
-
-    if (!validateHostname(hostname as string)) {
-      setAlertMessage(
-        "Invalid hostname. Please enter a valid hostname or IP address."
-      );
-      setAlertVariant("danger");
+    if (!username) {
+      setUsrnameError(true);
       return;
     }
-
-    if (!validatePort(port)) {
-      setAlertMessage("Port must be a positive number.");
-      setAlertVariant("danger");
+    if (!pass) {
+      setPassError(true);
       return;
     }
-
-    if (!validateCredentials()) return;
-
-    setConnected(true);
-    setAlertMessage("Connected to server successfully!");
-    setAlertVariant("success");
+    setOpenSSH(true);
+    const passParams = btoa(pass); //for query params which is not needed in our case
+    try {
+      // const response = await fetchXSRFToken();
+      // console.log("response >>", response);
+      // Cookies.set("_xsrf", response);
+      const res = await RemoteSSHConnect(ipAddress, port, username, pass);
+      console.log("res >>", res);
+    } catch (error) {
+      console.error("Failed to connect:", error);
+    }
   };
 
   const handleReset = () => {
-    setHostname(null);
-    setPort("");
-    setUsername("");
-    setPassword("");
-    setAlertMessage("");
-    setAlertVariant("");
-    setConnected(false);
+    setPort(22);
+    setPass("");
+    setSelectedBranch(null);
+    setSelectedDevice(null);
+    setSelectedUser(null);
   };
 
+  const handleCloseAlert = () => {
+    setAlertVisible(false);
+    setSelectedDevice(null);
+  };
+
+  useEffect(() => {
+    if (selectedDevice) {
+      const fetchIPAddress = async () => {
+        try {
+          const res = await GetPrivateIPAddress(selectedDevice.value);
+          const data = res.data.data[0];
+          const ip = data?.private_ip_address || "";
+          setIpAddress(ip);
+          if (!ip) setAlertVisible(true);
+        } catch (error) {
+          console.error("Error fetching IP:", error);
+          setIpAddress(" ");
+          setAlertVisible(true);
+        }
+      };
+      fetchIPAddress();
+    } else {
+      setIpAddress(" ");
+    }
+  }, [selectedDevice]);
+
+  useEffect(() => {
+    if (computerIdProp) {
+      const computer = staticData.Computers.find(
+        (device) => device.id === computerIdProp
+      );
+      if (computer) {
+        const branch = staticData.Locations.find(
+          (loc) => loc.id === computer.branchid
+        );
+        setSelectedBranch(
+          branch ? { value: branch.id, label: branch.name } : null
+        );
+        setSelectedDevice({ value: computer.id, label: computer.name });
+      }
+    }
+  }, [computerIdProp, staticData]);
+  // const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
   return (
-    <Content>
-      <div className="container mt-5">
-        <div className="row justify-content-center">
-          <div className="col-md-10 col-lg-10 col-xl-12">
-            <h2 className="text-center mb-4">🔐 Remote SSH</h2>
-            <ActionIcons />
-            <form className="p-4 shadow-sm bg-light rounded">
-              <div className="mb-3">
-                <label htmlFor="hostnameInput" className="form-label">
-                  Hostname/IP
-                </label>
-                <Select
-                  id="hostnameInput"
-                  options={computers}
-                  value={
-                    hostname
-                      ? { label: `${hostname} - ${hostname}`, value: hostname }
-                      : null
-                  }
-                  onChange={(selectedOption) =>
-                    setHostname(selectedOption?.value || null)
-                  }
-                  placeholder="Select a computer or enter IP"
-                />
-              </div>
+    // <>
+    //   <iframe src={BASE_URL} width="800" height="600"></iframe>
+    //   <div></div>
+    // </>
 
-              <div className="mb-3">
-                <label htmlFor="portInput" className="form-label">
-                  Port
-                </label>
-                <input
-                  type="number"
-                  id="portInput"
-                  className="form-control"
-                  placeholder="e.g., 22"
-                  value={port}
-                  onChange={(e) => setPort(e.target.value)}
-                />
-              </div>
+    <div
+      className="container-fluid"
+      style={{ paddingLeft: "30px", paddingRight: "30px" }}
+    >
+      <div className="row justify-content-center">
+        <div className="col-md-12 col-lg-10 col-xl-12">
+          {!computerIdProp && (
+            <div className="d-flex justify-content-between">
+              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+              <ActionIcons />
+            </div>
+          )}
 
-              <div className="mb-3">
-                <label htmlFor="usernameInput" className="form-label">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  id="usernameInput"
-                  className="form-control"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-
-              <div className="mb-5">
-                <label htmlFor="passwordInput" className="form-label">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="passwordInput"
-                  className="form-control"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-
-              <div className="d-flex flex-column flex-sm-row gap-3">
-                <button
-                  type="button"
-                  className="btn custom-btn-primary w-100 hyper-connect-btn"
-                  onClick={handleConnect}
-                >
-                  Connect
-                </button>
-                <button
-                  type="button"
-                  className="btn custom-btn-warning w-100 hyper-reset-btn"
-                  onClick={handleReset}
-                >
-                  Reset
-                </button>
-              </div>
-            </form>
-
-            {alertMessage && (
-              <div
-                className={`alert alert-${alertVariant} alert-dismissible fade show mt-4`}
-                role="alert"
-              >
-                <div className="d-flex justify-content-between">
-                  <span>{alertMessage}</span>
+          {openSSH === true ? (
+            <SSHClient
+              hostname={ipAddress}
+              credentials={{
+                username: username,
+                password: pass,
+              }}
+            />
+          ) : (
+            <div className="container">
+              <div className="card p-5">
+                <div className="row">
+                  <div className="col-md-12 mb-5 d-flex justify-content-end align-items-end">
+                    <div
+                      className="border rounded p-3 mb-4"
+                      style={{ width: "150px" }}
+                    >
+                      <label className="form-label text-start">
+                        <i className="bi bi-usb-symbol text-primary"></i>
+                        <span className="text-primary">Port</span>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control form-control-solid"
+                        value={port}
+                        placeholder="Enter Port (e.g., 8080)"
+                        onChange={(e) => setPort(Number(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label">Select Location</label>
+                    <Select
+                      options={locationOptions}
+                      classNamePrefix="react-select"
+                      value={selectedBranch}
+                      onChange={handleBranchChange}
+                      placeholder="Select Branch"
+                      isClearable
+                    />
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label">Username</label>
+                    <input
+                      type="text"
+                      className="form-control form-control-solid"
+                      placeholder="Username"
+                      onChange={(e) => {
+                        setUsrnameError(false);
+                        setUsername(e.target.value);
+                      }}
+                      style={{ height: "47px" }}
+                      required
+                    />
+                    {usrnameError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter your username.
+                      </small>
+                    )}
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label">Select User</label>
+                    <Select
+                      options={userOptions}
+                      classNamePrefix="react-select"
+                      value={selectedUser}
+                      onChange={(newValue) => setSelectedUser(newValue)}
+                      placeholder="Select User"
+                      isClearable
+                    />
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label required">Password</label>
+                    <input
+                      type="password"
+                      className="form-control form-control-solid"
+                      placeholder="Your password"
+                      onChange={(e) => {
+                        setPassError(false);
+                        setPass(e.target.value);
+                      }}
+                      style={{ height: "47px" }}
+                      required
+                    />
+                    {passError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter your password.
+                      </small>
+                    )}
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label required">
+                      Select Device
+                    </label>
+                    <Select
+                      classNamePrefix="react-select"
+                      options={compOptions}
+                      value={selectedDevice}
+                      onChange={(newValue) => {
+                        setDeviceError(false);
+                        setSelectedDevice(newValue);
+                      }}
+                      placeholder="Select Device"
+                      isClearable
+                    />
+                    {deviceError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please select a device.
+                      </small>
+                    )}
+                  </div>
+                  {selectedDevice && (
+                    <div className="col-md-6 mb-5">
+                      <label className="custom-label required">
+                        Device IP Address
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control form-control-solid"
+                        value={ipAddress}
+                        readOnly
+                        style={{ height: "47px" }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className="mt-5 d-flex flex-column justify-content-around flex-sm-row gap-3">
                   <button
                     type="button"
-                    className="btn-close"
-                    aria-label="Close"
-                    onClick={() => setAlertMessage("")}
-                  ></button>
-                </div>
-              </div>
-            )}
-
-            {connected && (
-              <div className="alert alert-success mt-4" role="alert">
-                <div className="d-flex justify-content-between">
-                  <span>Connected to server!</span>
+                    className="btn hyper-reset-btn"
+                    onClick={handleReset}
+                    style={{ width: "150px" }}
+                  >
+                    Reset
+                  </button>
                   <button
                     type="button"
-                    className="btn-close"
-                    aria-label="Close"
-                    onClick={() => setConnected(false)}
-                  ></button>
+                    className="btn hyper-connect-btn"
+                    // onClick={handleConnect}
+                    style={{ width: "150px" }}
+                  >
+                    Connect
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
-    </Content>
+      {alertVisible && <AlertModal onClose={handleCloseAlert} />}
+    </div>
   );
 };
 

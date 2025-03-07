@@ -1,3 +1,6 @@
+import axios from "axios";
+import Cookies from "js-cookie";
+
 import { ErrorResponse } from "../types/AuthTypes";
 import {
   CreateSoftInstRequestType,
@@ -8,6 +11,7 @@ import {
   PublicApiCall,
   getSessionTokenFromCookie,
 } from "./Config";
+const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
 
 const errorCatch = (error: ErrorResponse) => {
   console.log("ERROR API CALL", error, error?.response);
@@ -112,6 +116,134 @@ async function GetBranches() {
 }
 
 /** *********************************************************************************************/
+/** ************************************** Remote SSH *******************************************/
+/** *********************************************************************************************/
+
+function getXsrfTokenFromCookies(): string {
+  const match = Cookies.get("xyz");
+  console.log("match ==>>", match);
+  return match ?? "";
+}
+
+const fetchXSRFToken = async () => {
+  // const tokenResponse = await fetch(`${BASE_URL}/xsrf-token`, {
+  //   method: "GET",
+  //   credentials: "include",
+  // });
+  // const { _xsrf } = await tokenResponse.json();
+  // console.log("_xsrf ==>", _xsrf);
+  // return _xsrf;
+
+  // const response = await axios.get(`${BASE_URL}/xsrf-token`, {
+  //   withCredentials: true,
+  // });
+  const response = await axios.get(`${BASE_URL}/xsrf-token`);
+  return response.data._xsrf;
+};
+
+async function RemoteSSHConnect(
+  hostname: string,
+  port: number,
+  username: string,
+  pass: string
+) {
+  try {
+    const xsrfToken = await fetchXSRFToken();
+
+    const requestData = new URLSearchParams({
+      hostname: hostname,
+      port: port.toString(),
+      username: username,
+      password: pass,
+      term: "xterm-256color",
+      _xsrf: xsrfToken,
+    });
+
+    const response = await fetch(`${BASE_URL}/`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-XSRFToken": xsrfToken,
+      },
+      body: requestData,
+    });
+
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error("SSH Connection Error:", error);
+    throw error;
+  }
+}
+
+// const xsrfToken = getXsrfTokenFromCookies();
+// if (!xsrfToken) {
+//   console.warn("XSRF token missing from cookies. Fetching a new one...");
+//   await fetchXSRFToken();
+// }
+
+// const xsrfToken = await fetchXSRFToken();
+
+// const requestData = new URLSearchParams({
+//   hostname: hostname,
+//   port: port.toString(),
+//   username: username,
+//   password: pass,
+//   term: "xterm-256color",
+//   _xsrf: xsrfToken,
+// }).toString();
+
+// const response = await axios.post(`${BASE_URL}/`, requestData, {
+//   withCredentials: true,
+//   headers: {
+//     "Content-Type": "application/x-www-form-urlencoded",
+//     "X-Xsrf-Token": xsrfToken,
+//     Cookie: `_xsrf=${xsrfToken}`,
+//   },
+// });
+
+// console.log(response);
+// return response.data;
+// } catch (error) {
+//   console.error("SSH Connection Error:", error);
+//   throw error;
+// }
+// }
+
+// async function RemoteSSHConnect(
+//   hostname: string,
+//   port: number,
+//   username: string,
+//   pass: string
+// ) {
+//   try {
+//     const response = await axios.post(
+//       `${BASE_URL}/?hostname=${hostname}&username=${username}&password=${btoa(
+//         pass
+//       )}`,
+//       new URLSearchParams({
+//         hostname: hostname,
+//         port: port.toString(),
+//         username: username,
+//         password: pass,
+//         term: "xterm-256color",
+//         _xsrf: getXsrfTokenFromCookies(),
+//       }).toString(),
+//       {
+//         withCredentials: true,
+//         headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//       }
+//     );
+//     console.log(response);
+//     return response.data;
+//   } catch (error) {
+//     console.error("SSH Connection Error:", error);
+//     throw error;
+//   }
+// }
+
+/** *********************************************************************************************/
 /** ************************************** Software Installation ********************************/
 /** *********************************************************************************************/
 async function FetchAllSoftwareInstallations(
@@ -167,6 +299,29 @@ async function GetAllComputers() {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetComputer(id: number) {
+  return await PrivateApiCall.get(`/Computer/${id}`, {
+    params: {
+      expand_dropdowns: 1,
+    },
+  })
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetPrivateIPAddress(id: number) {
+  return await PrivateApiCall.get(`/AntComputerIP/`, {
+    params: {
+      get_hateoas: false,
+      order: "DESC",
+      "searchText[computers_id]": id,
+      range: "0-0",
+    },
+  })
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 /** *********************************************************************************************/
 /** ************************************** Locations ********************************************/
 /** *********************************************************************************************/
@@ -201,9 +356,13 @@ export {
   InitiateSoftwareInstallation,
   FetchAllSoftwareInstallations,
   CancelSoftwareInstallation,
-  GetAllSoftwareInstallations,
+  RemoteSSHConnect,
   GetAllComputers,
+  GetComputer,
+  GetPrivateIPAddress,
+  GetAllSoftwareInstallations,
   GetAllLocations,
   GetStaticData,
+  fetchXSRFToken,
   GetUsersAndAreas,
 };
