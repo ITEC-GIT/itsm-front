@@ -91,10 +91,10 @@ const RemoteConsolePage = ({ computerIdProp }: { computerIdProp?: number }) => {
           )}
           <button
             type="button"
-            className="btn btn-primary custom-btn hyper-connect-btn"
+            className="btn custom-action-btn"
             onClick={openModal}
           >
-            Start Remote Session
+            <div className="custom-btn-text">Start Remote Session</div>
           </button>
 
           {sessionActive && (
