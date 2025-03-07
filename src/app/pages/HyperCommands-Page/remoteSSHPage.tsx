@@ -162,189 +162,189 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       }
     }
   }, [computerIdProp, staticData]);
-  const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
+  // const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
   return (
-    <>
-      <iframe src={BASE_URL} width="800" height="600"></iframe>
-      <div></div>
-    </>
+    // <>
+    //   <iframe src={BASE_URL} width="800" height="600"></iframe>
+    //   <div></div>
+    // </>
 
-    // <div
-    //   className="container-fluid"
-    //   style={{ paddingLeft: "30px", paddingRight: "30px" }}
-    // >
-    //   <div className="row justify-content-center">
-    //     <div className="col-md-12 col-lg-10 col-xl-12">
-    //       {!computerIdProp && (
-    //         <div className="d-flex justify-content-between">
-    //           <h2 className="text-center mb-4">🔐 Remote SSH</h2>
-    //           <ActionIcons />
-    //         </div>
-    //       )}
+    <div
+      className="container-fluid"
+      style={{ paddingLeft: "30px", paddingRight: "30px" }}
+    >
+      <div className="row justify-content-center">
+        <div className="col-md-12 col-lg-10 col-xl-12">
+          {!computerIdProp && (
+            <div className="d-flex justify-content-between">
+              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+              <ActionIcons />
+            </div>
+          )}
 
-    //       {openSSH === true ? (
-    //         <SSHClient
-    //           hostname={ipAddress}
-    //           credentials={{
-    //             username: username,
-    //             password: pass,
-    //           }}
-    //         />
-    //       ) : (
-    //         <div className="container">
-    //           <div className="card p-5">
-    //             <div className="row">
-    //               <div className="col-md-12 mb-5 d-flex justify-content-end align-items-end">
-    //                 <div
-    //                   className="border rounded p-3 mb-4"
-    //                   style={{ width: "150px" }}
-    //                 >
-    //                   <label className="form-label text-start">
-    //                     <i className="bi bi-usb-symbol text-primary"></i>
-    //                     <span className="text-primary">Port</span>
-    //                   </label>
-    //                   <input
-    //                     type="number"
-    //                     className="form-control custom-input"
-    //                     value={port}
-    //                     placeholder="Enter Port (e.g., 8080)"
-    //                     onChange={(e) => setPort(Number(e.target.value))}
-    //                   />
-    //                 </div>
-    //               </div>
-    //               <div className="col-md-6 mb-5">
-    //                 <label className="custom-label">Select Location</label>
-    //                 <Select
-    //                   className="custom-select"
-    //                   options={locationOptions}
-    //                   classNamePrefix="react-select"
-    //                   value={selectedBranch}
-    //                   onChange={handleBranchChange}
-    //                   placeholder="Select Branch"
-    //                   isClearable
-    //                 />
-    //               </div>
-    //               <div className="col-md-6 mb-5">
-    //                 <label className="custom-label">Username</label>
-    //                 <input
-    //                   type="text"
-    //                   className="form-control custom-input"
-    //                   placeholder="Username"
-    //                   onChange={(e) => {
-    //                     setUsrnameError(false);
-    //                     setUsername(e.target.value);
-    //                   }}
-    //                   style={{ height: "47px" }}
-    //                   required
-    //                 />
-    //                 {usrnameError && (
-    //                   <small
-    //                     className="text-danger"
-    //                     style={{ fontSize: "0.875rem" }}
-    //                   >
-    //                     Please enter your username.
-    //                   </small>
-    //                 )}
-    //               </div>
-    //               <div className="col-md-6 mb-5">
-    //                 <label className="custom-label">Select User</label>
-    //                 <Select
-    //                   className="custom-select"
-    //                   options={userOptions}
-    //                   classNamePrefix="react-select"
-    //                   value={selectedUser}
-    //                   onChange={(newValue) => setSelectedUser(newValue)}
-    //                   placeholder="Select User"
-    //                   isClearable
-    //                 />
-    //               </div>
-    //               <div className="col-md-6 mb-5">
-    //                 <label className="custom-label required">Password</label>
-    //                 <input
-    //                   type="password"
-    //                   className="form-control custom-input"
-    //                   placeholder="Your password"
-    //                   onChange={(e) => {
-    //                     setPassError(false);
-    //                     setPass(e.target.value);
-    //                   }}
-    //                   style={{ height: "47px" }}
-    //                   required
-    //                 />
-    //                 {passError && (
-    //                   <small
-    //                     className="text-danger"
-    //                     style={{ fontSize: "0.875rem" }}
-    //                   >
-    //                     Please enter your password.
-    //                   </small>
-    //                 )}
-    //               </div>
-    //               <div className="col-md-6 mb-5">
-    //                 <label className="custom-label required">
-    //                   Select Device
-    //                 </label>
-    //                 <Select
-    //                   className="custom-select"
-    //                   options={compOptions}
-    //                   classNamePrefix="react-select"
-    //                   value={selectedDevice}
-    //                   onChange={(newValue) => {
-    //                     setDeviceError(false);
-    //                     setSelectedDevice(newValue);
-    //                   }}
-    //                   placeholder="Select Device"
-    //                   isClearable
-    //                 />
-    //                 {deviceError && (
-    //                   <small
-    //                     className="text-danger"
-    //                     style={{ fontSize: "0.875rem" }}
-    //                   >
-    //                     Please select a device.
-    //                   </small>
-    //                 )}
-    //               </div>
-    //               {selectedDevice && (
-    //                 <div className="col-md-6 mb-5">
-    //                   <label className="custom-label required">
-    //                     Device IP Address
-    //                   </label>
-    //                   <input
-    //                     type="text"
-    //                     className="form-control custom-input"
-    //                     value={ipAddress}
-    //                     readOnly
-    //                     style={{ height: "47px" }}
-    //                   />
-    //                 </div>
-    //               )}
-    //             </div>
-    //             <div className="mt-5 d-flex flex-column justify-content-around flex-sm-row gap-3">
-    //               <button
-    //                 type="button"
-    //                 className="btn hyper-reset-btn"
-    //                 onClick={handleReset}
-    //                 style={{ width: "150px" }}
-    //               >
-    //                 Reset
-    //               </button>
-    //               <button
-    //                 type="button"
-    //                 className="btn hyper-connect-btn"
-    //                 onClick={handleConnect}
-    //                 style={{ width: "150px" }}
-    //               >
-    //                 Connect
-    //               </button>
-    //             </div>
-    //           </div>
-    //         </div>
-    //       )}
-    //     </div>
-    //   </div>
-    //   {alertVisible && <AlertModal onClose={handleCloseAlert} />}
-    // </div>
+          {openSSH === true ? (
+            <SSHClient
+              hostname={ipAddress}
+              credentials={{
+                username: username,
+                password: pass,
+              }}
+            />
+          ) : (
+            <div className="container">
+              <div className="card p-5">
+                <div className="row">
+                  <div className="col-md-12 mb-5 d-flex justify-content-end align-items-end">
+                    <div
+                      className="border rounded p-3 mb-4"
+                      style={{ width: "150px" }}
+                    >
+                      <label className="form-label text-start">
+                        <i className="bi bi-usb-symbol text-primary"></i>
+                        <span className="text-primary">Port</span>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control custom-input"
+                        value={port}
+                        placeholder="Enter Port (e.g., 8080)"
+                        onChange={(e) => setPort(Number(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label">Select Location</label>
+                    <Select
+                      className="custom-select"
+                      options={locationOptions}
+                      classNamePrefix="react-select"
+                      value={selectedBranch}
+                      onChange={handleBranchChange}
+                      placeholder="Select Branch"
+                      isClearable
+                    />
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label">Username</label>
+                    <input
+                      type="text"
+                      className="form-control custom-input"
+                      placeholder="Username"
+                      onChange={(e) => {
+                        setUsrnameError(false);
+                        setUsername(e.target.value);
+                      }}
+                      style={{ height: "47px" }}
+                      required
+                    />
+                    {usrnameError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter your username.
+                      </small>
+                    )}
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label">Select User</label>
+                    <Select
+                      className="custom-select"
+                      options={userOptions}
+                      classNamePrefix="react-select"
+                      value={selectedUser}
+                      onChange={(newValue) => setSelectedUser(newValue)}
+                      placeholder="Select User"
+                      isClearable
+                    />
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label required">Password</label>
+                    <input
+                      type="password"
+                      className="form-control custom-input"
+                      placeholder="Your password"
+                      onChange={(e) => {
+                        setPassError(false);
+                        setPass(e.target.value);
+                      }}
+                      style={{ height: "47px" }}
+                      required
+                    />
+                    {passError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter your password.
+                      </small>
+                    )}
+                  </div>
+                  <div className="col-md-6 mb-5">
+                    <label className="custom-label required">
+                      Select Device
+                    </label>
+                    <Select
+                      className="custom-select"
+                      options={compOptions}
+                      classNamePrefix="react-select"
+                      value={selectedDevice}
+                      onChange={(newValue) => {
+                        setDeviceError(false);
+                        setSelectedDevice(newValue);
+                      }}
+                      placeholder="Select Device"
+                      isClearable
+                    />
+                    {deviceError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please select a device.
+                      </small>
+                    )}
+                  </div>
+                  {selectedDevice && (
+                    <div className="col-md-6 mb-5">
+                      <label className="custom-label required">
+                        Device IP Address
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control custom-input"
+                        value={ipAddress}
+                        readOnly
+                        style={{ height: "47px" }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className="mt-5 d-flex flex-column justify-content-around flex-sm-row gap-3">
+                  <button
+                    type="button"
+                    className="btn hyper-reset-btn"
+                    onClick={handleReset}
+                    style={{ width: "150px" }}
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="button"
+                    className="btn hyper-connect-btn"
+                    // onClick={handleConnect}
+                    style={{ width: "150px" }}
+                  >
+                    Connect
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      {alertVisible && <AlertModal onClose={handleCloseAlert} />}
+    </div>
   );
 };
 
