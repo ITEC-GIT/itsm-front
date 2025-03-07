@@ -1,18 +1,18 @@
-import {useIntl} from 'react-intl'
-import {KTIcon} from '../../../../helpers'
-import {SidebarMenuItemWithSub} from './SidebarMenuItemWithSub'
-import {SidebarMenuItem} from './SidebarMenuItem'
+import { useIntl } from "react-intl";
+import { KTIcon } from "../../../../helpers";
+import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
+import { SidebarMenuItem } from "./SidebarMenuItem";
 
 const SidebarMenuMain = () => {
-  const intl = useIntl()
+  const intl = useIntl();
 
   return (
     <>
       <SidebarMenuItem
-        to='/dashboard'
-        icon='element-11'
-        title={intl.formatMessage({id: 'MENU.DASHBOARD'})}
-        fontIcon='bi-app-indicator'
+        to="/dashboard"
+        icon="element-11"
+        title={intl.formatMessage({ id: "MENU.DASHBOARD" })}
+        fontIcon="bi-app-indicator"
       />
       <SidebarMenuItem
         to="/hyper-commands"
@@ -20,13 +20,26 @@ const SidebarMenuMain = () => {
         title="Hyper Commands"
         fontIcon="bi-layers"
       />
-      <div className='menu-item'>
-        <div className='menu-content pt-8 pb-2'>
-          <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Tickets</span>
+      <SidebarMenuItem
+        to="/assets"
+        icon="switch"
+        title="Assets"
+        fontIcon="bi-layers"
+      />
+      <div className="menu-item">
+        <div className="menu-content pt-8 pb-2">
+          <span className="menu-section text-muted text-uppercase fs-8 ls-1">
+            Tickets
+          </span>
         </div>
       </div>
-    
-      <SidebarMenuItem to='/tickets' icon='switch' title='All Tickets' fontIcon='bi-layers' />
+
+      <SidebarMenuItem
+        to="/tickets"
+        icon="switch"
+        title="All Tickets"
+        fontIcon="bi-layers"
+      />
       {/* <SidebarMenuItem to='/builder' icon='switch' title='My Tickets' fontIcon='bi-layers' />
       <SidebarMenuItem to='/builder' icon='switch' title='Due Today' fontIcon='bi-layers' />
       <SidebarMenuItem to='/builder' icon='switch' title='Knowledge Base' fontIcon='bi-layers'/> */}
@@ -130,7 +143,7 @@ const SidebarMenuMain = () => {
         </a>
       </div> */}
     </>
-  )
-}
+  );
+};
 
-export {SidebarMenuMain}
+export { SidebarMenuMain };

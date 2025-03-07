@@ -12,7 +12,7 @@ import { SelectDeviceType } from "../../types/devicesTypes";
 import { SelectLocationType } from "../../types/locationsTypes";
 import { formatName } from "../../../utils/custom";
 
-interface Step {
+export interface Step {
   id: number;
   title: string;
   iconClass: string;
@@ -29,7 +29,7 @@ interface StepNavigationStepProps {
   isComplete: boolean;
 }
 
-const Wizard = ({
+export const Wizard = ({
   steps,
   add,
   idgt,
@@ -318,10 +318,10 @@ const Wizard = ({
   }, []);
 
   return (
-    <div className="container-fluid p-5 bg-white">
+    <div className="row p-5 bg-white">
       <StepNavigation steps={steps} currentStep={currentStep} />
 
-      <div className="mt-4">
+      <div className="col-12 mt-4" style={{ height: "210px" }}>
         {currentStep === 1 && (
           <div className="d-flex flex-column">
             <div className="mb-4" style={{ height: "90px" }}>
@@ -330,7 +330,6 @@ const Wizard = ({
               </label>
               <Select
                 id="locationSelect"
-                className="custom-select"
                 classNamePrefix="react-select"
                 options={locationOptions.map((location) => ({
                   value: location.id.toString(),
@@ -366,7 +365,6 @@ const Wizard = ({
               </label>
               <Select
                 id="deviceSelect"
-                className="custom-select"
                 classNamePrefix="react-select"
                 isMulti
                 options={filteredDevices.map((device) => ({
@@ -410,7 +408,7 @@ const Wizard = ({
             </label>
             <input
               type="text"
-              className="form-control custom-input"
+              className="form-control form-control-solid"
               id="destinationInput"
               name="destination"
               value={destination}
@@ -438,7 +436,7 @@ const Wizard = ({
                   setSoftwareNameError(false);
                   setSoftwareName(e.target.value);
                 }}
-                className="form-control custom-input"
+                className="form-control form-control-solid"
                 placeholder="Enter the software name"
               />
             </div>
@@ -495,7 +493,7 @@ const Wizard = ({
                     setSoftwareUrlError(false);
                     setSoftwareUrl(e.target.value);
                   }}
-                  className="form-control custom-input"
+                  className="form-control form-control-solid"
                   placeholder="Enter the software URL"
                 />
                 {softwareUrlError && (
@@ -517,7 +515,7 @@ const Wizard = ({
                       setFile(e.target.files[0]);
                     }
                   }}
-                  className="form-control custom-input"
+                  className="form-control form-control-solid"
                 />
                 {file && <p>Selected file: {file.name}</p>}
                 {softwareUrlError && (
@@ -540,7 +538,7 @@ const Wizard = ({
             <input
               type="text"
               id="argumentsInput"
-              className="form-control custom-input"
+              className="form-control form-control-solid"
               placeholder="e.g., /a /b arg1=value1 arg2=value2"
               value={variables}
               onChange={(e) => setVariables(e.target.value)}
@@ -596,12 +594,14 @@ const Wizard = ({
           className="btn btn-primary"
           onClick={handleBack}
           disabled={isFirstStep ? true : isBackButtonDisabled}
+          style={{ height: "45px" }}
         >
           Back
         </button>
         {isLastStep ? (
           <button
             className="btn btn-success"
+            style={{ height: "45px" }}
             onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
               handleInstall(e)
             }
@@ -609,7 +609,11 @@ const Wizard = ({
             Submit
           </button>
         ) : (
-          <button className="btn btn-primary" onClick={handleNext}>
+          <button
+            className="btn btn-primary"
+            onClick={handleNext}
+            style={{ height: "45px" }}
+          >
             Next
           </button>
         )}
@@ -618,7 +622,7 @@ const Wizard = ({
   );
 };
 
-const StepNavigation: React.FC<StepNavigationProps> = ({
+export const StepNavigation: React.FC<StepNavigationProps> = ({
   steps,
   currentStep,
 }) => {
@@ -632,7 +636,6 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
               isActive={step.id === currentStep}
               isComplete={step.id < currentStep}
             />
-
             {index < steps.length - 1 && (
               <div
                 className={`step-line ${
@@ -655,7 +658,7 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
   );
 };
 
-const StepNavigationStep: React.FC<StepNavigationStepProps> = ({
+export const StepNavigationStep: React.FC<StepNavigationStepProps> = ({
   step,
   isActive,
   isComplete,
@@ -680,7 +683,7 @@ const StepNavigationStep: React.FC<StepNavigationStepProps> = ({
   );
 };
 
-const Step: React.FC<{ title: string; children: React.ReactNode }> = ({
+export const Step: React.FC<{ title: string; children: React.ReactNode }> = ({
   title,
   children,
 }) => {
@@ -691,5 +694,3 @@ const Step: React.FC<{ title: string; children: React.ReactNode }> = ({
     </div>
   );
 };
-
-export { Wizard };

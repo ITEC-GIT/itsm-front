@@ -78,11 +78,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const filtersStoreName = "softwareFilters";
 
   const handleApplyFilters = () => {
-    console.log("hii");
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
       return;
     const filtersSelection: Record<string, any> = {};
-    console.log("selectedFilters ==>>", selectedFilters);
     if (Object.keys(selectedFilters).length !== 0) {
       Object.entries(selectedFilters).forEach(([key, value]) => {
         const filterConfig = filtersOptions.find((option) => option.id === key);
@@ -118,7 +116,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       ...initialFilters,
       ...filtersSelection,
     };
-    console.log("wholeFilter ==>>", wholeFilter);
     saveFilters(wholeFilter);
     // handleClearFilters();
 
@@ -264,7 +261,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                       : "Unnamed",
                 }))
               : [];
-            console.log("newFilterData ==>>", newFilterData);
           } catch (error) {
             console.error(`Failed to fetch data for ${filter.id}:`, error);
           }
@@ -290,10 +286,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       }}
     >
       <div className="d-flex align-items-center gap-2 mb-4">
-        <button
-          className="toggle-btn close-filter-btn p-3"
-          onClick={handleCloseSidebar}
-        >
+        <button className="btn  p-3" onClick={handleCloseSidebar}>
           <i className={`fas fa-chevron-left`}></i>
         </button>
 
@@ -302,7 +295,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </h4>
       </div>
 
-      <div className="d-flex flex-column gap-3 bg-light border rounded shadow-sm">
+      <div className="d-flex flex-column gap-3 ">
         {filtersOptions.map((filter) => {
           if (activeFilters.includes(filter.id)) {
             return (
@@ -311,17 +304,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
                 {filter.id === "dateFilter" ? (
                   <>
-                    <div className="shadow-sm">
+                    <div>
                       <label className="custom-label">From</label>
                       <DatePicker date={startDate} setDate={setStartDate} />
                     </div>
-                    <div className="form-group shadow-sm">
-                      <label
-                        className="datePickerLabel custom-label"
-                        htmlFor="datePicker"
-                      >
-                        To
-                      </label>
+                    <div className="form-group">
+                      <label className="custom-label">To</label>
                       <DatePicker date={endDate} setDate={setEndDate} />
                     </div>
                   </>
@@ -329,7 +317,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   <Select
                     options={filterData[filter.id]}
                     placeholder={`Select ${filter.name}`}
-                    className="custom-select shadow-sm"
+                    // className="form-select-solid"
                     classNamePrefix="react-select"
                     value={selectedFilters[filter.id] ?? null}
                     onChange={(selectedOption) =>
@@ -354,19 +342,19 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
       <div className="d-flex justify-content-between mt-3 p-3">
         <button
-          className="toggle-btn p-3 hyper-connect-btn"
+          className="btn custom-btn p-3 blue-bg-btn"
           onClick={handleClearFilters}
         >
           <span className="hyper-btn-text">Clear</span>
         </button>
         <button
-          className="toggle-btn p-3 hyper-connect-btn"
+          className="btn p-3 custom-btn blue-bg-btn"
           onClick={handleApplyFilters}
         >
           <span className="hyper-btn-text">Apply</span>
         </button>
         <button
-          className="toggle-btn p-3 hyper-connect-btn"
+          className="btn p-3 custom-btn blue-bg-btn"
           onClick={handleSaveFilter}
         >
           <span className="hyper-btn-text">Save</span>
