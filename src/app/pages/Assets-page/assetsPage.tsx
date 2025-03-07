@@ -142,7 +142,6 @@ const AssetsPage = () => {
       const columnsWithoutAction = visibleColumns.filter(
         (col) => col.id !== "action" && col.id !== "id"
       );
-      console.log(columnsWithoutAction);
       const visibleCount = visibleColumns.length;
       const newWidths: Record<string, string> = {};
 

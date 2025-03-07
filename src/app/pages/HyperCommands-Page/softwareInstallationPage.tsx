@@ -246,12 +246,17 @@ const SoftwareInstallationPage = () => {
         });
       } else if (visibleCount > 2) {
         const baseWidthPercentage = Math.ceil(100 / visibleCount);
-
+        console.log(baseWidthPercentage);
         if (tableContainerRef.current) {
           const containerWidth = tableContainerRef.current.clientWidth;
           visibleCols.forEach((col: TableColumn<SoftwareHistoryType>) => {
             if (col.width) {
               const pixelWidth = parseInt(col.width, 10);
+
+              // if (col.id === "action" || col.id === "id") {
+              //   newWidths[col.id as string] = col.width;
+              // }
+              // else
               if (!isNaN(pixelWidth)) {
                 const columnPercentageWidth = Math.round(
                   (pixelWidth / containerWidth) * 100
@@ -260,7 +265,8 @@ const SoftwareInstallationPage = () => {
                 if (columnPercentageWidth < baseWidthPercentage) {
                   newWidths[col.id as string] = `${baseWidthPercentage}%`;
                 } else {
-                  newWidths[col.id as string] = col.width;
+                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                  // col.width;
                 }
               } else {
                 newWidths[col.id as string] = `${baseWidthPercentage}%`;
@@ -271,6 +277,7 @@ const SoftwareInstallationPage = () => {
           });
         }
       }
+      console.log("newWidths ==>>>", newWidths);
       setColumnWidths(newWidths);
     };
 
@@ -302,6 +309,10 @@ const SoftwareInstallationPage = () => {
           className="row justify-content-around  bg-white"
           style={{ height: "15%" }}
         >
+          <div className="d-flex justify-content-between">
+            <h2 className="text-center mb-4">🚀 Software Installation</h2>
+            <ActionIcons />
+          </div>
           <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2">
             <li className="nav-item">
               <a

@@ -321,7 +321,7 @@ export const Wizard = ({
     <div className="row p-5 bg-white">
       <StepNavigation steps={steps} currentStep={currentStep} />
 
-      <div className="mt-4">
+      <div className="col-12 mt-4" style={{ height: "210px" }}>
         {currentStep === 1 && (
           <div className="d-flex flex-column">
             <div className="mb-4" style={{ height: "90px" }}>
@@ -590,12 +590,14 @@ export const Wizard = ({
           className="btn btn-primary"
           onClick={handleBack}
           disabled={isFirstStep ? true : isBackButtonDisabled}
+          style={{ height: "45px" }}
         >
           Back
         </button>
         {isLastStep ? (
           <button
             className="btn btn-success"
+            style={{ height: "45px" }}
             onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
               handleInstall(e)
             }
@@ -603,7 +605,11 @@ export const Wizard = ({
             Submit
           </button>
         ) : (
-          <button className="btn btn-primary" onClick={handleNext}>
+          <button
+            className="btn btn-primary"
+            onClick={handleNext}
+            style={{ height: "45px" }}
+          >
             Next
           </button>
         )}

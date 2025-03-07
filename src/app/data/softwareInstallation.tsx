@@ -113,7 +113,7 @@ export const getColumns = (
         <span style={{ color: "#f0f0f0" }}>|</span> Destination
       </span>
     ),
-    width: columnXXLargeWidth,
+    width: columnXXXLargeWidth,
     selector: (row: SoftwareHistoryType) => row.destination,
     sortable: true,
     cell: (row: SoftwareHistoryType) => (
@@ -133,7 +133,7 @@ export const getColumns = (
         <span style={{ color: "#f0f0f0" }}>|</span> Arguments
       </span>
     ),
-    width: columnXXLargeWidth,
+    width: columnXXXLargeWidth,
     selector: (row: SoftwareHistoryType) => row.arguments,
     sortable: true,
     id: "Arguments",
@@ -221,10 +221,10 @@ export const getColumns = (
   {
     name: (
       <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Action
+        <span style={{ color: "#f0f0f0" }}>|</span>
       </span>
     ),
-    width: columnMediumWidth,
+    width: columnSmallWidth,
     cell: (row: SoftwareHistoryType) => (
       <button
         className="btn d-flex justify-content-center align-items-center"
@@ -238,7 +238,7 @@ export const getColumns = (
       </button>
     ),
     sortable: false,
-    id: "Action",
+    id: "action",
   },
 ];
 
