@@ -1,0 +1,1 @@
+must send the config and auth manually to server (all files such as .env and config files)

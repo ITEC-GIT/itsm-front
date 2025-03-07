@@ -15,7 +15,7 @@ export default defineConfig({
     },
   },
 
-  base: "/pulsar/itsm/",
+  base:  "/",
   build: {
     chunkSizeWarningLimit: 3000,
   },
