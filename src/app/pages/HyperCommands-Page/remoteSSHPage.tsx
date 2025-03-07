@@ -205,7 +205,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                       </label>
                       <input
                         type="number"
-                        className="form-control custom-input"
+                        className="form-control form-control-solid"
                         value={port}
                         placeholder="Enter Port (e.g., 8080)"
                         onChange={(e) => setPort(Number(e.target.value))}
@@ -215,7 +215,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                   <div className="col-md-6 mb-5">
                     <label className="custom-label">Select Location</label>
                     <Select
-                      className="custom-select"
                       options={locationOptions}
                       classNamePrefix="react-select"
                       value={selectedBranch}
@@ -228,7 +227,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     <label className="custom-label">Username</label>
                     <input
                       type="text"
-                      className="form-control custom-input"
+                      className="form-control form-control-solid"
                       placeholder="Username"
                       onChange={(e) => {
                         setUsrnameError(false);
@@ -249,7 +248,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                   <div className="col-md-6 mb-5">
                     <label className="custom-label">Select User</label>
                     <Select
-                      className="custom-select"
                       options={userOptions}
                       classNamePrefix="react-select"
                       value={selectedUser}
@@ -262,7 +260,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                     <label className="custom-label required">Password</label>
                     <input
                       type="password"
-                      className="form-control custom-input"
+                      className="form-control form-control-solid"
                       placeholder="Your password"
                       onChange={(e) => {
                         setPassError(false);
@@ -285,9 +283,8 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                       Select Device
                     </label>
                     <Select
-                      className="custom-select"
-                      options={compOptions}
                       classNamePrefix="react-select"
+                      options={compOptions}
                       value={selectedDevice}
                       onChange={(newValue) => {
                         setDeviceError(false);
@@ -312,7 +309,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                       </label>
                       <input
                         type="text"
-                        className="form-control custom-input"
+                        className="form-control form-control-solid"
                         value={ipAddress}
                         readOnly
                         style={{ height: "47px" }}
