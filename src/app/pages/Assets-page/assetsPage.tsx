@@ -13,12 +13,7 @@ import { FilterSidebar } from "../../components/form/filters";
 import { ColumnVisibility } from "../../types/common";
 import ColumnModal from "../../components/modal/columns";
 import clsx from "clsx";
-import {
-  activeFilters,
-  columns,
-  getColumns,
-  mockData,
-} from "../../data/assets";
+import { activeFilters, getColumns, mockData } from "../../data/assets";
 import { useNavigate } from "react-router-dom";
 import { showActionColumnAtom } from "../../atoms/table-atom/tableAtom";
 
@@ -35,7 +30,7 @@ const AssetsPage = () => {
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
     id: true,
     name: true,
-    entity: true,
+    entity: false,
     serial_number: true,
     model: true,
     location: true,
@@ -130,10 +125,10 @@ const AssetsPage = () => {
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<AssetsHistoryType>[]
   >([]);
-
+  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const memoizedColumns = useMemo(() => {
-    return getColumns(ShowActionColumn);
-  }, [ShowActionColumn]);
+    return getColumns(hoveredRowId);
+  }, [hoveredRowId]);
 
   useEffect(() => {
     const filteredColumns = memoizedColumns.filter(
@@ -144,11 +139,15 @@ const AssetsPage = () => {
 
   useEffect(() => {
     const calculateWidths = () => {
+      const columnsWithoutAction = visibleColumns.filter(
+        (col) => col.id !== "action" && col.id !== "id"
+      );
+      console.log(columnsWithoutAction);
       const visibleCount = visibleColumns.length;
       const newWidths: Record<string, string> = {};
 
       if (visibleCount === 2) {
-        visibleColumns.forEach((col: TableColumn<AssetsHistoryType>) => {
+        columnsWithoutAction.forEach((col: TableColumn<AssetsHistoryType>) => {
           newWidths[col.id as string] = "50%";
         });
       } else if (visibleCount > 2) {
@@ -157,27 +156,28 @@ const AssetsPage = () => {
         if (tableContainerRef.current) {
           const containerWidth = tableContainerRef.current.clientWidth;
 
-          visibleColumns.forEach((col: TableColumn<AssetsHistoryType>) => {
-            if (col.width) {
-              const pixelWidth = parseInt(col.width, 10);
+          columnsWithoutAction.forEach(
+            (col: TableColumn<AssetsHistoryType>) => {
+              if (col.width) {
+                const pixelWidth = parseInt(col.width, 10);
 
-              if (!isNaN(pixelWidth)) {
-                const columnPercentageWidth = Math.round(
-                  (pixelWidth / containerWidth) * 100
-                );
+                if (!isNaN(pixelWidth)) {
+                  const columnPercentageWidth =
+                    Math.round((pixelWidth / containerWidth) * 100) + 0.05;
 
-                if (columnPercentageWidth < baseWidthPercentage) {
-                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                  if (columnPercentageWidth < baseWidthPercentage) {
+                    newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                  } else {
+                    newWidths[col.id as string] = col.width;
+                  }
                 } else {
-                  newWidths[col.id as string] = col.width;
+                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
                 }
               } else {
                 newWidths[col.id as string] = `${baseWidthPercentage}%`;
               }
-            } else {
-              newWidths[col.id as string] = `${baseWidthPercentage}%`;
             }
-          });
+          );
         }
       }
 
@@ -196,14 +196,18 @@ const AssetsPage = () => {
     };
   }, [visibleColumns]);
 
-  const handleMouseEnter = () => {
-    setShowActionColumn(true);
+  const handleMouseEnter = (rowId: number) => {
+    setHoveredRowId(rowId);
   };
 
   const handleMouseLeave = () => {
-    setShowActionColumn(false);
+    setHoveredRowId(null);
   };
 
+  const columnsForModal = useMemo(
+    () => memoizedColumns.filter((col) => col.id !== "action"),
+    [memoizedColumns]
+  );
   return (
     <div className="container-fluid d-flex mt-4" style={{ height: "100%" }}>
       <div
@@ -245,7 +249,7 @@ const AssetsPage = () => {
             <ColumnModal
               isOpen={isColumnModalOpen}
               onClose={toggleColumnModal}
-              columns={columns}
+              columns={columnsForModal}
               initialVisibility={columnVisibility}
               onVisibilityChange={handleVisibilityChange}
             />
@@ -286,7 +290,7 @@ const AssetsPage = () => {
             highlightOnHover
             customStyles={customStyles}
             sortIcon={sortIcon}
-            onRowMouseEnter={handleMouseEnter}
+            onRowMouseEnter={(row) => handleMouseEnter(row.id)}
             onRowMouseLeave={handleMouseLeave}
           />
         </div>

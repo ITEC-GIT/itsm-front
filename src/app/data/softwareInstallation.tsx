@@ -234,10 +234,7 @@ export const getColumns = (
         onClick={() => handleCancelClick(row)}
         disabled={row.status === "cancelled" || row.status === "received"}
       >
-        <i
-          className="bi bi-x text-danger text-center"
-          style={{ fontSize: "2rem", padding: 0 }}
-        ></i>
+        <i className="bi bi-x-lg text-danger text-center table-icon"></i>
       </button>
     ),
     sortable: false,

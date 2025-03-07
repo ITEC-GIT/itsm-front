@@ -8,6 +8,7 @@ import { showActionColumnAtom } from "../atoms/table-atom/tableAtom";
 import {
   columnLargeWidth,
   columnMediumWidth,
+  columnSmallWidth,
   columnXLargeWidth,
   columnXXLargeWidth,
   columnXXXLargeWidth,
@@ -62,14 +63,14 @@ const colors = [
 ];
 
 export const getColumns = (
-  ShowActionColumn: boolean
+  hoveredRowId: number | null
 ): TableColumn<AssetsHistoryType>[] =>
   [
     {
       name: "#",
       sortable: true,
       sortFunction: (a: AssetsHistoryType, b: AssetsHistoryType) => a.id - b.id,
-      width: columnMediumWidth,
+      width: columnSmallWidth,
       cell: (row: AssetsHistoryType) => {
         const backgroundColor = getBackgroundColor(
           row.category,
@@ -90,7 +91,6 @@ export const getColumns = (
           </span>
         );
       },
-
       id: "id",
     },
     {
@@ -316,47 +316,44 @@ export const getColumns = (
       sortable: true,
       id: "alternate_username_number",
     },
-    ShowActionColumn
-      ? {
-          name: (
-            <span>
-              <span style={{ color: "#f0f0f0" }}>|</span> Action
-            </span>
-          ),
-          width: columnMediumWidth,
-          cell: (row: AssetsHistoryType) => {
-            const [showDeleteModal, setShowDeleteModal] = useState(false);
-            const [showActionColumn] = useAtom(showActionColumnAtom);
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span>
+        </span>
+      ),
+      width: "70px",
+      cell: (row: AssetsHistoryType) => {
+        const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-            const handleDeleteClick = () => {
-              setShowDeleteModal(true);
-            };
+        const handleDeleteClick = () => {
+          setShowDeleteModal(true);
+        };
 
-            const confirmDelete = () => {
-              setShowDeleteModal(false);
-            };
+        const confirmDelete = () => {
+          setShowDeleteModal(false);
+        };
 
-            const cancelDelete = () => {
-              setShowDeleteModal(false);
-            };
+        const cancelDelete = () => {
+          setShowDeleteModal(false);
+        };
 
-            return (
-              <div
-                className={`d-flex align-items-start ${
-                  showActionColumn ? "show" : "hide"
-                }`}
-              >
+        return (
+          <div
+            className={`d-flex align-items-start ${
+              hoveredRowId === row.id ? "show" : "hide"
+            }`}
+          >
+            {hoveredRowId === row.id && (
+              <>
                 <button className="table-btn-action" onClick={() => {}}>
-                  <i
-                    className="bi bi-pencil-square fs-2"
-                    style={{ color: "blue" }}
-                  ></i>
+                  <i className="bi bi-pencil text-primary table-icon"></i>
                 </button>
                 <button
                   className="table-btn-action"
                   onClick={handleDeleteClick}
                 >
-                  <i className="bi bi-trash fs-2 text-danger"></i>
+                  <i className="bi bi-x-lg text-danger table-icon"></i>
                 </button>
 
                 {showDeleteModal && (
@@ -431,20 +428,21 @@ export const getColumns = (
                     </div>
                   </div>
                 )}
-              </div>
-            );
-          },
-          sortable: false,
-          id: "action",
-        }
-      : null,
+              </>
+            )}
+          </div>
+        );
+      },
+      sortable: false,
+      id: "action",
+    },
   ].filter(Boolean) as TableColumn<AssetsHistoryType>[];
 
 export const columns: TableColumn<AssetsHistoryType>[] = [
   {
     name: "#",
     sortable: true,
-
+    sortFunction: (a: AssetsHistoryType, b: AssetsHistoryType) => a.id - b.id,
     width: columnMediumWidth,
     cell: (row: AssetsHistoryType) => {
       const backgroundColor = getBackgroundColor(
@@ -458,9 +456,11 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
             backgroundColor: backgroundColor,
             padding: "5px",
             borderRadius: "3px",
+            width: "62px",
+            textAlign: "center",
           }}
         >
-          {row.id}
+          <span>{row.id}</span>
         </span>
       );
     },
@@ -486,6 +486,17 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
       </Link>
     ),
     id: "name",
+  },
+  {
+    name: (
+      <span>
+        <span style={{ color: "#f0f0f0" }}>|</span> Type
+      </span>
+    ),
+    width: columnLargeWidth,
+    selector: (row: AssetsHistoryType) => row.type,
+    sortable: true,
+    id: "type",
   },
   {
     name: (
@@ -630,17 +641,6 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
   {
     name: (
       <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Type
-      </span>
-    ),
-    width: columnLargeWidth,
-    selector: (row: AssetsHistoryType) => row.type,
-    sortable: true,
-    id: "type",
-  },
-  {
-    name: (
-      <span>
         <span style={{ color: "#f0f0f0" }}>|</span> Project
       </span>
     ),
@@ -712,13 +712,10 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
           }`}
         >
           <button className="table-btn-action" onClick={() => {}}>
-            <i
-              className="bi bi-pencil-square fs-2"
-              style={{ color: "blue" }}
-            ></i>
+            <i className="bi bi-pencil text-primary table-icon"></i>
           </button>
           <button className="table-btn-action" onClick={handleDeleteClick}>
-            <i className="bi bi-trash fs-2 text-danger"></i>
+            <i className="bi bi-x-lg fs-2 text-danger table-icon"></i>
           </button>
 
           {showDeleteModal && (
