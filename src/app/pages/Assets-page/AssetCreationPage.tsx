@@ -5,16 +5,16 @@ import {
   CategoryOption,
   FieldValues,
 } from "../../types/assetsTypes";
-import { AssetFields, Steps } from "../../data/assets";
+import { AssetFields, categories, Steps } from "../../data/assets";
 import { StepNavigation } from "../../components/form/wizard";
 import { ModalComponent } from "../../components/modal/ModalComponent";
 import { BackButton } from "../../components/form/backButton";
+import { customStyles } from "../../data/dataTable";
 
 const AssetCreationPage = () => {
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryOption | null>(null);
   const [fieldValues, setFieldValues] = useState<FieldValues>({});
-  const [comments, setComments] = useState<string>("");
   const [isCategorySelected, setIsCategorySelected] = useState<boolean>(false);
   const [selectedPorts, setSelectedPorts] = useState<string[]>([]);
   const [passwordVisible, setPasswordVisible] = useState<{
@@ -39,6 +39,7 @@ const AssetCreationPage = () => {
   const [progress, setProgress] = useState<number>(0);
   const [categoryDisabled, setCategoryDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [hasStartedFilling, setHasStartedFilling] = useState(false);
 
   const handleChangeCategoryClick = () => {
     setShowModal(true);
@@ -51,9 +52,17 @@ const AssetCreationPage = () => {
   const handleConfirmCategoryChange = () => {
     setSelectedCategory(null);
     setIsCategorySelected(false);
+    setHasStartedFilling(false);
     setCategoryDisabled(false);
-    setFieldValues({});
     setCurrentStep(1);
+    clearFields();
+    setShowModal(false);
+  };
+
+  const clearFields = () => {
+    setFieldValues({});
+    setSelectedPorts([]);
+    setPasswordVisible({});
   };
 
   const togglePasswordVisibility = (id: number) => {
@@ -62,22 +71,6 @@ const AssetCreationPage = () => {
       [id]: !passwordVisible[id],
     });
   };
-
-  const categories: CategoryOption[] = [
-    { value: "Computer", label: "Computer" },
-    { value: "Monitor", label: "Monitor" },
-    { value: "Network device", label: "Network device" },
-    { value: "Devices", label: "Devices" },
-    { value: "Printer", label: "Printer" },
-    { value: "Cartridge", label: " Cartridge" },
-    { value: "Consumable", label: " Consumable" },
-    { value: "Mouse", label: "Mouse" },
-    { value: "Phone", label: "Phone" },
-    { value: "Rack", label: "Rack" },
-    { value: "Enclosure", label: "Enclosure" },
-    { value: "Passive device", label: "Passive device" },
-    { value: "Simcard", label: "Simcard item" },
-  ];
 
   const handlePortChange = (port: string) => {
     if (selectedPorts.includes(port)) {
@@ -88,14 +81,16 @@ const AssetCreationPage = () => {
   };
 
   const handleCategoryChange = (selectedOption: CategoryOption | null) => {
+    if (hasStartedFilling) {
+      handleChangeCategoryClick();
+    }
     setSelectedCategory(selectedOption);
     setIsCategorySelected(!!selectedOption);
     setCurrentStep(1);
-    setFieldValues({});
-    setCategoryDisabled(true);
   };
 
   const handleFieldChange = (id: number, value: any) => {
+    setHasStartedFilling(true);
     setFieldValues({ ...fieldValues, [id]: value });
   };
 
@@ -172,24 +167,16 @@ const AssetCreationPage = () => {
               value={selectedCategory}
               onChange={handleCategoryChange}
               isClearable
-              isDisabled={categoryDisabled}
+              className="custom-react-select"
             />
-            {categoryDisabled && (
-              <>
-                <button
-                  className="btn btn-secondary mt-2"
-                  onClick={handleChangeCategoryClick}
-                >
-                  Change Category
-                </button>
-                <ModalComponent
-                  isOpen={showModal}
-                  onConfirm={handleConfirmCategoryChange}
-                  onCancel={handleCancelCategoryChange}
-                  message="<h5>Are you sure you want to change the category?</h5>
-                          <h6>All data in the following steps will be lost.</h6>"
-                />
-              </>
+            {showModal && (
+              <ModalComponent
+                isOpen={showModal}
+                onConfirm={handleConfirmCategoryChange}
+                onCancel={handleCancelCategoryChange}
+                message="<h5>Are you sure you want to change the category?</h5>
+                                <h6>All data in the following steps will be discarded.</h6>"
+              />
             )}
           </div>
         </div>
@@ -339,6 +326,22 @@ const AssetCreationPage = () => {
                                           : "🔒"}
                                       </span>
                                     </div>
+                                  )}
+                                  {field.type === "textArea" && (
+                                    <textarea
+                                      className="form-control form-control-solid"
+                                      rows={3}
+                                      placeholder={field.label}
+                                      value={String(
+                                        fieldValues[field.id] || ""
+                                      )}
+                                      onChange={(e) =>
+                                        handleFieldChange(
+                                          field.id,
+                                          e.target.value
+                                        )
+                                      }
+                                    ></textarea>
                                   )}
                                 </div>
                               )

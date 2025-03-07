@@ -7,10 +7,7 @@ import {
   AssetsHistoryType,
   GetAllAssetsRequestType as FilterType,
 } from "../../types/assetsTypes";
-import {
-  customStyles,
-  sortIcon,
-} from "../../../_metronic/assets/sass/custom/dataTable";
+import { customStyles, sortIcon } from "../../data/dataTable";
 import { debounce } from "lodash";
 import { FilterSidebar } from "../../components/form/filters";
 import { ColumnVisibility } from "../../types/common";
@@ -26,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { showActionColumnAtom } from "../../atoms/table-atom/tableAtom";
 
 const AssetsPage = () => {
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [ShowActionColumn, setShowActionColumn] = useAtom(showActionColumnAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -144,8 +142,6 @@ const AssetsPage = () => {
     setVisibleColumns(filteredColumns);
   }, [columnVisibility, memoizedColumns]);
 
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const calculateWidths = () => {
       const visibleCount = visibleColumns.length;
@@ -211,12 +207,8 @@ const AssetsPage = () => {
   return (
     <div className="container-fluid d-flex mt-4" style={{ height: "100%" }}>
       <div
-        className="content-container"
+        className="content-container rounded p-3"
         style={{
-          position: "relative",
-          height: "100%",
-
-          transition: "margin 0.3s ease-in-out",
           marginRight: isSidebarOpen ? "15%" : "0",
           width: isSidebarOpen ? "78%" : "100%",
         }}
@@ -226,7 +218,7 @@ const AssetsPage = () => {
         </div> */}
 
         <div
-          className="row justify-content-around  p-3 rounded shadow-sm bg-white"
+          className="row justify-content-around  bg-white"
           style={{ height: "15%" }}
         >
           <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
@@ -278,7 +270,11 @@ const AssetsPage = () => {
           </div>
         </div>
 
-        <div ref={tableContainerRef} style={{ height: "75%" }}>
+        <div
+          className="p-3"
+          ref={tableContainerRef}
+          style={{ backgroundColor: "white", height: "78%" }}
+        >
           <DataTable
             columns={visibleColumns.map((col) => ({
               ...col,
@@ -295,8 +291,11 @@ const AssetsPage = () => {
           />
         </div>
 
-        <div className="sticky-pagination" style={{ height: "10%" }}>
-          <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
+        <div className="sticky-pagination" style={{ height: "7%" }}>
+          <div
+            className="pagination-controls d-flex justify-content-end mt-3 mb-3"
+            style={{ alignSelf: "top" }}
+          >
             <button
               className="btn btn-sm btn-light me-2"
               onClick={handleFirstPage}

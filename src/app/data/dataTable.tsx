@@ -38,3 +38,10 @@ export const customStyles = {
     },
   },
 };
+
+export const columnXXXLargeWidth = "210px";
+export const columnXXLargeWidth = "180px";
+export const columnXLargeWidth = "140px";
+export const columnLargeWidth = "120px";
+export const columnMediumWidth = "100px";
+export const columnSmallWidth = "50px";

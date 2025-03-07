@@ -6,11 +6,11 @@
 }
 
 .step-line {
-  flex: 1;
-  height: 2px;
-  background-color: lightgray;
-  margin: 0 0;
-  z-index: 0;
+  flex: 1 !important;
+  height: 2px !important;
+  background-color: lightgray !important;
+  margin: 0 0 !important;
+  z-index: 0 !important;
 }
 
 .step-navigation-step {
@@ -27,7 +27,9 @@
 }
 
 .step-line-complete {
-  background-color: green;
+  // linear-gradient(90deg, #007bff, #0056b3);
+  // background: linear-gradient(to right, #b5e8b8, #28a745) !important;
+  background-color: #28a745 !important;
 }
 
 .step-button {
@@ -39,11 +41,12 @@
   position: relative;
   z-index: 1;
   background-color: transparent !important;
-  color: #007bff !important;
-  border: 2px solid #007bff !important;
+  color: #769fcd !important;
+  border: 2px solid #769fcd !important;
 }
 
 .border-color-success {
+  border-width: 2px !important;
   border-color: #28a745 !important;
   color: #28a745 !important;
 }
@@ -89,9 +92,9 @@
 }
 
 .step-icon {
-  font-size: 24px !important;
-  position: absolute;
-  transform: translate(-40%, -50%);
+  font-size: 1.7rem !important;
+  position: absolute !important;
+  transform: translate(-40%, -50%) !important;
 }
 
 // software installation
@@ -106,9 +109,9 @@
 }
 
 .option-btn.active {
-  background-color: #007bff;
+  background-color: #007bff !important;
   color: white;
-  border: 1px solid #007bff;
+  border: 1px solid #007bff !important;
 }
 
 .url-input-container,

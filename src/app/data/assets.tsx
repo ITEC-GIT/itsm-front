@@ -1,18 +1,35 @@
 import { useState } from "react";
-import { AssetsHistoryType } from "../types/assetsTypes";
+import { AssetsHistoryType, CategoryOption } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
 import { Link } from "react-router-dom";
 import { getBackgroundColor } from "../../utils/custom";
 import { useAtom } from "jotai";
 import { showActionColumnAtom } from "../atoms/table-atom/tableAtom";
+import {
+  columnLargeWidth,
+  columnMediumWidth,
+  columnXLargeWidth,
+  columnXXLargeWidth,
+  columnXXXLargeWidth,
+} from "./dataTable";
 
-const columnXXXLargeWidth = "210px";
-const columnXXLargeWidth = "180px";
-const columnXLargeWidth = "140px";
-const columnLargeWidth = "120px";
-const columnMediumWidth = "100px";
+export const categories: CategoryOption[] = [
+  { value: "Computer", label: "Computer" },
+  { value: "Monitor", label: "Monitor" },
+  { value: "Network device", label: "Network device" },
+  { value: "Devices", label: "Devices" },
+  { value: "Printer", label: "Printer" },
+  { value: "Cartridge", label: " Cartridge" },
+  { value: "Consumable", label: " Consumable" },
+  { value: "Mouse", label: "Mouse" },
+  { value: "Phone", label: "Phone" },
+  { value: "Rack", label: "Rack" },
+  { value: "Enclosure", label: "Enclosure" },
+  { value: "Passive device", label: "Passive device" },
+  { value: "Simcard", label: "Simcard item" },
+];
 
-const categories = [
+const assetCategories = [
   "Computer",
   "Monitor",
   "Network device",
@@ -51,12 +68,12 @@ export const getColumns = (
     {
       name: "#",
       sortable: true,
-
+      sortFunction: (a: AssetsHistoryType, b: AssetsHistoryType) => a.id - b.id,
       width: columnMediumWidth,
       cell: (row: AssetsHistoryType) => {
         const backgroundColor = getBackgroundColor(
           row.category,
-          categories,
+          assetCategories,
           colors
         );
         return (
@@ -432,7 +449,7 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
     cell: (row: AssetsHistoryType) => {
       const backgroundColor = getBackgroundColor(
         row.category,
-        categories,
+        assetCategories,
         colors
       );
       return (
@@ -1587,50 +1604,60 @@ export const AssetFields = [
     group: "Basic Information",
     note: "MSIN is the least 8 or 10 digits og IMSI ",
   },
+  {
+    id: 82,
+    key: "Comments",
+    type: "textArea",
+    label: "Comments",
+    category: ["General"],
+    group: "More Information",
+  },
 ];
 
 export const Steps = [
   {
     id: 1,
     title: "Ownership",
-    iconClass: "bi bi-person-badge",
+    iconClass: "fa-solid fa-user-shield",
   },
-
   {
     id: 2,
     title: "Basic Information",
-    iconClass: "bi bi-info-circle",
+    iconClass: "fa-solid fa-circle-info",
   },
-
   {
     id: 3,
     title: "More Information",
-    iconClass: "bi bi-file-earmark-text",
+    iconClass: "fa-solid fa-file-lines",
   },
   {
     id: 4,
     title: "Connectivity",
-    iconClass: "bi bi-wifi",
+    iconClass: "fa-solid fa-wifi",
   },
   {
     id: 5,
     title: "Uploads",
-    iconClass: "bi bi-upload",
+    iconClass: "fa-solid fa-upload",
   },
   {
     id: 6,
     title: "Room Details",
-    iconClass: "bi bi-house",
+    iconClass: "fa-solid fa-house",
   },
   {
     id: 7,
     title: "Asset Metrics",
-    iconClass: "bi bi-graph-up",
+    iconClass: "fa-solid fa-chart-line",
   },
   {
     id: 8,
     title: "Credentials",
-    iconClass: "bi bi-graph-up",
+    iconClass: "fa-solid fa-id-card",
   },
-  { id: 9, title: "Submission", iconClass: "fa fa-check-circle" },
+  {
+    id: 9,
+    title: "Submission",
+    iconClass: "fa-solid fa-circle-check",
+  },
 ];

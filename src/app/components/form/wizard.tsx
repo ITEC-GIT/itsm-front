@@ -318,7 +318,7 @@ export const Wizard = ({
   }, []);
 
   return (
-    <div className="container-fluid p-5 bg-white">
+    <div className="row p-5 bg-white">
       <StepNavigation steps={steps} currentStep={currentStep} />
 
       <div className="mt-4">

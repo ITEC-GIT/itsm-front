@@ -247,36 +247,36 @@
 }
 
 .status-initialized {
-  color: orange;
+  color: #f7c1c1;
   font-weight: bold;
   padding: 8px;
   background-color: #ffe5b4;
 }
 
 .status-initialized:hover {
-  background-color: #ffd699;
+  background-color: #f7c1c9;
 }
 
 .status-received {
-  color: green;
+  color: #fadcbf;
   font-weight: bold;
   padding: 8px;
   background-color: #d3ffd3;
 }
 
 .status-received:hover {
-  background-color: #aaffaa;
+  background-color: #fadcbe;
 }
 
 .status-canceled {
-  color: red;
+  color: #fae4ae;
   font-weight: bold;
   padding: 8px;
   background-color: #ffcccc;
 }
 
 .status-canceled:hover {
-  background-color: #ffb3b3;
+  background-color: #fae4ae;
 }
 
 .url-cell {

@@ -6,8 +6,8 @@ import { AssetTabsComponent } from "../../components/assets-details/assetTabs";
 import { BackButton } from "../../components/form/backButton";
 
 const mockAssetDetailsData: { [key: string]: AssetDetails } = {
-  "7": {
-    id: "7",
+  "10": {
+    id: "10",
     name: "Server-Alpha",
     entity: "IT Department",
     serial_number: "SN-12345",
