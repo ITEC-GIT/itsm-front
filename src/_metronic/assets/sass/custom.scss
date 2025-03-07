@@ -1,6 +1,8 @@
-.content-background{
-    background-color: #DDE2E6 !important;
-    padding-top: 20px !important;
+@import "./custom/variables";
+
+.content-background {
+  background-color: $content-background-color !important;
+  padding-top: 20px !important;
 }
 
 .required::after {
