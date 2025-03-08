@@ -9,7 +9,6 @@ import {Content} from "../../../_metronic/layout/components/content";
 import {Editor} from "@tinymce/tinymce-react";
 import clsx from "clsx";
 import ReactQuill, {Quill} from "react-quill";
-import TicketCardExpanded from "../../../_metronic/layout/components/custom-components/CardExpanded.tsx";
 import {string} from "yup";
 import {CustomQuill, CustomQuillImageClipboard, getMaxWords, HeadlessQuillViewer} from "./TicketUtils.tsx";
 import Cookies from "js-cookie";
