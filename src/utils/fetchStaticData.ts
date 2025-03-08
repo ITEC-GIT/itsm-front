@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 import { dataMissingInIndexedDB, saveToIndexedDB } from "../app/indexDB/Config";
 import { GetStaticData, GetUsersAndAreas } from "../app/config/ApiCalls";
 import { useAtom } from "jotai";
-import { staticDataAtom } from "../app/atoms/filters-atoms/filtersAtom";
+// import { staticDataAtom } from "../app/atoms/filters-atoms/filtersAtom";
 
 const STORE_NAMES = [
   "assignees",

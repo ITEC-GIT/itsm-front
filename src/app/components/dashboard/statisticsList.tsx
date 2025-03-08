@@ -68,8 +68,8 @@ export const StatisticsList = ({ data }: { data: any }) => {
 
         {/* middle */}
         <div className="col-12 col-sm-4 col-md-4 col-xl-6 text-center chart-container d-flex justify-content-center">
-          <ChartDisplay chartType={"Pie Chart"} />
-          <ChartDisplay chartType={"Bar Chart"} />
+          <ChartDisplay chartType={"Pie Chart"} chartTitle={"title name"} />
+          <ChartDisplay chartType={"Bar Chart"} chartTitle={"title name"} />
         </div>
 
         {/* right side */}
