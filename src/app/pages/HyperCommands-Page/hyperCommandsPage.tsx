@@ -5,6 +5,7 @@ import { ToolbarWrapper } from "../../../_metronic/layout/components/toolbar/Too
 import { actions } from "../../data/hyperCommands";
 import { useNavigate } from "react-router-dom";
 import { Content } from "../../../_metronic/layout/components/content/Content";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 const HyperCommandsPage: FC = () => {
   const navigate = useNavigate();
@@ -53,8 +54,11 @@ const HyperCommandsWrapper: FC = () => {
   const intl = useIntl();
   return (
     <>
-      <PageTitle breadcrumbs={[]}>Hyper Comamnds</PageTitle>
+        <AnimatedRouteWrapper>
+
+        <PageTitle breadcrumbs={[]}>Hyper Comamnds</PageTitle>
       <HyperCommandsPage />
+        </AnimatedRouteWrapper>
     </>
   );
 };

@@ -1,17 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import { debounce, range } from "lodash";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Cookies from "js-cookie";
+import { debounce } from "lodash";
 import clsx from "clsx";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
-import { Content } from "../../../_metronic/layout/components/content/Content";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../../../_metronic/assets/sass/custom/dataTable";
-import { Wizard } from "../../components/form/wizard";
-import { steps } from "../../data/softwareInstallation";
+
 import {
   CancelSoftwareInstallation,
-  FetchAllSoftwareInstallations,
   GetAllSoftwareInstallations,
 } from "../../config/ApiCalls";
+
 import {
   GetAllSoftwareInstallationRequestType as filterType,
   SoftwareHistoryType,
@@ -20,22 +18,40 @@ import { CardsStat } from "../../components/softwareInstallation/cards-statistic
 import {
   getCircleColor,
   getGreatestId,
-  getLowestId,
   getStatusClass,
 } from "../../../utils/custom";
 import { SearchComponent } from "../../components/form/search";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
+import { FilterButton } from "../../components/form/filterButton";
 
-const SoftwareInstallationPage = () => {
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
+import { StaticDataType } from "../../types/filtersAtomType";
+import { Wizard } from "../../components/form/wizard";
+import {
+  activeFilters,
+  getColumns,
+  steps,
+} from "../../data/softwareInstallation";
+import { customStyles, sortIcon } from "../../data/dataTable";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+
+const SoftwareInstallationPage = ({
+  computerIdProp,
+}: {
+  computerIdProp?: number;
+}) => {
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const loggedInUser = Number(Cookies.get("user"));
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [isAdmin, setIsAdmin] = useState<1 | 0>(0);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
   const [selectedEntry, setSelectedEntry] = useState<SoftwareHistoryType>();
-
   const SoftwarePerPage = 10;
   const minPagesToShow = 3;
   const [maxTotalSoftwares, setMaxTotalSoftwares] = useState<number>(0);
@@ -51,17 +67,25 @@ const SoftwareInstallationPage = () => {
   const [alertUpdateMessage, setAlertUpdateMessage] = useState<string>("");
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const [filters, setFilters] = useState<filterType>({
     range: "0-50",
     order: "desc",
   });
 
   const [toggleInstance] = useAtom(sidebarToggleAtom);
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
+  const [visibleColumns, setVisibleColumns] = useState<
+    TableColumn<SoftwareHistoryType>[]
+  >([]);
+
   const handleToggle = () => {
     if (toggleInstance) {
       toggleInstance.toggle();
     }
   };
+
   const toggleSidebar = () => {
     setShowForm(false);
     setIsSidebarOpen((prevState) => !prevState);
@@ -69,15 +93,18 @@ const SoftwareInstallationPage = () => {
   };
 
   const fetchData = async (filters: filterType) => {
-    const response = await GetAllSoftwareInstallations(filters);
+    const queryFilters = computerIdProp
+      ? { ...filters, computer: computerIdProp }
+      : filters;
+    const response = await GetAllSoftwareInstallations(queryFilters);
     return response.data;
   };
 
   const initialFetch = async () => {
-    const initialFilters = {
-      range: "0-50",
-      order: "desc",
-    };
+    const initialFilters = computerIdProp
+      ? { range: "0-50", order: "desc", computer: computerIdProp }
+      : { range: "0-50", order: "desc" };
+
     const response = await GetAllSoftwareInstallations(initialFilters);
     return response.data;
   };
@@ -117,176 +144,12 @@ const SoftwareInstallationPage = () => {
     }
   };
 
-  const columns: TableColumn<SoftwareHistoryType>[] = [
-    {
-      name: "#",
-      sortable: false,
-      width: "50px",
-      cell: (row: SoftwareHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.id.toString()}
-        >
-          {row.id}
-        </span>
-      ),
-    },
-    {
-      name: "Software",
-      selector: (row: SoftwareHistoryType) => row.software,
-      sortable: true,
-      width: "150px",
-
-      cell: (row: SoftwareHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.software}
-        >
-          {row.software}
-        </span>
-      ),
-    },
-    {
-      name: "Device",
-      selector: (row: SoftwareHistoryType) => row.computer_name,
-      width: "150px",
-      cell: (row: SoftwareHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.computer_name}
-        >
-          {row.computer_name}
-        </span>
-      ),
-      sortable: true,
-    },
-    {
-      name: "URL",
-      width: "150px",
-      selector: (row: SoftwareHistoryType) => row.url,
-      sortable: true,
-
-      cell: (row: SoftwareHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.url}
-          className="url-cell"
-        >
-          {row.url}
-        </span>
-      ),
-    },
-    {
-      name: "Destination",
-      selector: (row: SoftwareHistoryType) => row.destination,
-      sortable: true,
-      cell: (row: SoftwareHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.destination}
-        >
-          {row.destination}
-        </span>
-      ),
-    },
-    {
-      name: "Arguments",
-      selector: (row: SoftwareHistoryType) => row.arguments,
-
-      sortable: true,
-      cell: (row: SoftwareHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.arguments}
-        >
-          {row.arguments}
-        </span>
-      ),
-    },
-    {
-      name: "Status",
-      selector: (row: SoftwareHistoryType) => row.status,
-      sortable: true,
-      cell: (row: SoftwareHistoryType) => {
-        return (
-          <div
-            className={`status-cell ${getStatusClass(row.status)}`}
-            title={row.status}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: "10px",
-                height: "10px",
-                borderRadius: "50%",
-                backgroundColor: getCircleColor(row.status),
-                marginRight: "8px",
-              }}
-            ></span>
-            {row.status}
-          </div>
-        );
-      },
-    },
-    {
-      name: "User",
-      width: "100px",
-      selector: (row: SoftwareHistoryType) => row.user_name,
-      sortable: true,
-    },
-    {
-      name: "Date",
-      selector: (row: SoftwareHistoryType) => {
-        const date = new Date(row.created_at);
-        const options: Intl.DateTimeFormatOptions = {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        };
-        return date.toLocaleDateString("en-US", options);
-      },
-      sortable: true,
-    },
-    {
-      name: "Action",
-      width: "70px",
-      cell: (row: SoftwareHistoryType) => (
-        <button
-          className="btn btn-danger btn-sm d-flex justify-content-center align-items-center"
-          style={{
-            width: "30px",
-            height: "30px",
-            borderRadius: "50%",
-          }}
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title="Cancel Installation"
-          onClick={() => handleCancelClick(row)}
-          disabled={row.status === "cancelled" || row.status === "received"}
-        >
-          <i
-            className="bi bi-ban text-center"
-            style={{ fontSize: "1rem", padding: 0 }}
-          ></i>
-        </button>
-      ),
-      sortable: false,
-    },
-  ];
-
   const handleSearchChange = debounce((query: string) => {
     setCurrentHistoryPage(1);
     setSearchQuery(query);
   }, 100);
 
   const filteredHistory = useMemo(() => {
-    console.log("came to here");
     if (!paginatedHistory || !searchQuery.trim()) return paginatedHistory || [];
     const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
     return softwareHistory.data.filter((entry: SoftwareHistoryType) => {
@@ -311,15 +174,10 @@ const SoftwareInstallationPage = () => {
     const totalFetchedPages = Math.ceil(
       filteredHistory.length / SoftwarePerPage
     );
-    console.log("totalFetchedPages", totalFetchedPages);
-    console.log("page", page);
-    console.log("hasMore", hasMore);
-
     if (page > totalFetchedPages && hasMore) {
       setIsLoadingMore(true);
       fetchData(filters).then((newData) => {
         setPaginatedHistory((prevHistory) => [...prevHistory, ...newData.data]);
-        console.log();
         setHasMore(newData.totalCount > paginatedHistory.length);
         setIsLoadingMore(false);
       });
@@ -366,7 +224,6 @@ const SoftwareInstallationPage = () => {
           `Installation history updated. ${diff} software items are being initialized.`
         );
       }
-      console.log("paginatedHistory =>>", paginatedHistory);
       setHasMore(softwareHistory.count < totalcount);
     }
 
@@ -376,50 +233,283 @@ const SoftwareInstallationPage = () => {
   }, [softwareHistory, error]);
 
   useEffect(() => {
-    if (filters) {
-      console.log("filters ==>>", filters);
+    if (filters || computerIdProp) {
       setCurrentHistoryPage(1);
+      setPaginatedHistory([]);
+      setMaxTotalSoftwares(0);
+
       fetchData(filters).then((newData) => {
         setPaginatedHistory(newData.data);
-        setHasMore(newData.totalCount > paginatedHistory.length);
+        setMaxTotalSoftwares(newData.totalCount);
+        setHasMore(newData.totalCount > newData.data.length);
       });
     }
-  }, [filters]);
+  }, [filters, computerIdProp]);
+
+  // useEffect(() => {
+  //   if (filters) {
+  //     setCurrentHistoryPage(1);
+  //     fetchData(filters).then((newData) => {
+  //       setPaginatedHistory(newData.data);
+  //       setHasMore(newData.totalCount > paginatedHistory.length);
+  //     });
+  //   }
+  // }, [filters, computerIdProp]);
+
+  useEffect(() => {
+    if (staticData?.assignees) {
+      const user = staticData.assignees.find(
+        (assignee) => assignee?.id === loggedInUser
+      );
+      const isAdmin = user ? user.is_admin : 0;
+      setIsAdmin(isAdmin);
+    }
+  }, [loggedInUser, staticData]);
 
   const handleAlertClose = () => setShowUpdateAlert(false);
 
-  const activeFilters = [
-    "softwareStatusFilter",
-    "userFilter",
-    "computersFilter",
-    "dateFilter",
-  ];
+  useEffect(() => {
+    const calculateWidths = () => {
+      const visibleCols = getColumns(handleCancelClick);
+      setVisibleColumns(visibleCols);
+      const visibleCount = visibleCols.length;
+      const newWidths: Record<string, string> = {};
+
+      if (visibleCount === 2) {
+        visibleCols.forEach((col: TableColumn<SoftwareHistoryType>) => {
+          newWidths[col.id as string] = "50%";
+        });
+      } else if (visibleCount > 2) {
+        const baseWidthPercentage = Math.ceil(100 / visibleCount);
+        console.log(baseWidthPercentage);
+        if (tableContainerRef.current) {
+          const containerWidth = tableContainerRef.current.clientWidth;
+          visibleCols.forEach((col: TableColumn<SoftwareHistoryType>) => {
+            if (col.width) {
+              const pixelWidth = parseInt(col.width, 10);
+
+              // if (col.id === "action" || col.id === "id") {
+              //   newWidths[col.id as string] = col.width;
+              // }
+              // else
+              if (!isNaN(pixelWidth)) {
+                const columnPercentageWidth = Math.round(
+                  (pixelWidth / containerWidth) * 100
+                );
+
+                if (columnPercentageWidth < baseWidthPercentage) {
+                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                } else {
+                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                  // col.width;
+                }
+              } else {
+                newWidths[col.id as string] = `${baseWidthPercentage}%`;
+              }
+            } else {
+              newWidths[col.id as string] = `${baseWidthPercentage}%`;
+            }
+          });
+        }
+      }
+      console.log("newWidths ==>>>", newWidths);
+      setColumnWidths(newWidths);
+    };
+
+    calculateWidths();
+
+    const observer = new ResizeObserver(calculateWidths);
+    if (tableContainerRef.current) {
+      observer.observe(tableContainerRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
-    //<Content>
-    <div
+      <AnimatedRouteWrapper>
+
+      <div
       className="container-fluid d-flex"
-      style={{ paddingLeft: "30px", paddingRight: "30px" }}
+      style={{ height: "100%", paddingLeft: "30px", paddingRight: "30px" }}
     >
       <div
-        className="content-container"
+        className="content-container rounded p-3 bg-white"
         style={{
-          transition: "margin 0.3s ease-in-out",
           marginRight: isSidebarOpen ? "15%" : "0",
-          width: isSidebarOpen ? "78%" : "100%",
+          width: isSidebarOpen ? "82%" : "100%",
         }}
       >
-        <div className="row justify-content-center">
+        <div
+          className="row justify-content-around  bg-white"
+          style={{ height: "15%" }}
+        >
+          <div className="d-flex justify-content-between">
+            <h2 className="text-center mb-4">🚀 Software Installation</h2>
+            <ActionIcons />
+          </div>
+          <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2">
+            <li className="nav-item">
+              <a
+                className="nav-link custom-nav-link active"
+                data-bs-toggle="tab"
+                href="#software_installation"
+              >
+                Software Installation
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className="nav-link custom-nav-link"
+                data-bs-toggle="tab"
+                href="#installation_history"
+              >
+                Installation History
+              </a>
+            </li>
+          </ul>
+          <div className="tab-content ">
+            <div
+              className="tab-pane fade show active"
+              id="software_installation"
+              role="tabpanel"
+            >
+              <div className="col-12">
+                <Wizard
+                  steps={steps}
+                  add={setPaginatedHistory}
+                  idgt={getGreatestId(paginatedHistory) ?? 0}
+                />
+                <div className="p-5" ref={tableContainerRef}>
+                  <DataTable
+                    columns={visibleColumns.map((col) => ({
+                      ...col,
+                      width: columnWidths[col.id as string],
+                    }))}
+                    data={getCurrentPageRecords.slice(0, 5)}
+                    persistTableHead={true}
+                    responsive
+                    highlightOnHover
+                    customStyles={customStyles}
+                    sortIcon={sortIcon}
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              className="tab-pane fade"
+              id="installation_history"
+              role="tabpanel"
+            >
+              <div className="col-12">
+                <div className="row d-flex justify-content-end gap-2 p-5">
+                  <SearchComponent
+                    value={searchQuery}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleSearchChange(e.target.value)
+                    }
+                  />
+                  <FilterButton toggleSidebar={toggleSidebar} />
+                </div>
+
+                <div className="row mt-5 mb-5 d-flex justify-content-between">
+                  {showUpdateAlert && (
+                    <div className="col-12 col-md-12 d-flex align-items-center">
+                      <div
+                        className="alert alert-info alert-dismissible fade show"
+                        role="alert"
+                        onClick={() => refetch()}
+                      >
+                        <strong>Update Detected!</strong> {alertUpdateMessage}
+                        <button
+                          type="button"
+                          className="btn-close"
+                          onClick={handleAlertClose}
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-5" ref={tableContainerRef}>
+                  <DataTable
+                    columns={visibleColumns.map((col) => ({
+                      ...col,
+                      width: columnWidths[col.id as string],
+                    }))}
+                    data={getCurrentPageRecords}
+                    persistTableHead={true}
+                    responsive
+                    highlightOnHover
+                    customStyles={customStyles}
+                    sortIcon={sortIcon}
+                  />
+                </div>
+
+                <div className="sticky-pagination">
+                  <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
+                    <button
+                      className="btn btn-sm btn-light me-2"
+                      onClick={handleFirstPage}
+                      disabled={currentHistorysPage === 1}
+                    >
+                      First
+                    </button>
+                    <button
+                      className="btn btn-sm btn-light me-2"
+                      onClick={handlePreviousPage}
+                      disabled={currentHistorysPage === 1}
+                    >
+                      Previous
+                    </button>
+                    {Array.from(
+                      { length: endPage - startPage + 1 },
+                      (_, index) => startPage + index
+                    ).map((page) => (
+                      <button
+                        key={page}
+                        className={clsx("btn btn-sm me-2", {
+                          "btn-primary": currentHistorysPage === page,
+                          "btn-light": currentHistorysPage !== page,
+                        })}
+                        onClick={() => handlePageChange(page)}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                    <button
+                      className="btn btn-sm btn-light me-2"
+                      onClick={handleNextPage}
+                      disabled={currentHistorysPage === totalPages}
+                    >
+                      Next
+                    </button>
+                    <button
+                      className="btn btn-sm btn-light"
+                      onClick={handleLastPage}
+                      disabled={currentHistorysPage === totalPages}
+                    >
+                      Last
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* <div className="row justify-content-center">
           <div className="col-md-12 col-lg-10 col-xl-12">
             <div className="d-flex justify-content-between">
               <h2 className="text-center mb-4">🚀 Software Installation</h2>
               <ActionIcons />
             </div>
-
-            <CardsStat />
             <button
               type="button"
-              className="btn btn-primary hyper-connect-btn mb-3"
+              className="btn custom-btn mb-3"
               onClick={() => setShowForm((prev) => !prev)}
             >
               {showForm ? (
@@ -430,13 +520,7 @@ const SoftwareInstallationPage = () => {
                 <i className="bi bi-plus-lg hyper-btn-icon"></i>
               )}
             </button>
-            {showForm && (
-              <Wizard
-                steps={steps}
-                add={setPaginatedHistory}
-                idgt={getGreatestId(paginatedHistory) ?? 0}
-              />
-            )}
+           
             <div className="row mt-5 mb-5 d-flex justify-content-between align-items-center">
               <div className="col-12 col-md-4 d-flex align-items-center">
                 <h3>Installation History</h3>
@@ -449,12 +533,7 @@ const SoftwareInstallationPage = () => {
                     handleSearchChange(e.target.value)
                   }
                 />
-                <button
-                  className="btn btn-primary hyper-connect-btn mb-4"
-                  onClick={toggleSidebar}
-                >
-                  Add Filters
-                </button>
+                <FilterButton toggleSidebar={toggleSidebar} />
               </div>
             </div>
             <div className="row mt-5 mb-5 d-flex justify-content-between">
@@ -476,66 +555,67 @@ const SoftwareInstallationPage = () => {
                 </div>
               )}
             </div>
-            <DataTable
-              customStyles={customStyles}
-              columns={columns}
-              data={getCurrentPageRecords}
-              responsive
-              highlightOnHover
-              progressPending={isLoading || isLoadingMore}
-              progressComponent={
-                <div className="d-flex justify-content-center my-3">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              }
-            />
-            <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
+          </div>
+        </div>
+        <div ref={tableContainerRef}>
+          <DataTable
+            columns={visibleColumns.map((col) => ({
+              ...col,
+              width: columnWidths[col.id as string],
+            }))}
+            data={getCurrentPageRecords}
+            persistTableHead={true}
+            responsive
+            highlightOnHover
+            customStyles={customStyles}
+            sortIcon={sortIcon}
+          />
+        </div>
+        <div className="sticky-pagination">
+          <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handleFirstPage}
+              disabled={currentHistorysPage === 1}
+            >
+              First
+            </button>
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handlePreviousPage}
+              disabled={currentHistorysPage === 1}
+            >
+              Previous
+            </button>
+            {Array.from(
+              { length: endPage - startPage + 1 },
+              (_, index) => startPage + index
+            ).map((page) => (
               <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleFirstPage}
-                disabled={currentHistorysPage === 1}
+                key={page}
+                className={clsx("btn btn-sm me-2", {
+                  "btn-primary": currentHistorysPage === page,
+                  "btn-light": currentHistorysPage !== page,
+                })}
+                onClick={() => handlePageChange(page)}
               >
-                First
+                {page}
               </button>
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handlePreviousPage}
-                disabled={currentHistorysPage === 1}
-              >
-                Previous
-              </button>
-              {Array.from(
-                { length: endPage - startPage + 1 },
-                (_, index) => startPage + index
-              ).map((page) => (
-                <button
-                  key={page}
-                  className={clsx("btn btn-sm me-2", {
-                    "btn-primary": currentHistorysPage === page,
-                    "btn-light": currentHistorysPage !== page,
-                  })}
-                  onClick={() => handlePageChange(page)}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleNextPage}
-                disabled={currentHistorysPage === totalPages}
-              >
-                Next
-              </button>
-              <button
-                className="btn btn-sm btn-light"
-                onClick={handleLastPage}
-                disabled={currentHistorysPage === totalPages}
-              >
-                Last
-              </button>
-            </div>
+            ))}
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handleNextPage}
+              disabled={currentHistorysPage === totalPages}
+            >
+              Next
+            </button>
+            <button
+              className="btn btn-sm btn-light"
+              onClick={handleLastPage}
+              disabled={currentHistorysPage === totalPages}
+            >
+              Last
+            </button>
           </div>
         </div>
 
@@ -592,7 +672,7 @@ const SoftwareInstallationPage = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
 
       <div
@@ -608,6 +688,7 @@ const SoftwareInstallationPage = () => {
         />
       </div>
     </div>
+      </AnimatedRouteWrapper>
   );
 };
 

@@ -2,7 +2,7 @@ import { lazy, FC, Suspense } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { MasterLayout } from "../../_metronic/layout/MasterLayout";
 import TopBarProgress from "react-topbar-progress-indicator";
-import { DashboardWrapper } from "../pages/dashboard-page/DashboardPage";
+import { DashboardWrapper } from "../pages/Dashboard-page/DashboardPage";
 import { getCSSVariableValue } from "../../_metronic/assets/ts/_utils";
 import { WithChildren } from "../../_metronic/helpers";
 import TicketPageWrapper from "../pages/tickets-pages/TicketPageWrapper";
@@ -12,6 +12,9 @@ import { SoftwareInstallationPage } from "../pages/HyperCommands-Page/softwareIn
 import { RemoteSSHPage } from "../pages/HyperCommands-Page/remoteSSHPage";
 import { RemoteConsolePage } from "../pages/HyperCommands-Page/remoteConsolePage";
 import { PerformanceMonitoringPage } from "../pages/HyperCommands-Page/performanceMonitoringPage";
+import { AssetsPageWrapper } from "../pages/Assets-page/assetsPage";
+import { AssetDetailsPage } from "../pages/Assets-page/assetDetailsPage";
+import { AssetCreationPage } from "../pages/Assets-page/AssetCreationPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -23,47 +26,36 @@ const PrivateRoutes = () => {
     () => import("../modules/apps/user-management/UsersPage")
   );
 
-
   return (
-      <Routes>
-
-          <Route element={<MasterLayout/>}>
-            {/* Redirect to Dashboard after success login/registartion */}
-            <Route path="auth/*" element={<Navigate to="/dashboard"/>}/>
-            {/* Pages */}
-            <Route path="dashboard" element={<DashboardWrapper/>}/>
-            <Route path="hyper-commands" element={<HyperCommandsWrapper/>}/>
-            <Route
-                path="hyper-commands/software-installation"
-                element={<SoftwareInstallationPage/>}
-            />
-            <Route path="hyper-commands/remote-ssh" element={<RemoteSSHPage/>}/>
-            <Route
-                path="hyper-commands/remote-console"
-                element={<RemoteConsolePage/>}
-            />
-            <Route
-                path="hyper-commands/performance-monitoring"
-                element={<PerformanceMonitoringPage/>}
-            />
-            <Route
-                path="tickets"
-                element={
-
-                  <TicketPageWrapper/>
-                }
-              />
-                {/*<Route path="tickets" element={*/}
-
-                {/*  <TicketPageWrapper />}*/}
-
-                {/*/>*/}
-
-            <Route path="/ticket/:id" element={<TicketsDetailPage/>}/>
-                {/*
+    <Routes>
+      <Route element={<MasterLayout />}>
+        {/* Redirect to Dashboard after success login/registartion */}
+        <Route path="auth/*" element={<Navigate to="/dashboard" />} />
+        {/* Pages */}
+        <Route path="dashboard" element={<DashboardWrapper />} />
+        <Route path="hyper-commands" element={<HyperCommandsWrapper />} />
+        <Route
+          path="hyper-commands/software-installation/:userId?"
+          element={<SoftwareInstallationPage />}
+        />
+        <Route path="hyper-commands/remote-ssh" element={<RemoteSSHPage />} />
+        <Route
+          path="hyper-commands/remote-console"
+          element={<RemoteConsolePage />}
+        />
+        <Route
+          path="hyper-commands/performance-monitoring"
+          element={<PerformanceMonitoringPage />}
+        />
+        <Route path="assets" element={<AssetsPageWrapper />} />
+        <Route path="assets/:id" element={<AssetDetailsPage />} />
+        <Route path="assets/new" element={<AssetCreationPage />} />
+        <Route path="tickets" element={<TicketPageWrapper />} />
+        <Route path="/ticket/:id" element={<TicketsDetailPage />} />
+        {/* 
         <Route path='menu-test' element={<MenuTestPage />} /> */}
-                {/* Lazy Modules */}
-                {/* <Route
+        {/* Lazy Modules */}
+        {/* <Route
           path='crafted/pages/profile/*'
           element={
             <SuspensedView>
@@ -111,15 +103,14 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         /> */}
-                {/* Page Not Found */}
-            <Route path="*" element={<Navigate to="/error/404"/>}/>
-          </Route>
-
-      </Routes>
+        {/* Page Not Found */}
+        <Route path="*" element={<Navigate to="/error/404" />} />
+      </Route>
+    </Routes>
   );
 };
 
-const SuspensedView: FC<WithChildren> = ({children}) => {
+const SuspensedView: FC<WithChildren> = ({ children }) => {
   const baseColor = getCSSVariableValue("--bs-primary");
   TopBarProgress.config({
     barColors: {
