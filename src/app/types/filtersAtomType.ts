@@ -35,15 +35,15 @@ type Location = {
 
 export interface StaticDataType {
   Computers: Computer[];
-  Departments: {}[];
+  Departments: [];
   "Initialized softwares": number;
   Locations: Location[];
   "Received softwares": number;
-  SoftwareStatus: {}[];
+  SoftwareStatus: [];
   assignees: Assignee[];
-  priorityOptions: {}[];
+  priorityOptions: [];
   requesters: Requester[];
-  statusOptions: {}[];
-  typeOptions: {}[];
-  urgencyOptions: {}[];
+  statusOptions: [];
+  typeOptions: [];
+  urgencyOptions: [];
 }

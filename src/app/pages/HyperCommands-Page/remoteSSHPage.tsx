@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { selectValueType } from "../../types/dashboard";
 import { useAtomValue } from "jotai";
-import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../types/filtersAtomType";
 import Select from "react-select";
 import Cookies from "js-cookie";
@@ -12,6 +12,7 @@ import {
   RemoteSSHConnect,
 } from "../../config/ApiCalls";
 import SSHClient from "../../components/Remote SSH/SSHClient";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 const AlertModal = ({ onClose }: { onClose: () => void }) => (
   <div className="alert-overlay">
@@ -168,6 +169,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     //   <iframe src={BASE_URL} width="800" height="600"></iframe>
     //   <div></div>
     // </>
+      <AnimatedRouteWrapper>
 
     <div
       className="container-fluid"
@@ -342,6 +344,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       </div>
       {alertVisible && <AlertModal onClose={handleCloseAlert} />}
     </div>
+      </AnimatedRouteWrapper>
   );
 };
 

@@ -23,6 +23,7 @@ const initialValues = {
 export function LoginPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [usrAtom,setUserData] = useAtom(userAtom);
   const setIsAuthenticatedAtom = useSetAtom(isAuthenticatedAtom);
   const loginRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -59,7 +60,7 @@ export function LoginPage() {
           Cookies.set("isAuthenticated", "true");
           const userId = res.session.glpiID;
           Cookies.set("user", userId);
-
+          Cookies.set("username", res.session.glpiname);
           setLoginError(null);
           const {
             session: { glpiID, ...restSession },

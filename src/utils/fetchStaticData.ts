@@ -115,7 +115,7 @@ const STORE_NAMES = [
 
 export const fetchStaticDataWithAtom = async () => {
   try {
-    const [staticData, setStaticData] = useAtom(staticDataAtom);
+    // const [staticData, setStaticData] = useAtom(staticDataAtom);
 
     const [usersAndAreasResponse, staticDataResponse] = await Promise.all([
       GetUsersAndAreas(),
@@ -139,7 +139,8 @@ export const fetchStaticDataWithAtom = async () => {
     };
 
     if (typeof data === "object" && data !== null) {
-      setStaticData(data);
+      const x=0;
+      // setStaticData(data);
     } else {
       console.error("Invalid data received from the API:", data);
     }

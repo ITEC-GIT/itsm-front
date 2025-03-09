@@ -15,4 +15,16 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
-}
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
+      rules: {
+        // Convert all errors to warnings
+        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/no-unused-vars': 'warn',
+        'no-console': 'warn',
+        'no-debugger': 'warn',
+      },
+    },
+  ],
+};

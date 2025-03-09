@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { devicesVNC } from "../../data/hyperCommands";
 import { SelectDeviceType } from "../../types/devicesTypes";
 import { useAtomValue } from "jotai";
-import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../types/filtersAtomType";
 
 interface props {

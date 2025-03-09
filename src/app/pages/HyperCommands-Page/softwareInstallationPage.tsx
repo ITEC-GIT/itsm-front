@@ -27,7 +27,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import { FilterButton } from "../../components/form/filterButton";
 
-import { staticDataAtom } from "../../atoms/filters-atoms/filtersAtom";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { Wizard } from "../../components/form/wizard";
 import {
@@ -36,6 +36,7 @@ import {
   steps,
 } from "../../data/softwareInstallation";
 import { customStyles, sortIcon } from "../../data/dataTable";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 const SoftwareInstallationPage = ({
   computerIdProp,
@@ -328,7 +329,9 @@ const SoftwareInstallationPage = ({
   }, []);
 
   return (
-    <div
+      <AnimatedRouteWrapper>
+
+      <div
       className="container-fluid d-flex"
       style={{ height: "100%", paddingLeft: "30px", paddingRight: "30px" }}
     >
@@ -685,6 +688,7 @@ const SoftwareInstallationPage = ({
         />
       </div>
     </div>
+      </AnimatedRouteWrapper>
   );
 };
 

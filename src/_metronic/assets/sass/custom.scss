@@ -1,8 +1,7 @@
 @import "./custom/variables";
 
-.content-background {
-  background-color: $content-background-color !important;
-  //  background-color:#D3D3D3 !important;
+.content-background{
+  background-color: #DDE2E6 !important;
   padding-top: 20px !important;
 }
 
@@ -41,4 +40,68 @@
 }
 .tickets-filter-background {
   background-color: transparent !important;
+}
+
+// .custom-badge {
+//   padding: 5px 10px;
+//   font-size: 14px;
+//   font-weight: bold;
+//   border-radius: 5px;
+//   text-align: center;
+//   max-width: fit-content;
+//   position: relative;
+//   margin-right: 10px; /* Add some space between badges */
+//   .badge-close {
+//     position: absolute;
+
+//     cursor: pointer;
+//     font-weight: bold;
+//     color: inherit;
+//     border-left: 2px solid currentColor; /* Add border */
+//     padding-left: 5px; /* Add padding to separate from border */
+//     &:hover {
+//       color: red; // Change color on hover
+//     }
+//   }
+// }
+.custom-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  padding-right: 0px !important;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 1px;
+  text-align: center;
+  max-width: fit-content;
+  position: relative;
+  margin-right: 10px; /* Add some space between badges */
+  .badge-close {
+    margin-left: 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: inherit;
+    border-left: 2px solid currentColor; /* Add border */
+    padding-left: 5px; /* Add padding to separate from border */
+  }
+  .badge-close:hover {
+    color: black; /* Change background on hover */
+  }
+}
+
+.count-align-bottom {
+  display: flex;
+  align-items: flex-end;
+}
+.custom-badge-value {
+  color: orange; /* or any other shade of gold you prefer */
+  margin-left: 4px; /* Adjust the spacing as needed */
+
+}
+.animated-wrapper {
+  width: 100%;
+  height: 100%; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
 }

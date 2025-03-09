@@ -10,6 +10,7 @@ import { useAtom } from "jotai";
 import { dashboardViewAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
 import MainDashboard from "./mainDashbaord";
 import { GetDashboardAnalytics } from "../../config/ApiCalls";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 const DashboardPage: FC = () => {
   const [currentView] = useAtom(dashboardViewAtom);
@@ -43,10 +44,13 @@ const DashboardWrapper: FC = () => {
   const intl = useIntl();
   return (
     <>
+      <AnimatedRouteWrapper>
+
       <PageTitle breadcrumbs={[]}>
         {intl.formatMessage({ id: "MENU.DASHBOARD" })}
       </PageTitle>
       <DashboardPage />
+      </AnimatedRouteWrapper>
     </>
   );
 };

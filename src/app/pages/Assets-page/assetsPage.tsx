@@ -16,6 +16,7 @@ import clsx from "clsx";
 import { activeFilters, getColumns, mockData } from "../../data/assets";
 import { useNavigate } from "react-router-dom";
 import { showActionColumnAtom } from "../../atoms/table-atom/tableAtom";
+import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 const AssetsPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -208,7 +209,9 @@ const AssetsPage = () => {
     [memoizedColumns]
   );
   return (
-    <div className="container-fluid d-flex mt-4" style={{ height: "100%" }}>
+      <AnimatedRouteWrapper>
+
+      <div className="container-fluid d-flex mt-4" style={{ height: "100%" }}>
       <div
         className="content-container rounded p-3"
         style={{
@@ -359,10 +362,12 @@ const AssetsPage = () => {
         />
       </div>
     </div>
+      </AnimatedRouteWrapper>
   );
 };
 
 const AssetsPageWrapper = () => {
+
   return <AssetsPage />;
 };
 

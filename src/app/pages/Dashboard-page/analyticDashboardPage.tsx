@@ -4,7 +4,7 @@ import {
   loadFromIndexedDB,
   removeFromIndexedDB,
   saveToIndexedDB,
-} from "../../indexDB/Config";
+} from "../../indexDB/IndexDBConfig";
 import { Rnd } from "react-rnd";
 import { SidebarAnalytic } from "../../components/dashboard/sidebarChartt";
 import { ChartType } from "../../types/dashboard";

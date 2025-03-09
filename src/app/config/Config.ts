@@ -9,6 +9,9 @@ export const PrivateApiCall = axios.create({
   baseURL: 'https://cobalt.pulsar.ao/apirest.php',
   withCredentials: true,
 });
+export const ImageUploadApiCall = axios.create({
+    baseURL: 'http://localhost:3007'
+});
 
 export function getSessionTokenFromCookie() {
   const match = document.cookie.match(/session_token=([^;]+)/);

@@ -15,7 +15,7 @@ export default defineConfig({
     },
   },
 
-  base:  "/",
+  base:  process.env.VITE_BASE_URL || "/",
   build: {
     chunkSizeWarningLimit: 3000,
   },

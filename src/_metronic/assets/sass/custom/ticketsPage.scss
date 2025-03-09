@@ -1,0 +1,20 @@
+.tickets-pagination-controls {
+    position: sticky; // Makes the navigation stick to the container's bottom
+    bottom: 5px !important;       // Adds margin from the bottom
+    top: 0px !important;
+    left: 0;            // Aligns it to the container's left edge
+    right: 0;           // Aligns it to the container's right edge
+    display: flex;      // Allows child elements to be flexibly positioned
+    justify-content: right; // Centers the navigation horizontally
+    margin: auto;       // Ensures it's centered with padding around it
+    padding: 4px;       // Adds some padding around the controls
+    background-color: #f8f9fa; // Optional: Background color for better visibility
+    border-top: 1px solid #ddd; // Optional: Adds a separator line
+    width: 100% !important;
+  }
+  
+  .tickets-component-container {
+    position: relative !important; // Enables absolute positioning for the child elements
+    max-height: 95% !important;  // Ensures the component takes full screen height
+    margin-bottom: 4px;
+  }

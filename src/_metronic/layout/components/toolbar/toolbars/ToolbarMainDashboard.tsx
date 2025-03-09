@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useAtom, useAtomValue } from "jotai";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useLayout } from "../../../core";
-import { staticDataAtom } from "../../../../../app/atoms/filters-atoms/filtersAtom";
+import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../../../../app/types/filtersAtomType";
 import { selectValueType } from "../../../../../app/types/dashboard";
 import {
@@ -13,10 +13,15 @@ import {
 
 const ToolbarMainDashboard = () => {
   const { classes } = useLayout();
+  // const [staticData, setStaticData] = useAtom(staticDataAtom) ;
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
   const [selectedDeviceAtom, setSelectedDeviceAtom] = useAtom(
     selectedComputerDashboardAtom
   );
+  useEffect(() => {
+
+    const asd=0;
+  }, [staticData]);
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
