@@ -361,7 +361,7 @@ export const Wizard = ({
             </div>
             <div className="mb-4" style={{ height: "90px" }}>
               <label htmlFor="deviceSelect" className="form-label required">
-                Select Device
+                Select Devices
               </label>
               <Select
                 id="deviceSelect"
