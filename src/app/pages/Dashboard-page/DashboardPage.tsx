@@ -40,8 +40,8 @@ const DashboardPage: FC = () => {
       }}
     >
       <ToolbarWrapper source={"dashboard"} />
-      <AnalyticsDashboard />
-      {/* {currentView === "main" ? <MainDashboard /> : <AnalyticsDashboard />} */}
+
+      {currentView === "main" ? <MainDashboard /> : <AnalyticsDashboard />}
     </div>
   );
 };
