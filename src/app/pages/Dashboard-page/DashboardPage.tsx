@@ -33,9 +33,8 @@ const DashboardPage: FC = () => {
 
   return (
     <div
+      className="d-flex flex-column"
       style={{
-        display: "flex",
-        flexDirection: "column",
         height: "calc(100vh - var(--bs-app-header-height))",
       }}
     >
