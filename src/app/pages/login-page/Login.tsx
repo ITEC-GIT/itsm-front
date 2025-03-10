@@ -23,7 +23,7 @@ const initialValues = {
 export function LoginPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [usrAtom,setUserData] = useAtom(userAtom);
+  const [usrAtom, setUserData] = useAtom(userAtom);
   const setIsAuthenticatedAtom = useSetAtom(isAuthenticatedAtom);
   const loginRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -88,9 +88,6 @@ export function LoginPage() {
     >
       <div className="text-center mb-11">
         <h1 className="text-gray-900 fw-bolder mb-3">Sign In</h1>
-        <div className="text-gray-500 fw-semibold fs-6">
-          Your Social Campaigns
-        </div>
       </div>
 
       {loginError && <div className="alert alert-danger">{loginError}</div>}
@@ -141,9 +138,9 @@ export function LoginPage() {
         <div />
 
         {/* begin::Link */}
-        <Link to="/auth/forgot-password" className="link-primary">
+        {/* <Link to="/auth/forgot-password" className="link-primary">
           Forgot Password ?
-        </Link>
+        </Link> */}
         {/* end::Link */}
       </div>
       {/* end::Wrapper */}
@@ -167,12 +164,12 @@ export function LoginPage() {
       </div>
       {/* end::Action */}
 
-      <div className="text-gray-500 text-center fw-semibold fs-6">
+      {/* <div className="text-gray-500 text-center fw-semibold fs-6">
         Not a Member yet?{" "}
         <Link to="/auth/registration" className="link-primary">
           Sign up
         </Link>
-      </div>
+      </div> */}
     </form>
   );
 }
