@@ -191,88 +191,63 @@ const AnalyticsDashboard: React.FC = () => {
   }, [userId]);
 
   return (
-    <div
-      className="container-fluid"
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "#DDE2E6",
-        overflow: "hidden",
-      }}
-    >
+    <div className="container-fluid dashboard-container-fluid">
       <div className="row flex-grow-1" style={{ overflow: "hidden" }}>
-        <div
-          className="col-sm-3 col-md-3 col-lg-3 col-xl-2"
-          style={{
-            height: "100%",
-            overflowY: "auto",
-            backgroundColor: "#f7f9fc",
-          }}
-        >
+        <div className="col-sm-3 col-md-3 col-lg-4 col-xl-2 pe-0 height-100">
           <SidebarAnalytic
             selectedCharts={selectedCharts}
             toggleChart={toggleChart}
           />
         </div>
 
-        <div
-          className="col-sm-9 col-md-9 col-lg-9 col-xl-10"
-          style={{
-            height: "100%",
-            overflowY: "auto",
-            backgroundColor: "#f7f9fc",
-            borderRadius: "10px",
-            padding: "1.5rem 1rem",
-            position: "relative",
-          }}
-        >
-          <div
-            ref={parentRef}
-            className="parent d-flex flex-wrap gap-2 p-3 bg-light"
-            style={{ position: "relative", minHeight: "100%", width: "100%" }}
-          >
-            {selectedCharts.map(
-              ({ id, type, x, y, width, height, title }, index) => {
-                const config = chartConfig[type as ChartType];
+        <div className="col-sm-9 col-md-9 col-lg-9 col-xl-10 pt-3 pb-3 height-100">
+          <div className="dashboard-display-container p-3">
+            <div
+              ref={parentRef}
+              className="parent d-flex flex-wrap gap-2 p-3 dashboard-parent-chart-container"
+            >
+              {selectedCharts.map(
+                ({ id, type, x, y, width, height, title }, index) => {
+                  const config = chartConfig[type as ChartType];
 
-                const chartWidth = parseInt(config.options.chart.width, 10);
-                const chartHeight = parseInt(config.options.chart.height, 10);
-                return (
-                  <Rnd
-                    key={id}
-                    size={{ width, height }}
-                    position={{ x, y }}
-                    onDragStop={(e: any, d: { x: number; y: number }) =>
-                      handleDragStop(index, d.x, d.y)
-                    }
-                    onResizeStop={(
-                      e: any,
-                      direction: any,
-                      ref: HTMLElement,
-                      delta: { width: number; height: number },
-                      position: { x: number; y: number }
-                    ) =>
-                      handleResizeStop(index, direction, ref, delta, position)
-                    }
-                    minWidth={chartWidth}
-                    minHeight={chartHeight}
-                    maxWidth={window.innerWidth * 0.75}
-                    enableResizing={{
-                      top: true,
-                      right: true,
-                      bottom: true,
-                      left: true,
-                    }}
-                  >
-                    <ChartDisplay
-                      chartType={type as ChartType}
-                      chartTitle={title}
-                    />
-                  </Rnd>
-                );
-              }
-            )}
+                  const chartWidth = parseInt(config.options.chart.width, 10);
+                  const chartHeight = parseInt(config.options.chart.height, 10);
+                  return (
+                    <Rnd
+                      key={id}
+                      size={{ width, height }}
+                      position={{ x, y }}
+                      onDragStop={(e: any, d: { x: number; y: number }) =>
+                        handleDragStop(index, d.x, d.y)
+                      }
+                      onResizeStop={(
+                        e: any,
+                        direction: any,
+                        ref: HTMLElement,
+                        delta: { width: number; height: number },
+                        position: { x: number; y: number }
+                      ) =>
+                        handleResizeStop(index, direction, ref, delta, position)
+                      }
+                      minWidth={chartWidth}
+                      minHeight={chartHeight}
+                      maxWidth={window.innerWidth * 0.75}
+                      enableResizing={{
+                        top: true,
+                        right: true,
+                        bottom: true,
+                        left: true,
+                      }}
+                    >
+                      <ChartDisplay
+                        chartType={type as ChartType}
+                        chartTitle={title}
+                      />
+                    </Rnd>
+                  );
+                }
+              )}
+            </div>
           </div>
         </div>
       </div>

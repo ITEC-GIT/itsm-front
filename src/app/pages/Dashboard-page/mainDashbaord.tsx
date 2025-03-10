@@ -84,27 +84,25 @@ const MainDashboard = () => {
   }, []);
 
   return (
-    <div
-      className="container-fluid"
-      style={{ paddingLeft: "20px", backgroundColor: "#DDE2E6" }}
-    >
-      <div className="row">
-        <div className="col-sm-3 col-md-3 col-lg-3 col-xl-2">
+    <div className="container-fluid dashboard-container-fluid">
+      <div className="row flex-grow-1" style={{ overflow: "hidden" }}>
+        <div
+          className="col-sm-3 col-md-3 col-lg-4 col-xl-2 pe-0"
+          style={{
+            height: "100%",
+          }}
+        >
           <SidebarMain />
         </div>
         <div
-          className="col-sm-9 col-md-9 col-lg-9 col-xl-10 mt-3"
+          className="col-sm-9 col-md-9 col-lg-9 col-xl-10 pt-3 pb-3"
           style={{
-            backgroundColor: "white",
-            borderRadius: "10px",
-            padding: "1.5rem 1rem",
-            flexGrow: "1",
-            overflowY: "auto",
-            height: "79vh",
-            maxHeight: "79vh",
+            height: "100%",
           }}
         >
-          {renderActiveView()}
+          <div className="dashboard-display-container p-3">
+            {renderActiveView()}
+          </div>
         </div>
       </div>
     </div>

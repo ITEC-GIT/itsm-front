@@ -23,9 +23,9 @@ const SidebarMain = () => {
   }, [selectedComputerAtom]);
 
   return (
-    <div className="sidebar-main mt-3">
+    <div className="sidebar-main p-3">
       {selectedComputerAtom ? (
-        <div className="computer-info">
+        <div className="computer-info p-3">
           <div className="computer-header">
             <h2 className="computer-name">{computer?.name}</h2>
             <span className="computer-type">
