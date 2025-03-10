@@ -185,13 +185,17 @@
   border-bottom: 1px solid #eee;
 }
 
-.sidebar-analytics {
-  height: 100% !important;
-  padding: 0 5px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  scrollbar-width: none !important;
-}
+// .sidebar-analytics {
+
+//   // height: 100% !important;
+//   // padding: 0 5px !important;
+//   display: flex !important;
+//   flex-direction: column !important;
+//   scrollbar-width: none !important;
+//   overflow-y: auto !important;
+//   position: sticky !important;
+//   top: 0 !important;
+// }
 
 .chart-list {
   background: #ffffff !important;
@@ -202,7 +206,7 @@
   flex-direction: column !important;
   overflow-y: auto !important;
   scrollbar-width: none !important;
-  max-height: 79vh !important;
+
   -ms-overflow-style: none !important;
 }
 .chart-list::-webkit-scrollbar {

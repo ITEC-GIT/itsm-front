@@ -191,23 +191,39 @@ const AnalyticsDashboard: React.FC = () => {
   }, [userId]);
 
   return (
-    <div className="container-fluid" style={{ backgroundColor: "#DDE2E6" }}>
-      <div className="row">
-        <div className="col-sm-3 col-md-3 col-lg-3 col-xl-2">
+    <div
+      className="container-fluid"
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "#DDE2E6",
+        overflow: "hidden",
+      }}
+    >
+      <div className="row flex-grow-1" style={{ overflow: "hidden" }}>
+        <div
+          className="col-sm-3 col-md-3 col-lg-3 col-xl-2"
+          style={{
+            height: "100%",
+            overflowY: "auto",
+            backgroundColor: "#f7f9fc",
+          }}
+        >
           <SidebarAnalytic
             selectedCharts={selectedCharts}
             toggleChart={toggleChart}
           />
         </div>
+
         <div
-          className="col-sm-9 col-md-9 col-lg-9 col-xl-10 mt-3"
+          className="col-sm-9 col-md-9 col-lg-9 col-xl-10"
           style={{
+            height: "100%",
+            overflowY: "auto",
             backgroundColor: "#f7f9fc",
             borderRadius: "10px",
             padding: "1.5rem 1rem",
-            height: "79vh",
-            overflowY: "auto",
-            // overflowX: "hidden",
             position: "relative",
           }}
         >

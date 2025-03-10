@@ -32,11 +32,17 @@ const DashboardPage: FC = () => {
   }, []);
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - var(--bs-app-header-height))",
+      }}
+    >
       <ToolbarWrapper source={"dashboard"} />
-
-      {currentView === "main" ? <MainDashboard /> : <AnalyticsDashboard />}
-    </>
+      <AnalyticsDashboard />
+      {/* {currentView === "main" ? <MainDashboard /> : <AnalyticsDashboard />} */}
+    </div>
   );
 };
 
@@ -45,11 +51,10 @@ const DashboardWrapper: FC = () => {
   return (
     <>
       <AnimatedRouteWrapper>
-
-      <PageTitle breadcrumbs={[]}>
-        {intl.formatMessage({ id: "MENU.DASHBOARD" })}
-      </PageTitle>
-      <DashboardPage />
+        <PageTitle breadcrumbs={[]}>
+          {intl.formatMessage({ id: "MENU.DASHBOARD" })}
+        </PageTitle>
+        <DashboardPage />
       </AnimatedRouteWrapper>
     </>
   );
