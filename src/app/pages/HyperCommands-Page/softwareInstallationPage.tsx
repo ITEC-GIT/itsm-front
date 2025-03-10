@@ -329,179 +329,175 @@ const SoftwareInstallationPage = ({
   }, []);
 
   return (
-      <AnimatedRouteWrapper>
-
+    <AnimatedRouteWrapper>
       <div
-      className="container-fluid d-flex"
-      style={{ height: "100%", paddingLeft: "30px", paddingRight: "30px" }}
-    >
-      <div
-        className="content-container rounded p-3 bg-white"
-        style={{
-          marginRight: isSidebarOpen ? "15%" : "0",
-          width: isSidebarOpen ? "82%" : "100%",
-        }}
+        className="container-fluid d-flex"
+        style={{ height: "100%", paddingLeft: "30px", paddingRight: "30px" }}
       >
         <div
-          className="row justify-content-around  bg-white"
-          style={{ height: "15%" }}
+          className="content-container rounded p-3 bg-white"
+          style={{
+            marginRight: isSidebarOpen ? "15%" : "0",
+            width: isSidebarOpen ? "82%" : "100%",
+          }}
         >
-          <div className="d-flex justify-content-between">
-            <h2 className="text-center mb-4">🚀 Software Installation</h2>
-            <ActionIcons />
-          </div>
-          <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2">
-            <li className="nav-item">
-              <a
-                className="nav-link custom-nav-link active"
-                data-bs-toggle="tab"
-                href="#software_installation"
-              >
-                Software Installation
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link custom-nav-link"
-                data-bs-toggle="tab"
-                href="#installation_history"
-              >
-                Installation History
-              </a>
-            </li>
-          </ul>
-          <div className="tab-content ">
-            <div
-              className="tab-pane fade show active"
-              id="software_installation"
-              role="tabpanel"
-            >
-              <div className="col-12">
-                <Wizard
-                  steps={steps}
-                  add={setPaginatedHistory}
-                  idgt={getGreatestId(paginatedHistory) ?? 0}
-                />
-                <div className="p-5" ref={tableContainerRef}>
-                  <DataTable
-                    columns={visibleColumns.map((col) => ({
-                      ...col,
-                      width: columnWidths[col.id as string],
-                    }))}
-                    data={getCurrentPageRecords.slice(0, 5)}
-                    persistTableHead={true}
-                    responsive
-                    highlightOnHover
-                    customStyles={customStyles}
-                    sortIcon={sortIcon}
-                  />
-                </div>
-              </div>
+          <div
+            className="row justify-content-around  bg-white"
+            style={{ height: "15%" }}
+          >
+            <div className="d-flex justify-content-between">
+              <h2 className="text-center mb-4">🚀 Software Installation</h2>
+              <ActionIcons />
             </div>
-            <div
-              className="tab-pane fade"
-              id="installation_history"
-              role="tabpanel"
-            >
-              <div className="col-12">
-                <div className="row d-flex justify-content-end gap-2 p-5">
-                  <SearchComponent
-                    value={searchQuery}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleSearchChange(e.target.value)
-                    }
+            <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2">
+              <li className="nav-item">
+                <a
+                  className="nav-link custom-nav-link active"
+                  data-bs-toggle="tab"
+                  href="#software_installation"
+                >
+                  Software Installation
+                </a>
+              </li>
+              <li className="nav-item">
+                <a
+                  className="nav-link custom-nav-link"
+                  data-bs-toggle="tab"
+                  href="#installation_history"
+                >
+                  Installation History
+                </a>
+              </li>
+            </ul>
+            <div className="tab-content ">
+              <div
+                className="tab-pane fade show active"
+                id="software_installation"
+                role="tabpanel"
+              >
+                <div className="col-12">
+                  <Wizard
+                    steps={steps}
+                    add={setPaginatedHistory}
+                    idgt={getGreatestId(paginatedHistory) ?? 0}
                   />
-                  <FilterButton toggleSidebar={toggleSidebar} />
-                </div>
-
-                <div className="row mt-5 mb-5 d-flex justify-content-between">
-                  {showUpdateAlert && (
-                    <div className="col-12 col-md-12 d-flex align-items-center">
-                      <div
-                        className="alert alert-info alert-dismissible fade show"
-                        role="alert"
-                        onClick={() => refetch()}
-                      >
-                        <strong>Update Detected!</strong> {alertUpdateMessage}
-                        <button
-                          type="button"
-                          className="btn-close"
-                          onClick={handleAlertClose}
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-5" ref={tableContainerRef}>
-                  <DataTable
-                    columns={visibleColumns.map((col) => ({
-                      ...col,
-                      width: columnWidths[col.id as string],
-                    }))}
-                    data={getCurrentPageRecords}
-                    persistTableHead={true}
-                    responsive
-                    highlightOnHover
-                    customStyles={customStyles}
-                    sortIcon={sortIcon}
-                  />
-                </div>
-
-                <div className="sticky-pagination">
-                  <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
-                    <button
-                      className="btn btn-sm btn-light me-2"
-                      onClick={handleFirstPage}
-                      disabled={currentHistorysPage === 1}
-                    >
-                      First
-                    </button>
-                    <button
-                      className="btn btn-sm btn-light me-2"
-                      onClick={handlePreviousPage}
-                      disabled={currentHistorysPage === 1}
-                    >
-                      Previous
-                    </button>
-                    {Array.from(
-                      { length: endPage - startPage + 1 },
-                      (_, index) => startPage + index
-                    ).map((page) => (
-                      <button
-                        key={page}
-                        className={clsx("btn btn-sm me-2", {
-                          "btn-primary": currentHistorysPage === page,
-                          "btn-light": currentHistorysPage !== page,
-                        })}
-                        onClick={() => handlePageChange(page)}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                    <button
-                      className="btn btn-sm btn-light me-2"
-                      onClick={handleNextPage}
-                      disabled={currentHistorysPage === totalPages}
-                    >
-                      Next
-                    </button>
-                    <button
-                      className="btn btn-sm btn-light"
-                      onClick={handleLastPage}
-                      disabled={currentHistorysPage === totalPages}
-                    >
-                      Last
-                    </button>
+                  <div className="p-5" ref={tableContainerRef}>
+                    <DataTable
+                      columns={visibleColumns.map((col) => ({
+                        ...col,
+                        width: columnWidths[col.id as string],
+                      }))}
+                      data={getCurrentPageRecords.slice(0, 5)}
+                      persistTableHead={true}
+                      responsive
+                      highlightOnHover
+                      customStyles={customStyles}
+                      sortIcon={sortIcon}
+                    />
                   </div>
                 </div>
               </div>
+              <div
+                className="tab-pane fade"
+                id="installation_history"
+                role="tabpanel"
+              >
+                <div className="col-12">
+                  <div className="row d-flex justify-content-end gap-2 p-5">
+                    <SearchComponent
+                      value={searchQuery}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleSearchChange(e.target.value)
+                      }
+                    />
+                    <FilterButton toggleSidebar={toggleSidebar} />
+                  </div>
+
+                  <div className="row mt-5 mb-5 d-flex justify-content-between">
+                    {showUpdateAlert && (
+                      <div className="col-12 col-md-12 d-flex align-items-center">
+                        <div
+                          className="alert alert-info alert-dismissible fade show"
+                          role="alert"
+                          onClick={() => refetch()}
+                        >
+                          <strong>Update Detected!</strong> {alertUpdateMessage}
+                          <button
+                            type="button"
+                            className="btn-close"
+                            onClick={handleAlertClose}
+                            aria-label="Close"
+                          ></button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-5" ref={tableContainerRef}>
+                    <DataTable
+                      columns={visibleColumns.map((col) => ({
+                        ...col,
+                        width: columnWidths[col.id as string],
+                      }))}
+                      data={getCurrentPageRecords}
+                      persistTableHead={true}
+                      responsive
+                      highlightOnHover
+                      customStyles={customStyles}
+                      sortIcon={sortIcon}
+                    />
+                  </div>
+                </div>
+                <div className="tickets-pagination-controls">
+                  <button
+                    className="btn btn-sm btn-light me-2"
+                    onClick={handleFirstPage}
+                    disabled={currentHistorysPage === 1}
+                  >
+                    First
+                  </button>
+                  <button
+                    className="btn btn-sm btn-light me-2"
+                    onClick={handlePreviousPage}
+                    disabled={currentHistorysPage === 1}
+                  >
+                    Previous
+                  </button>
+                  {Array.from(
+                    { length: endPage - startPage + 1 },
+                    (_, index) => startPage + index
+                  ).map((page) => (
+                    <button
+                      key={page}
+                      className={clsx("btn btn-sm me-2", {
+                        "btn-primary": currentHistorysPage === page,
+                        "btn-light": currentHistorysPage !== page,
+                      })}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    className="btn btn-sm btn-light me-2"
+                    onClick={handleNextPage}
+                    disabled={currentHistorysPage === totalPages}
+                  >
+                    Next
+                  </button>
+                  <button
+                    className="btn btn-sm btn-light"
+                    onClick={handleLastPage}
+                    disabled={currentHistorysPage === totalPages}
+                  >
+                    Last
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* <div className="row justify-content-center">
+          {/* <div className="row justify-content-center">
           <div className="col-md-12 col-lg-10 col-xl-12">
             <div className="d-flex justify-content-between">
               <h2 className="text-center mb-4">🚀 Software Installation</h2>
@@ -673,22 +669,22 @@ const SoftwareInstallationPage = ({
             </div>
           </div>
         )} */}
-      </div>
+        </div>
 
-      <div
-        className={`sidebar-container ${
-          isSidebarOpen ? "sidebar-open" : "sidebar-closed"
-        }`}
-      >
-        <FilterSidebar
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-          activeFilters={activeFilters}
-          saveFilters={setFilters}
-        />
+        <div
+          className={`sidebar-container ${
+            isSidebarOpen ? "sidebar-open" : "sidebar-closed"
+          }`}
+        >
+          <FilterSidebar
+            isOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+            activeFilters={activeFilters}
+            saveFilters={setFilters}
+          />
+        </div>
       </div>
-    </div>
-      </AnimatedRouteWrapper>
+    </AnimatedRouteWrapper>
   );
 };
 
