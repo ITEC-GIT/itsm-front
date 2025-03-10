@@ -6,14 +6,22 @@ const SearchComponent = ({
   onChange: any;
 }) => {
   return (
-    <div style={{ width: "100%", maxWidth: "300px" }}>
-      <input
-        type="text"
-        className="form-control form-control-solid"
-        placeholder="Search..."
-        value={value}
-        onChange={onChange}
-      />
+    <div className="d-flex position-relative my-1">
+      <div className="position-relative w-100">
+        <i
+          className="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"
+          style={{ fontSize: "14px" }}
+        ></i>
+        <input
+          type="text"
+          className="form-control form-control-sm form-control-solid w-200px"
+          name="Search Tickets"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Search ..."
+          style={{ paddingLeft: "35px" }}
+        />
+      </div>
     </div>
   );
 };
