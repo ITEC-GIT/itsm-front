@@ -43,6 +43,7 @@ const SoftwareInstallationPage = ({
 }: {
   computerIdProp?: number;
 }) => {
+  const [isSoftwareInstallation, setIsSoftwareInstallation] = useState(false);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const loggedInUser = Number(Cookies.get("user"));
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
@@ -330,61 +331,66 @@ const SoftwareInstallationPage = ({
 
   return (
     <AnimatedRouteWrapper>
-      <div className="container-fluid d-flex " style={{ height: "100%" }}>
-        <div
-          className="content-container rounded bg-white p-5"
-          style={{
-            marginRight: isSidebarOpen ? "15%" : "0",
-            width: isSidebarOpen ? "82%" : "100%",
-          }}
-        >
+      <div className="d-flex flex-column custom-container-height card-container">
+        <div className="container-fluid d-flex flex-column" style={{ flex: 1 }}>
           <div
-            className="row justify-content-around bg-white"
-            style={{ height: "15%" }}
+            className="d-flex flex-column content-container  bg-white p-5"
+            style={{
+              marginRight: isSidebarOpen ? "15%" : "0",
+              width: isSidebarOpen ? "82%" : "100%",
+            }}
           >
-            <div className="d-flex justify-content-between p-5">
-              <h2 className="text-center mb-4">🚀 Software Installation</h2>
-              <ActionIcons />
+            <div className="row justify-content-around bg-white">
+              <div className="d-flex justify-content-between ps-5 pe-5">
+                <h2>🚀 Software Installation</h2>
+                <ActionIcons />
+              </div>
+              <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2 ps-5 pe-5">
+                <li className="nav-item">
+                  <a
+                    className="nav-link custom-nav-link active"
+                    data-bs-toggle="tab"
+                    href="#software_installation"
+                    onClick={() => setIsSoftwareInstallation(false)}
+                  >
+                    Software Installation
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a
+                    className="nav-link custom-nav-link"
+                    data-bs-toggle="tab"
+                    href="#installation_history"
+                    onClick={() => setIsSoftwareInstallation(true)}
+                  >
+                    Installation History
+                  </a>
+                </li>
+              </ul>
             </div>
-            <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2 p-5">
-              <li className="nav-item">
-                <a
-                  className="nav-link custom-nav-link active"
-                  data-bs-toggle="tab"
-                  href="#software_installation"
-                >
-                  Software Installation
-                </a>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="nav-link custom-nav-link"
-                  data-bs-toggle="tab"
-                  href="#installation_history"
-                >
-                  Installation History
-                </a>
-              </li>
-            </ul>
-            <div className="tab-content p-0">
+            <div
+              className="tab-content p-0"
+              style={{ flex: 1, overflowY: "auto" }}
+            >
               <div
                 className="tab-pane fade show active"
                 id="software_installation"
                 role="tabpanel"
               >
-                <div className="col-12">
+                <div className="col-12 p-1">
                   <Wizard
                     steps={steps}
                     add={setPaginatedHistory}
                     idgt={getGreatestId(paginatedHistory) ?? 0}
                   />
+
                   <div className="p-5" ref={tableContainerRef}>
                     <DataTable
                       columns={visibleColumns.map((col) => ({
                         ...col,
                         width: columnWidths[col.id as string],
                       }))}
-                      data={getCurrentPageRecords.slice(0, 5)}
+                      data={getCurrentPageRecords.slice(0, 4)}
                       persistTableHead={true}
                       responsive
                       highlightOnHover
@@ -400,7 +406,7 @@ const SoftwareInstallationPage = ({
                 role="tabpanel"
               >
                 <div className="col-12">
-                  <div className="d-flex align-items-center justify-content-end gap-2 p-5">
+                  <div className="d-flex align-items-center justify-content-end gap-2">
                     <SearchComponent
                       value={searchQuery}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -430,7 +436,7 @@ const SoftwareInstallationPage = ({
                     )}
                   </div>
 
-                  <div className="p-5" ref={tableContainerRef}>
+                  <div ref={tableContainerRef}>
                     <DataTable
                       columns={visibleColumns.map((col) => ({
                         ...col,
@@ -445,67 +451,69 @@ const SoftwareInstallationPage = ({
                     />
                   </div>
                 </div>
-                <div className="tickets-pagination-controls">
-                  <button
-                    className="btn btn-sm btn-light me-2"
-                    onClick={handleFirstPage}
-                    disabled={currentHistorysPage === 1}
-                  >
-                    First
-                  </button>
-                  <button
-                    className="btn btn-sm btn-light me-2"
-                    onClick={handlePreviousPage}
-                    disabled={currentHistorysPage === 1}
-                  >
-                    Previous
-                  </button>
-                  {Array.from(
-                    { length: endPage - startPage + 1 },
-                    (_, index) => startPage + index
-                  ).map((page) => (
-                    <button
-                      key={page}
-                      className={clsx("btn btn-sm me-2", {
-                        "btn-primary": currentHistorysPage === page,
-                        "btn-light": currentHistorysPage !== page,
-                      })}
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                  <button
-                    className="btn btn-sm btn-light me-2"
-                    onClick={handleNextPage}
-                    disabled={currentHistorysPage === totalPages}
-                  >
-                    Next
-                  </button>
-                  <button
-                    className="btn btn-sm btn-light"
-                    onClick={handleLastPage}
-                    disabled={currentHistorysPage === totalPages}
-                  >
-                    Last
-                  </button>
-                </div>
               </div>
             </div>
           </div>
-        </div>
+          {isSoftwareInstallation && (
+            <div className="tickets-pagination-controls">
+              <button
+                className="btn btn-sm btn-light me-2"
+                onClick={handleFirstPage}
+                disabled={currentHistorysPage === 1}
+              >
+                First
+              </button>
+              <button
+                className="btn btn-sm btn-light me-2"
+                onClick={handlePreviousPage}
+                disabled={currentHistorysPage === 1}
+              >
+                Previous
+              </button>
+              {Array.from(
+                { length: endPage - startPage + 1 },
+                (_, index) => startPage + index
+              ).map((page) => (
+                <button
+                  key={page}
+                  className={clsx("btn btn-sm me-2", {
+                    "btn-primary": currentHistorysPage === page,
+                    "btn-light": currentHistorysPage !== page,
+                  })}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                className="btn btn-sm btn-light me-2"
+                onClick={handleNextPage}
+                disabled={currentHistorysPage === totalPages}
+              >
+                Next
+              </button>
+              <button
+                className="btn btn-sm btn-light"
+                onClick={handleLastPage}
+                disabled={currentHistorysPage === totalPages}
+              >
+                Last
+              </button>
+            </div>
+          )}
 
-        <div
-          className={`sidebar-container ${
-            isSidebarOpen ? "sidebar-open" : "sidebar-closed"
-          }`}
-        >
-          <FilterSidebar
-            isOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-            activeFilters={activeFilters}
-            saveFilters={setFilters}
-          />
+          <div
+            className={`sidebar-container ${
+              isSidebarOpen ? "sidebar-open" : "sidebar-closed"
+            }`}
+          >
+            <FilterSidebar
+              isOpen={isSidebarOpen}
+              toggleSidebar={toggleSidebar}
+              activeFilters={activeFilters}
+              saveFilters={setFilters}
+            />
+          </div>
         </div>
       </div>
     </AnimatedRouteWrapper>

@@ -48,9 +48,8 @@
 }
 
 .content-container {
-  position: relative !important;
+  flex: 1 !important;
   height: 100% !important;
-  // transition: margin 0.3s ease-in-out",
   transition: margin 0.3s ease-in-out !important;
 }
 
@@ -119,4 +118,19 @@
 
 .custom-nav-link:not(.active) {
   color: black !important;
+}
+
+.card-container {
+  padding: 20px 30px 0 30px !important;
+  background-color: #dde2e6 !important;
+  overflow: auto !important;
+}
+
+.custom-main-container {
+  background-color: white !important;
+  border-radius: 5px !important;
+}
+
+.custom-container-height {
+  height: calc(100vh - var(--bs-app-header-height)) !important;
 }

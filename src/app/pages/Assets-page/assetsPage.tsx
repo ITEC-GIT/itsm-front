@@ -210,142 +210,154 @@ const AssetsPage = () => {
   );
   return (
     <AnimatedRouteWrapper>
-      <div className="container-fluid d-flex mt-4" style={{ height: "100%" }}>
-        <div
-          className="content-container rounded p-3"
-          style={{
-            marginRight: isSidebarOpen ? "15%" : "0",
-            width: isSidebarOpen ? "78%" : "100%",
-          }}
-        >
-          {/* <div className="d-flex mb-3">
-          <h2 className="mb-4">🛠️ Assets</h2>
-        </div> */}
+      <div className="card-container custom-container-height">
+        <div className="d-flex flex-column custom-main-container height-100">
+          <div className="container-fluid d-flex flex-column mt-4 height-100">
+            <div
+              className="content-container d-flex flex-column rounded"
+              style={{
+                marginRight: isSidebarOpen ? "15%" : "0",
+                width: isSidebarOpen ? "78%" : "100%",
+                overflow: "hidden",
+              }}
+            >
+              <div className="d-flex mb-3 ms-2">
+                <h2 className="mb-4">🛠️ Assets</h2>
+              </div>
 
-          <div
-            className="row justify-content-around  bg-white"
-            style={{ height: "15%" }}
-          >
-            <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
-              <button className="btn custom-btn">
-                <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
-                <span className="custom-btn-text">Download</span>
-              </button>
-              <button className="btn custom-btn" onClick={toggleColumnModal}>
-                <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
-                <span className="custom-btn-text">Columns</span>
-              </button>
-              <button className="btn custom-btn" onClick={toggleAddAssetModal}>
-                <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
-                <span className="custom-btn-text">Asset</span>
-              </button>
-              <ColumnModal
-                isOpen={isColumnModalOpen}
-                onClose={toggleColumnModal}
-                columns={columnsForModal}
-                initialVisibility={columnVisibility}
-                onVisibilityChange={handleVisibilityChange}
-              />
-            </div>
+              <div className="row justify-content-around p-3">
+                <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
+                  <button className="btn custom-btn">
+                    <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
+                    <span className="custom-btn-text">Download</span>
+                  </button>
+                  <button
+                    className="btn custom-btn"
+                    onClick={toggleColumnModal}
+                  >
+                    <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
+                    <span className="custom-btn-text">Columns</span>
+                  </button>
+                  <button
+                    className="btn custom-btn"
+                    onClick={toggleAddAssetModal}
+                  >
+                    <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
+                    <span className="custom-btn-text">Asset</span>
+                  </button>
+                  <ColumnModal
+                    isOpen={isColumnModalOpen}
+                    onClose={toggleColumnModal}
+                    columns={columnsForModal}
+                    initialVisibility={columnVisibility}
+                    onVisibilityChange={handleVisibilityChange}
+                  />
+                </div>
 
-            <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
-              <SearchComponent
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleSearchChange(e.target.value)
-                }
-              />
+                <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
+                  <SearchComponent
+                    value={searchQuery}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleSearchChange(e.target.value)
+                    }
+                  />
 
-              <button
-                className="btn custom-btn"
-                onClick={toggleSidebar}
-                title="Filters"
+                  <button
+                    className="btn custom-btn"
+                    onClick={toggleSidebar}
+                    title="Filters"
+                  >
+                    <i className="bi bi-funnel custom-btn-icon"></i>
+                    Filters
+                  </button>
+                </div>
+              </div>
+
+              <div
+                className="p-3"
+                ref={tableContainerRef}
+                style={{
+                  flex: 1,
+                  overflow: "auto",
+                }}
               >
-                <i className="bi bi-funnel custom-btn-icon"></i>
-                Filters
-              </button>
+                <DataTable
+                  columns={visibleColumns.map((col) => ({
+                    ...col,
+                    width: columnWidths[col.id as string],
+                  }))}
+                  data={mockData}
+                  persistTableHead={true}
+                  responsive
+                  highlightOnHover
+                  customStyles={customStyles}
+                  sortIcon={sortIcon}
+                  onRowMouseEnter={(row) => handleMouseEnter(row.id)}
+                  onRowMouseLeave={handleMouseLeave}
+                />
+              </div>
+
+              <div className="tickets-pagination-controls">
+                <button
+                  className="btn btn-sm btn-light me-2"
+                  onClick={handleFirstPage}
+                  disabled={currentHistorysPage === 1}
+                >
+                  First
+                </button>
+                <button
+                  className="btn btn-sm btn-light me-2"
+                  onClick={handlePreviousPage}
+                  disabled={currentHistorysPage === 1}
+                >
+                  Previous
+                </button>
+                {Array.from(
+                  { length: endPage - startPage + 1 },
+                  (_, index) => startPage + index
+                ).map((page) => (
+                  <button
+                    key={page}
+                    className={clsx("btn btn-sm me-2", {
+                      "btn-primary": currentHistorysPage === page,
+                      "btn-light": currentHistorysPage !== page,
+                    })}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  className="btn btn-sm btn-light me-2"
+                  onClick={handleNextPage}
+                  disabled={currentHistorysPage === totalPages}
+                >
+                  Next
+                </button>
+                <button
+                  className="btn btn-sm btn-light"
+                  onClick={handleLastPage}
+                  disabled={currentHistorysPage === totalPages}
+                >
+                  Last
+                </button>
+              </div>
+            </div>
+
+            <div
+              className={`sidebar-container ${
+                isSidebarOpen ? "sidebar-open" : "sidebar-closed"
+              }`}
+            >
+              <FilterSidebar
+                isOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+                activeFilters={activeFilters}
+                saveFilters={setFilters}
+              />
             </div>
           </div>
-
-          <div
-            className="p-3"
-            ref={tableContainerRef}
-            style={{ backgroundColor: "white", height: "78%" }}
-          >
-            <DataTable
-              columns={visibleColumns.map((col) => ({
-                ...col,
-                width: columnWidths[col.id as string],
-              }))}
-              data={mockData}
-              persistTableHead={true}
-              responsive
-              highlightOnHover
-              customStyles={customStyles}
-              sortIcon={sortIcon}
-              onRowMouseEnter={(row) => handleMouseEnter(row.id)}
-              onRowMouseLeave={handleMouseLeave}
-            />
-          </div>
         </div>
-
-        <div
-          className={`sidebar-container ${
-            isSidebarOpen ? "sidebar-open" : "sidebar-closed"
-          }`}
-        >
-          <FilterSidebar
-            isOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-            activeFilters={activeFilters}
-            saveFilters={setFilters}
-          />
-        </div>
-      </div>
-      <div className="tickets-pagination-controls">
-        <button
-          className="btn btn-sm btn-light me-2"
-          onClick={handleFirstPage}
-          disabled={currentHistorysPage === 1}
-        >
-          First
-        </button>
-        <button
-          className="btn btn-sm btn-light me-2"
-          onClick={handlePreviousPage}
-          disabled={currentHistorysPage === 1}
-        >
-          Previous
-        </button>
-        {Array.from(
-          { length: endPage - startPage + 1 },
-          (_, index) => startPage + index
-        ).map((page) => (
-          <button
-            key={page}
-            className={clsx("btn btn-sm me-2", {
-              "btn-primary": currentHistorysPage === page,
-              "btn-light": currentHistorysPage !== page,
-            })}
-            onClick={() => handlePageChange(page)}
-          >
-            {page}
-          </button>
-        ))}
-        <button
-          className="btn btn-sm btn-light me-2"
-          onClick={handleNextPage}
-          disabled={currentHistorysPage === totalPages}
-        >
-          Next
-        </button>
-        <button
-          className="btn btn-sm btn-light"
-          onClick={handleLastPage}
-          disabled={currentHistorysPage === totalPages}
-        >
-          Last
-        </button>
       </div>
     </AnimatedRouteWrapper>
   );
