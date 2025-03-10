@@ -330,26 +330,23 @@ const SoftwareInstallationPage = ({
 
   return (
     <AnimatedRouteWrapper>
-      <div
-        className="container-fluid d-flex"
-        style={{ height: "100%", paddingLeft: "30px", paddingRight: "30px" }}
-      >
+      <div className="container-fluid d-flex " style={{ height: "100%" }}>
         <div
-          className="content-container rounded p-3 bg-white"
+          className="content-container rounded bg-white p-5"
           style={{
             marginRight: isSidebarOpen ? "15%" : "0",
             width: isSidebarOpen ? "82%" : "100%",
           }}
         >
           <div
-            className="row justify-content-around  bg-white"
+            className="row justify-content-around bg-white"
             style={{ height: "15%" }}
           >
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-between p-5">
               <h2 className="text-center mb-4">🚀 Software Installation</h2>
               <ActionIcons />
             </div>
-            <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2">
+            <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2 p-5">
               <li className="nav-item">
                 <a
                   className="nav-link custom-nav-link active"
@@ -369,7 +366,7 @@ const SoftwareInstallationPage = ({
                 </a>
               </li>
             </ul>
-            <div className="tab-content ">
+            <div className="tab-content p-0">
               <div
                 className="tab-pane fade show active"
                 id="software_installation"
@@ -403,7 +400,7 @@ const SoftwareInstallationPage = ({
                 role="tabpanel"
               >
                 <div className="col-12">
-                  <div className="row d-flex justify-content-end gap-2 p-5">
+                  <div className="d-flex align-items-center justify-content-end gap-2 p-5">
                     <SearchComponent
                       value={searchQuery}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -413,7 +410,7 @@ const SoftwareInstallationPage = ({
                     <FilterButton toggleSidebar={toggleSidebar} />
                   </div>
 
-                  <div className="row mt-5 mb-5 d-flex justify-content-between">
+                  <div className="row mb-5 d-flex justify-content-between">
                     {showUpdateAlert && (
                       <div className="col-12 col-md-12 d-flex align-items-center">
                         <div
@@ -496,179 +493,6 @@ const SoftwareInstallationPage = ({
               </div>
             </div>
           </div>
-
-          {/* <div className="row justify-content-center">
-          <div className="col-md-12 col-lg-10 col-xl-12">
-            <div className="d-flex justify-content-between">
-              <h2 className="text-center mb-4">🚀 Software Installation</h2>
-              <ActionIcons />
-            </div>
-            <button
-              type="button"
-              className="btn custom-btn mb-3"
-              onClick={() => setShowForm((prev) => !prev)}
-            >
-              {showForm ? (
-                <span style={{ display: "inline-block", marginRight: "8px" }}>
-                  Installation Steps
-                </span>
-              ) : (
-                <i className="bi bi-plus-lg hyper-btn-icon"></i>
-              )}
-            </button>
-           
-            <div className="row mt-5 mb-5 d-flex justify-content-between align-items-center">
-              <div className="col-12 col-md-4 d-flex align-items-center">
-                <h3>Installation History</h3>
-              </div>
-
-              <div className="col-12 col-md-8 d-flex justify-content-md-end gap-2">
-                <SearchComponent
-                  value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleSearchChange(e.target.value)
-                  }
-                />
-                <FilterButton toggleSidebar={toggleSidebar} />
-              </div>
-            </div>
-            <div className="row mt-5 mb-5 d-flex justify-content-between">
-              {showUpdateAlert && (
-                <div className="col-12 col-md-12 d-flex align-items-center">
-                  <div
-                    className="alert alert-info alert-dismissible fade show"
-                    role="alert"
-                    onClick={() => refetch()}
-                  >
-                    <strong>Update Detected!</strong> {alertUpdateMessage}
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleAlertClose}
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div ref={tableContainerRef}>
-          <DataTable
-            columns={visibleColumns.map((col) => ({
-              ...col,
-              width: columnWidths[col.id as string],
-            }))}
-            data={getCurrentPageRecords}
-            persistTableHead={true}
-            responsive
-            highlightOnHover
-            customStyles={customStyles}
-            sortIcon={sortIcon}
-          />
-        </div>
-        <div className="sticky-pagination">
-          <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
-            <button
-              className="btn btn-sm btn-light me-2"
-              onClick={handleFirstPage}
-              disabled={currentHistorysPage === 1}
-            >
-              First
-            </button>
-            <button
-              className="btn btn-sm btn-light me-2"
-              onClick={handlePreviousPage}
-              disabled={currentHistorysPage === 1}
-            >
-              Previous
-            </button>
-            {Array.from(
-              { length: endPage - startPage + 1 },
-              (_, index) => startPage + index
-            ).map((page) => (
-              <button
-                key={page}
-                className={clsx("btn btn-sm me-2", {
-                  "btn-primary": currentHistorysPage === page,
-                  "btn-light": currentHistorysPage !== page,
-                })}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              className="btn btn-sm btn-light me-2"
-              onClick={handleNextPage}
-              disabled={currentHistorysPage === totalPages}
-            >
-              Next
-            </button>
-            <button
-              className="btn btn-sm btn-light"
-              onClick={handleLastPage}
-              disabled={currentHistorysPage === totalPages}
-            >
-              Last
-            </button>
-          </div>
-        </div>
-
-        {isModalOpen && (
-          <div
-            className="modal show"
-            tabIndex={-1}
-            role="dialog"
-            style={{
-              display: "block",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div className="modal-dialog" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Cancel Installation:</h5>
-                  <button
-                    type="button"
-                    className="close"
-                    onClick={() => setIsModalOpen(false)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      fontSize: "1.5rem",
-                      lineHeight: "1",
-                    }}
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <p>
-                    Are you sure you want to cancel the installation of{" "}
-                    <strong>{selectedEntry?.software}</strong>?
-                  </p>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setIsModalOpen(false)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={confirmCancellation}
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )} */}
         </div>
 
         <div

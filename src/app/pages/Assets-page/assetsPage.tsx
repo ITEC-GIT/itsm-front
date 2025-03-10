@@ -227,23 +227,15 @@ const AssetsPage = () => {
             style={{ height: "15%" }}
           >
             <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
-              <button className="btn custom-btn" title="Download">
+              <button className="btn custom-btn">
                 <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
                 <span className="custom-btn-text">Download</span>
               </button>
-              <button
-                className="btn custom-btn"
-                onClick={toggleColumnModal}
-                title="Columns"
-              >
+              <button className="btn custom-btn" onClick={toggleColumnModal}>
                 <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
                 <span className="custom-btn-text">Columns</span>
               </button>
-              <button
-                className="btn custom-btn"
-                onClick={toggleAddAssetModal}
-                title="Add Asset"
-              >
+              <button className="btn custom-btn" onClick={toggleAddAssetModal}>
                 <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
                 <span className="custom-btn-text">Asset</span>
               </button>

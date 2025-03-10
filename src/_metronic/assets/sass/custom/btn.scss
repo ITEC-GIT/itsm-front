@@ -3,13 +3,11 @@
   align-items: center !important;
   justify-content: center !important;
   height: 40px !important;
-  max-width: 9rem !important;
+  max-width: 10rem !important;
   margin: 0 !important;
   padding: 0.8rem 1.6rem !important;
-  background: rgba(255, 255, 255, 1) !important;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.102874) !important;
-  border-radius: 0.5rem !important;
-  // color: rgba(32, 34, 35, 1) !important;
+  background: $btn-bg-color !important;
+  border-radius: $btn-border-radius !important;
   border: 1px solid #f0f0f0 !important;
   line-height: 1 !important;
   text-align: center !important;
@@ -41,7 +39,7 @@
 }
 
 .custom-btn:hover {
-  background-color: rgba(11, 1, 20, 0.1) !important;
+  background-color: $btn-bh-color-hover !important;
 }
 
 ///colors:
@@ -75,9 +73,9 @@
   max-width: 18rem !important;
   margin: 0 !important;
   padding: 0.8rem 1.6rem !important;
-  background: rgba(255, 255, 255, 1) !important;
+  background: $btn-bg-color !important;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.102874) !important;
-  border-radius: 0.5rem !important;
+  border-radius: $btn-border-radius !important;
   border: 1px solid #f0f0f0 !important;
   line-height: 1 !important;
   text-align: center !important;
@@ -99,10 +97,9 @@
   height: 40px !important;
   margin: 0 !important;
   padding: 0.8rem 1.6rem !important;
-  background: rgba(255, 255, 255, 1) !important;
+  background: $btn-bg-color !important;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.102874) !important;
-  border-radius: 0.5rem !important;
-  // color: rgba(32, 34, 35, 1) !important;
+  border-radius: $btn-border-radius !important; // color: rgba(32, 34, 35, 1) !important;
   border: 1px solid #f0f0f0 !important;
   line-height: 1 !important;
   text-align: center !important;
@@ -114,5 +111,12 @@
 }
 
 .custom-action-btn:hover {
-  background-color: rgba(11, 1, 20, 0.1) !important;
+  background-color: rgba(20, 10, 30, 0.05) !important;
+}
+.custom-nav-link.active {
+  color: #007bff !important;
+}
+
+.custom-nav-link:not(.active) {
+  color: black !important;
 }

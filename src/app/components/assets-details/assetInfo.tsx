@@ -34,16 +34,16 @@ const AssetInfoComponent = () => {
       </div>
 
       <div className="asset-btn-group">
-        <button className="btn asset-action-btn">
+        <button className="btn custom-btn me-2">
           <i className="bi bi-terminal "></i> Terminal
         </button>
-        <button className="btn asset-action-btn">
+        <button className="btn custom-btn me-2">
           <i className="bi bi-play-circle "></i> Run Script
         </button>
-        <button className="btn asset-action-btn">
+        <button className="btn custom-btn me-2">
           <i className="bi bi-tv "></i> Remote
         </button>
-        <button className="btn asset-action-btn">
+        <button className="btn custom-btn me-2">
           <i className="bi bi-gear "></i> Actions
         </button>
         {/* <button className="btn hover-scale asset-action-btn">
