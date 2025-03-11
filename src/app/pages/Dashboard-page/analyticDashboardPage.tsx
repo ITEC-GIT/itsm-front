@@ -10,6 +10,8 @@ import { SidebarAnalytic } from "../../components/dashboard/sidebarChartt";
 import { ChartType } from "../../types/dashboard";
 import { ChartDisplay } from "../../components/dashboard/chartDisplay";
 import { chartConfig } from "../../data/dashboard";
+import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
+import { useAtom } from "jotai";
 
 const AnalyticsDashboard: React.FC = () => {
   const userId = Number(Cookies.get("user"));
@@ -190,17 +192,54 @@ const AnalyticsDashboard: React.FC = () => {
     }
   }, [userId]);
 
+  const [toggleInstance] = useAtom(sidebarToggleAtom);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // Default to open
+
+  useEffect(() => {
+    if (!toggleInstance || !toggleInstance.target) return;
+
+    const sidebarTarget = toggleInstance.target;
+    const updateSidebarState = () => {
+      const isMinimized = sidebarTarget.hasAttribute(
+        "data-kt-app-sidebar-minimize"
+      );
+      setIsSidebarOpen(!isMinimized);
+    };
+
+    const observer = new MutationObserver(() => {
+      updateSidebarState();
+    });
+
+    observer.observe(sidebarTarget, { attributes: true });
+
+    updateSidebarState();
+
+    return () => observer.disconnect();
+  }, [toggleInstance]);
+
   return (
     <div className="container-fluid dashboard-container-fluid">
       <div className="row flex-grow-1" style={{ overflow: "hidden" }}>
-        <div className="col-sm-3 col-md-3 col-lg-4 col-xl-2 pe-0 height-100">
+        <div
+          className={`pe-0 transition-all height-100 ${
+            isSidebarOpen
+              ? "col-sm-4 col-md-4 col-lg-4 col-xl-3"
+              : "col-sm-3 col-md-3 col-lg-3 col-xl-2"
+          }`}
+        >
           <SidebarAnalytic
             selectedCharts={selectedCharts}
             toggleChart={toggleChart}
           />
         </div>
 
-        <div className="col-sm-9 col-md-9 col-lg-9 col-xl-10 pt-3 pb-3 height-100">
+        <div
+          className={`pt-3 pb-3 height-100 transition-all${
+            isSidebarOpen
+              ? "col-sm-8 col-md-8 col-lg-8 col-xl-9"
+              : "col-sm-9 col-md-9 col-lg-9 col-xl-10"
+          }`}
+        >
           <div className="dashboard-display-container p-3">
             <div
               ref={parentRef}

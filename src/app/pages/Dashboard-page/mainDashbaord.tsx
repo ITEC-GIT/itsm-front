@@ -8,6 +8,7 @@ import {
 import { TicketsPage } from "../tickets-pages/TicketsPage";
 import { SoftwareInstallationPage } from "../HyperCommands-Page/softwareInstallationPage";
 import { RemoteSSHPage } from "../HyperCommands-Page/remoteSSHPage";
+import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 
 const RemoteConsoleiew = () => (
   <div className="remote-ssh-view">
@@ -52,7 +53,8 @@ const MainDashboard = () => {
   const [selctedDeviceAtom, setSelectedDeviceAtom] = useAtom<
     number | undefined
   >(selectedComputerDashboardAtom);
-
+  const [toggleInstance] = useAtom(sidebarToggleAtom);
+  console.log(toggleInstance);
   const renderActiveView = () => {
     if (!selctedDeviceAtom) {
       return <DashboardPlaceholder />;
@@ -83,22 +85,48 @@ const MainDashboard = () => {
     setSelectedDeviceAtom(undefined);
   }, []);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // Default to open
+
+  useEffect(() => {
+    if (!toggleInstance || !toggleInstance.target) return;
+
+    const sidebarTarget = toggleInstance.target;
+    const updateSidebarState = () => {
+      const isMinimized = sidebarTarget.hasAttribute(
+        "data-kt-app-sidebar-minimize"
+      );
+      setIsSidebarOpen(!isMinimized);
+    };
+
+    const observer = new MutationObserver(() => {
+      updateSidebarState();
+    });
+
+    observer.observe(sidebarTarget, { attributes: true });
+
+    updateSidebarState();
+
+    return () => observer.disconnect();
+  }, [toggleInstance]);
+
   return (
     <div className="container-fluid dashboard-container-fluid">
       <div className="row flex-grow-1" style={{ overflow: "hidden" }}>
         <div
-          className="col-sm-3 col-md-3 col-lg-4 col-xl-2 pe-0"
-          style={{
-            height: "100%",
-          }}
+          className={`pe-0 transition-all height-100 ${
+            isSidebarOpen
+              ? " col-md-4 col-lg-5 col-xl-2 col-auto"
+              : " col-md-3 col-lg-3 col-xl-2 col-auto"
+          }`}
         >
           <SidebarMain />
         </div>
         <div
-          className="col-sm-9 col-md-9 col-lg-9 col-xl-10 pt-3 pb-3"
-          style={{
-            height: "100%",
-          }}
+          className={`pt-3 pb-3 height-100 transition-all${
+            isSidebarOpen
+              ? "col-md-8 col-lg-7 col-xl-10"
+              : "col-md-9 col-lg-9 col-xl-10"
+          }`}
         >
           <div className="dashboard-display-container p-3">
             {renderActiveView()}
