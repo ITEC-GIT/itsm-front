@@ -27,11 +27,13 @@ ENV VITE_APP_PREVIEW_URL=https://preview.keenthemes.com/metronic8/react/demo1/
 ENV VITE_APP_PREVIEW_REACT_URL=https://preview.keenthemes.com/metronic8/react
 ENV VITE_APP_PREVIEW_DOCS_URL=https://preview.keenthemes.com/metronic8/react/docs
 ENV VITE_APP_THEME_API_URL=https://preview.keenthemes.com/theme-api/api
-ENV VITE_APP_ENV=development
+ENV VITE_APP_ENV=deployment
 ENV VITE_APP_ITSM_GLPI_API_BASE_URL=https://cobalt.pulsar.ao/apirest.php
 ENV VITE_APP_ITSM_GLPI_APP_TOKEN=13Azo4gaH0BIdcHLFMRKdfK7wHUVTiHGtYxTGZBN
 ENV VITE_APP_ITSM_GLPI_USER_TOKEN=THONZ63oRtOdMpnbj8YSVcrQlgFIF24ciWnlfTV1
-
+ENV VITE_APP_ITSM_GLPI_API_BASE_PROFILES_URL =https://cobalt.pulsar.ao/files/_pictures/
+ENV VITE_APP_ITSM_GLPI_API_BASE_ATTACHMENT_FILES =https://cobalt.pulsar.ao/files
+ENV VITE_APP_ITSM_NGINX_IMAGES_URL = http://cobalt.pulsar.ao:3007
 # Build the Vite app
 RUN npm run build
 
