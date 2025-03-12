@@ -214,7 +214,7 @@ const AssetsPage = () => {
         <div className="d-flex flex-column custom-main-container height-100">
           <div className="container-fluid d-flex flex-column mt-4 height-100">
             <div
-              className="content-container d-flex flex-column rounded"
+              className="content-container d-flex flex-column"
               style={{
                 marginRight: isSidebarOpen ? "15%" : "0",
                 width: isSidebarOpen ? "78%" : "100%",
