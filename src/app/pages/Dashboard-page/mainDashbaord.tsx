@@ -6,9 +6,9 @@ import {
   selectedComputerDashboardAtom,
 } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { TicketsPage } from "../tickets-pages/TicketsPage";
-import { SoftwareInstallationPage } from "../HyperCommands-Page/softwareInstallationPage";
 import { RemoteSSHPage } from "../HyperCommands-Page/remoteSSHPage";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
+import { SoftwareInstallationDashboard } from "./softwareInstallationDashboard";
 
 const RemoteConsoleiew = () => (
   <div className="remote-ssh-view">
@@ -54,14 +54,17 @@ const MainDashboard = () => {
     number | undefined
   >(selectedComputerDashboardAtom);
   const [toggleInstance] = useAtom(sidebarToggleAtom);
-  console.log(toggleInstance);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+
   const renderActiveView = () => {
     if (!selctedDeviceAtom) {
       return <DashboardPlaceholder />;
     }
     switch (activeView) {
       case "software-installation":
-        return <SoftwareInstallationPage computerIdProp={selctedDeviceAtom} />;
+        return (
+          <SoftwareInstallationDashboard computerIdProp={selctedDeviceAtom} />
+        );
       case "remote-ssh":
         return <RemoteSSHPage computerIdProp={selctedDeviceAtom} />;
       case "remote-console":
@@ -84,8 +87,6 @@ const MainDashboard = () => {
   useEffect(() => {
     setSelectedDeviceAtom(undefined);
   }, []);
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // Default to open
 
   useEffect(() => {
     if (!toggleInstance || !toggleInstance.target) return;
@@ -115,8 +116,8 @@ const MainDashboard = () => {
         <div
           className={`pe-0 transition-all height-100 ${
             isSidebarOpen
-              ? " col-md-4 col-lg-5 col-xl-2 col-auto"
-              : " col-md-3 col-lg-3 col-xl-2 col-auto"
+              ? " col-md-4 col-lg-5 col-xl-2 "
+              : " col-md-3 col-lg-3 col-xl-2 "
           }`}
         >
           <SidebarMain />
