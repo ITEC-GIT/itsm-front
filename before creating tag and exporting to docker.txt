@@ -1,0 +1,10 @@
+make
+npm run build
+
+ to detect all problems before hand on development
+
+ check vite problem
+https://github.com/vitejs/vite/issues/19242
+
+preview.allowedHost
+https://www.reddit.com/r/reactjs/comments/1i6cmh3/new_vite_update_breaks_docker_containers_running/
