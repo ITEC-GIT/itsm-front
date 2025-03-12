@@ -3,3 +3,10 @@ $content-background-color: #f1f1f4;
 :root {
   --blue-gradient: linear-gradient(90deg, #007bff, #0056b3);
 }
+
+$btn-border-radius: 5px;
+$btn-bg-color: rgba(20, 10, 30, 0.05);
+$btn-bg-color-hover: rgba(11, 1, 20, 0.1);
+$btn-bg-color-selected: #dde2e6;
+
+$filter-sidebar-border: 1px solid #dde2e6;

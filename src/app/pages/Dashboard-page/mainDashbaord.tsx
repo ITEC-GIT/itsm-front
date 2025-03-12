@@ -6,8 +6,9 @@ import {
   selectedComputerDashboardAtom,
 } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { TicketsPage } from "../tickets-pages/TicketsPage";
-import { SoftwareInstallationPage } from "../HyperCommands-Page/softwareInstallationPage";
 import { RemoteSSHPage } from "../HyperCommands-Page/remoteSSHPage";
+import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
+import { SoftwareInstallationDashboard } from "./softwareInstallationDashboard";
 
 const RemoteConsoleiew = () => (
   <div className="remote-ssh-view">
@@ -52,6 +53,8 @@ const MainDashboard = () => {
   const [selctedDeviceAtom, setSelectedDeviceAtom] = useAtom<
     number | undefined
   >(selectedComputerDashboardAtom);
+  const [toggleInstance] = useAtom(sidebarToggleAtom);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
   const renderActiveView = () => {
     if (!selctedDeviceAtom) {
@@ -59,7 +62,9 @@ const MainDashboard = () => {
     }
     switch (activeView) {
       case "software-installation":
-        return <SoftwareInstallationPage computerIdProp={selctedDeviceAtom} />;
+        return (
+          <SoftwareInstallationDashboard computerIdProp={selctedDeviceAtom} />
+        );
       case "remote-ssh":
         return <RemoteSSHPage computerIdProp={selctedDeviceAtom} />;
       case "remote-console":
@@ -83,28 +88,50 @@ const MainDashboard = () => {
     setSelectedDeviceAtom(undefined);
   }, []);
 
+  useEffect(() => {
+    if (!toggleInstance || !toggleInstance.target) return;
+
+    const sidebarTarget = toggleInstance.target;
+    const updateSidebarState = () => {
+      const isMinimized = sidebarTarget.hasAttribute(
+        "data-kt-app-sidebar-minimize"
+      );
+      setIsSidebarOpen(!isMinimized);
+    };
+
+    const observer = new MutationObserver(() => {
+      updateSidebarState();
+    });
+
+    observer.observe(sidebarTarget, { attributes: true });
+
+    updateSidebarState();
+
+    return () => observer.disconnect();
+  }, [toggleInstance]);
+
   return (
-    <div
-      className="container-fluid"
-      style={{ paddingLeft: "20px", backgroundColor: "#DDE2E6" }}
-    >
-      <div className="row">
-        <div className="col-sm-3 col-md-3 col-lg-3 col-xl-2">
+    <div className="container-fluid dashboard-container-fluid">
+      <div className="row flex-grow-1" style={{ overflow: "hidden" }}>
+        <div
+          className={`pe-0 transition-all height-100 ${
+            isSidebarOpen
+              ? " col-md-4 col-lg-5 col-xl-2 "
+              : " col-md-3 col-lg-3 col-xl-2 "
+          }`}
+        >
           <SidebarMain />
         </div>
         <div
-          className="col-sm-9 col-md-9 col-lg-9 col-xl-10 mt-3"
-          style={{
-            backgroundColor: "white",
-            borderRadius: "10px",
-            padding: "1.5rem 1rem",
-            flexGrow: "1",
-            overflowY: "auto",
-            height: "79vh",
-            maxHeight: "79vh",
-          }}
+          className={`pt-3 pb-3 height-100 transition-all${
+            isSidebarOpen
+              ? "col-md-8 col-lg-7 col-xl-10"
+              : "col-md-9 col-lg-9 col-xl-10"
+          }`}
         >
-          {renderActiveView()}
+          <div className="dashboard-display-container p-3">
+            {renderActiveView()}
+          </div>
         </div>
       </div>
     </div>

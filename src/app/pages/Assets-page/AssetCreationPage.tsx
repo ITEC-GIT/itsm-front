@@ -396,13 +396,21 @@ const AssetCreationPage = () => {
               )}
 
               <div className="d-flex justify-content-between mt-4">
-                <button className="btn btn-primary" onClick={handleBack}>
+                <button
+                  className="btn btn-sm btn-primary action-btn "
+                  onClick={handleBack}
+                >
                   Back
                 </button>
                 {isLastStep ? (
-                  <button className="btn btn-success">Submit</button>
+                  <button className="btn btn-sm btn-success action-btn">
+                    Submit
+                  </button>
                 ) : (
-                  <button className="btn btn-primary" onClick={handleNext}>
+                  <button
+                    className="btn btn-sm btn-primary action-btn "
+                    onClick={handleNext}
+                  >
                     Next
                   </button>
                 )}

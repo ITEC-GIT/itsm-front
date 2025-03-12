@@ -358,34 +358,22 @@ export const getColumns = (
 
                 {showDeleteModal && (
                   <div
-                    className={`modal fade ${
+                    className={`modal w-100 fade ${
                       showDeleteModal ? "show d-block" : ""
                     }`}
-                    tabIndex={-1}
                     role="dialog"
                     aria-hidden={!showDeleteModal}
                     style={{
                       background: showDeleteModal
                         ? "rgba(0,0,0,0.5)"
                         : "transparent",
-                      width: "100%",
                     }}
                   >
                     <div className="modal-dialog modal-dialog-centered">
                       <div className="modal-content p-5">
                         <div className="d-flex justify-content-start align-items-center mb-5">
-                          <div
-                            style={{
-                              backgroundColor: "#FF9800",
-                              borderRadius: "50%",
-                              padding: "10px",
-                              marginRight: "15px",
-                            }}
-                          >
-                            <i
-                              className="bi bi-exclamation"
-                              style={{ color: "white", fontSize: "3rem" }}
-                            ></i>
+                          <div className="circle-div">
+                            <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
                           </div>
                           <div className="d-flex flex-column">
                             <h3>Delete assets</h3>
@@ -398,28 +386,13 @@ export const getColumns = (
                         <div className="d-flex justify-content-end mt-5">
                           <button
                             onClick={cancelDelete}
-                            style={{
-                              backgroundColor: "transparent",
-                              border: "none",
-                              padding: "8px 15px",
-                              cursor: "pointer",
-                              marginRight: "10px",
-                              fontSize: "1rem",
-                            }}
+                            className="custom-modal-cancel-btn"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={confirmDelete}
-                            style={{
-                              backgroundColor: "#dc3545",
-                              color: "white",
-                              border: "none",
-                              padding: "8px 15px",
-                              cursor: "pointer",
-                              borderRadius: "5px",
-                              fontSize: "1rem",
-                            }}
+                            className="custom-modal-confirm-btn"
                           >
                             Delete
                           </button>
@@ -464,7 +437,6 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
         </span>
       );
     },
-
     id: "id",
   },
   {
@@ -720,30 +692,20 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
 
           {showDeleteModal && (
             <div
-              className={`modal fade ${showDeleteModal ? "show d-block" : ""}`}
-              tabIndex={-1}
+              className={`modal w-100 fade ${
+                showDeleteModal ? "show d-block" : ""
+              }`}
               role="dialog"
               aria-hidden={!showDeleteModal}
               style={{
                 background: showDeleteModal ? "rgba(0,0,0,0.5)" : "transparent",
-                width: "100%",
               }}
             >
               <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content p-5">
                   <div className="d-flex justify-content-start align-items-center mb-5">
-                    <div
-                      style={{
-                        backgroundColor: "#FF9800",
-                        borderRadius: "50%",
-                        padding: "10px",
-                        marginRight: "15px",
-                      }}
-                    >
-                      <i
-                        className="bi bi-exclamation"
-                        style={{ color: "white", fontSize: "3rem" }}
-                      ></i>
+                    <div className="circle-div">
+                      <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
                     </div>
                     <div className="d-flex flex-column">
                       <h3>Delete assets</h3>
@@ -755,28 +717,13 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
                   <div className="d-flex justify-content-end mt-5">
                     <button
                       onClick={cancelDelete}
-                      style={{
-                        backgroundColor: "transparent",
-                        border: "none",
-                        padding: "8px 15px",
-                        cursor: "pointer",
-                        marginRight: "10px",
-                        fontSize: "1rem",
-                      }}
+                      className="custom-modal-cancel-btn"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={confirmDelete}
-                      style={{
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 15px",
-                        cursor: "pointer",
-                        borderRadius: "5px",
-                        fontSize: "1rem",
-                      }}
+                      className="custom-modal-confirm-btn"
                     >
                       Delete
                     </button>
@@ -803,6 +750,101 @@ export const activeFilters = [
 
 export const mockData = [
   {
+    id: 111,
+    name: "Device 10",
+    entity: "Entity J",
+    serial_number: "SN012345",
+    model: "Model G",
+    location: "Atlanta",
+    last_update: "2023-09-29",
+    component_processor: "AMD Ryzen 5",
+    type: "Workstation",
+    project: "Project Kappa",
+    address: "707 Fir St",
+    inventory_number: "INV010",
+    alternate_username_number: "AU010",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.10",
+    category: "Network device",
+  },
+  {
+    id: 1111,
+    name: "Device 10",
+    entity: "Entity J",
+    serial_number: "SN012345",
+    model: "Model G",
+    location: "Atlanta",
+    last_update: "2023-09-29",
+    component_processor: "AMD Ryzen 5",
+    type: "Workstation",
+    project: "Project Kappa",
+    address: "707 Fir St",
+    inventory_number: "INV010",
+    alternate_username_number: "AU010",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.10",
+    category: "Network device",
+  },
+  {
+    id: 22,
+    name: "Device 10",
+    entity: "Entity J",
+    serial_number: "SN012345",
+    model: "Model G",
+    location: "Atlanta",
+    last_update: "2023-09-29",
+    component_processor: "AMD Ryzen 5",
+    type: "Workstation",
+    project: "Project Kappa",
+    address: "707 Fir St",
+    inventory_number: "INV010",
+    alternate_username_number: "AU010",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.10",
+    category: "Network device",
+  },
+  {
+    id: 222,
+    name: "Device 10",
+    entity: "Entity J",
+    serial_number: "SN012345",
+    model: "Model G",
+    location: "Atlanta",
+    last_update: "2023-09-29",
+    component_processor: "AMD Ryzen 5",
+    type: "Workstation",
+    project: "Project Kappa",
+    address: "707 Fir St",
+    inventory_number: "INV010",
+    alternate_username_number: "AU010",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.10",
+    category: "Network device",
+  },
+  {
+    id: 2222,
+    name: "Device 10",
+    entity: "Entity J",
+    serial_number: "SN012345",
+    model: "Model G",
+    location: "Atlanta",
+    last_update: "2023-09-29",
+    component_processor: "AMD Ryzen 5",
+    type: "Workstation",
+    project: "Project Kappa",
+    address: "707 Fir St",
+    inventory_number: "INV010",
+    alternate_username_number: "AU010",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.10",
+    category: "Network device",
+  },
+  {
     id: 10,
     name: "Device 10",
     entity: "Entity J",
@@ -822,7 +864,7 @@ export const mockData = [
     category: "Network device",
   },
   {
-    id: 11,
+    id: 22222,
     name: "Device 11",
     entity: "Entity K",
     serial_number: "SN678901",
@@ -841,7 +883,7 @@ export const mockData = [
     category: "Rack",
   },
   {
-    id: 12,
+    id: 333,
     name: "Device 12",
     entity: "Entity L",
     serial_number: "SN345678",
@@ -860,7 +902,121 @@ export const mockData = [
     category: "Devices",
   },
   {
-    id: 13,
+    id: 55555,
+    name: "Device 13",
+    entity: "Entity M",
+    serial_number: "SN901234",
+    model: "Model J",
+    location: "Philadelphia",
+    last_update: "2023-10-07",
+    component_processor: "AMD Ryzen 7",
+    type: "Desktop",
+    project: "Project Mu",
+    address: "909 Oak St",
+    inventory_number: "INV012",
+    alternate_username_number: "AU012",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.13",
+    category: "Enclouser",
+  },
+  {
+    id: 5555,
+    name: "Device 13",
+    entity: "Entity M",
+    serial_number: "SN901234",
+    model: "Model J",
+    location: "Philadelphia",
+    last_update: "2023-10-07",
+    component_processor: "AMD Ryzen 7",
+    type: "Desktop",
+    project: "Project Mu",
+    address: "909 Oak St",
+    inventory_number: "INV012",
+    alternate_username_number: "AU012",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.13",
+    category: "Enclouser",
+  },
+  {
+    id: 555,
+    name: "Device 13",
+    entity: "Entity M",
+    serial_number: "SN901234",
+    model: "Model J",
+    location: "Philadelphia",
+    last_update: "2023-10-07",
+    component_processor: "AMD Ryzen 7",
+    type: "Desktop",
+    project: "Project Mu",
+    address: "909 Oak St",
+    inventory_number: "INV012",
+    alternate_username_number: "AU012",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.13",
+    category: "Enclouser",
+  },
+  {
+    id: 55,
+    name: "Device 13",
+    entity: "Entity M",
+    serial_number: "SN901234",
+    model: "Model J",
+    location: "Philadelphia",
+    last_update: "2023-10-07",
+    component_processor: "AMD Ryzen 7",
+    type: "Desktop",
+    project: "Project Mu",
+    address: "909 Oak St",
+    inventory_number: "INV012",
+    alternate_username_number: "AU012",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.13",
+    category: "Enclouser",
+  },
+  {
+    id: 4444,
+    name: "Device 13",
+    entity: "Entity M",
+    serial_number: "SN901234",
+    model: "Model J",
+    location: "Philadelphia",
+    last_update: "2023-10-07",
+    component_processor: "AMD Ryzen 7",
+    type: "Desktop",
+    project: "Project Mu",
+    address: "909 Oak St",
+    inventory_number: "INV012",
+    alternate_username_number: "AU012",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.13",
+    category: "Enclouser",
+  },
+  {
+    id: 444,
+    name: "Device 13",
+    entity: "Entity M",
+    serial_number: "SN901234",
+    model: "Model J",
+    location: "Philadelphia",
+    last_update: "2023-10-07",
+    component_processor: "AMD Ryzen 7",
+    type: "Desktop",
+    project: "Project Mu",
+    address: "909 Oak St",
+    inventory_number: "INV012",
+    alternate_username_number: "AU012",
+    action: "Active",
+    status: "Online",
+    public_ip: "192.168.1.13",
+    category: "Enclouser",
+  },
+  {
+    id: 44,
     name: "Device 13",
     entity: "Entity M",
     serial_number: "SN901234",

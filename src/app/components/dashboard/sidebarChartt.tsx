@@ -11,14 +11,14 @@ const SidebarAnalytic: React.FC<SidebarProps> = ({
   selectedCharts,
 }) => {
   return (
-    <div className="sidebar-analytics mt-3">
-      <div className="chart-list">
+    <div className="sidebar-analytics p-3">
+      <div className="chart-list p-3">
         {chartSideBarItems.map((category, index) => (
           <div key={index}>
             <h5 className="section-title-up-down">{category.title}</h5>
 
             <div
-              className="d-flex flex-column align-items-start"
+              className="d-flex flex-column align-items-start mb-2"
               style={{ gap: "0.5rem" }}
             >
               {category.charts.map((chart) => {

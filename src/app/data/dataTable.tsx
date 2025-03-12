@@ -29,7 +29,12 @@ export const customStyles = {
       borderTop: "1px solid rgb(222, 222, 222)",
     },
   },
-
+  table: {
+    style: {
+      width: "100%",
+      // tableLayout: "fixed" as "fixed",
+    },
+  },
   cells: {
     style: {
       paddingLeft: "8px",

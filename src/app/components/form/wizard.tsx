@@ -35,8 +35,8 @@ export const Wizard = ({
   idgt,
 }: {
   steps: any;
-  add: React.Dispatch<React.SetStateAction<SoftwareHistoryType[]>>;
-  idgt: number;
+  add?: React.Dispatch<React.SetStateAction<SoftwareHistoryType[]>>;
+  idgt?: number;
 }) => {
   const userData = useAtomValue(userAtom);
   const [userName, setUserName] = useState<string>("");
@@ -184,7 +184,7 @@ export const Wizard = ({
     };
 
     const record: SoftwareHistoryType = {
-      id: idgt + 1,
+      id: idgt ? idgt + 1 : 1,
       software: softwareName.trim(),
       url: softwareUrl.trim(),
       destination: destination.trim(),
@@ -235,7 +235,7 @@ export const Wizard = ({
                 setProgress(0);
                 setShowAlert(false);
                 setCurrentStep(1);
-                add((prev: SoftwareHistoryType[]) => [record, ...prev]);
+                add?.((prev: SoftwareHistoryType[]) => [record, ...prev]);
               }, 1000);
 
               return prev;
@@ -318,7 +318,7 @@ export const Wizard = ({
   }, []);
 
   return (
-    <div className="row p-5 bg-white">
+    <div className=" bg-white">
       <StepNavigation steps={steps} currentStep={currentStep} />
 
       <div className="col-12 mt-4" style={{ height: "210px" }}>
@@ -591,17 +591,15 @@ export const Wizard = ({
 
       <div className="d-flex justify-content-between mt-4">
         <button
-          className="btn btn-primary"
+          className="btn btn-sm btn-primary action-btn"
           onClick={handleBack}
           disabled={isFirstStep ? true : isBackButtonDisabled}
-          style={{ height: "45px" }}
         >
           Back
         </button>
         {isLastStep ? (
           <button
-            className="btn btn-success"
-            style={{ height: "45px" }}
+            className="btn btn-sm btn-success action-btn"
             onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
               handleInstall(e)
             }
@@ -610,9 +608,8 @@ export const Wizard = ({
           </button>
         ) : (
           <button
-            className="btn btn-primary"
+            className="btn btn-sm btn-primary action-btn"
             onClick={handleNext}
-            style={{ height: "45px" }}
           >
             Next
           </button>

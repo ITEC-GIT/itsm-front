@@ -2,7 +2,6 @@ import Cookies from "js-cookie";
 import { dataMissingInIndexedDB, saveToIndexedDB } from "../app/indexDB/Config";
 import { GetStaticData, GetUsersAndAreas } from "../app/config/ApiCalls";
 import { useAtom } from "jotai";
-// import { staticDataAtom } from "../app/atoms/filters-atoms/filtersAtom";
 
 const STORE_NAMES = [
   "assignees",
@@ -139,7 +138,7 @@ export const fetchStaticDataWithAtom = async () => {
     };
 
     if (typeof data === "object" && data !== null) {
-      const x=0;
+      const x = 0;
       // setStaticData(data);
     } else {
       console.error("Invalid data received from the API:", data);

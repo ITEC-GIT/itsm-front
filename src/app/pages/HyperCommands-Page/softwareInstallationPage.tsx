@@ -2,40 +2,40 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { debounce } from "lodash";
 import clsx from "clsx";
-import { ActionIcons } from "../../components/hyper-commands/action-icons";
+import { ActionIcons } from "../../components/hyper-commands/action-icons.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
 
 import {
   CancelSoftwareInstallation,
   GetAllSoftwareInstallations,
-} from "../../config/ApiCalls";
+} from "../../config/ApiCalls.ts";
 
 import {
   GetAllSoftwareInstallationRequestType as filterType,
   SoftwareHistoryType,
-} from "../../types/softwareInstallationTypes";
-import { CardsStat } from "../../components/softwareInstallation/cards-statistics";
+} from "../../types/softwareInstallationTypes.ts";
+import { CardsStat } from "../../components/softwareInstallation/cards-statistics.tsx";
 import {
   getCircleColor,
   getGreatestId,
   getStatusClass,
-} from "../../../utils/custom";
-import { SearchComponent } from "../../components/form/search";
+} from "../../../utils/custom.ts";
+import { SearchComponent } from "../../components/form/search.tsx";
 import { useQuery } from "@tanstack/react-query";
-import { FilterSidebar } from "../../components/form/filters";
+import { FilterSidebar } from "../../components/form/filters.tsx";
 import { useAtom, useAtomValue } from "jotai";
-import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
-import { FilterButton } from "../../components/form/filterButton";
+import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar.ts";
+import { FilterButton } from "../../components/form/filterButton.tsx";
 
-import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { StaticDataType } from "../../types/filtersAtomType";
-import { Wizard } from "../../components/form/wizard";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms.ts";
+import { StaticDataType } from "../../types/filtersAtomType.ts";
+import { Wizard } from "../../components/form/wizard.tsx";
 import {
   activeFilters,
   getColumns,
   steps,
-} from "../../data/softwareInstallation";
-import { customStyles, sortIcon } from "../../data/dataTable";
+} from "../../data/softwareInstallation.tsx";
+import { customStyles, sortIcon } from "../../data/dataTable.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 
 const SoftwareInstallationPage = ({
@@ -277,42 +277,48 @@ const SoftwareInstallationPage = ({
 
       if (visibleCount === 2) {
         visibleCols.forEach((col: TableColumn<SoftwareHistoryType>) => {
-          newWidths[col.id as string] = "50%";
+          if (col.id === "action") {
+            newWidths[col.id as string] = col.width || "auto";
+          } else if (col.id === "id") {
+            newWidths[col.id as string] = col.width || "auto";
+          } else {
+            newWidths[col.id as string] = "50%";
+          }
         });
       } else if (visibleCount > 2) {
         const baseWidthPercentage = Math.ceil(100 / visibleCount);
-        console.log(baseWidthPercentage);
+
         if (tableContainerRef.current) {
           const containerWidth = tableContainerRef.current.clientWidth;
           visibleCols.forEach((col: TableColumn<SoftwareHistoryType>) => {
-            if (col.width) {
-              const pixelWidth = parseInt(col.width, 10);
+            if (col.id === "action") {
+              newWidths[col.id as string] = col.width || "auto";
+            } else if (col.id === "id") {
+              newWidths[col.id as string] = col.width || "auto";
+            } else {
+              if (col.width) {
+                const pixelWidth = parseInt(col.width, 10);
 
-              // if (col.id === "action" || col.id === "id") {
-              //   newWidths[col.id as string] = col.width;
-              // }
-              // else
-              if (!isNaN(pixelWidth)) {
-                const columnPercentageWidth = Math.round(
-                  (pixelWidth / containerWidth) * 100
-                );
+                if (!isNaN(pixelWidth)) {
+                  const columnPercentageWidth = Math.round(
+                    (pixelWidth / containerWidth) * 100
+                  );
 
-                if (columnPercentageWidth < baseWidthPercentage) {
-                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                  if (columnPercentageWidth < baseWidthPercentage) {
+                    newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                  } else {
+                    newWidths[col.id as string] = col.width;
+                  }
                 } else {
                   newWidths[col.id as string] = `${baseWidthPercentage}%`;
-                  // col.width;
                 }
               } else {
                 newWidths[col.id as string] = `${baseWidthPercentage}%`;
               }
-            } else {
-              newWidths[col.id as string] = `${baseWidthPercentage}%`;
             }
           });
         }
       }
-      console.log("newWidths ==>>>", newWidths);
       setColumnWidths(newWidths);
     };
 
@@ -326,129 +332,190 @@ const SoftwareInstallationPage = ({
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [isSidebarOpen]);
+
+  const [activeTab, setActiveTab] = useState("installation");
+  const divRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+  const pagRef = useRef<HTMLDivElement>(null);
+  const [pagHeight, setPagHeight] = useState(0);
+
+  useEffect(() => {
+    if (divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
+      setHeight(Math.round(rect.height));
+    }
+    if (pagRef.current) {
+      const rect = pagRef.current.getBoundingClientRect();
+      setPagHeight(Math.round(rect.height));
+    }
+  }, [divRef.current, pagRef.current]);
 
   return (
     <AnimatedRouteWrapper>
-      <div
-        className="container-fluid d-flex"
-        style={{ height: "100%", paddingLeft: "30px", paddingRight: "30px" }}
-      >
+      <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
         <div
-          className="content-container rounded p-3 bg-white"
-          style={{
-            marginRight: isSidebarOpen ? "15%" : "0",
-            width: isSidebarOpen ? "82%" : "100%",
-          }}
+          className="row d-flex custom-main-container custom-container-height"
+          // style={{ overflowY: "auto" }}
         >
           <div
-            className="row justify-content-around  bg-white"
-            style={{ height: "15%" }}
+            className={`d-flex flex-column ${
+              isSidebarOpen ? "col-9" : "col-12"
+            }`}
           >
-            <div className="d-flex justify-content-between">
-              <h2 className="text-center mb-4">🚀 Software Installation</h2>
-              <ActionIcons />
-            </div>
-            <ul className="nav nav-tabs mb-5 fs-6 border-0 gap-2">
-              <li className="nav-item">
-                <a
-                  className="nav-link custom-nav-link active"
-                  data-bs-toggle="tab"
-                  href="#software_installation"
-                >
-                  Software Installation
-                </a>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="nav-link custom-nav-link"
-                  data-bs-toggle="tab"
-                  href="#installation_history"
-                >
-                  Installation History
-                </a>
-              </li>
-            </ul>
-            <div className="tab-content ">
-              <div
-                className="tab-pane fade show active"
-                id="software_installation"
-                role="tabpanel"
-              >
-                <div className="col-12">
-                  <Wizard
-                    steps={steps}
-                    add={setPaginatedHistory}
-                    idgt={getGreatestId(paginatedHistory) ?? 0}
-                  />
-                  <div className="p-5" ref={tableContainerRef}>
-                    <DataTable
-                      columns={visibleColumns.map((col) => ({
-                        ...col,
-                        width: columnWidths[col.id as string],
-                      }))}
-                      data={getCurrentPageRecords.slice(0, 5)}
-                      persistTableHead={true}
-                      responsive
-                      highlightOnHover
-                      customStyles={customStyles}
-                      sortIcon={sortIcon}
-                    />
-                  </div>
-                </div>
+            <div ref={divRef}>
+              <div className="d-flex justify-content-between">
+                <h2>🚀 Software Installation</h2>
+                <ActionIcons />
               </div>
+
+              <ul className="nav nav-tabs border-0 gap-2 mt-3" role="tablist">
+                <li className="nav-item">
+                  <button
+                    className={`nav-link custom-nav-link ${
+                      activeTab === "installation" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setActiveTab("installation");
+                      setIsSidebarOpen(false);
+                    }}
+                  >
+                    Software Installation
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className={`nav-link custom-nav-link ${
+                      activeTab === "history" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("history")}
+                  >
+                    Software History
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div>
               <div
-                className="tab-pane fade"
-                id="installation_history"
-                role="tabpanel"
+                className="tab-content"
+                style={{
+                  // backgroundColor: "red",
+                  padding: "10px",
+                  // height: `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px)`,
+                  // height: "100px",
+                  height:
+                    activeTab === "installation"
+                      ? `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px)`
+                      : `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - ${pagHeight}px)`,
+                  overflow: "auto",
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
               >
-                <div className="col-12">
-                  <div className="row d-flex justify-content-end gap-2 p-5">
-                    <SearchComponent
-                      value={searchQuery}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleSearchChange(e.target.value)
-                      }
+                {activeTab === "installation" && (
+                  <div
+                    className="d-flex flex-column overflow-auto"
+                    style={{ maxHeight: "100%", flexGrow: 1 }}
+                  >
+                    <Wizard
+                      steps={steps}
+                      add={setPaginatedHistory}
+                      idgt={getGreatestId(paginatedHistory) ?? 0}
                     />
-                    <FilterButton toggleSidebar={toggleSidebar} />
+                    <div className="mt-5" ref={tableContainerRef}>
+                      <DataTable
+                        columns={visibleColumns.map((col) => ({
+                          ...col,
+                          width: columnWidths[col.id as string],
+                        }))}
+                        data={getCurrentPageRecords.slice(0, 4)}
+                        persistTableHead={true}
+                        responsive
+                        highlightOnHover
+                        customStyles={customStyles}
+                        sortIcon={sortIcon}
+                      />
+                    </div>
                   </div>
+                )}
 
-                  <div className="row mt-5 mb-5 d-flex justify-content-between">
-                    {showUpdateAlert && (
-                      <div className="col-12 col-md-12 d-flex align-items-center">
-                        <div
-                          className="alert alert-info alert-dismissible fade show"
-                          role="alert"
-                          onClick={() => refetch()}
-                        >
-                          <strong>Update Detected!</strong> {alertUpdateMessage}
-                          <button
-                            type="button"
-                            className="btn-close"
-                            onClick={handleAlertClose}
-                            aria-label="Close"
-                          ></button>
-                        </div>
+                {activeTab === "history" && (
+                  <div
+                    className="d-flex flex-column overflow-auto"
+                    style={{
+                      maxHeight: "100%",
+                      flexGrow: 1,
+                      position: "relative",
+                    }}
+                  >
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        {showUpdateAlert && (
+                          <div
+                            className="alert alert-info alert-dismissible fade show"
+                            role="alert"
+                            onClick={() => refetch()}
+                          >
+                            <strong>Update Detected!</strong>{" "}
+                            {alertUpdateMessage}
+                            <button
+                              type="button"
+                              className="btn-close"
+                              onClick={handleAlertClose}
+                              aria-label="Close"
+                            ></button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  <div className="p-5" ref={tableContainerRef}>
-                    <DataTable
-                      columns={visibleColumns.map((col) => ({
-                        ...col,
-                        width: columnWidths[col.id as string],
-                      }))}
-                      data={getCurrentPageRecords}
-                      persistTableHead={true}
-                      responsive
-                      highlightOnHover
-                      customStyles={customStyles}
-                      sortIcon={sortIcon}
-                    />
+                      <div className="d-flex align-items-center justify-content-end gap-2">
+                        <SearchComponent
+                          value={searchQuery}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleSearchChange(e.target.value)
+                          }
+                        />
+                        <FilterButton toggleSidebar={toggleSidebar} />
+                      </div>
+                    </div>
+
+                    <div
+                      className="mt-5"
+                      // style={{ width: "100%", overflowX: "auto" }}
+                      ref={tableContainerRef}
+                    >
+                      <DataTable
+                        columns={visibleColumns.map((col) => ({
+                          ...col,
+                          width: columnWidths[col.id as string],
+                        }))}
+                        data={getCurrentPageRecords}
+                        persistTableHead={true}
+                        responsive
+                        highlightOnHover
+                        customStyles={customStyles}
+                        sortIcon={sortIcon}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="tickets-pagination-controls">
+                )}
+              </div>
+
+              {activeTab === "history" && (
+                <div
+                  ref={pagRef}
+                  className="d-flex justify-content-end align-items-center"
+                  style={{
+                    position: "sticky",
+                    bottom: 0,
+                    height: "40px",
+                    // top: "100%",
+                    // right: "0",
+                    width: "100%",
+                    zIndex: "2000",
+                  }}
+                >
                   <button
                     className="btn btn-sm btn-light me-2"
                     onClick={handleFirstPage}
@@ -493,197 +560,71 @@ const SoftwareInstallationPage = ({
                     Last
                   </button>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
-          {/* <div className="row justify-content-center">
-          <div className="col-md-12 col-lg-10 col-xl-12">
-            <div className="d-flex justify-content-between">
-              <h2 className="text-center mb-4">🚀 Software Installation</h2>
-              <ActionIcons />
-            </div>
-            <button
-              type="button"
-              className="btn custom-btn mb-3"
-              onClick={() => setShowForm((prev) => !prev)}
+          {isSidebarOpen && (
+            <div
+              className="col-3 custom-border"
+              style={{
+                height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
+                overflow: "auto",
+              }}
             >
-              {showForm ? (
-                <span style={{ display: "inline-block", marginRight: "8px" }}>
-                  Installation Steps
-                </span>
-              ) : (
-                <i className="bi bi-plus-lg hyper-btn-icon"></i>
-              )}
-            </button>
-           
-            <div className="row mt-5 mb-5 d-flex justify-content-between align-items-center">
-              <div className="col-12 col-md-4 d-flex align-items-center">
-                <h3>Installation History</h3>
-              </div>
-
-              <div className="col-12 col-md-8 d-flex justify-content-md-end gap-2">
-                <SearchComponent
-                  value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleSearchChange(e.target.value)
-                  }
+              <div>
+                <FilterSidebar
+                  isOpen={isSidebarOpen}
+                  toggleSidebar={toggleSidebar}
+                  activeFilters={activeFilters}
+                  saveFilters={setFilters}
                 />
-                <FilterButton toggleSidebar={toggleSidebar} />
               </div>
             </div>
-            <div className="row mt-5 mb-5 d-flex justify-content-between">
-              {showUpdateAlert && (
-                <div className="col-12 col-md-12 d-flex align-items-center">
-                  <div
-                    className="alert alert-info alert-dismissible fade show"
-                    role="alert"
-                    onClick={() => refetch()}
-                  >
-                    <strong>Update Detected!</strong> {alertUpdateMessage}
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleAlertClose}
-                      aria-label="Close"
-                    ></button>
-                  </div>
+          )}
+        </div>
+      </div>
+      {isModalOpen && (
+        <div
+          className={`modal w-100 fade ${isModalOpen ? "show d-block" : ""}`}
+          tabIndex={-1}
+          role="dialog"
+          aria-hidden={!isModalOpen}
+          style={{
+            background: isModalOpen ? "rgba(0,0,0,0.5)" : "transparent",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content p-5">
+              <div className="d-flex justify-content-start align-items-center mb-5">
+                <div className="circle-div">
+                  <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div ref={tableContainerRef}>
-          <DataTable
-            columns={visibleColumns.map((col) => ({
-              ...col,
-              width: columnWidths[col.id as string],
-            }))}
-            data={getCurrentPageRecords}
-            persistTableHead={true}
-            responsive
-            highlightOnHover
-            customStyles={customStyles}
-            sortIcon={sortIcon}
-          />
-        </div>
-        <div className="sticky-pagination">
-          <div className="pagination-controls d-flex justify-content-end mt-3 mb-3">
-            <button
-              className="btn btn-sm btn-light me-2"
-              onClick={handleFirstPage}
-              disabled={currentHistorysPage === 1}
-            >
-              First
-            </button>
-            <button
-              className="btn btn-sm btn-light me-2"
-              onClick={handlePreviousPage}
-              disabled={currentHistorysPage === 1}
-            >
-              Previous
-            </button>
-            {Array.from(
-              { length: endPage - startPage + 1 },
-              (_, index) => startPage + index
-            ).map((page) => (
-              <button
-                key={page}
-                className={clsx("btn btn-sm me-2", {
-                  "btn-primary": currentHistorysPage === page,
-                  "btn-light": currentHistorysPage !== page,
-                })}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              className="btn btn-sm btn-light me-2"
-              onClick={handleNextPage}
-              disabled={currentHistorysPage === totalPages}
-            >
-              Next
-            </button>
-            <button
-              className="btn btn-sm btn-light"
-              onClick={handleLastPage}
-              disabled={currentHistorysPage === totalPages}
-            >
-              Last
-            </button>
-          </div>
-        </div>
-
-        {isModalOpen && (
-          <div
-            className="modal show"
-            tabIndex={-1}
-            role="dialog"
-            style={{
-              display: "block",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div className="modal-dialog" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Cancel Installation:</h5>
-                  <button
-                    type="button"
-                    className="close"
-                    onClick={() => setIsModalOpen(false)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      fontSize: "1.5rem",
-                      lineHeight: "1",
-                    }}
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div className="modal-body">
+                <div className="d-flex flex-column">
                   <p>
                     Are you sure you want to cancel the installation of{" "}
                     <strong>{selectedEntry?.software}</strong>?
                   </p>
                 </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setIsModalOpen(false)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={confirmCancellation}
-                  >
-                    Confirm
-                  </button>
-                </div>
+              </div>
+              <div className="d-flex justify-content-end mt-5">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="custom-modal-cancel-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  className="custom-modal-confirm-btn"
+                  onClick={confirmCancellation}
+                >
+                  Confirm
+                </button>
               </div>
             </div>
           </div>
-        )} */}
         </div>
-
-        <div
-          className={`sidebar-container ${
-            isSidebarOpen ? "sidebar-open" : "sidebar-closed"
-          }`}
-        >
-          <FilterSidebar
-            isOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-            activeFilters={activeFilters}
-            saveFilters={setFilters}
-          />
-        </div>
-      </div>
+      )}
     </AnimatedRouteWrapper>
   );
 };

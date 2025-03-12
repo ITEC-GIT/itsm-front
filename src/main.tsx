@@ -16,8 +16,8 @@ import { AppRoutes } from "./app/routing/AppRoutes";
 import { BrowserRouter } from "react-router-dom";
 import { createStore, Provider as JotaiProvider } from "jotai";
 import { DevTools } from "jotai-devtools";
-import 'jotai-devtools/styles.css'
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import "jotai-devtools/styles.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /**
  * Creates `axios-mock-adapter` instance for provided `axios` instance, add
@@ -47,7 +47,7 @@ if (container) {
           <AppRoutes />
         </JotaiProvider>
       </MetronicI18nProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   );
 }
