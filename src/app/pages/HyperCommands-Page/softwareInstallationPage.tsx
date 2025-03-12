@@ -584,6 +584,47 @@ const SoftwareInstallationPage = ({
           )}
         </div>
       </div>
+      {isModalOpen && (
+        <div
+          className={`modal w-100 fade ${isModalOpen ? "show d-block" : ""}`}
+          tabIndex={-1}
+          role="dialog"
+          aria-hidden={!isModalOpen}
+          style={{
+            background: isModalOpen ? "rgba(0,0,0,0.5)" : "transparent",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content p-5">
+              <div className="d-flex justify-content-start align-items-center mb-5">
+                <div className="circle-div">
+                  <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
+                </div>
+                <div className="d-flex flex-column">
+                  <p>
+                    Are you sure you want to cancel the installation of{" "}
+                    <strong>{selectedEntry?.software}</strong>?
+                  </p>
+                </div>
+              </div>
+              <div className="d-flex justify-content-end mt-5">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="custom-modal-cancel-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  className="custom-modal-confirm-btn"
+                  onClick={confirmCancellation}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AnimatedRouteWrapper>
   );
 };
