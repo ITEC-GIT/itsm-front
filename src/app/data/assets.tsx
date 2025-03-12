@@ -358,34 +358,22 @@ export const getColumns = (
 
                 {showDeleteModal && (
                   <div
-                    className={`modal fade ${
+                    className={`modal w-100 fade ${
                       showDeleteModal ? "show d-block" : ""
                     }`}
-                    tabIndex={-1}
                     role="dialog"
                     aria-hidden={!showDeleteModal}
                     style={{
                       background: showDeleteModal
                         ? "rgba(0,0,0,0.5)"
                         : "transparent",
-                      width: "100%",
                     }}
                   >
                     <div className="modal-dialog modal-dialog-centered">
                       <div className="modal-content p-5">
                         <div className="d-flex justify-content-start align-items-center mb-5">
-                          <div
-                            style={{
-                              backgroundColor: "#FF9800",
-                              borderRadius: "50%",
-                              padding: "10px",
-                              marginRight: "15px",
-                            }}
-                          >
-                            <i
-                              className="bi bi-exclamation"
-                              style={{ color: "white", fontSize: "3rem" }}
-                            ></i>
+                          <div className="circle-div">
+                            <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
                           </div>
                           <div className="d-flex flex-column">
                             <h3>Delete assets</h3>
@@ -398,28 +386,13 @@ export const getColumns = (
                         <div className="d-flex justify-content-end mt-5">
                           <button
                             onClick={cancelDelete}
-                            style={{
-                              backgroundColor: "transparent",
-                              border: "none",
-                              padding: "8px 15px",
-                              cursor: "pointer",
-                              marginRight: "10px",
-                              fontSize: "1rem",
-                            }}
+                            className="custom-modal-cancel-btn"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={confirmDelete}
-                            style={{
-                              backgroundColor: "#dc3545",
-                              color: "white",
-                              border: "none",
-                              padding: "8px 15px",
-                              cursor: "pointer",
-                              borderRadius: "5px",
-                              fontSize: "1rem",
-                            }}
+                            className="custom-modal-confirm-btn"
                           >
                             Delete
                           </button>
@@ -719,30 +692,20 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
 
           {showDeleteModal && (
             <div
-              className={`modal fade ${showDeleteModal ? "show d-block" : ""}`}
-              tabIndex={-1}
+              className={`modal w-100 fade ${
+                showDeleteModal ? "show d-block" : ""
+              }`}
               role="dialog"
               aria-hidden={!showDeleteModal}
               style={{
                 background: showDeleteModal ? "rgba(0,0,0,0.5)" : "transparent",
-                width: "100%",
               }}
             >
               <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content p-5">
                   <div className="d-flex justify-content-start align-items-center mb-5">
-                    <div
-                      style={{
-                        backgroundColor: "#FF9800",
-                        borderRadius: "50%",
-                        padding: "10px",
-                        marginRight: "15px",
-                      }}
-                    >
-                      <i
-                        className="bi bi-exclamation"
-                        style={{ color: "white", fontSize: "3rem" }}
-                      ></i>
+                    <div className="circle-div">
+                      <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
                     </div>
                     <div className="d-flex flex-column">
                       <h3>Delete assets</h3>
@@ -754,28 +717,13 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
                   <div className="d-flex justify-content-end mt-5">
                     <button
                       onClick={cancelDelete}
-                      style={{
-                        backgroundColor: "transparent",
-                        border: "none",
-                        padding: "8px 15px",
-                        cursor: "pointer",
-                        marginRight: "10px",
-                        fontSize: "1rem",
-                      }}
+                      className="custom-modal-cancel-btn"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={confirmDelete}
-                      style={{
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 15px",
-                        cursor: "pointer",
-                        borderRadius: "5px",
-                        fontSize: "1rem",
-                      }}
+                      className="custom-modal-confirm-btn"
                     >
                       Delete
                     </button>
