@@ -33,7 +33,7 @@
 
 .computer-header {
   padding-top: 1.2rem !important;
-  height: 78px !important;
+  height: 80px !important;
   text-overflow: ellipsis;
 }
 
@@ -98,11 +98,11 @@
   align-items: center;
   width: 100%;
   text-align: left;
-  padding: 0.7rem 0.4rem;
+  padding: 0.5rem 0.2rem;
   border: none;
   background: transparent;
   gap: 0.5rem;
-  white-space: nowrap;
+  // white-space: nowrap;
 
   &:hover {
     background: lighten(#4361ee, 35%);
