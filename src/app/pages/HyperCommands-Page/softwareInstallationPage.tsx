@@ -277,13 +277,13 @@ const SoftwareInstallationPage = ({
 
       if (visibleCount === 2) {
         visibleCols.forEach((col: TableColumn<SoftwareHistoryType>) => {
-          if (col.id === "action") {
-            newWidths[col.id as string] = col.width || "auto";
-          } else if (col.id === "id") {
-            newWidths[col.id as string] = col.width || "auto";
-          } else {
+          // if (col.id === "action") {
+          //   newWidths[col.id as string] = col.width || "auto";
+          // } else if (col.id === "id") {
+          //   newWidths[col.id as string] = col.width || "auto";
+          // } else {
             newWidths[col.id as string] = "50%";
-          }
+          // }
         });
       } else if (visibleCount > 2) {
         const baseWidthPercentage = Math.ceil(100 / visibleCount);
@@ -291,11 +291,11 @@ const SoftwareInstallationPage = ({
         if (tableContainerRef.current) {
           const containerWidth = tableContainerRef.current.clientWidth;
           visibleCols.forEach((col: TableColumn<SoftwareHistoryType>) => {
-            if (col.id === "action") {
-              newWidths[col.id as string] = col.width || "auto";
-            } else if (col.id === "id") {
-              newWidths[col.id as string] = col.width || "auto";
-            } else {
+            // if (col.id === "action") {
+            //   newWidths[col.id as string] = col.width || "auto";
+            // } else if (col.id === "id") {
+            //   newWidths[col.id as string] = col.width || "auto";
+            // } else {
               if (col.width) {
                 const pixelWidth = parseInt(col.width, 10);
 
@@ -315,7 +315,7 @@ const SoftwareInstallationPage = ({
               } else {
                 newWidths[col.id as string] = `${baseWidthPercentage}%`;
               }
-            }
+            // }
           });
         }
       }
