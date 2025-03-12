@@ -35,8 +35,8 @@ export const Wizard = ({
   idgt,
 }: {
   steps: any;
-  add: React.Dispatch<React.SetStateAction<SoftwareHistoryType[]>>;
-  idgt: number;
+  add?: React.Dispatch<React.SetStateAction<SoftwareHistoryType[]>>;
+  idgt?: number;
 }) => {
   const userData = useAtomValue(userAtom);
   const [userName, setUserName] = useState<string>("");
@@ -184,7 +184,7 @@ export const Wizard = ({
     };
 
     const record: SoftwareHistoryType = {
-      id: idgt + 1,
+      id: idgt ? idgt + 1 : 1,
       software: softwareName.trim(),
       url: softwareUrl.trim(),
       destination: destination.trim(),
@@ -235,7 +235,7 @@ export const Wizard = ({
                 setProgress(0);
                 setShowAlert(false);
                 setCurrentStep(1);
-                add((prev: SoftwareHistoryType[]) => [record, ...prev]);
+                add?.((prev: SoftwareHistoryType[]) => [record, ...prev]);
               }, 1000);
 
               return prev;
