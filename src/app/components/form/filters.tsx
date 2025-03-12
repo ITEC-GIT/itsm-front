@@ -274,17 +274,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   }, [staticData]);
 
   return (
-    <div
-      className={`sidebar collapse collapse-horizontal show bg-white text-black shadow-2xl rounded-xl ${
-        isOpen ? "d-block" : "d-none"
-      }`}
-      style={{
-        width: "100%",
-        height: "90%",
-        overflowY: "auto",
-        backdropFilter: isOpen ? "blur(5px)" : "none",
-      }}
-    >
+    <div>
       <div className="d-flex align-items-center gap-2 mb-4">
         <button className="btn  p-3" onClick={handleCloseSidebar}>
           <i className={`fas fa-chevron-left`}></i>
@@ -362,7 +352,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </div>
 
       {savedFilters.length > 0 && (
-        <div className="saved-filters-container mt-3 bg-white shadow-sm rounded-lg p-3">
+        <div className=" mt-3 bg-white p-3">
           <h5 className="font-semibold text-lg text-dark mb-3">
             Saved Filters
           </h5>
