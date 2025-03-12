@@ -31,6 +31,12 @@
   height: 100% !important;
 }
 
+.custom-scrolling {
+  height: calc(100% - 10px) !important;
+  overflow-y: auto;
+  scrollbar-width: none !important;
+}
+
 .computer-header {
   padding-top: 1.2rem !important;
   height: 80px !important;
