@@ -37,10 +37,13 @@ const ColumnsModal = <T,>({
     const allSelected = Object.values(columnsVisibility).every(
       (visibility) => visibility
     );
+
     const newVisibility = columns.reduce((acc, col) => {
       acc[col.id as string] = !allSelected;
       return acc;
     }, {} as Record<string, boolean>);
+
+    newVisibility["action"] = true;
     setColumnsVisibility(newVisibility);
   };
 
