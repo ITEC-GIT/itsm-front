@@ -137,9 +137,16 @@ const getStatusBadge = (status?: string) => {
   );
 };
 
-const AssetHistoryComponent = () => {
+const AssetHistoryComponent: React.FC<{ devHeight: number }> = ({
+  devHeight,
+}) => {
   return (
-    <div className="vertical-scroll p-2">
+    <div
+      className="vertical-scroll p-2"
+      style={{
+        height: `calc(100vh - var(--bs-app-header-height) - ${devHeight}px) `,
+      }}
+    >
       <h6 className="fw-bold">
         Last logged in by &nbsp;
         <span className="text-primary">DESKTOP-1FEPMGR</span>

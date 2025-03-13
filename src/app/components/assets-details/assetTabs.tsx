@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AssetHistoryComponent } from "./assetHistory";
 import TicketPageWrapper from "../../pages/tickets-pages/TicketPageWrapper";
 import { AssetAppsComponent } from "./assetApps";
@@ -15,20 +15,28 @@ const asset = {
   purchaseDate: "2023-10-26",
   value: 1200,
 };
-const AssetTabsComponent = () => {
+const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
   const [selectedTab, setSelectedTab] = useState("summary");
+  const navRef = useRef<HTMLUListElement>(null);
+  const [totalHeight, setTotalHeight] = useState<number>(0);
 
   const handleTabClick = (tab: string) => {
     setSelectedTab(tab);
   };
 
+  useEffect(() => {
+    if (navRef.current) {
+      setTotalHeight(navRef.current.offsetHeight + devHeight + 45);
+    }
+  }, [devHeight]);
+
   return (
     <>
       <ul
-        className="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap"
+        ref={navRef}
+        className="nav nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder"
         id="myTabs"
         role="tablist"
-        style={{ paddingLeft: "10px" }}
       >
         <li className="nav-item" role="presentation">
           <button
@@ -112,8 +120,15 @@ const AssetTabsComponent = () => {
         </li>
       </ul>
       <div className="row">
-        <div className={selectedTab === "summary" ? "col-8" : "col-12"}>
-          <div className="tab-content mt-3">
+        <div
+          className={`vertical-scroll ${
+            selectedTab === "summary" ? "col-8" : "col-12"
+          }`}
+          style={{
+            height: `calc(100vh - var(--bs-app-header-height) - ${totalHeight}px) `,
+          }}
+        >
+          <div className="tab-content h-100 p-0">
             <div
               className={`tab-pane fade ${
                 selectedTab === "summary" ? "show active" : ""
@@ -169,7 +184,7 @@ const AssetTabsComponent = () => {
             className="col-4"
             style={{ backgroundColor: "rgba(246,248,251,255)" }}
           >
-            <AssetHistoryComponent />
+            <AssetHistoryComponent devHeight={totalHeight} />
           </div>
         )}
       </div>

@@ -122,7 +122,6 @@
 
 .vertical-scroll {
   overflow-y: auto !important;
-  max-height: 68vh !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
@@ -160,9 +159,9 @@
   font-size: 1.5rem !important;
 }
 
-.app-row {
-  height: 68vh !important;
-}
+// .app-row {
+//   height: 200px !important;
+// }
 
 //nav
 
