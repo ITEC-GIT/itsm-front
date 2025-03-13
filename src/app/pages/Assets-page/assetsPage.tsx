@@ -11,7 +11,7 @@ import { customStyles, sortIcon } from "../../data/dataTable";
 import { debounce } from "lodash";
 import { FilterSidebar } from "../../components/form/filters";
 import { ColumnVisibility } from "../../types/common";
-import ColumnModal from "../../components/modal/columns";
+import ColumnsModal from "../../components/modal/columns";
 import clsx from "clsx";
 import { activeFilters, getColumns, mockData } from "../../data/assets";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,8 @@ const AssetsPage = () => {
 
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [ShowActionColumn, setShowActionColumn] = useAtom(showActionColumnAtom);
@@ -241,12 +243,21 @@ const AssetsPage = () => {
                     <span className="custom-btn-text">Download</span>
                   </button>
                   <button
+                    ref={btnRef}
                     className="btn custom-btn"
                     onClick={toggleColumnModal}
                   >
                     <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
                     <span className="custom-btn-text">Columns</span>
                   </button>
+                  <ColumnsModal
+                    isOpen={isColumnModalOpen}
+                    onClose={toggleColumnModal}
+                    columns={columnsForModal}
+                    initialVisibility={columnVisibility}
+                    onVisibilityChange={handleVisibilityChange}
+                    buttonRef={btnRef}
+                  />
                   <button
                     className="btn custom-btn"
                     onClick={toggleAddAssetModal}
@@ -254,13 +265,6 @@ const AssetsPage = () => {
                     <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
                     <span className="custom-btn-text">Asset</span>
                   </button>
-                  <ColumnModal
-                    isOpen={isColumnModalOpen}
-                    onClose={toggleColumnModal}
-                    columns={columnsForModal}
-                    initialVisibility={columnVisibility}
-                    onVisibilityChange={handleVisibilityChange}
-                  />
                 </div>
 
                 <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
