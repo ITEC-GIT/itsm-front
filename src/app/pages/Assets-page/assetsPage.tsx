@@ -318,18 +318,7 @@ const AssetsPage = () => {
               </div>
             </div>
 
-            <div
-              className="d-flex justify-content-end align-items-center"
-              style={{
-                position: "sticky",
-                bottom: 0,
-                height: "40px",
-                // top: "100%",
-                // right: "0",
-                width: "100%",
-                zIndex: "1000",
-              }}
-            >
+            <div className="sticky-pagination d-flex justify-content-end align-items-center">
               <button
                 className="btn btn-sm btn-light me-2"
                 onClick={handleFirstPage}

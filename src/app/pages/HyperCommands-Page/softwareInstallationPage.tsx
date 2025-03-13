@@ -282,7 +282,7 @@ const SoftwareInstallationPage = ({
           // } else if (col.id === "id") {
           //   newWidths[col.id as string] = col.width || "auto";
           // } else {
-            newWidths[col.id as string] = "50%";
+          newWidths[col.id as string] = "50%";
           // }
         });
       } else if (visibleCount > 2) {
@@ -296,25 +296,25 @@ const SoftwareInstallationPage = ({
             // } else if (col.id === "id") {
             //   newWidths[col.id as string] = col.width || "auto";
             // } else {
-              if (col.width) {
-                const pixelWidth = parseInt(col.width, 10);
+            if (col.width) {
+              const pixelWidth = parseInt(col.width, 10);
 
-                if (!isNaN(pixelWidth)) {
-                  const columnPercentageWidth = Math.round(
-                    (pixelWidth / containerWidth) * 100
-                  );
+              if (!isNaN(pixelWidth)) {
+                const columnPercentageWidth = Math.round(
+                  (pixelWidth / containerWidth) * 100
+                );
 
-                  if (columnPercentageWidth < baseWidthPercentage) {
-                    newWidths[col.id as string] = `${baseWidthPercentage}%`;
-                  } else {
-                    newWidths[col.id as string] = col.width;
-                  }
-                } else {
+                if (columnPercentageWidth < baseWidthPercentage) {
                   newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                } else {
+                  newWidths[col.id as string] = col.width;
                 }
               } else {
                 newWidths[col.id as string] = `${baseWidthPercentage}%`;
               }
+            } else {
+              newWidths[col.id as string] = `${baseWidthPercentage}%`;
+            }
             // }
           });
         }
@@ -397,20 +397,15 @@ const SoftwareInstallationPage = ({
             </div>
             <div>
               <div
-                className="tab-content"
+                className="tab-content d-flex flex-column"
                 style={{
-                  // backgroundColor: "red",
                   padding: "10px",
-                  // height: `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px)`,
-                  // height: "100px",
                   height:
                     activeTab === "installation"
                       ? `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px)`
                       : `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - ${pagHeight}px)`,
                   overflow: "auto",
                   flexGrow: 1,
-                  display: "flex",
-                  flexDirection: "column",
                 }}
               >
                 {activeTab === "installation" && (
@@ -505,16 +500,7 @@ const SoftwareInstallationPage = ({
               {activeTab === "history" && (
                 <div
                   ref={pagRef}
-                  className="d-flex justify-content-end align-items-center"
-                  style={{
-                    position: "sticky",
-                    bottom: 0,
-                    height: "40px",
-                    // top: "100%",
-                    // right: "0",
-                    width: "100%",
-                    zIndex: "1000",
-                  }}
+                  className="sticky-pagination d-flex justify-content-end align-items-center"
                 >
                   <button
                     className="btn btn-sm btn-light me-2"
