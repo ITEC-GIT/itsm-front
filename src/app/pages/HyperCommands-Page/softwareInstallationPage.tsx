@@ -513,7 +513,7 @@ const SoftwareInstallationPage = ({
                     // top: "100%",
                     // right: "0",
                     width: "100%",
-                    zIndex: "2000",
+                    zIndex: "1000",
                   }}
                 >
                   <button
