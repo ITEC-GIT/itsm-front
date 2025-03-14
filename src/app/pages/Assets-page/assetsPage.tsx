@@ -290,7 +290,7 @@ const AssetsPage = () => {
             <div
               style={{
                 height: `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - 40px)`,
-                overflow: "auto",
+                overflow: "hidden",
               }}
             >
               <div
@@ -298,7 +298,7 @@ const AssetsPage = () => {
                 ref={tableContainerRef}
                 style={{
                   flex: 1,
-                  overflow: "auto",
+                  // overflow: "auto",
                 }}
               >
                 <DataTable
@@ -314,6 +314,8 @@ const AssetsPage = () => {
                   sortIcon={sortIcon}
                   onRowMouseEnter={(row) => handleMouseEnter(row.id)}
                   onRowMouseLeave={handleMouseLeave}
+                  fixedHeader
+                  fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
                 />
               </div>
             </div>
