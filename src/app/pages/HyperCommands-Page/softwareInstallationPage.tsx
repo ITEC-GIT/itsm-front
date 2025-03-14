@@ -339,6 +339,8 @@ const SoftwareInstallationPage = ({
   const [height, setHeight] = useState(0);
   const pagRef = useRef<HTMLDivElement>(null);
   const [pagHeight, setPagHeight] = useState(0);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const [filtersHeight, setFiltersHeight] = useState(0);
 
   useEffect(() => {
     if (divRef.current) {
@@ -349,7 +351,11 @@ const SoftwareInstallationPage = ({
       const rect = pagRef.current.getBoundingClientRect();
       setPagHeight(Math.round(rect.height));
     }
-  }, [divRef.current, pagRef.current]);
+    if (filtersRef.current) {
+      const rect = filtersRef.current.getBoundingClientRect();
+      setFiltersHeight(Math.round(rect.height));
+    }
+  }, [divRef.current, pagRef.current, filtersRef.current]);
 
   return (
     <AnimatedRouteWrapper>
@@ -397,21 +403,22 @@ const SoftwareInstallationPage = ({
             </div>
             <div>
               <div
-                className="tab-content d-flex flex-column"
+                className="tab-content d-flex flex-column flex-grow-1 overflow-auto"
                 style={{
                   padding: "10px",
                   height:
                     activeTab === "installation"
                       ? `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px)`
-                      : `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - ${pagHeight}px)`,
-                  overflow: "auto",
-                  flexGrow: 1,
+                      : "",
+                  // `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - ${pagHeight}px)`,
                 }}
               >
                 {activeTab === "installation" && (
                   <div
-                    className="d-flex flex-column overflow-auto"
-                    style={{ maxHeight: "100%", flexGrow: 1 }}
+                    className="d-flex flex-column flex-grow-1 overflow-auto none-scroll-width"
+                    style={{
+                      maxHeight: "100%",
+                    }}
                   >
                     <Wizard
                       steps={steps}
@@ -437,14 +444,17 @@ const SoftwareInstallationPage = ({
 
                 {activeTab === "history" && (
                   <div
-                    className="d-flex flex-column overflow-auto"
-                    style={{
-                      maxHeight: "100%",
-                      flexGrow: 1,
-                      position: "relative",
-                    }}
+                    className="d-flex flex-column flex-grow-1 position-relative overflow-auto none-scroll-width "
+                    style={
+                      {
+                        // maxHeight: "100%",
+                      }
+                    }
                   >
-                    <div className="d-flex align-items-center justify-content-between">
+                    <div
+                      ref={filtersRef}
+                      className="d-flex align-items-center justify-content-between p-2"
+                    >
                       <div>
                         {showUpdateAlert && (
                           <div
@@ -474,24 +484,33 @@ const SoftwareInstallationPage = ({
                         <FilterButton toggleSidebar={toggleSidebar} />
                       </div>
                     </div>
-
                     <div
-                      className="mt-5"
-                      // style={{ width: "100%", overflowX: "auto" }}
-                      ref={tableContainerRef}
+                      style={{
+                        height: `calc(100vh - var(--bs-app-header-height) - 50px - ${height}px - ${pagHeight}px - ${filtersHeight}px)`,
+                        overflow: "auto",
+                      }}
                     >
-                      <DataTable
-                        columns={visibleColumns.map((col) => ({
-                          ...col,
-                          width: columnWidths[col.id as string],
-                        }))}
-                        data={getCurrentPageRecords}
-                        persistTableHead={true}
-                        responsive
-                        highlightOnHover
-                        customStyles={customStyles}
-                        sortIcon={sortIcon}
-                      />
+                      <div
+                        ref={tableContainerRef}
+                        style={{
+                          flex: 1,
+                        }}
+                      >
+                        <DataTable
+                          columns={visibleColumns.map((col) => ({
+                            ...col,
+                            width: columnWidths[col.id as string],
+                          }))}
+                          data={getCurrentPageRecords}
+                          persistTableHead={true}
+                          responsive
+                          highlightOnHover
+                          customStyles={customStyles}
+                          sortIcon={sortIcon}
+                          fixedHeader
+                          fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - 50px - ${height}px - ${pagHeight}px - ${filtersHeight}px)`}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -552,10 +571,9 @@ const SoftwareInstallationPage = ({
 
           {isSidebarOpen && (
             <div
-              className="col-3 custom-border"
+              className="col-3 custom-border overflow-auto"
               style={{
                 height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
-                overflow: "auto",
               }}
             >
               <div>

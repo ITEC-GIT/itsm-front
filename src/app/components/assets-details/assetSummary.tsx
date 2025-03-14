@@ -3,7 +3,10 @@ import { StatCard } from "./assetCard";
 
 const AssetSummaryComponent = () => {
   return (
-    <div className="row vertical-scroll" style={{ padding: "5px" }}>
+    <div
+      className="row none-scroll-width vertical-scroll"
+      style={{ padding: "5px" }}
+    >
       <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
         <StatCard
           leftTop={`<i class='bi bi-cpu text-muted'>&nbsp;CPU</i> <span class='text-dark fw-bold'> 2.2 GHz </span>`}

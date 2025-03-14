@@ -227,3 +227,11 @@
   font-size: 5rem !important;
   animation: pulse 1s infinite ease-in-out !important; //pulse or bounce
 }
+
+//scrolling
+
+.none-scroll-width {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+

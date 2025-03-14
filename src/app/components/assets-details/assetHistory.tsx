@@ -142,7 +142,7 @@ const AssetHistoryComponent: React.FC<{ devHeight: number }> = ({
 }) => {
   return (
     <div
-      className="vertical-scroll p-2"
+      className="none-scroll-width vertical-scroll p-2"
       style={{
         height: `calc(100vh - var(--bs-app-header-height) - ${devHeight}px) `,
       }}

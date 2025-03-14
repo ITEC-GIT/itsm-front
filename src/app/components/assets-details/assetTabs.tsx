@@ -121,7 +121,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
       </ul>
       <div className="row">
         <div
-          className={`vertical-scroll ${
+          className={`none-scroll-width vertical-scroll ${
             selectedTab === "summary" ? "col-8" : "col-12"
           }`}
           style={{
@@ -154,7 +154,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               id="tickets"
               role="tabpanel"
             >
-              <div className="row vertical-scroll">
+              <div className="row none-scroll-width vertical-scroll">
                 <TicketPageWrapper />
               </div>
             </div>
