@@ -1419,7 +1419,7 @@ export const AssetFields = [
     group: "Basic Information",
   },
   {
-    id: 41,
+    id: 100,
     key: "DevicesModel",
     type: "select",
     label: "Model",
@@ -1766,6 +1766,45 @@ export const AssetFields = [
     group: "More Information",
   },
 ];
+
+// export const Steps = [
+//   {
+//     title: "Ownership",
+//     iconClass: "fa-solid fa-user-shield",
+//   },
+//   {
+//     title: "Basic Information",
+//     iconClass: "fa-solid fa-circle-info",
+//   },
+//   {
+//     title: "More Information",
+//     iconClass: "fa-solid fa-file-lines",
+//   },
+//   {
+//     title: "Connectivity",
+//     iconClass: "fa-solid fa-wifi",
+//   },
+//   {
+//     title: "Uploads",
+//     iconClass: "fa-solid fa-upload",
+//   },
+//   {
+//     title: "Room Details",
+//     iconClass: "fa-solid fa-house",
+//   },
+//   {
+//     title: "Asset Metrics",
+//     iconClass: "fa-solid fa-chart-line",
+//   },
+//   {
+//     title: "Credentials",
+//     iconClass: "fa-solid fa-id-card",
+//   },
+//   {
+//     title: "Submission",
+//     iconClass: "fa-solid fa-circle-check",
+//   },
+// ];
 
 export const Steps = [
   {
