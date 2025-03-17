@@ -2,7 +2,7 @@ import { AvatarComponent } from "../form/avatar";
 
 const AssetInfoComponent = () => {
   return (
-    <div className="row d-flex flex-column flex-md-row justify-content-between mb-4 p-0 ps-5 pe-2">
+    <div className="row d-flex flex-column flex-md-row justify-content-between mb-4 ps-5 pe-2">
       <div className="col-12 col-md-6 d-flex gap-2 p-0">
         <i className="bi bi-hdd me-2 type-icon"></i>
         <div className="d-flex flex-column w-100">
