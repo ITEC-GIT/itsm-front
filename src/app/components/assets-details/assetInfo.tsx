@@ -2,15 +2,15 @@ import { AvatarComponent } from "../form/avatar";
 
 const AssetInfoComponent = () => {
   return (
-    <div className="row d-flex flex-column flex-md-row justify-content-between mb-4 p-0">
-      <div className="col-12 col-md-6 d-flex gap-2">
+    <div className="row d-flex flex-column flex-md-row justify-content-between mb-4 p-0 ps-5 pe-2">
+      <div className="col-12 col-md-6 d-flex gap-2 p-0">
         <i className="bi bi-hdd me-2 type-icon"></i>
         <div className="d-flex flex-column w-100">
           <div className="d-flex  align-items-center gap-2">
             <h3 className="mb-0">DESKTOP-1FEPMGR</h3>
             <span className="badge bg-success status-badge">ONLINE</span>
           </div>
-          {/* Second Row: Avatar and Sync Date */}
+
           <div className="d-flex  align-items-center gap-2 mt-2">
             <div>
               <AvatarComponent
@@ -22,7 +22,7 @@ const AssetInfoComponent = () => {
             </div>
             <span className="sync-date">last sync 2 minutes ago</span>
           </div>
-          {/* Third Row: Location Details */}
+
           <div className="d-flex  align-items-center gap-2 mt-2">
             <div>
               <i className="bi bi-geo-alt-fill location-icon"></i>
@@ -36,8 +36,7 @@ const AssetInfoComponent = () => {
         </div>
       </div>
 
-      {/* Right Section: Buttons */}
-      <div className="col-12 col-md-6 d-flex flex-wrap justify-content-md-end mt-3 mt-md-0 ">
+      <div className="col-12 col-md-6 d-flex flex-wrap justify-content-md-end mt-3 mt-md-0 p-0">
         <button className="btn custom-btn me-2 mb-2">
           <i className="bi bi-terminal"></i> Terminal
         </button>

@@ -106,7 +106,7 @@ const AssetDetailsPage: React.FC = () => {
               <AssetInfoComponent />
             </div>
 
-            <div className="col-12">
+            <div className="col-12 pe-5 ps-5">
               <AssetTabsComponent devHeight={devHeight} />
             </div>
           </div>
