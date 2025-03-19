@@ -35,9 +35,7 @@ const AuthLayout = () => {
         <img
           className="w-100 h-100"
           alt="Logo"
-          src={toAbsoluteUrl(
-            "public/media/svg/Pulsar GrandNet - Banner Software.png"
-          )}
+          src={toAbsoluteUrl("media/svg/Pulsar GrandNet - Banner Software.png")}
         />
       </div>
       {/* end::Aside */}
