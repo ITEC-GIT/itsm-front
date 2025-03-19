@@ -193,7 +193,7 @@ const AnalyticsDashboard: React.FC = () => {
   }, [userId]);
 
   const [toggleInstance] = useAtom(sidebarToggleAtom);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // Default to open
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
   useEffect(() => {
     if (!toggleInstance || !toggleInstance.target) return;

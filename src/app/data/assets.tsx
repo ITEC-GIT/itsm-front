@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { getBackgroundColor } from "../../utils/custom";
 import { useAtom } from "jotai";
 import { showActionColumnAtom } from "../atoms/table-atom/tableAtom";
+
 import {
   columnLargeWidth,
   columnMediumWidth,
@@ -13,6 +14,26 @@ import {
   columnXXLargeWidth,
   columnXXXLargeWidth,
 } from "./dataTable";
+import { CiSettings } from "react-icons/ci";
+import {
+  FaComputer,
+  FaPlug,
+  FaRegCircle,
+  FaPhone,
+  FaSimCard,
+  FaNetworkWired,
+} from "react-icons/fa6";
+import { LuPrinter, LuMonitor } from "react-icons/lu";
+import {
+  MdDevices,
+  MdLocalDrink,
+  MdOutlineCable,
+  MdOutlineDeviceUnknown,
+  MdOutlineRoomPreferences,
+} from "react-icons/md";
+import { BsHddRack } from "react-icons/bs";
+import { SiInkdrop } from "react-icons/si";
+import { ActionModal } from "../components/modal/ActionModal";
 
 export const categories: CategoryOption[] = [
   { value: "Computer", label: "Computer" },
@@ -31,35 +52,41 @@ export const categories: CategoryOption[] = [
 ];
 
 const assetCategories = [
-  "Computer",
-  "Monitor",
-  "Network device",
-  "Devices",
-  "Printer",
-  "Cartridge",
-  "Consumable",
-  "Mouse",
-  "Phone",
-  "Rack",
-  "Enclosure",
-  "Passive device",
-  "Simcard",
+  "computer",
+  "monitor",
+  "software",
+  "networkdevice",
+  "printer",
+  "cartridgemodels",
+  "consumablemodels",
+  "phone",
+  "racks",
+  "devices",
+  "enclosures",
+  "passivedevices",
+  "simcard",
+  "unmanageddevices",
+  "pdus",
+  "cables",
 ];
 
 const colors = [
   "#f7c1c1",
+  "#d4e6a8",
   "#f7c1c1",
   "#fadcbf",
   "#fadcbf",
   "#fae4ae",
   "#fae4ae",
   "#e0e0e0",
+  "#f7e6c1",
   "#e0e0e0",
   "#fde9b3",
   "#fde9b3",
   "#d9d3cb",
   "#d9d3cb",
   "#f7c1c1",
+  "#e6e6a8",
 ];
 
 export const getColumns = (
@@ -67,9 +94,8 @@ export const getColumns = (
 ): TableColumn<AssetsHistoryType>[] =>
   [
     {
-      name: "#",
+      name: "",
       sortable: true,
-      sortFunction: (a: AssetsHistoryType, b: AssetsHistoryType) => a.id - b.id,
       width: columnSmallWidth,
       cell: (row: AssetsHistoryType) => {
         const backgroundColor = getBackgroundColor(
@@ -87,11 +113,24 @@ export const getColumns = (
               textAlign: "center",
             }}
           >
-            <span>{row.id}</span>
+            {Icons[row.category.toLowerCase()] || (
+              <i className="fa-thin fa-question"></i>
+            )}
           </span>
         );
       },
-      id: "id",
+      id: "icon",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Type
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetsHistoryType) => row.category,
+      sortable: true,
+      id: "type",
     },
     {
       name: (
@@ -101,28 +140,43 @@ export const getColumns = (
       ),
       selector: (row: AssetsHistoryType) => row.name,
       sortable: true,
-      width: columnLargeWidth,
-      cell: (row: AssetsHistoryType) => (
-        <Link
-          to={`/assets/${row.id}`}
-          title={row.name}
-          style={{ color: "blue", textDecoration: "none" }}
-        >
-          {row.name}
-        </Link>
-      ),
+      width: columnXLargeWidth,
+      cell: (row: AssetsHistoryType) => {
+        const [showActionModal, setShowActionModal] = useState(false);
+
+        return (
+          <div className="d-flex justify-content-between w-100">
+            <Link
+              to={`/assets/${row.id}`}
+              title={row.name}
+              style={{ color: "blue", textDecoration: "none" }}
+            >
+              {row.name}
+            </Link>
+            <button
+              type="button"
+              className={`btn btn-link p-0 ${
+                hoveredRowId === row.id ? "d-block" : "d-none"
+              }`}
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Action"
+              onClick={() => setShowActionModal(!showActionModal)}
+            >
+              <CiSettings style={{ fontSize: "20px" }} />
+            </button>
+            {showActionModal && (
+              <ActionModal
+                isOpen={showActionModal}
+                onClose={() => setShowActionModal(false)}
+                category={row.category}
+                assetId={row.id}
+              />
+            )}
+          </div>
+        );
+      },
       id: "name",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Type
-        </span>
-      ),
-      width: columnLargeWidth,
-      selector: (row: AssetsHistoryType) => row.type,
-      sortable: true,
-      id: "type",
     },
     {
       name: (
@@ -413,10 +467,9 @@ export const getColumns = (
 
 export const columns: TableColumn<AssetsHistoryType>[] = [
   {
-    name: "#",
+    name: "",
     sortable: true,
-    sortFunction: (a: AssetsHistoryType, b: AssetsHistoryType) => a.id - b.id,
-    width: columnMediumWidth,
+    width: columnSmallWidth,
     cell: (row: AssetsHistoryType) => {
       const backgroundColor = getBackgroundColor(
         row.category,
@@ -433,11 +486,13 @@ export const columns: TableColumn<AssetsHistoryType>[] = [
             textAlign: "center",
           }}
         >
-          <span>{row.id}</span>
+          {Icons[row.category.toLowerCase()] || (
+            <i className="fa-thin fa-question"></i>
+          )}
         </span>
       );
     },
-    id: "id",
+    id: "icon",
   },
   {
     name: (
@@ -750,8 +805,27 @@ export const activeFilters = [
 
 export const mockData = [
   {
+    id: 5297,
+    name: "Computer",
+    entity: "Entity J",
+    serial_number: "SN012345",
+    model: "Model G",
+    location: "Atlanta",
+    last_update: "2023-09-29",
+    component_processor: "AMD Ryzen 5",
+    type: "Workstation",
+    project: "Project Kappa",
+    address: "707 Fir St",
+    inventory_number: "INV010",
+    alternate_username_number: "AU010",
+    action: "Active",
+    status: "Offline",
+    public_ip: "192.168.1.10",
+    category: "computer",
+  },
+  {
     id: 111,
-    name: "Device 10",
+    name: "printer",
     entity: "Entity J",
     serial_number: "SN012345",
     model: "Model G",
@@ -766,11 +840,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.10",
-    category: "Network device",
+    category: "printer",
   },
   {
     id: 1111,
-    name: "Device 10",
+    name: "phone",
     entity: "Entity J",
     serial_number: "SN012345",
     model: "Model G",
@@ -785,11 +859,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.10",
-    category: "Network device",
+    category: "phone",
   },
   {
     id: 22,
-    name: "Device 10",
+    name: "racks",
     entity: "Entity J",
     serial_number: "SN012345",
     model: "Model G",
@@ -804,11 +878,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.10",
-    category: "Network device",
+    category: "racks",
   },
   {
     id: 222,
-    name: "Device 10",
+    name: "enclosures",
     entity: "Entity J",
     serial_number: "SN012345",
     model: "Model G",
@@ -823,11 +897,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.10",
-    category: "Network device",
+    category: "enclosures",
   },
   {
     id: 2222,
-    name: "Device 10",
+    name: "networkdevice",
     entity: "Entity J",
     serial_number: "SN012345",
     model: "Model G",
@@ -842,7 +916,7 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.10",
-    category: "Network device",
+    category: "networkdevice",
   },
   {
     id: 10,
@@ -861,11 +935,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.10",
-    category: "Network device",
+    category: "networkdevice",
   },
   {
     id: 22222,
-    name: "Device 11",
+    name: "monitor",
     entity: "Entity K",
     serial_number: "SN678901",
     model: "Model H",
@@ -880,11 +954,11 @@ export const mockData = [
     action: "Inactive",
     status: "Offline",
     public_ip: "192.168.1.11",
-    category: "Rack",
+    category: "monitor",
   },
   {
     id: 333,
-    name: "Device 12",
+    name: "pdus",
     entity: "Entity L",
     serial_number: "SN345678",
     model: "Model I",
@@ -899,7 +973,7 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.12",
-    category: "Devices",
+    category: "pdus",
   },
   {
     id: 55555,
@@ -937,11 +1011,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.13",
-    category: "Enclouser",
+    category: "devices",
   },
   {
     id: 555,
-    name: "Device 13",
+    name: "software",
     entity: "Entity M",
     serial_number: "SN901234",
     model: "Model J",
@@ -956,11 +1030,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.13",
-    category: "Enclouser",
+    category: "software",
   },
   {
     id: 55,
-    name: "Device 13",
+    name: "cartridgemodels",
     entity: "Entity M",
     serial_number: "SN901234",
     model: "Model J",
@@ -975,11 +1049,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.13",
-    category: "Enclouser",
+    category: "cartridgemodels",
   },
   {
     id: 4444,
-    name: "Device 13",
+    name: "consumablemodels",
     entity: "Entity M",
     serial_number: "SN901234",
     model: "Model J",
@@ -994,11 +1068,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.13",
-    category: "Enclouser",
+    category: "consumablemodels",
   },
   {
     id: 444,
-    name: "Device 13",
+    name: "passivedevices",
     entity: "Entity M",
     serial_number: "SN901234",
     model: "Model J",
@@ -1013,11 +1087,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.13",
-    category: "Enclouser",
+    category: "passivedevices",
   },
   {
     id: 44,
-    name: "Device 13",
+    name: "cables",
     entity: "Entity M",
     serial_number: "SN901234",
     model: "Model J",
@@ -1032,11 +1106,11 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.13",
-    category: "Enclouser",
+    category: "cables",
   },
   {
     id: 14,
-    name: "Device 13",
+    name: "simcard",
     entity: "Entity M",
     serial_number: "SN901234",
     model: "Model J",
@@ -1051,7 +1125,7 @@ export const mockData = [
     action: "Active",
     status: "Online",
     public_ip: "192.168.1.14",
-    category: "Computer",
+    category: "simcard",
   },
 ];
 
@@ -1767,45 +1841,6 @@ export const AssetFields = [
   },
 ];
 
-// export const Steps = [
-//   {
-//     title: "Ownership",
-//     iconClass: "fa-solid fa-user-shield",
-//   },
-//   {
-//     title: "Basic Information",
-//     iconClass: "fa-solid fa-circle-info",
-//   },
-//   {
-//     title: "More Information",
-//     iconClass: "fa-solid fa-file-lines",
-//   },
-//   {
-//     title: "Connectivity",
-//     iconClass: "fa-solid fa-wifi",
-//   },
-//   {
-//     title: "Uploads",
-//     iconClass: "fa-solid fa-upload",
-//   },
-//   {
-//     title: "Room Details",
-//     iconClass: "fa-solid fa-house",
-//   },
-//   {
-//     title: "Asset Metrics",
-//     iconClass: "fa-solid fa-chart-line",
-//   },
-//   {
-//     title: "Credentials",
-//     iconClass: "fa-solid fa-id-card",
-//   },
-//   {
-//     title: "Submission",
-//     iconClass: "fa-solid fa-circle-check",
-//   },
-// ];
-
 export const Steps = [
   {
     id: 1,
@@ -1853,3 +1888,352 @@ export const Steps = [
     iconClass: "fa-solid fa-circle-check",
   },
 ];
+
+const Icons: { [key: string]: JSX.Element } = {
+  computer: <FaComputer />,
+  printer: <LuPrinter />,
+  monitor: <LuMonitor />,
+  software: <i className="fa-brands fa-uncharted"></i>,
+  networkdevice: <FaNetworkWired />,
+  devices: <MdDevices />,
+  cartridgemodels: <SiInkdrop />,
+  consumablemodels: <MdLocalDrink />,
+  racks: <BsHddRack />,
+  enclosures: <MdOutlineRoomPreferences />,
+  pdus: <FaPlug />,
+  passivedevices: <FaRegCircle />,
+  unmanageddevices: <MdOutlineDeviceUnknown />,
+  cables: <MdOutlineCable />,
+  phone: <FaPhone />,
+  simcard: <FaSimCard />,
+};
+
+export const Actions: Record<
+  string,
+  {
+    key: string;
+    id: number;
+    labels: { name: string; icon: string; excludedCategories?: string[] }[];
+  }
+> = {
+  "Anti-Theft Actions": {
+    id: 1,
+    key: "Anti-Theft Actions",
+    labels: [
+      {
+        name: "Take Screenshot",
+        icon: "https://img.icons8.com/?size=50&id=13371&format=png&color=000000",
+      },
+      {
+        name: "Take Camera Picture",
+        icon: "https://img.icons8.com/?size=50&id=20859&format=png&color=000000",
+      },
+      {
+        name: "Voice Record (5min)",
+        icon: "https://img.icons8.com/?size=50&id=MewtzptWEsk5&format=png&color=000000",
+      },
+      {
+        name: "Open Location",
+        icon: "https://img.icons8.com/?size=50&id=13778&format=png&color=000000",
+      },
+      {
+        name: "Encrypt",
+        icon: "https://img.icons8.com/?size=50&id=12324&format=png&color=000000",
+      },
+    ],
+  },
+  "Co-Reach Actions": {
+    id: 2,
+    key: "Co-Reach Actions",
+    labels: [
+      {
+        name: "VNC",
+        icon: "https://img.icons8.com/?size=50&id=9MJf0ngDwS8z&format=png&color=000000",
+      },
+      {
+        name: "SSH",
+        icon: "https://img.icons8.com/?size=50&id=19292&format=png&color=000000",
+      },
+      {
+        name: "Send Command",
+        icon: "https://img.icons8.com/?size=50&id=1PZDx02Lg0Is&format=png&color=000000",
+      },
+      {
+        name: "Software Install",
+        icon: "https://img.icons8.com/?size=50&id=18363&format=png&color=000000",
+      },
+      {
+        name: "Performance Monitoring",
+        icon: "https://img.icons8.com/?size=50&id=EIn9Yb82LfeM&format=png&color=000000",
+      },
+    ],
+  },
+  "More Actions": {
+    id: 3,
+    key: "More Actions",
+    labels: [
+      {
+        name: "Update",
+        icon: "https://img.icons8.com/?size=50&id=13937&format=png&color=000000",
+      },
+      {
+        name: "Clone",
+        icon: "https://img.icons8.com/?size=50&id=HsA4R7FslZm8&format=png&color=000000",
+        excludedCategories: ["cartridgemodels", "racks"],
+      },
+      {
+        name: "Add to trashbin",
+        icon: "https://img.icons8.com/?size=50&id=KD7CbP0QmK7R&format=png&color=000000",
+      },
+      {
+        name: "Enable the financial and administrative information",
+        icon: "https://img.icons8.com/?size=50&id=aTrrRPCUiwd6&format=png&color=000000",
+      },
+      {
+        name: "Unlock items",
+        icon: "https://img.icons8.com/?size=50&id=bmqc7DrIxfXZ&format=png&color=000000",
+        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
+      },
+      {
+        name: "Add to transfer list",
+        icon: "https://img.icons8.com/?size=50&id=107437&format=png&color=000000",
+      },
+      {
+        name: "Associate to an appliance",
+        icon: "https://img.icons8.com/?size=50&id=HYcGuVv64Nng&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "cartridgemodels",
+          "consumablemodels",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Recalculate the category",
+        icon: "https://img.icons8.com/?size=50&id=HYcGuVv64Nng&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "computer",
+          "monitor",
+          "networkdevice",
+          "devices",
+          "printer",
+          "cartridgemodels",
+          "consumablemodels",
+          "phone",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Remove from a rack",
+        icon: "https://img.icons8.com/?size=50&id=WWaHY6BpYxMJ&format=png&color=000000",
+        excludedCategories: [
+          "software",
+          "printer",
+          "cartridgemodels",
+          "consumablemodels",
+          "phone",
+          "racks",
+        ],
+      },
+      {
+        name: "Operating systems",
+        icon: "https://img.icons8.com/?size=50&id=QGeedI2KhNCQ&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "monitor",
+          "software",
+          "networkdevice",
+          "devices",
+          "printer",
+          "cartridgemodels",
+          "consumablemodels",
+          "phone",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Connect",
+        icon: "https://img.icons8.com/?size=50&id=aEjOpeGqcuAf&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "software",
+          "networkdevice",
+          "cartridgemodels",
+          "consumablemodels",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Disconnect",
+        icon: "https://img.icons8.com/?size=50&id=GCoO9q1mgOr9&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "computer",
+          "software",
+          "networkdevice",
+          "cartridgemodels",
+          "consumablemodels",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Install",
+        icon: "https://img.icons8.com/?size=50&id=IxuhLHjdG8Jf&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "monitor",
+          "software",
+          "networkdevice",
+          "devices",
+          "printer",
+          "cartridgemodels",
+          "consumablemodels",
+          "phone",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Add a license",
+        icon: "https://img.icons8.com/?size=50&id=6PEs2EypZuRA&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "software",
+          "cartridgemodels",
+          "consumablemodels",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Link knowledgebase article",
+        icon: "https://img.icons8.com/?size=50&id=31362&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "cartridgemodels",
+          "consumablemodels",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Add a document",
+        icon: "https://img.icons8.com/?size=50&id=CQRMBNqHIi78&format=png&color=000000",
+        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
+      },
+      {
+        name: "Remove a document",
+        icon: "https://img.icons8.com/?size=50&id=Ne46CdR3BzHy&format=png&color=000000",
+        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
+      },
+      {
+        name: "Add a contract",
+        icon: "https://img.icons8.com/?size=50&id=w475EM7gCfQX&format=png&color=000000",
+        excludedCategories: [
+          "cartridgemodels",
+          "consumablemodels",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Remove a contract",
+        icon: "https://img.icons8.com/?size=50&id=OD8sZ5sM6qI7&format=png&color=000000",
+        excludedCategories: [
+          "cartridgemodels",
+          "consumablemodels",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Amend comment",
+        icon: "https://img.icons8.com/?size=50&id=fAQ7yQiPgqfh&format=png&color=000000",
+      },
+      {
+        name: "Add note",
+        icon: "https://img.icons8.com/?size=50&id=vDaHd0NhMQuc&format=png&color=000000",
+        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
+      },
+      {
+        name: "Unlock components",
+        icon: "https://img.icons8.com/?size=50&id=fbv9wSpSd3DR&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "software",
+          "networkdevice",
+          "devices",
+          "cartridgemodels",
+          "consumablemodels",
+          "racks",
+          "passivedevices",
+        ],
+      },
+      {
+        name: "Unlock fields",
+        icon: "https://img.icons8.com/?size=50&id=GFOlcUcHVQJX&format=png&color=000000",
+        excludedCategories: [
+          "pdus",
+          "enclosures",
+          "software",
+          "networkdevice",
+          "devices",
+          "cartridgemodels",
+          "consumablemodels",
+          "racks",
+          "passivedevices",
+        ],
+      },
+    ],
+  },
+};
+
+export const AssetCategoryActions: Record<string, string[]> = {
+  computer: ["Anti-Theft Actions", "Co-Reach Actions", "More Actions"],
+  monitor: ["More Actions"],
+  software: ["More Actions"],
+  networkdevice: ["More Actions"],
+  devices: ["More Actions"],
+  printer: ["More Actions"],
+  cartridgemodels: ["More Actions"],
+  consumablemodels: ["More Actions"],
+  phone: ["More Actions"],
+  racks: ["More Actions"],
+  enclosures: ["More Actions"],
+  pdus: ["More Actions"],
+  passivedevices: ["More Actions"],
+  simcard: ["More Actions"],
+};
+
+export const getAvailableActions = (category: string) => {
+  const actionCategories = AssetCategoryActions[category] || [];
+
+  const availableActions = actionCategories.reduce((acc, actionCategory) => {
+    if (Actions[actionCategory]) {
+      acc[actionCategory] = {
+        key: Actions[actionCategory].key,
+        labels: Actions[actionCategory].labels.filter(
+          (label) =>
+            !label.excludedCategories ||
+            !label.excludedCategories.includes(category)
+        ),
+      };
+    }
+    return acc;
+  }, {} as Record<string, { key: string; labels: { name: string; icon: string }[] }>);
+
+  return availableActions;
+};
