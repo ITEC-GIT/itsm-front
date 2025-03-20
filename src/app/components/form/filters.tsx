@@ -329,7 +329,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         })}
       </div>
 
-      <div className="d-flex justify-content-between mt-3 p-3">
+      <div className="row d-flex justify-content-between m-0 gap-2 p-3">
         <button
           className="btn custom-btn p-3 blue-bg-btn"
           onClick={handleClearFilters}

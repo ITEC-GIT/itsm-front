@@ -365,8 +365,8 @@ const SoftwareInstallationPage = ({
           // style={{ overflowY: "auto" }}
         >
           <div
-            className={`d-flex flex-column ${
-              isSidebarOpen ? "col-9" : "col-12"
+            className={`cont-d-flex-column ${
+              isSidebarOpen ? "cont-custom-hide col-9" : "col-12"
             }`}
           >
             <div ref={divRef}>
@@ -571,7 +571,7 @@ const SoftwareInstallationPage = ({
 
           {isSidebarOpen && (
             <div
-              className="col-3 custom-border overflow-auto"
+              className="col-3 custom-border overflow-auto filter-sidebar-small p-0"
               style={{
                 height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
               }}
