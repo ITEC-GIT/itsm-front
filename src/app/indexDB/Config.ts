@@ -51,7 +51,6 @@ export async function saveToIndexedDB(
     const transaction = db.transaction(STORE_NAME, "readwrite");
     const store = transaction.objectStore(STORE_NAME);
 
-    // Get the highest ID to auto-generate new IDs
     const getAllKeysRequest = store.getAllKeys();
 
     getAllKeysRequest.onsuccess = () => {
