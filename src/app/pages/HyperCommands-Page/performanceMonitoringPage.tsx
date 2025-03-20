@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
-import { Content } from "../../../_metronic/layout/components/content/Content";
 
 const PerformanceMonitoringPage = ({
   computerIdProp,
@@ -14,11 +13,11 @@ const PerformanceMonitoringPage = ({
   ]);
 
   return (
-    <div
-      className="container-fluid"
-      style={{ paddingLeft: "30px", paddingRight: "30px" }}
-    >
-      <div className="row justify-content-center mb-4">
+    <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
+      <div
+        className="row d-flex custom-main-container custom-container-height"
+        style={{ overflowY: "auto" }}
+      >
         <div className="col-12">
           {!computerIdProp && (
             <div className="d-flex justify-content-between">
