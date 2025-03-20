@@ -381,6 +381,7 @@ const AssetsPage = () => {
                   toggleSidebar={toggleSidebar}
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
+                  filtersStoreName={"assetsFilters"}
                 />
               </div>
             </div>

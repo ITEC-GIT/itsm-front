@@ -582,6 +582,7 @@ const SoftwareInstallationPage = ({
                   toggleSidebar={toggleSidebar}
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
+                  filtersStoreName={"softwareFilters"}
                 />
               </div>
             </div>

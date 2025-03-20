@@ -18,6 +18,7 @@ interface FilterSidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
   activeFilters: string[];
+  filtersStoreName: string;
   saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
 }
 
@@ -59,6 +60,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   isOpen,
   toggleSidebar,
   activeFilters,
+  filtersStoreName,
   saveFilters,
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
@@ -73,10 +75,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const [editFilterName, setEditFilterName] = useState<string>("");
 
   const userId = Number(Cookies.get("user"));
-  const staticDbName = "JotaiDB";
   const filtersDbName = "savedFiltersDB";
-  const filtersStoreName = "softwareFilters";
-
   const handleApplyFilters = () => {
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
       return;
