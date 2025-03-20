@@ -44,7 +44,7 @@ const RoutesContent: FC = () => {
     const [user, setUser] = useAtom(userAtom);
     useEffect(() => {
         if (user && user.session_token != '') {
-            const userName = user.session?.glpiname;
+            const userName = user.user_name;
         }
     }, [user]);
     const navigate = useNavigate();
@@ -185,7 +185,7 @@ const RoutesContent: FC = () => {
                     ? userBranches.data.assignees
                     : prev
             );
-            const currentUser = user.session?.glpiname;
+            const currentUser = user.user_name;
 
             const currentAssignee = userBranches.data.assignees.find(
                 (assignee: { name: string; is_admin: number }) => assignee.name === currentUser

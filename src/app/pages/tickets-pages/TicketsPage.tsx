@@ -185,191 +185,181 @@ const TicketsPage: React.FC = () => {
             }
         ) => {
             let responseData = response.data;
-            if (responseData.length !== 0) {
-                if (initialFetching) {
-                    setInitialFetchedTickets(response.data);
-                    setInitialFetchedTicketsTotal(response.totalcount);
-                    setMaxTotalTickets(response.totalcount);
-                    setCurrentTotalTicketsAccumulation(responseData.length);
-                    setTickets(responseData);
-                    setCurrentTicketsPage(1);
-                    setFetchAction("initial");
-                } else if (fetchMorePagesFlag && !filterFetching) {
-                    setCurrentTotalTicketsAccumulation(
-                        (prevTotal) => prevTotal + responseData.length
-                    );
-                    setFetchAction("more");
+            if (responseData.length == 0) {
+                const asgf = 0
+            }
+            if (initialFetching) {
+                setInitialFetchedTickets(response.data);
+                setInitialFetchedTicketsTotal(response.totalcount);
+                setMaxTotalTickets(response.totalcount);
+                setCurrentTotalTicketsAccumulation(responseData.length);
+                setTickets(responseData);
+                setCurrentTicketsPage(1);
+                setFetchAction("initial");
+            } else if (fetchMorePagesFlag && !filterFetching) {
+                setCurrentTotalTicketsAccumulation(
+                    (prevTotal) => prevTotal + responseData.length
+                );
+                setFetchAction("more");
+                const mismatch = Math.abs(
+                    Number(response.totalcount) - Number(initialFetchedTicketsTotal)
+                );
+                if (mismatch != response.totalcount) {
+                    setMismatchCount(mismatch);
+                }
+                setTickets(responseData);
+            } else if (fetchLessPagesFlag && !filterFetching) {
+                responseData = response.data.sort((a: any, b: any) => b.id - a.id);
+                // i can make flag , if current response data is less than num to fetch
+                // then no need for more pagination ot the right side
+                setCurrentTotalTicketsAccumulation((prevTotal) => {
+                    if (previousTotalTicketsValue < responseData.length) {
+                        return prevTotal - previousTotalTicketsValue
+                    }
+                    return prevTotal - responseData.length;
+                    // const newTotal = prevTotal - responseData.length;
+                    // // return newTotal;
+                    // return newTotal < responseData.length
+                    //     ? responseData.length
+                    //     : newTotal;
+                });
+                setFetchAction("less");
+
+                const mismatch = Math.abs(
+                    Number(response.totalcount) - Number(initialFetchedTicketsTotal)
+                );
+                if (mismatch != response.totalcount) {
+                    setMismatchCount(mismatch);
+                }
+                setTickets(responseData);
+            } else if (filterFetching && fetchMorePagesFlag) {
+                const responseData = response.data;
+                setCurrentTotalTicketsAccumulation(
+                    (prevTotal) => prevTotal + responseData.length
+                );
+                setFetchAction("more");
+
+                setTickets(responseData);
+            } else if (filterFetching && fetchLessPagesFlag) {
+                responseData = response.data.sort((a: any, b: any) => b.id - a.id);
+                // setCurrentTotalTicketsAccumulation(
+                //     (prevTotal) => prevTotal - responseData.length
+                // );
+                setCurrentTotalTicketsAccumulation((prevTotal) => {
+                    const newTotal = prevTotal - responseData.length;
+                    // return newTotal;
+                    return newTotal < responseData.length
+                        ? responseData.length
+                        : newTotal;
+                });
+                setFetchAction("less");
+
+                setTickets(responseData);
+            } else if (filterFetching) {
+                const responseData = response.data;
+                console.log(responseData);
+                setTickets(responseData);
+
+                setCurrentTotalTicketsAccumulation(responseData.length);
+                setCurrentTicketsPage(1);
+                setMaxTotalTickets(response.totalcount);
+                setFetchAction("initial");
+
+            } else if (intervalFetching) {
+                const intervalFetchedTicketsRes: TicketResponse = response;
+
+                setIntervalFetchedTicketsResponse(intervalFetchedTicketsRes);
+
+                // need data to be added by me maybe using pulsar , or local database
+                // must set the setTotaltickets in a way
+                if (response.totalcount !== initialFetchedTicketsTotal) {
+                    setAutomaticRefetchLengthMismatchFlag(true);
                     const mismatch = Math.abs(
                         Number(response.totalcount) - Number(initialFetchedTicketsTotal)
                     );
+                    console.log(`Mismatch in total tickets over interval: ${mismatch}`);
                     if (mismatch != response.totalcount) {
                         setMismatchCount(mismatch);
                     }
-                    setTickets(responseData);
-                } else if (fetchLessPagesFlag && !filterFetching) {
-                    responseData = response.data.sort((a: any, b: any) => b.id - a.id);// i can make flag , if current response data is less than num to fetch
-                    // then no need for more pagination ot the right side
-                    setCurrentTotalTicketsAccumulation((prevTotal) => {
-                        if (previousTotalTicketsValue < responseData.length) {
-                            return prevTotal - previousTotalTicketsValue
-                        }
-                        return prevTotal - responseData.length;
-                        // const newTotal = prevTotal - responseData.length;
-                        // // return newTotal;
-                        // return newTotal < responseData.length
-                        //     ? responseData.length
-                        //     : newTotal;
-                    });
-                    setFetchAction("less");
+                }
+                if (
+                    intervalFetchedTicketsRes &&
+                    intervalFetchedTicketsRes.data.length > 0
+                ) {
 
-                    const mismatch = Math.abs(
-                        Number(response.totalcount) - Number(initialFetchedTicketsTotal)
+                    const updatedTicketsIds = getUpdatedRepliesTickets(
+                        initialFetchedTickets,
+                        intervalFetchedTicketsRes.data
                     );
-                    if (mismatch != response.totalcount) {
-                        setMismatchCount(mismatch);
-                    }
-                    setTickets(responseData);
-                } else if (intervalFetching) {
-                    const intervalFetchedTicketsRes: TicketResponse = response;
+                    // must make if ticket is clicked , then make it read and not show it, if 'read' and new item is added with same id , then delete old one with same id when adding
+                    const filterNewTickets = async () => {
+                        const newTickets: any[] = [];
+                        const transformTickets = (tickets: any[]): any[] => {
+                            return tickets.map(ticket => ({
+                                id: ticket.id,
+                                last_reply_date: ticket.last_reply_date,
+                                is_read: "unread", // Always setting is_read as "unread"
+                            }));
+                        };
+                        for (const ticket of transformTickets(updatedTicketsIds)) {
+                            const exists = await itemExists('DynamicTicketsUnread', ticket.id, ticket.last_reply_date);
 
-                    setIntervalFetchedTicketsResponse(intervalFetchedTicketsRes);
-
-                    // need data to be added by me maybe using pulsar , or local database
-                    // must set the setTotaltickets in a way
-                    if (response.totalcount !== initialFetchedTicketsTotal) {
-                        setAutomaticRefetchLengthMismatchFlag(true);
-                        const mismatch = Math.abs(
-                            Number(response.totalcount) - Number(initialFetchedTicketsTotal)
-                        );
-                        console.log(`Mismatch in total tickets over interval: ${mismatch}`);
-                        if (mismatch != response.totalcount) {
-                            setMismatchCount(mismatch);
+                            if (!exists) {
+                                newTickets.push(ticket);
+                            }
                         }
-                    }
-                    if (
-                        intervalFetchedTicketsRes &&
-                        intervalFetchedTicketsRes.data.length > 0
-                    ) {
 
-                        const updatedTicketsIds = getUpdatedRepliesTickets(
-                            initialFetchedTickets,
-                            intervalFetchedTicketsRes.data
-                        );
-                        // must make if ticket is clicked , then make it read and not show it, if 'read' and new item is added with same id , then delete old one with same id when adding
-                        const filterNewTickets = async () => {
-                            const newTickets: any[] = [];
-                            const transformTickets = (tickets: any[]): any[] => {
-                                return tickets.map(ticket => ({
+                        return newTickets;
+                    };
+
+                    filterNewTickets().then((newTickets) => {
+                        if (newTickets.length > 0) {
+                            setTicketIdsWithReplyUnread(prevIds => [...prevIds, ...newTickets]);
+
+                            // Store in IndexedDB to prevent future duplicates
+                            newTickets.forEach(ticket => {
+
+                                addCommentItem('DynamicTicketsUnread', {
                                     id: ticket.id,
                                     last_reply_date: ticket.last_reply_date,
-                                    is_read: "unread", // Always setting is_read as "unread"
-                                }));
-                            };
-                            for (const ticket of transformTickets(updatedTicketsIds)) {
-                                const exists = await itemExists('DynamicTicketsUnread', ticket.id, ticket.last_reply_date);
-
-                                if (!exists) {
-                                    newTickets.push(ticket);
-                                }
-                            }
-
-                            return newTickets;
-                        };
-
-                        filterNewTickets().then((newTickets) => {
-                            if (newTickets.length > 0) {
-                                setTicketIdsWithReplyUnread(prevIds => [...prevIds, ...newTickets]);
-
-                                // Store in IndexedDB to prevent future duplicates
-                                newTickets.forEach(ticket => {
-
-                                    addCommentItem('DynamicTicketsUnread', { id: ticket.id, last_reply_date: ticket.last_reply_date ,is_read:'unread'});
+                                    is_read: 'unread'
                                 });
-                            }
-                        });
-                        setInitialFetchedTickets(intervalFetchedTicketsRes.data);
-                        setInitialFetchedTicketsTotal(
-                            intervalFetchedTicketsRes.totalcount
-                        );
-                        // must make it that it is not stored in the index db before, so i keep the date reply with the ticket id, if the combination exists before then i dont add it
-                        // const newTicketIds: string[] = [];
-                        // for (const combination of updatedTicketsIds) {
-                        //     // Await the check for each combination.
-                        //     if (!(await isCombinationStored(combination))) {
-                        //         newTicketIds.push(combination);
-                        //     }
-                        // if (updatedTicketsIds.length > 0) {
-                        //
-                        //     setTicketIdsWithReplyUnread(prevIds => [...prevIds, ...updatedTicketsIds]);
-                        // }
-                        // // addItem('DynamicTicketsUnread', '12' )
-                        //
-                        // updatedTicketsIds.forEach((id: string) => addItem('DynamicTicketsUnread', id ));
-                        //                         const replyx=0
-                    }
-
-                    const x = 0;
-                } else if (filterFetching && fetchMorePagesFlag) {
-                    const responseData = response.data;
-                    setCurrentTotalTicketsAccumulation(
-                        (prevTotal) => prevTotal + responseData.length
-                    );
-                    setFetchAction("more");
-
-                    setTickets(responseData);
-                } else if (filterFetching && fetchLessPagesFlag) {
-                    responseData = response.data.sort((a: any, b: any) => b.id - a.id);
-                    // setCurrentTotalTicketsAccumulation(
-                    //     (prevTotal) => prevTotal - responseData.length
-                    // );
-                    setCurrentTotalTicketsAccumulation((prevTotal) => {
-                        const newTotal = prevTotal - responseData.length;
-                        // return newTotal;
-                        return newTotal < responseData.length
-                            ? responseData.length
-                            : newTotal;
+                            });
+                        }
                     });
-                    setFetchAction("less");
-
-                    setTickets(responseData);
-                } else if (filterFetching) {
-                    const responseData = response.data;
-
-                    setTickets(responseData);
-
-                    setCurrentTotalTicketsAccumulation(responseData.length);
-                    setCurrentTicketsPage(1);
-                    setMaxTotalTickets(response.totalcount);
-                    setFetchAction("initial");
-
+                    setInitialFetchedTickets(intervalFetchedTicketsRes.data);
+                    setInitialFetchedTicketsTotal(
+                        intervalFetchedTicketsRes.totalcount
+                    );
                 }
+            }
 
-                if (
-                    initialFetching ||
-                    fetchMorePagesFlag ||
-                    fetchLessPagesFlag ||
-                    filterFetching
-                ) {
-                    setIsTicketsFetch(false);
-                    setIsDataLoading(false);
-
-                    console.log("response", response);
-                } else {
-                    // it is interval fetching through window focus or 3 mintues itnerval
-                    setIsTicketsFetch(false);
-                }
-                if (currentTicketsPage > responseData.length / ticketsPerPage) {
-                    setCurrentTicketsPage(1);
-                }
-                if (!intervalFetching) {
-                    setTotalTicketsFetchedAtom(response.count);
-
-                }
-            } else {
+            if (
+                initialFetching ||
+                fetchMorePagesFlag ||
+                fetchLessPagesFlag ||
+                filterFetching
+            ) {
                 setIsTicketsFetch(false);
                 setIsDataLoading(false);
+
                 console.log("response", response);
+            } else {
+                // it is interval fetching through window focus or 3 mintues itnerval
+                setIsTicketsFetch(false);
             }
+            if (currentTicketsPage > responseData.length / ticketsPerPage) {
+                setCurrentTicketsPage(1);
+            }
+            if (!intervalFetching) {
+                setTotalTicketsFetchedAtom(response.count);
+
+            }
+
+        setIsTicketsFetch(false);
+        setIsDataLoading(false);
+        console.log("response", response);
+
 
         },
         onError: (error) => {
@@ -617,11 +607,12 @@ const TicketsPage: React.FC = () => {
             if (backendFilter.requester)
                 filterBody.requester = backendFilter.requester.value;
             if (backendFilter.branch) filterBody.area_id = backendFilter.branch.value;
-            if (backendFilter.assignee)
-                filterBody.assignee === backendFilter.assignee.value;
+            if (backendFilter.assignee){
+                filterBody.assignee = backendFilter.assignee.value;
+            }
             if (backendFilter.from)
-                filterBody.opening_date.from = backendFilter.from.value;
-            if (backendFilter.to) filterBody.opening_date.to = backendFilter.to.value;
+                filterBody.opening_date.from_date = backendFilter.from.value;
+            if (backendFilter.to) filterBody.opening_date.to_date = backendFilter.to.value;
             if (backendFilter.isStarred) filterBody.starred = backendFilter.isStarred.value==="true"?1:0;
 
             setIsTicketsFetch(true);
@@ -731,8 +722,8 @@ const TicketsPage: React.FC = () => {
         if (backendFilter.branch) reqBody.area_id = backendFilter.branch.value;
         if (backendFilter.assignee) reqBody.assignee = backendFilter.assignee.value;
         if (backendFilter.from)
-            reqBody.opening_date.from = backendFilter.from.value;
-        if (backendFilter.to) reqBody.opening_date.to = backendFilter.to.value;
+            reqBody.opening_date.from_date = backendFilter.from.value;
+        if (backendFilter.to) reqBody.opening_date.to_date = backendFilter.to.value;
 
         return reqBody;
     };
@@ -982,7 +973,6 @@ const TicketsPage: React.FC = () => {
         }
     }, [toolbarSearch, tickets]);
     useEffect(() => {
-        if (tickets.length > 0) {
             const sortedTickets = [...tickets].sort((a, b) => {
                 if (pinnedTicketIds.includes(a.id) && !pinnedTicketIds.includes(b.id)) {
                     return -1;
@@ -994,7 +984,7 @@ const TicketsPage: React.FC = () => {
             });
 
             const filtered = sortedTickets.filter((ticket) => {
-                const assignees: Assignee[] = JSON.parse(ticket?.assignees || "[]");
+                const assignees: Assignee[] = ticket?.assignees || [];
                 const matchesStatus =
                     frontFilter.status.value === "" ||
                     String(ticket.status) === frontFilter.status.value;
@@ -1056,7 +1046,7 @@ const TicketsPage: React.FC = () => {
             } else {
                 setPaginatedTickets(paginatedTickets); // Paginate the full list of tickets
             }
-        }
+
     }, [
         currentTicketsPage,
         tickets,
@@ -1341,10 +1331,23 @@ const TicketsPage: React.FC = () => {
                             </div>
                         ) : (
                             paginatedTickets.map((ticket) => {
-                                const parsedAssignees: Assignee[] = JSON.parse(ticket?.assignees || "[]");
-                                const isEmptyAssignees = parsedAssignees.every(
-                                    (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
-                                );
+                                const parsedAssignees: Assignee[] = ticket?.assignees || [];
+                                let isEmptyAssignees=false;
+                                if (parsedAssignees.length>0){
+                                    try {
+                                        // Check if the array contains only null-valued objects
+                                        isEmptyAssignees = parsedAssignees.every(
+                                            (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
+                                        );
+                                    } catch (e) {
+                                        // Handle the error
+                                        const asd=0;
+                                    }
+                                    //  isEmptyAssignees = parsedAssignees.every(
+                                    //     (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
+                                    // );
+                                }
+
                                 // If the array is empty or contains only null-valued objects, set it to an empty array
                                 const assignees: Assignee[] = isEmptyAssignees ? [] : parsedAssignees;
                                 return (

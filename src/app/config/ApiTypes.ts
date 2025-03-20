@@ -12,8 +12,8 @@ export interface ApiRequestBody {
   order: string;
   idgt?: number;
   opening_date: {
-    from?: string;
-    to?: string;
+    from_date?: string;
+    to_date?: string;
   };
   starred?: number;
 }

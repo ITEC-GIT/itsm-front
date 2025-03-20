@@ -1,4 +1,4 @@
-import { ErrorResponse } from "../types/AuthTypes";
+import {ErrorResponse} from "../types/AuthTypes";
 import {
     CreateSoftInstRequestType,
     GetAllSoftwareInstallationRequestType,
@@ -6,9 +6,16 @@ import {
 import Cookies from "js-cookie";
 
 import {ApiRequestBody, UpdateTicketRequestBody, UpdateTicketReplyRequestBody} from "./ApiTypes";
-import {PrivateApiCall, PublicApiCall, getSessionTokenFromCookie, ImageUploadApiCall} from "./Config";
+import {
+    PrivateApiCall,
+    PublicApiCall,
+    getSessionTokenFromCookie,
+    ImageUploadApiCall,
+    PrivateApiCallFastApi, PublicApiCallFastApi
+} from "./Config";
 import {ImageUploadData, ImageUploadResponse} from "../types/TicketTypes.ts";
 import axios from "axios";
+
 const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
 
 const errorCatch = (error: ErrorResponse) => {
@@ -29,22 +36,17 @@ const errorCatch = (error: ErrorResponse) => {
 /** ******************************************************************************************* */
 
 async function LoginApi(login: string, password: string) {
-    const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
     const authHeader = `Basic ${btoa(`${login}:${password}`)}`;
 
-    return await PublicApiCall.get(`/initSession/`, {
-        params: {
-            get_full_session: true,
-        },
+    return await PublicApiCallFastApi.get(`/session/init_session`, {
+
         headers: {
-            "app-token": appToken,
             Authorization: authHeader,
         },
     })
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
-
 
 const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
     try {
@@ -54,13 +56,13 @@ const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
             range: body.range,
             order: body.order,
         };
-        if(body.starred===1){
-            const asd=0
+        if (body.starred === 1) {
+            const asd = 0
         }
         if (body.idgt !== undefined) {
             params.idgt = body.idgt;
         }
-        const response = await PrivateApiCall.post("/searchTickets", body, {
+        const response = await PrivateApiCallFastApi.post("/tickets/filter_tickets", body, {
             headers: {
                 "App-Token": appToken,
                 "Session-Token": sessionToken,
@@ -81,7 +83,7 @@ const UpdateTicket = async (body: UpdateTicketRequestBody): Promise<any> => {
         const sessionToken = getSessionTokenFromCookie();
 
 
-        const response = await PrivateApiCall.post("/UpdateTicket", body, {
+        const response = await PrivateApiCallFastApi.post("/tickets/update_ticket", body, {
             headers: {
                 "App-Token": appToken,
                 "Session-Token": sessionToken,
@@ -99,10 +101,19 @@ const UpdateTicket = async (body: UpdateTicketRequestBody): Promise<any> => {
 
 /** ************************************** User *********************************************** */
 /** ******************************************************************************************* */
+async function GetTicketWithReplies(ticketId: number) {
+    return await PrivateApiCallFastApi.get(`/tickets/get_replies/${ticketId}`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
 
+async function GetTicketAttachments(ticketId: number) {
+    return await PrivateApiCall.get(`/Ticket/${ticketId}/Document/`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
 
 const SendRepliesAsync = async (ticketId: number, text: string): Promise<any> => {
-    const url = `https://cobalt.pulsar.ao/apirest.php/Ticket/${ticketId}/ITILFollowup`;
 
 
     const headers = {
@@ -112,23 +123,21 @@ const SendRepliesAsync = async (ticketId: number, text: string): Promise<any> =>
     };
 
     const payload = {
-        input: {
-            itemtype: "Ticket",
-            items_id: ticketId,
-            content: text,
-        },
-    };
 
-    axios.post(url, payload, {headers})
-        .then(response => {
-            console.log(`Response for Ticket ${ticketId}: ${response.status}`);
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error("Error posting follow-up:", error);
-        });
+        itemtype: "Ticket",
+        items_id: ticketId,
+        content: text,
+
+    };
+    await PrivateApiCallFastApi.post(`/tickets/create_reply`, payload, {
+        headers: headers
+    })
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+
 
 };
+
 
 async function GetUserProfile() {
     return await PrivateApiCall.get(`/getActiveProfile/`)
@@ -147,11 +156,6 @@ async function GetUsers() {
 /** ************************************** Tickets **********************************************/
 /** *********************************************************************************************/
 
-async function GetTicketsView() {
-    return await PrivateApiCall.get(`/TicketsView/`)
-        .then((response) => response)
-        .catch((error: any) => errorCatch(error));
-}
 
 // http://192.168.151.22/apirest.php/TicketsView?idgt=1&range=0-3&order=asc , starting from max id 1 , we get 4 items
 async function GetTicketsViewById(range: string, order: string, idgt?: number) {
@@ -189,75 +193,77 @@ async function GetDashboardAnalytics() {
 }
 
 /** *********************************************************************************************/
+
 /** ************************************** Branches *********************************************/
 /** *********************************************************************************************/
 
 async function GetBranches() {
-  return await PublicApiCall.get(`//`)
-    .then((response) => response)
-    .catch((error: any) => errorCatch(error));
+    return await PublicApiCall.get(`//`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
 }
 
 /** *********************************************************************************************/
+
 /** ************************************** Remote SSH *******************************************/
 /** *********************************************************************************************/
 
 function getXsrfTokenFromCookies(): string {
-  const match = Cookies.get("xyz");
-  console.log("match ==>>", match);
-  return match ?? "";
+    const match = Cookies.get("xyz");
+    console.log("match ==>>", match);
+    return match ?? "";
 }
 
 const fetchXSRFToken = async () => {
-  // const tokenResponse = await fetch(`${BASE_URL}/xsrf-token`, {
-  //   method: "GET",
-  //   credentials: "include",
-  // });
-  // const { _xsrf } = await tokenResponse.json();
-  // console.log("_xsrf ==>", _xsrf);
-  // return _xsrf;
+    // const tokenResponse = await fetch(`${BASE_URL}/xsrf-token`, {
+    //   method: "GET",
+    //   credentials: "include",
+    // });
+    // const { _xsrf } = await tokenResponse.json();
+    // console.log("_xsrf ==>", _xsrf);
+    // return _xsrf;
 
-  // const response = await axios.get(`${BASE_URL}/xsrf-token`, {
-  //   withCredentials: true,
-  // });
-  const response = await axios.get(`${BASE_URL}/xsrf-token`);
-  return response.data._xsrf;
+    // const response = await axios.get(`${BASE_URL}/xsrf-token`, {
+    //   withCredentials: true,
+    // });
+    const response = await axios.get(`${BASE_URL}/xsrf-token`);
+    return response.data._xsrf;
 };
 
 async function RemoteSSHConnect(
-  hostname: string,
-  port: number,
-  username: string,
-  pass: string
+    hostname: string,
+    port: number,
+    username: string,
+    pass: string
 ) {
-  try {
-    const xsrfToken = await fetchXSRFToken();
+    try {
+        const xsrfToken = await fetchXSRFToken();
 
-    const requestData = new URLSearchParams({
-      hostname: hostname,
-      port: port.toString(),
-      username: username,
-      password: pass,
-      term: "xterm-256color",
-      _xsrf: xsrfToken,
-    });
+        const requestData = new URLSearchParams({
+            hostname: hostname,
+            port: port.toString(),
+            username: username,
+            password: pass,
+            term: "xterm-256color",
+            _xsrf: xsrfToken,
+        });
 
-    const response = await fetch(`${BASE_URL}/`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-XSRFToken": xsrfToken,
-      },
-      body: requestData,
-    });
+        const response = await fetch(`${BASE_URL}/`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-XSRFToken": xsrfToken,
+            },
+            body: requestData,
+        });
 
-    const data = await response.json();
-    console.log(data);
-  } catch (error) {
-    console.error("SSH Connection Error:", error);
-    throw error;
-  }
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error("SSH Connection Error:", error);
+        throw error;
+    }
 }
 
 // const xsrfToken = getXsrfTokenFromCookies();
@@ -464,7 +470,7 @@ async function UpdateStarred(ticketId: number, starred: number) {
         "starred": starred
     }
 
-    const response = await PrivateApiCall.post("/UpdateTicket", ticketStarredBody, {
+    const response = await PrivateApiCallFastApi.post("/tickets/UpdateTicket", ticketStarredBody, {
         headers: {
             "App-Token": appToken,
             "Session-Token": sessionToken,
@@ -482,16 +488,7 @@ async function GetUsersAndAreas() {
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
-async function GetTicketWithReplies(ticketId: number) {
-    return await PrivateApiCall.get(`/ticketitilfollowups?id=${ticketId}`)
-        .then((response) => response)
-        .catch((error: any) => errorCatch(error));
-}
-async function GetTicketAttachments(ticketId: number) {
-    return await PrivateApiCall.get(`/Ticket/${ticketId}/Document/`)
-.then((response) => response)
-        .catch((error: any) => errorCatch(error));
-}
+
 async function PostReplyImages(formData: any) {
     try {
 
@@ -554,7 +551,7 @@ const fetchAndOpenFile = async (url: string) => {
         const sessionToken = getSessionTokenFromCookie();
         const attachmentFiles = import.meta.env.VITE_APP_ITSM_GLPI_API_BASE_ATTACHMENT_FILES;
 
-        const attachmentSent=`${attachmentFiles}/${url}`
+        const attachmentSent = `${attachmentFiles}/${url}`
         const response = await fetch(attachmentSent, {
             method: "GET",
             headers: {
@@ -564,7 +561,7 @@ const fetchAndOpenFile = async (url: string) => {
             },
         });
 
-        if (response.status!=200) {
+        if (response.status != 200) {
             throw new Error(`Failed to fetch file: ${response.statusText}`);
         }
 
@@ -594,9 +591,9 @@ export {
     FetchFilteredTickets,
     UpdateStarred,
     UpdateTicket,
-    fetchXSRFToken,GetPrivateIPAddress,
+    fetchXSRFToken, GetPrivateIPAddress,
     PostReplyImages,
     bulkDeleteImages,
-    GetComputer,RemoteSSHConnect,
-    SendRepliesAsync,GetTicketWithReplies,GetTicketAttachments,fetchAndOpenFile
+    GetComputer, RemoteSSHConnect,
+    SendRepliesAsync, GetTicketWithReplies, GetTicketAttachments, fetchAndOpenFile
 };
