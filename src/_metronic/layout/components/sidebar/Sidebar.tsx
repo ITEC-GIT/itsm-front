@@ -46,7 +46,7 @@ const updateDOM = (config: ILayout) => {
       }
 
       if (config.app?.sidebar?.default?.minimize?.desktop?.hoverable) {
-        document.body.setAttribute("data-kt-app-sidebar-hoverable", "true");
+        document.body.setAttribute("data-kt-app-sidebar-hoverable", "false");
       }
     }
 
