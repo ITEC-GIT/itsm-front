@@ -1986,7 +1986,7 @@ export const Actions: Record<
         icon: "https://img.icons8.com/?size=50&id=KD7CbP0QmK7R&format=png&color=000000",
       },
       {
-        name: "Enable the financial and administrative information",
+        name: "Activate Financial and Administrative Data",
         icon: "https://img.icons8.com/?size=50&id=aTrrRPCUiwd6&format=png&color=000000",
       },
       {
