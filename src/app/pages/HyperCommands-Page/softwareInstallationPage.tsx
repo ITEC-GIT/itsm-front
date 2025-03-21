@@ -89,7 +89,7 @@ const SoftwareInstallationPage = ({
   const toggleSidebar = () => {
     setShowForm(false);
     setIsSidebarOpen((prevState) => !prevState);
-    handleToggle();
+    // handleToggle();
   };
 
   const fetchData = async (filters: filterType) => {

@@ -40,15 +40,23 @@ const updateDOM = (config: ILayout) => {
     config.layoutType === "dark-sidebar" ||
     config.layoutType === "light-sidebar"
   ) {
-    if (config.app?.sidebar?.default?.minimize?.desktop?.enabled) {
-      if (config.app?.sidebar?.default?.minimize?.desktop?.default) {
-        document.body.setAttribute("data-kt-app-sidebar-minimize", "on");
-      }
+    const storedState = localStorage.getItem("sidebarState") || "open";
+    const isMinimized = storedState === "minimized";
 
-      if (config.app?.sidebar?.default?.minimize?.desktop?.hoverable) {
-        document.body.setAttribute("data-kt-app-sidebar-hoverable", "false");
-      }
-    }
+    document.body.classList.toggle("app-sidebar-minimize", isMinimized);
+    document.body.setAttribute(
+      "data-kt-app-sidebar-minimize",
+      isMinimized ? "on" : "off"
+    );
+    // if (config.app?.sidebar?.default?.minimize?.desktop?.enabled) {
+    //   if (config.app?.sidebar?.default?.minimize?.desktop?.default) {
+    //     document.body.setAttribute("data-kt-app-sidebar-minimize", "on");
+    //   }
+
+    //   if (config.app?.sidebar?.default?.minimize?.desktop?.hoverable) {
+    //     document.body.setAttribute("data-kt-app-sidebar-hoverable", "false");
+    //   }
+    // }
 
     if (config.app?.sidebar?.default?.minimize?.mobile?.enabled) {
       if (config.app?.sidebar?.default?.minimize?.mobile?.default) {
