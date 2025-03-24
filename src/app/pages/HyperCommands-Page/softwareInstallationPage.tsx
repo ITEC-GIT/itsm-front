@@ -24,7 +24,6 @@ import { SearchComponent } from "../../components/form/search.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters.tsx";
 import { useAtom, useAtomValue } from "jotai";
-import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar.ts";
 import { FilterButton } from "../../components/form/filterButton.tsx";
 
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms.ts";
@@ -73,23 +72,14 @@ const SoftwareInstallationPage = ({
     order: "desc",
   });
 
-  const [toggleInstance] = useAtom(sidebarToggleAtom);
-
   const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<SoftwareHistoryType>[]
   >([]);
 
-  const handleToggle = () => {
-    if (toggleInstance) {
-      toggleInstance.toggle();
-    }
-  };
-
   const toggleSidebar = () => {
     setShowForm(false);
     setIsSidebarOpen((prevState) => !prevState);
-    // handleToggle();
   };
 
   const fetchData = async (filters: filterType) => {

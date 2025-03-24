@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchComponent } from "../../components/form/search";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { useAtom } from "jotai";
-import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import {
   AssetsHistoryType,
   GetAllAssetsRequestType as FilterType,
@@ -54,7 +53,6 @@ const AssetsPage = () => {
   });
 
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [toggleInstance] = useAtom(sidebarToggleAtom);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false);
@@ -65,15 +63,8 @@ const AssetsPage = () => {
     setIsColumnModalOpen((prevState) => !prevState);
   };
 
-  const handleToggle = () => {
-    if (toggleInstance) {
-      toggleInstance.toggle();
-    }
-  };
-
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
-    handleToggle();
   };
 
   const toggleAddAssetModal = () => {
