@@ -5,7 +5,10 @@ import { useLayout } from "../../core";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { ToggleComponent } from "../../../assets/ts/components";
 import { useAtom } from "jotai";
-import { sidebarToggleAtom } from "../../../../app/atoms/sidebar-atom/sidebar";
+import {
+  isSidebarOpenAtom,
+  sidebarToggleAtom,
+} from "../../../../app/atoms/sidebar-atom/sidebar";
 
 type PropsType = {
   sidebarRef: MutableRefObject<HTMLDivElement | null>;
@@ -14,6 +17,7 @@ type PropsType = {
 const SidebarLogo = (props: PropsType) => {
   const { config } = useLayout();
   const [toggleInstance, setToggleInstance] = useAtom(sidebarToggleAtom);
+  const [isSidebarOpenA, setIsSidebarOpenA] = useAtom(isSidebarOpenAtom);
   const toggleRef = useRef<HTMLDivElement>(null);
   const [isSidebarMinimized, setIsSidebarMinimized] = useState<boolean>(() => {
     return localStorage.getItem("sidebarState") === "minimized";
@@ -59,6 +63,7 @@ const SidebarLogo = (props: PropsType) => {
       );
       setIsSidebarMinimized(isMinimized);
       localStorage.setItem("sidebarState", isMinimized ? "minimized" : "open");
+      setIsSidebarOpenA(isMinimized ? false : true);
     };
 
     setTimeout(() => {
@@ -75,6 +80,7 @@ const SidebarLogo = (props: PropsType) => {
     const newState = !isSidebarMinimized;
     setIsSidebarMinimized(newState);
     localStorage.setItem("sidebarState", newState ? "minimized" : "open");
+    setIsSidebarOpenA(newState ? false : true);
 
     document.body.classList.toggle("app-sidebar-minimize", newState);
     document.body.setAttribute(
