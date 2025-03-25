@@ -136,7 +136,7 @@ const AssetsTree = () => {
   useEffect(() => {
     if (divRef.current) {
       const rect = divRef.current.getBoundingClientRect();
-      setDivWidth(Math.round(rect.height));
+      setDivWidth(Math.round(rect.width));
     }
   }, [divRef.current]);
 
