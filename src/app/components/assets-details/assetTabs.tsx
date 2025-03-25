@@ -5,6 +5,7 @@ import { AssetAppsComponent } from "./assetApps";
 import { AssetDetailsComponent } from "./assetDetails";
 import { AssetSummaryComponent } from "./assetSummary";
 import { AssetPoliciesComponent } from "./assetPolicies";
+import { AssetsTree } from "./assetDetailsTree";
 
 const asset = {
   name: "Laptop",
@@ -118,6 +119,22 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
             Policies
           </button>
         </li>
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link text-gray tab-text ml-2 ${
+              selectedTab === "tree" ? "active text-active-bold" : ""
+            } me-6`}
+            id="tab-tree"
+            data-bs-toggle="tab"
+            data-bs-target="#tree"
+            type="button"
+            role="tab"
+            onClick={() => handleTabClick("Tree")}
+          >
+            <i className="bi bi-diagram-2 me-2"></i>
+            Tree
+          </button>
+        </li>
       </ul>
       <div className="row">
         <div
@@ -175,6 +192,15 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               role="tabpanel"
             >
               <AssetPoliciesComponent />
+            </div>
+            <div
+              className={`tab-pane fade ${
+                selectedTab === "tree" ? "show active" : ""
+              }`}
+              id="tree"
+              role="tabpanel"
+            >
+              <AssetsTree />
             </div>
           </div>
         </div>

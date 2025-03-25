@@ -2237,3 +2237,10 @@ export const getAvailableActions = (category: string) => {
 
   return availableActions;
 };
+
+
+export const AssetsTemplate ={
+  "computer":{
+    
+  }
+}
