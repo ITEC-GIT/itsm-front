@@ -34,6 +34,7 @@ const AssetsPage = () => {
   });
 
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
+    settings: true,
     icon: true,
     name: true,
     entity: false,

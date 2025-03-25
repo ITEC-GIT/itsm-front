@@ -14,7 +14,7 @@ import {
   columnXXLargeWidth,
   columnXXXLargeWidth,
 } from "./dataTable";
-import { CiSettings } from "react-icons/ci";
+import { VscTools } from "react-icons/vsc";
 import {
   FaComputer,
   FaPlug,
@@ -95,6 +95,48 @@ export const getColumns = (
   [
     {
       name: "",
+      width: columnSmallWidth,
+      cell: (row: AssetsHistoryType) => {
+        const [showActionModal, setShowActionModal] = useState(false);
+
+        return (
+          <div className="d-flex w-100">
+            <input
+              type="checkbox"
+              // checked={selectedRows.has(row.id)}
+              // onChange={() => toggleRowSelection(row.id)}
+            />
+
+            <button
+              type="button"
+              className={`btn btn-link p-0 ms-2`}
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Action"
+              onClick={() => setShowActionModal(!showActionModal)}
+            >
+              <VscTools
+                style={{
+                  fontSize: "20px",
+                  color: "rgb(170 161 146)",
+                }}
+              />
+            </button>
+            {showActionModal && (
+              <ActionModal
+                isOpen={showActionModal}
+                onClose={() => setShowActionModal(false)}
+                category={row.category}
+                assetId={row.id}
+              />
+            )}
+          </div>
+        );
+      },
+      id: "settings",
+    },
+    {
+      name: "",
       sortable: true,
       width: columnSmallWidth,
       cell: (row: AssetsHistoryType) => {
@@ -142,8 +184,6 @@ export const getColumns = (
       sortable: true,
       width: columnXLargeWidth,
       cell: (row: AssetsHistoryType) => {
-        const [showActionModal, setShowActionModal] = useState(false);
-
         return (
           <div className="d-flex justify-content-between w-100">
             <Link
@@ -153,26 +193,6 @@ export const getColumns = (
             >
               {row.name}
             </Link>
-            <button
-              type="button"
-              className={`btn btn-link p-0 ${
-                hoveredRowId === row.id ? "d-block" : "d-none"
-              }`}
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Action"
-              onClick={() => setShowActionModal(!showActionModal)}
-            >
-              <CiSettings style={{ fontSize: "20px" }} />
-            </button>
-            {showActionModal && (
-              <ActionModal
-                isOpen={showActionModal}
-                onClose={() => setShowActionModal(false)}
-                category={row.category}
-                assetId={row.id}
-              />
-            )}
           </div>
         );
       },
@@ -2238,9 +2258,6 @@ export const getAvailableActions = (category: string) => {
   return availableActions;
 };
 
-
-export const AssetsTemplate ={
-  "computer":{
-    
-  }
-}
+export const AssetsTemplate = {
+  computer: {},
+};
