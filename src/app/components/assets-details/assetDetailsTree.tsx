@@ -1,7 +1,7 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Handle, Position, ReactFlow } from "reactflow";
 import { Monitor, Keyboard, MousePointer, MonitorCog } from "lucide-react";
 import "reactflow/dist/style.css";
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 
 const dynamicNodes = [
   {
@@ -31,7 +31,7 @@ const dynamicNodes = [
   {
     id: 5,
     type: "customNode",
-    data: { label: "PC", type: "PC" },
+    data: { label: "Keyboard", type: "Keyboard" },
     parent: 1,
   },
   {
@@ -40,7 +40,70 @@ const dynamicNodes = [
     data: { label: "Mouse", type: "Mouse" },
     parent: 1,
   },
-  { id: 7, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  {
+    id: 7,
+    type: "customNode",
+    data: { label: "Keyboard", type: "Keyboard" },
+    parent: 1,
+  },
+  {
+    id: 8,
+    type: "customNode",
+    data: { label: "Monitor", type: "Monitor" },
+    parent: 1,
+  },
+  {
+    id: 9,
+    type: "customNode",
+    data: { label: "Keyboard", type: "Keyboard" },
+    parent: 1,
+  },
+  {
+    id: 10,
+    type: "customNode",
+    data: { label: "Keyboard", type: "Keyboard" },
+    parent: 1,
+  },
+  {
+    id: 11,
+    type: "customNode",
+    data: { label: "Mouse", type: "Mouse" },
+    parent: 1,
+  },
+  { id: 12, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  {
+    id: 13,
+    type: "customNode",
+    data: { label: "Mouse", type: "Mouse" },
+    parent: 1,
+  },
+  { id: 14, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  {
+    id: 15,
+    type: "customNode",
+    data: { label: "Monitor", type: "Monitor" },
+    parent: 1,
+  },
+  { id: 16, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  {
+    id: 17,
+    type: "customNode",
+    data: { label: "Mouse", type: "Mouse" },
+    parent: 1,
+  },
+  {
+    id: 18,
+    type: "customNode",
+    data: { label: "Monitor", type: "Monitor" },
+    parent: 1,
+  },
+  { id: 19, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  {
+    id: 20,
+    type: "customNode",
+    data: { label: "Mouse", type: "Mouse" },
+    parent: 1,
+  },
 ];
 
 const CustomNode = ({ data }: any) => {
@@ -131,78 +194,99 @@ const AssetsTree = () => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const divRef = useRef<HTMLDivElement>(null);
-  const [divWidth, setDivWidth] = useState<number | null>(null);
+  const [divWidth, setDivWidth] = useState<number>(800);
 
   useEffect(() => {
-    if (divRef.current) {
-      const rect = divRef.current.getBoundingClientRect();
+    if (!divRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
       setDivWidth(Math.round(rect.width));
+    });
+    observer.observe(divRef.current);
+    if (divRef.current) {
+      setDivWidth(divRef.current.offsetWidth);
     }
-  }, [divRef.current]);
+
+    return () => observer.disconnect();
+  }, []);
 
   const calculatePositions = useCallback(() => {
     const parentNodes = dynamicNodes.filter((node) => !node.parent);
     const childNodes = dynamicNodes.filter((node) => node.parent !== null);
-
-    // Config
     const NODE_WIDTH = 100;
     const HORIZONTAL_GAP = 50;
     const VERTICAL_GAP = 120;
 
-    // Calculate max nodes per row based on container width
-    const maxNodesPerRow = Math.max(
-      1,
-      Math.floor((divWidth ?? 0) / (NODE_WIDTH + HORIZONTAL_GAP))
-    );
+    const positionedParents = parentNodes.map((node) => ({
+      ...node,
+      id: node.id.toString(),
+      parent: null,
+      position: {
+        x: divWidth / 2 - NODE_WIDTH / 2,
+        y: 50,
+      },
+    }));
 
-    // Position parents in a grid (wrap to new row if needed)
-    const positionedParents = parentNodes.map((node, index) => {
-      const row = Math.floor(index / maxNodesPerRow);
-      const col = index % maxNodesPerRow;
-      return {
-        ...node,
-        id: node.id.toString(),
-        parent: null,
-        position: {
-          x: col * (NODE_WIDTH + HORIZONTAL_GAP),
-          y: row * VERTICAL_GAP,
-        },
-      };
+    const childrenByParent: Record<string, typeof childNodes> = {};
+    childNodes.forEach((node) => {
+      const parentId = String(node.parent);
+      if (!childrenByParent[parentId]) {
+        childrenByParent[parentId] = [];
+      }
+      childrenByParent[parentId].push(node);
     });
 
-    // Position children under their parents (vertically stacked)
-    const positionedChildren = childNodes.map((node) => {
-      const parent = positionedParents.find(
-        (p) => p.id === String(node.parent)
+    const positionedChildren: Node[] = [];
+
+    Object.entries(childrenByParent).forEach(([parentId, children]) => {
+      const parent = positionedParents.find((p) => p.id === parentId);
+      if (!parent) return;
+
+      const maxNodesPerRow = Math.max(
+        1,
+        Math.floor(divWidth / (NODE_WIDTH + HORIZONTAL_GAP))
       );
-      const siblings = childNodes.filter((n) => n.parent === node.parent);
-      const siblingIndex = siblings.findIndex((n) => n.id === node.id);
+      const totalRows = Math.ceil(children.length / maxNodesPerRow);
 
-      return {
-        ...node,
-        id: node.id.toString(),
-        parent: node.parent?.toString(),
-        position: {
-          x:
-            (parent?.position.x ?? 0) +
-            siblingIndex * (NODE_WIDTH + HORIZONTAL_GAP / 2),
-          y: (parent?.position.y ?? 0) + VERTICAL_GAP,
-        },
-      };
+      children.forEach((child, index) => {
+        const row = Math.floor(index / maxNodesPerRow);
+        const col = index % maxNodesPerRow;
+
+        const nodesInRow = Math.min(
+          maxNodesPerRow,
+          children.length - row * maxNodesPerRow
+        );
+        const rowWidth =
+          nodesInRow * NODE_WIDTH + (nodesInRow - 1) * HORIZONTAL_GAP;
+        const rowStartX = parent.position.x + NODE_WIDTH / 2 - rowWidth / 2;
+
+        positionedChildren.push({
+          ...child,
+          id: child.id.toString(),
+          parent: parentId,
+          position: {
+            x: rowStartX + col * (NODE_WIDTH + HORIZONTAL_GAP),
+            y: parent.position.y + VERTICAL_GAP + row * VERTICAL_GAP * 0.8,
+          },
+        });
+      });
     });
 
-    // Generate edges
-    const generatedEdges = childNodes.map((node) => ({
-      id: `e${node.parent}-${node.id}`,
-      source: String(node.parent),
-      target: String(node.id),
+    const generatedEdges = childNodes.map((child) => ({
+      id: `edge-${child.parent}-${child.id}`,
+      source: String(child.parent),
+      target: String(child.id),
+      type: "smoothstep",
+      style: { stroke: "#007bff", strokeWidth: 2 },
+      markerEnd: { type: "arrowclosed", color: "#007bff" },
     }));
 
     return {
       nodes: [...positionedParents, ...positionedChildren],
       edges: generatedEdges,
     };
-  }, [divRef.current]);
+  }, [divWidth]);
 
   useEffect(() => {
     const { nodes: newNodes, edges: newEdges } = calculatePositions();
@@ -221,6 +305,7 @@ const AssetsTree = () => {
         nodes={nodes}
         edges={edges}
         nodeTypes={memoizedNodeTypes}
+        fitViewOptions={{ padding: 0.5 }}
         zoomOnScroll={false}
         zoomOnPinch={false}
         zoomOnDoubleClick={false}
