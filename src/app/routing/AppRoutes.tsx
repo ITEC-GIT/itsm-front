@@ -28,6 +28,7 @@ import {
     mastersAtom,
     slavesAtom,
 } from "../atoms/app-routes-global-atoms/globalFetchedAtoms";
+import useWebSocket from "../sockets/useWebSocket.ts";
 
 
 /**
@@ -39,14 +40,15 @@ const {BASE_URL} = import.meta.env;
 
 const RoutesContent: FC = () => {
     const [currentUser, setCurrentUser] = useState<any>(null);
-
     const isAuthAtom = useAtomValue(isAuthenticatedAtom);
     const [user, setUser] = useAtom(userAtom);
     useEffect(() => {
-        if (user && user.session_token != '') {
+        if (user && user.access_token != '') {
             const userName = user.user_name;
         }
     }, [user]);
+    const { messages } = useWebSocket(Number(user?.user_id));
+
     const navigate = useNavigate();
     const [staticData, setStaticData] = useAtom(staticDataAtom);
 
@@ -171,8 +173,8 @@ const RoutesContent: FC = () => {
     useEffect(() => {
         if (userBranches && userBranches.data) {
             setItsmBranches((prev) =>
-                prev !== userBranches.data.Departments
-                    ? userBranches.data.Departments
+                prev !== userBranches.data.areas
+                    ? userBranches.data.areas
                     : prev
             );
             setItsmSlaves((prev) =>

@@ -21,7 +21,7 @@ const HeaderUserMenu: FC = () => {
   const logout = () => {
     console.log("logout");
     Cookies.set("isAuthenticated", "false");
-    Cookies.remove("session_token");
+    Cookies.remove("access_token");
     setUserAtom({} as UserAtomType);
     setIsAuthAtom(false);
 

@@ -36,13 +36,16 @@ const errorCatch = (error: ErrorResponse) => {
 /** ******************************************************************************************* */
 
 async function LoginApi(login: string, password: string) {
-    const authHeader = `Basic ${btoa(`${login}:${password}`)}`;
+    // const authHeader = `Basic ${btoa(`${login}:${password}`)}`;
 
-    return await PublicApiCallFastApi.get(`/session/init_session`, {
-
+    return await axios.post(`http://127.0.0.1:8000/session/init_session`,
+        new URLSearchParams({
+            username: login,
+            password: password
+        }), {
         headers: {
-            Authorization: authHeader,
-        },
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
     })
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
@@ -430,7 +433,7 @@ async function GetAllLocations() {
 /** ************************************** Static Data ******************************************/
 /** *********************************************************************************************/
 async function GetStaticData() {
-    return await PrivateApiCall.get(`/GetStaticData`)
+    return await PrivateApiCallFastApi.get(`/static/static_data`)
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
@@ -484,7 +487,7 @@ async function UpdateStarred(ticketId: number, starred: number) {
 }
 
 async function GetUsersAndAreas() {
-    return await PrivateApiCall.get(`/UsersAndAreas`)
+    return await PrivateApiCallFastApi.get(`/static/users_areas`)
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }

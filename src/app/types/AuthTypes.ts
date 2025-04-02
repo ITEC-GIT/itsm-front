@@ -5,14 +5,14 @@ export type ErrorResponse = {
 };
 
 export type UserAtomType = {
-  session_token: string,
+  access_token: string,
   user_id:string,
   user_name:string,
   expires_at:string
 };
 
 export const initialUserState: UserAtomType = {
-  session_token: "",
+  access_token: "",
   user_id:"",
   user_name:"",
   expires_at:""
