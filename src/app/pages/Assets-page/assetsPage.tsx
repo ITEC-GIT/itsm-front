@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchComponent } from "../../components/form/search";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useAtom } from "jotai";
 import {
   AssetsHistoryType,
   GetAllAssetsRequestType as FilterType,
@@ -11,11 +10,10 @@ import { debounce } from "lodash";
 import { FilterSidebar } from "../../components/form/filters";
 import { ColumnVisibility } from "../../types/common";
 import ColumnsModal from "../../components/modal/columns";
-import clsx from "clsx";
-import { activeFilters, getColumns, mockData } from "../../data/assets";
+import { activeFilters, getColumns } from "../../data/assets";
 import { useNavigate } from "react-router-dom";
-import { showActionColumnAtom } from "../../atoms/table-atom/tableAtom";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+import { GetAssets } from "../../config/ApiCalls.ts";
 
 const AssetsPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -26,37 +24,30 @@ const AssetsPage = () => {
   const btnRef = useRef<HTMLButtonElement>(null);
 
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
-  const [ShowActionColumn, setShowActionColumn] = useAtom(showActionColumnAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filters, setFilters] = useState<FilterType>({
-    range: "0-50",
     order: "desc",
   });
-
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
     settings: true,
     icon: true,
     name: true,
-    entity: false,
     serial_number: true,
+    category: true,
+    manufacturer: true,
     model: true,
-    location: true,
-    component_processor: false,
-    last_update: true,
     type: true,
-    project: false,
-    address: false,
-    inventory_number: false,
-    alternate_username_number: false,
-    status: true,
-    public_ip: true,
     action: true,
+    description: false,
+    caption: false,
   });
 
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false);
+
+  const [assetsData, setAssetsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -73,49 +64,10 @@ const AssetsPage = () => {
     navigate("/assets/new");
   };
 
-  // const visibleColumns = columns.filter(
-  //   (col) => columnVisibility[col.id as string]
-  // );
-
   const handleSearchChange = debounce((query: string) => {
     //  setCurrentHistoryPage(1);
     setSearchQuery(query);
   }, 100);
-
-  const RecordsPerPage = 10;
-  const minPagesToShow = 3;
-  const [maxTotalData, setMaxTotalData] = useState<number>(0);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-
-  const handlePageChange = (page: number) => {
-    setCurrentHistoryPage(page);
-    const totalFetchedPages = Math.ceil(mockData.length / RecordsPerPage);
-    // filteredHistory.length / RecordsPerPage
-
-    if (page > totalFetchedPages && hasMore) {
-      setIsLoadingMore(true);
-      // fetchData(filters).then((newData) => {
-      //   setPaginatedHistory((prevHistory) => [...prevHistory, ...newData.data]);
-      //   setHasMore(newData.totalCount > paginatedHistory.length);
-      //   setIsLoadingMore(false);
-      // });
-    }
-  };
-  const totalPages = Math.ceil(mockData.length / RecordsPerPage);
-
-  const startPage =
-    Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
-  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
-
-  const handleFirstPage = () => setCurrentHistoryPage(1);
-  const handlePreviousPage = () =>
-    setCurrentHistoryPage((prev) => Math.max(prev - 1, 1));
-  const handleNextPage = () => {
-    setCurrentHistoryPage((prev) => Math.min(prev + 1, totalPages));
-    handlePageChange(currentHistorysPage + 1);
-  };
-
-  const handleLastPage = () => setCurrentHistoryPage(totalPages);
 
   const handleVisibilityChange = (newVisibility: ColumnVisibility) => {
     setColumnVisibility(newVisibility);
@@ -124,10 +76,10 @@ const AssetsPage = () => {
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<AssetsHistoryType>[]
   >([]);
-  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
+
   const memoizedColumns = useMemo(() => {
-    return getColumns(hoveredRowId);
-  }, [hoveredRowId]);
+    return getColumns();
+  }, []);
 
   useEffect(() => {
     const filteredColumns = memoizedColumns.filter(
@@ -194,14 +146,6 @@ const AssetsPage = () => {
     };
   }, [visibleColumns]);
 
-  const handleMouseEnter = (rowId: number) => {
-    setHoveredRowId(rowId);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredRowId(null);
-  };
-
   const columnsForModal = useMemo(
     () => memoizedColumns.filter((col) => col.id !== "action"),
     [memoizedColumns]
@@ -213,6 +157,24 @@ const AssetsPage = () => {
       setHeight(Math.round(rect.height));
     }
   }, [divRef.current]);
+
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        setLoading(true);
+        const data = await GetAssets(filters);
+        setAssetsData(data.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to load assets data");
+        console.error("Error fetching assets:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssets();
+  }, [filters, searchQuery]);
 
   return (
     <AnimatedRouteWrapper>
@@ -293,41 +255,39 @@ const AssetsPage = () => {
                   // overflow: "auto",
                 }}
               >
-                <DataTable
+                {/* <DataTable
                   columns={visibleColumns.map((col) => ({
                     ...col,
                     width: columnWidths[col.id as string],
                   }))}
-                  data={mockData}
+                  data={assetsData}
                   persistTableHead={true}
                   responsive
                   highlightOnHover
                   customStyles={customStyles}
                   sortIcon={sortIcon}
-                  onRowMouseEnter={(row) => handleMouseEnter(row.id)}
-                  onRowMouseLeave={handleMouseLeave}
                   fixedHeader
                   fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
-                />
+                /> */}
               </div>
             </div>
 
             <div className="sticky-pagination d-flex justify-content-end align-items-center">
               <button
                 className="btn btn-sm btn-light me-2"
-                onClick={handleFirstPage}
+                // onClick={handleFirstPage}
                 disabled={currentHistorysPage === 1}
               >
                 First
               </button>
               <button
                 className="btn btn-sm btn-light me-2"
-                onClick={handlePreviousPage}
+                // onClick={handlePreviousPage}
                 disabled={currentHistorysPage === 1}
               >
                 Previous
               </button>
-              {Array.from(
+              {/* {Array.from(
                 { length: endPage - startPage + 1 },
                 (_, index) => startPage + index
               ).map((page) => (
@@ -341,18 +301,18 @@ const AssetsPage = () => {
                 >
                   {page}
                 </button>
-              ))}
+              ))} */}
               <button
                 className="btn btn-sm btn-light me-2"
-                onClick={handleNextPage}
-                disabled={currentHistorysPage === totalPages}
+                // onClick={handleNextPage}
+                // disabled={currentHistorysPage === totalPages}
               >
                 Next
               </button>
               <button
                 className="btn btn-sm btn-light"
-                onClick={handleLastPage}
-                disabled={currentHistorysPage === totalPages}
+                // onClick={handleLastPage}
+                // disabled={currentHistorysPage === totalPages}
               >
                 Last
               </button>
@@ -374,6 +334,7 @@ const AssetsPage = () => {
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
                   filtersStoreName={"assetsFilters"}
+                  initialFilters={{}}
                 />
               </div>
             </div>

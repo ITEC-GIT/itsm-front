@@ -1,21 +1,24 @@
 export type AssetsHistoryType = {
   id: number;
   name: string;
-  entity: string;
+  category: string;
+  hash: string;
+  manufacturer: string;
   serial_number: string;
   model: string;
-  location: string;
-  last_update: string;
-  component_processor: string;
   type: string;
-  project: string;
-  address: string;
-  inventory_number: string;
-  alternate_username_number: string;
-  action: string;
   status: string;
-  public_ip: string;
-  category: string;
+  description: string;
+  caption: string;
+  // entity: string;
+  // location: string;
+  // last_update: string;
+  // component_processor: string;
+  // project: string;
+  // address: string;
+  // inventory_number: string;
+  // alternate_username_number: string;
+  // public_ip: string;
 };
 
 export type GetAllAssetsRequestType = {

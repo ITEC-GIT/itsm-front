@@ -5,7 +5,7 @@ import {
   CategoryOption,
   FieldValues,
 } from "../../types/assetsTypes";
-import { AssetFields, categories, Steps } from "../../data/assets";
+import { AssetFields, Steps } from "../../data/assets";
 import { StepNavigation } from "../../components/form/wizard";
 import { ModalComponent } from "../../components/modal/ModalComponent";
 import { BackButton } from "../../components/form/backButton";
@@ -177,13 +177,13 @@ const AssetCreationPage = () => {
                 <label className="form-label d-flex align-items-center">
                   Category
                 </label>
-                <Select
+                {/* <Select
                   options={categories}
                   value={selectedCategory}
                   onChange={handleCategoryChange}
                   isClearable
                   className="custom-react-select"
-                />
+                /> */}
                 {showModal && (
                   <ModalComponent
                     isOpen={showModal}
