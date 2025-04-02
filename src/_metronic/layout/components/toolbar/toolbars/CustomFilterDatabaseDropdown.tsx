@@ -137,7 +137,7 @@ const CustomFilterBackendDataDropdown: React.FC<
     const filterBody: ApiRequestBody = {
       range: "0-5",
       order: "desc",
-      opening_date: { from: "", to: "" },
+      opening_date: { from_date: "", to_date: "" },
     };
 
     if (status.value) filterBody.status = status.value;
@@ -147,8 +147,8 @@ const CustomFilterBackendDataDropdown: React.FC<
     if (requester.value) filterBody.requester = requester.value;
     if (branch.value) filterBody.area_id = branch.value;
     if (assignee.value) filterBody.assignee = assignee.value;
-    if (formattedFromdDate) filterBody.opening_date.from = formattedFromdDate;
-    if (formattedTodDate) filterBody.opening_date.to = formattedTodDate;
+    if (formattedFromdDate) filterBody.opening_date.from_date = formattedFromdDate;
+    if (formattedTodDate) filterBody.opening_date.to_date = formattedTodDate;
     if(isStarred)filterBody.starred = Number(isStarred);
     // filterBody.opening_date={"from":formattedFromdDate,"to":formattedTodDate}
     // filterBackendMutation.mutate(filterBody);

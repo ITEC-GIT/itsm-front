@@ -295,8 +295,8 @@ export const Wizard = ({
   };
 
   const fetchUserData = () => {
-    if (userData?.session?.glpiname) {
-      setUserName(userData.session.glpiname);
+    if (userData?.user_name) {
+      setUserName(userData.user_name);
     }
   };
 

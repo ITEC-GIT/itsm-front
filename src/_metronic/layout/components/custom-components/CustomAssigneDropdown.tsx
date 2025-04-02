@@ -96,7 +96,7 @@ const CustomAssigneeDropDown: React.FC<CustomAssigneeDropDownPropos> = ({
 
       const assigneeChangedInfo = {
         ticketId: ticketId,
-        assigneeNewData: JSON.stringify(updatedAssignees),
+        assigneeNewData: updatedAssignees,
         assigneeIds: assigneeIds,
       };
 
