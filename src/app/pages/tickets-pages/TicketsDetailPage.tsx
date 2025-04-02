@@ -45,7 +45,7 @@ const TicketsDetailPage: React.FC = () => {
     const [editorHtml, setEditorHtml] = useState("");
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
     const [ticketReplies, setTicketReplies] = useState([]);
-    const assignees: Assignee[] = JSON.parse(ticket?.assignees || "[]");
+    const assignees: Assignee[] = ticket?.assignees || [];
     const [htmlContent, setHtmlContent] = useState("");
 
     const queryClient = useQueryClient(); // Get the query client
@@ -88,7 +88,7 @@ const TicketsDetailPage: React.FC = () => {
         if (ticketWithReplies == undefined || ticketWithReplies.data == undefined) {
             return;
         }
-        const ticketRepliesReturned = ticketWithReplies.data.data[1].replies
+        const ticketRepliesReturned = ticketWithReplies.data.replies
         if (ticketRepliesReturned.length > 0) {
             const sortedData = ticketRepliesReturned.sort((a: any, b: any) => {
                 return new Date(b.date_creation).getTime() - new Date(a.date_creation).getTime();

@@ -56,22 +56,19 @@ export function LoginPage() {
 
         const res = response.data;
         if (res) {
-          Cookies.set("session_token", res?.session_token);
+          Cookies.set("access_token", res.access_token);
           Cookies.set("isAuthenticated", "true");
-          const userId = res.session.glpiID;
+          const userId = res.user_id;
           Cookies.set("user", userId);
-          Cookies.set("username", res.session.glpiname);
+          Cookies.set("username", res.user_name);
           setLoginError(null);
-          const {
-            session: { glpiID, ...restSession },
-            ...rest
-          } = res;
-          const updatedRes = { ...rest, session: restSession };
+          const updatedRes = { access_token:  res.access_token,user_id: res.user_id, user_name: res.user_name, expires_at: res.expires_at };
           setUser(updatedRes);
           setIsAuthenticatedAtom(true);
         }
 
         navigate("/dashboard");
+        const dasg=0;
       } catch (error) {
         console.error("Error:", error);
         setLoginError((error as Error).message);
