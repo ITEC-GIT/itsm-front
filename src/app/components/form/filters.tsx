@@ -20,6 +20,7 @@ interface FilterSidebarProps {
   activeFilters: string[];
   filtersStoreName: string;
   saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
+  initialFilters: any;
 }
 
 interface FiltersTitleProps {
@@ -30,6 +31,12 @@ interface FiltersTitleProps {
 }
 
 const filtersOptions: FiltersTitleProps[] = [
+  {
+    id: "AssetCategoriesFilter",
+    name: "Category",
+    AtomKey: "assetCategories",
+    data: [],
+  },
   {
     id: "softwareStatusFilter",
     name: "Status",
@@ -62,6 +69,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   activeFilters,
   filtersStoreName,
   saveFilters,
+  initialFilters,
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
   const [selectedFilters, setSelectedFilters] = useState<
@@ -125,11 +133,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     setSelectedFilters({});
     setStartDate("");
     setEndDate("");
-    //ask about this
-    const initialFilters = {
-      range: "0-50",
-      order: "desc",
-    };
     saveFilters(initialFilters);
   };
 
@@ -252,11 +255,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   value: ("id" in item ? item.id?.toString() : "") || "",
                   label:
                     "label" in item
-                      ? item.label
+                      ? item.label.toLowerCase()
                       : "status" in item
-                      ? item.status
+                      ? item.status.toLowerCase()
                       : "name" in item
-                      ? item.name
+                      ? item.name.toLowerCase()
                       : "Unnamed",
                 }))
               : [];

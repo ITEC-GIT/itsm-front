@@ -67,10 +67,12 @@ const SoftwareInstallationPage = ({
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [filters, setFilters] = useState<filterType>({
+  const initialFilters = {
     range: "0-50",
     order: "desc",
-  });
+  };
+
+  const [filters, setFilters] = useState<filterType>(initialFilters);
 
   const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
   const [visibleColumns, setVisibleColumns] = useState<
@@ -573,6 +575,7 @@ const SoftwareInstallationPage = ({
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
                   filtersStoreName={"softwareFilters"}
+                  initialFilters={initialFilters}
                 />
               </div>
             </div>
