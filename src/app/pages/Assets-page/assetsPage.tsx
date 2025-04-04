@@ -7,13 +7,15 @@ import {
 } from "../../types/assetsTypes";
 import { customStyles, sortIcon } from "../../data/dataTable";
 import { debounce } from "lodash";
-import { FilterSidebar } from "../../components/form/filters";
 import { ColumnVisibility } from "../../types/common";
 import ColumnsModal from "../../components/modal/columns";
 import { activeFilters, getColumns } from "../../data/assets";
 import { useNavigate } from "react-router-dom";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { GetAssets } from "../../config/ApiCalls.ts";
+import { CircularSpinner } from "../../components/spinners/circularSpinner.tsx";
+import { FilterSidebarMulti } from "../../components/form/filtersWithMulti.tsx";
+import { FilterButton } from "../../components/form/filterButton.tsx";
 
 const AssetsPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -23,31 +25,124 @@ const AssetsPage = () => {
 
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
+  const [assetsData, setAssetsData] = useState<any[]>([]);
+  const [assetsDataPro, setAssetsDataPro] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+
+  useEffect(() => {
+    const processedAssetsData = assetsData.map((item) => ({
+      ...item,
+      uniqueKey: item.hash ? `${item.hash}-${item.id}` : `id-${item.id}`,
+    }));
+    setAssetsDataPro(processedAssetsData);
+  }, [assetsData]);
+
+  const filteredData = useMemo(() => {
+    if (!searchQuery.trim()) return assetsDataPro || [];
+    const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
+    return assetsDataPro.filter((entry: AssetsHistoryType) => {
+      return keywords.every(
+        (keyword) =>
+          entry.category.toLowerCase().includes(keyword) ||
+          entry.name.toLowerCase().includes(keyword) ||
+          entry.type?.toLowerCase().includes(keyword) ||
+          entry.model?.toLowerCase().includes(keyword) ||
+          entry.manufacturer?.toLowerCase().includes(keyword) ||
+          entry.serial_number?.toString().toLowerCase().includes(keyword)
+      );
+    });
+  }, [assetsDataPro, searchQuery]);
+
+  const totalItems = filteredData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterType>({
-    order: "desc",
-  });
+  const [filters, setFilters] = useState<FilterType>({});
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
     settings: true,
-    icon: true,
     name: true,
     serial_number: true,
     category: true,
     manufacturer: true,
     model: true,
     type: true,
-    action: true,
-    description: false,
-    caption: false,
+    computer: true,
   });
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false);
 
-  const [assetsData, setAssetsData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
+  const [visibleColumns, setVisibleColumns] = useState<
+    TableColumn<AssetsHistoryType>[]
+  >([]);
+
+  const [widthsCalculated, setWidthsCalculated] = useState(false);
+
+  const handleFirstPage = () => {
+    setCurrentPage(1);
+  };
+
+  const handleLastPage = () => {
+    setCurrentPage(totalPages);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const getVisiblePages = () => {
+    const visiblePages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    let startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
+    let endPage = startPage + maxVisiblePages - 1;
+
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+    }
+
+    if (startPage > 1) {
+      visiblePages.push(1);
+      if (startPage > 2) {
+        visiblePages.push("...");
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      visiblePages.push(i);
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        visiblePages.push("...");
+      }
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  };
 
   const navigate = useNavigate();
 
@@ -65,17 +160,13 @@ const AssetsPage = () => {
   };
 
   const handleSearchChange = debounce((query: string) => {
-    //  setCurrentHistoryPage(1);
+    setCurrentPage(1);
     setSearchQuery(query);
   }, 100);
 
   const handleVisibilityChange = (newVisibility: ColumnVisibility) => {
     setColumnVisibility(newVisibility);
   };
-  const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
-  const [visibleColumns, setVisibleColumns] = useState<
-    TableColumn<AssetsHistoryType>[]
-  >([]);
 
   const memoizedColumns = useMemo(() => {
     return getColumns();
@@ -90,61 +181,64 @@ const AssetsPage = () => {
 
   useEffect(() => {
     const calculateWidths = () => {
+      if (!tableContainerRef.current) return;
+
+      const containerWidth = tableContainerRef.current.clientWidth;
+      if (containerWidth === 0) return;
+
       const columnsWithoutAction = visibleColumns.filter(
         (col) => col.id !== "action" && col.id !== "id"
       );
+
       const visibleCount = visibleColumns.length;
       const newWidths: Record<string, string> = {};
 
       if (visibleCount === 2) {
-        columnsWithoutAction.forEach((col: TableColumn<AssetsHistoryType>) => {
+        columnsWithoutAction.forEach((col) => {
           newWidths[col.id as string] = "50%";
         });
       } else if (visibleCount > 2) {
         const baseWidthPercentage = Math.ceil(100 / visibleCount);
 
-        if (tableContainerRef.current) {
-          const containerWidth = tableContainerRef.current.clientWidth;
-
-          columnsWithoutAction.forEach(
-            (col: TableColumn<AssetsHistoryType>) => {
-              if (col.width) {
-                const pixelWidth = parseInt(col.width, 10);
-
-                if (!isNaN(pixelWidth)) {
-                  const columnPercentageWidth =
-                    Math.round((pixelWidth / containerWidth) * 100) + 0.05;
-
-                  if (columnPercentageWidth < baseWidthPercentage) {
-                    newWidths[col.id as string] = `${baseWidthPercentage}%`;
-                  } else {
-                    newWidths[col.id as string] = col.width;
-                  }
-                } else {
-                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
-                }
+        columnsWithoutAction.forEach((col) => {
+          let columnWidth = col.width;
+          if (columnWidth) {
+            let pixelWidth = parseFloat(columnWidth.replace("px", ""));
+            if (!isNaN(pixelWidth)) {
+              if (col.id === "settings") {
+                newWidths[col.id] = columnWidth || `${baseWidthPercentage}%`;
               } else {
-                newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                const columnPercentageWidth =
+                  (pixelWidth / containerWidth) * 100;
+                newWidths[col.id as string] =
+                  columnPercentageWidth < baseWidthPercentage
+                    ? `${baseWidthPercentage}%`
+                    : `${columnPercentageWidth}%`;
               }
+            } else {
+              newWidths[col.id as string] = columnWidth;
             }
-          );
-        }
+          } else {
+            newWidths[col.id as string] = `${baseWidthPercentage}%`;
+          }
+        });
       }
 
       setColumnWidths(newWidths);
+      setWidthsCalculated(true);
     };
 
-    calculateWidths();
-
+    const timeoutId = setTimeout(calculateWidths, 100);
     const observer = new ResizeObserver(calculateWidths);
     if (tableContainerRef.current) {
       observer.observe(tableContainerRef.current);
     }
 
     return () => {
+      clearTimeout(timeoutId);
       observer.disconnect();
     };
-  }, [visibleColumns]);
+  }, [visibleColumns, tableContainerRef.current]);
 
   const columnsForModal = useMemo(
     () => memoizedColumns.filter((col) => col.id !== "action"),
@@ -159,12 +253,41 @@ const AssetsPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
+    const mapFilters = (currentFilters: any) => {
+      const mappedFilters: any = {};
+
+      Object.entries(currentFilters).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+
+        if (key === "category") {
+          mappedFilters["asset_type"] = Array.isArray(value)
+            ? value.map((item) => item)
+            : [value];
+        } else if (key === "computer") {
+          mappedFilters["computer_id"] = Array.isArray(value)
+            ? value.map((item) => item)
+            : [value];
+        } else {
+          mappedFilters[key] = value;
+        }
+      });
+
+      return mappedFilters;
+    };
+
+    console.log("Filters before mapping:", filters);
+
     const fetchAssets = async () => {
       try {
         setLoading(true);
-        const data = await GetAssets(filters);
-        setAssetsData(data.data);
-        setError(null);
+        const mappedFilters = mapFilters(filters);
+        console.log("Mapped filters:", mappedFilters);
+
+        const data = await GetAssets(mappedFilters);
+        if (data.status === 200) {
+          setAssetsData(data.data);
+          setError(null);
+        }
       } catch (err) {
         setError("Failed to load assets data");
         console.error("Error fetching assets:", err);
@@ -174,7 +297,7 @@ const AssetsPage = () => {
     };
 
     fetchAssets();
-  }, [filters, searchQuery]);
+  }, [filters]);
 
   return (
     <AnimatedRouteWrapper>
@@ -224,95 +347,96 @@ const AssetsPage = () => {
                 <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
                   <SearchComponent
                     value={searchQuery}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleSearchChange(e.target.value)
-                    }
+                    onChange={handleSearchChange}
                   />
 
-                  <button
-                    className="btn custom-btn"
-                    onClick={toggleSidebar}
-                    title="Filters"
-                  >
-                    <i className="bi bi-funnel custom-btn-icon"></i>
-                    Filters
-                  </button>
+                  <FilterButton toggleSidebar={toggleSidebar} />
                 </div>
               </div>
             </div>
-
             <div
               style={{
                 height: `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - 40px)`,
                 overflow: "hidden",
               }}
             >
-              <div
-                className="p-3"
-                ref={tableContainerRef}
-                style={{
-                  flex: 1,
-                  // overflow: "auto",
-                }}
-              >
-                {/* <DataTable
-                  columns={visibleColumns.map((col) => ({
-                    ...col,
-                    width: columnWidths[col.id as string],
-                  }))}
-                  data={assetsData}
-                  persistTableHead={true}
-                  responsive
-                  highlightOnHover
-                  customStyles={customStyles}
-                  sortIcon={sortIcon}
-                  fixedHeader
-                  fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
-                /> */}
-              </div>
+              {loading ? (
+                <div className="h-100 d-flex align-items-center justify-content-center my-4">
+                  <CircularSpinner />
+                </div>
+              ) : (
+                <div
+                  className="p-3"
+                  ref={tableContainerRef}
+                  style={{
+                    flex: 1,
+                    // overflow: "auto",
+                  }}
+                >
+                  <DataTable
+                    columns={visibleColumns.map((col) => ({
+                      ...col,
+                      width: columnWidths[col.id as string],
+                    }))}
+                    data={currentItems}
+                    keyField="uniqueKey"
+                    persistTableHead
+                    responsive
+                    highlightOnHover
+                    customStyles={customStyles}
+                    sortIcon={sortIcon}
+                    fixedHeader
+                    fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="sticky-pagination d-flex justify-content-end align-items-center">
               <button
                 className="btn btn-sm btn-light me-2"
-                // onClick={handleFirstPage}
-                disabled={currentHistorysPage === 1}
+                onClick={handleFirstPage}
+                disabled={currentPage === 1}
               >
                 First
               </button>
               <button
                 className="btn btn-sm btn-light me-2"
-                // onClick={handlePreviousPage}
-                disabled={currentHistorysPage === 1}
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
               >
                 Previous
               </button>
-              {/* {Array.from(
-                { length: endPage - startPage + 1 },
-                (_, index) => startPage + index
-              ).map((page) => (
-                <button
-                  key={page}
-                  className={clsx("btn btn-sm me-2", {
-                    "btn-primary": currentHistorysPage === page,
-                    "btn-light": currentHistorysPage !== page,
-                  })}
-                  onClick={() => handlePageChange(page)}
-                >
-                  {page}
-                </button>
-              ))} */}
+
+              {getVisiblePages().map((page, index) =>
+                typeof page === "number" ? (
+                  <button
+                    key={page}
+                    className={`btn btn-sm me-2 ${
+                      currentPage === page ? "btn-primary" : "btn-light"
+                    }`}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                ) : (
+                  <span key={`ellipsis-${index}`} className="mx-1">
+                    ...
+                  </span>
+                )
+              )}
+
               <button
                 className="btn btn-sm btn-light me-2"
-                // onClick={handleNextPage}
-                // disabled={currentHistorysPage === totalPages}
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages || totalPages === 0}
               >
                 Next
               </button>
               <button
                 className="btn btn-sm btn-light"
-                // onClick={handleLastPage}
-                // disabled={currentHistorysPage === totalPages}
+                onClick={handleLastPage}
+                disabled={currentPage === totalPages || totalPages === 0}
               >
                 Last
               </button>
@@ -328,13 +452,12 @@ const AssetsPage = () => {
               }}
             >
               <div>
-                <FilterSidebar
+                <FilterSidebarMulti
                   isOpen={isSidebarOpen}
                   toggleSidebar={toggleSidebar}
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
                   filtersStoreName={"assetsFilters"}
-                  initialFilters={{}}
                 />
               </div>
             </div>

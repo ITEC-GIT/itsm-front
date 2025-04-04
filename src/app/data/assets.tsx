@@ -1,15 +1,10 @@
 import { useState } from "react";
-import { AssetsHistoryType, CategoryOption } from "../types/assetsTypes";
+import { AssetsHistoryType } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
 import { Link } from "react-router-dom";
 import { getBackgroundColor } from "../../utils/custom";
-import { useAtom } from "jotai";
-import { showActionColumnAtom } from "../atoms/table-atom/tableAtom";
-
 import {
   columnLargeWidth,
-  columnMediumWidth,
-  columnSmallWidth,
   columnXLargeWidth,
   columnXXLargeWidth,
   columnXXXLargeWidth,
@@ -31,83 +26,92 @@ import {
   MdOutlineDeviceUnknown,
   MdOutlineRoomPreferences,
 } from "react-icons/md";
-import { BsHddRack } from "react-icons/bs";
+import { GrStorage } from "react-icons/gr";
+import { BsHddRack, BsModem } from "react-icons/bs";
 import { SiInkdrop } from "react-icons/si";
 import { ActionModal } from "../components/modal/ActionModal";
+import { useAtom } from "jotai";
+import { staticDataAtom } from "../atoms/app-routes-global-atoms/approutesAtoms";
 
-const assetCategories = [
-  "computers",
-  "monitors",
-  "software",
-  "networkdevice",
-  "printers",
-  "cartridgemodels",
-  "consumablemodels",
-  "phone",
-  "racks",
-  "devices",
-  "enclosures",
-  "passivedevices",
-  "simcard",
-  "unmanageddevices",
-  "pdus",
-  "cables",
-];
+export const activeFilters = ["computersFilter", "AssetCategoriesFilter"];
 
 const colors = [
   "#f7c1c1",
   "#d4e6a8",
-  "#f7c1c1",
-  "#fadcbf",
   "#fadcbf",
   "#fae4ae",
-  "#fae4ae",
-  "#e0e0e0",
-  "#f7e6c1",
-  "#e0e0e0",
-  "#fde9b3",
-  "#fde9b3",
-  "#d9d3cb",
-  "#d9d3cb",
-  "#f7c1c1",
   "#e6e6a8",
+  "#f7e6c1",
+  "#fde9b3",
+  "#d9d3cb",
+  "#f7c1c9",
+  "#d4e6a8",
+  "#fadcba",
+  "#fae4ad",
+  "#e0e0e9",
+  "#f7e6c8",
+  "#fde9b0",
+  "#d9d3cf",
+  "#e0e0e0",
 ];
+
 export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
   [
     {
       name: "",
-      width: columnSmallWidth,
+      width: columnXLargeWidth,
       cell: (row: AssetsHistoryType) => {
         const [showActionModal, setShowActionModal] = useState(false);
+        const [staticData] = useAtom(staticDataAtom);
 
+        const assetCategories =
+          staticData["assetCategories" as keyof typeof staticData] || [];
+        const backgroundColor = getBackgroundColor(
+          row.category,
+          assetCategories,
+          colors
+        );
         return (
-          <div className="d-flex w-100">
-            <input
-              type="checkbox"
-              // checked={selectedRows.has(row.id)}
-              // onChange={() => toggleRowSelection(row.id)}
-            />
-
-            <button
-              type="button"
-              className={`btn btn-link p-0 ms-2`}
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Action"
-              onClick={() => setShowActionModal(!showActionModal)}
-            >
-              <VscTools
-                style={{
-                  fontSize: "20px",
-                  color: "rgb(170 161 146)",
-                }}
+          <div className="d-flex justify-content-between w-100">
+            <div>
+              <input
+                type="checkbox"
+                // checked={selectedRows.has(row.id)}
+                // onChange={() => toggleRowSelection(row.id)}
               />
-            </button>
+
+              <button
+                type="button"
+                className={`btn btn-link p-0 ms-2`}
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Action"
+                onClick={() => setShowActionModal(!showActionModal)}
+              >
+                <VscTools
+                  style={{
+                    fontSize: "20px",
+                    color: "rgb(170 161 146)",
+                  }}
+                />
+              </button>
+            </div>
+
+            <span
+              className="category-span "
+              style={{
+                backgroundColor: backgroundColor,
+              }}
+            >
+              {assignIcon(row.category.toLowerCase()) || (
+                <i className="fa-thin fa-question"></i>
+              )}
+            </span>
             {showActionModal && (
               <ActionModal
                 isOpen={showActionModal}
                 onClose={() => setShowActionModal(false)}
-                category={row.category}
+                category={row.category.toLowerCase()}
                 assetId={row.id}
               />
             )}
@@ -117,34 +121,6 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
       id: "settings",
     },
     {
-      name: "",
-      sortable: true,
-      width: columnSmallWidth,
-      cell: (row: AssetsHistoryType) => {
-        const backgroundColor = getBackgroundColor(
-          row.category,
-          assetCategories,
-          colors
-        );
-        return (
-          <span
-            style={{
-              backgroundColor: backgroundColor,
-              padding: "5px",
-              borderRadius: "3px",
-              width: "62px",
-              textAlign: "center",
-            }}
-          >
-            {Icons[row.category.toLowerCase()] || (
-              <i className="fa-thin fa-question"></i>
-            )}
-          </span>
-        );
-      },
-      id: "icon",
-    },
-    {
       name: (
         <span>
           <span style={{ color: "#f0f0f0" }}>|</span> Device
@@ -152,7 +128,7 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
       ),
       selector: (row: AssetsHistoryType) => row.name,
       sortable: true,
-      width: columnXLargeWidth,
+      width: columnXXXLargeWidth,
       cell: (row: AssetsHistoryType) => {
         return (
           <div className="d-flex justify-content-between w-100">
@@ -176,7 +152,7 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
       ),
       selector: (row: AssetsHistoryType) => row.category.toLowerCase(),
       sortable: true,
-      width: columnXLargeWidth,
+      width: columnXXLargeWidth,
 
       id: "category",
     },
@@ -186,7 +162,7 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
           <span style={{ color: "#f0f0f0" }}>|</span> Type
         </span>
       ),
-      width: columnLargeWidth,
+      width: columnXLargeWidth,
       selector: (row: AssetsHistoryType) => row.type,
       sortable: true,
       id: "type",
@@ -214,30 +190,23 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
     {
       name: (
         <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Status
+          <span style={{ color: "#f0f0f0" }}>|</span> Manufacturer
         </span>
       ),
-      width: columnLargeWidth,
-      selector: (row: AssetsHistoryType) => row.status,
+      width: columnXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.model,
       sortable: true,
-      id: "status",
-      cell: (row: AssetsHistoryType) => {
-        return (
-          <span
-            style={{
-              backgroundColor: "#e3edff",
-              color: "#333",
-              fontWeight: "500",
-              padding: "5px",
-              borderRadius: "3px",
-            }}
-          >
-            {row.status}
-          </span>
-        );
-      },
+      cell: (row: AssetsHistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.model}
+        >
+          {row.manufacturer}
+        </span>
+      ),
+      id: "manufacturer",
     },
-
     {
       name: (
         <span>
@@ -259,736 +228,27 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
       ),
       id: "serial_number",
     },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Parent Asset
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.model,
+      sortable: true,
+      cell: (row: AssetsHistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.model}
+        >
+          {row.computer_id}
+        </span>
+      ),
+      id: "computer",
+    },
   ].filter(Boolean) as TableColumn<AssetsHistoryType>[];
-
-// export const getColumns = (
-//   hoveredRowId: number | null
-// ): TableColumn<AssetsHistoryType>[] =>
-//   [
-//     {
-//       name: "",
-//       width: columnSmallWidth,
-//       cell: (row: AssetsHistoryType) => {
-//         const [showActionModal, setShowActionModal] = useState(false);
-
-//         return (
-//           <div className="d-flex w-100">
-//             <input
-//               type="checkbox"
-//               // checked={selectedRows.has(row.id)}
-//               // onChange={() => toggleRowSelection(row.id)}
-//             />
-
-//             <button
-//               type="button"
-//               className={`btn btn-link p-0 ms-2`}
-//               data-bs-toggle="tooltip"
-//               data-bs-placement="top"
-//               title="Action"
-//               onClick={() => setShowActionModal(!showActionModal)}
-//             >
-//               <VscTools
-//                 style={{
-//                   fontSize: "20px",
-//                   color: "rgb(170 161 146)",
-//                 }}
-//               />
-//             </button>
-//             {showActionModal && (
-//               <ActionModal
-//                 isOpen={showActionModal}
-//                 onClose={() => setShowActionModal(false)}
-//                 category={row.category}
-//                 assetId={row.id}
-//               />
-//             )}
-//           </div>
-//         );
-//       },
-//       id: "settings",
-//     },
-//     {
-//       name: "",
-//       sortable: true,
-//       width: columnSmallWidth,
-//       cell: (row: AssetsHistoryType) => {
-//         const backgroundColor = getBackgroundColor(
-//           row.category,
-//           assetCategories,
-//           colors
-//         );
-//         return (
-//           <span
-//             style={{
-//               backgroundColor: backgroundColor,
-//               padding: "5px",
-//               borderRadius: "3px",
-//               width: "62px",
-//               textAlign: "center",
-//             }}
-//           >
-//             {Icons[row.category.toLowerCase()] || (
-//               <i className="fa-thin fa-question"></i>
-//             )}
-//           </span>
-//         );
-//       },
-//       id: "icon",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Type
-//         </span>
-//       ),
-//       width: columnLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.category,
-//       sortable: true,
-//       id: "type",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Device
-//         </span>
-//       ),
-//       selector: (row: AssetsHistoryType) => row.name,
-//       sortable: true,
-//       width: columnXLargeWidth,
-//       cell: (row: AssetsHistoryType) => {
-//         return (
-//           <div className="d-flex justify-content-between w-100">
-//             <Link
-//               to={`/assets/${row.id}`}
-//               title={row.name}
-//               style={{ color: "blue", textDecoration: "none" }}
-//             >
-//               {row.name}
-//             </Link>
-//           </div>
-//         );
-//       },
-//       id: "name",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Status
-//         </span>
-//       ),
-//       width: columnLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.status,
-//       sortable: true,
-//       id: "status",
-//       cell: (row: AssetsHistoryType) => {
-//         return (
-//           <span
-//             style={{
-//               backgroundColor: "#e3edff",
-//               color: "#333",
-//               fontWeight: "500",
-//               padding: "5px",
-//               borderRadius: "3px",
-//             }}
-//           >
-//             {row.status}
-//           </span>
-//         );
-//       },
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Public IP
-//         </span>
-//       ),
-//       width: columnLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.public_ip,
-//       sortable: true,
-//       id: "public_ip",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Entity
-//         </span>
-//       ),
-//       selector: (row: AssetsHistoryType) => row.entity,
-//       width: columnLargeWidth,
-//       cell: (row: AssetsHistoryType) => (
-//         <span
-//           data-bs-toggle="tooltip"
-//           data-bs-placement="top"
-//           title={row.entity}
-//         >
-//           {row.entity}
-//         </span>
-//       ),
-//       sortable: true,
-//       id: "entity",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Serial Number
-//         </span>
-//       ),
-//       width: columnXXLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.serial_number,
-//       sortable: true,
-//       cell: (row: AssetsHistoryType) => (
-//         <span
-//           data-bs-toggle="tooltip"
-//           data-bs-placement="top"
-//           title={row.serial_number}
-//           className="url-cell"
-//         >
-//           {row.serial_number}
-//         </span>
-//       ),
-//       id: "serial_number",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Model
-//         </span>
-//       ),
-//       width: columnLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.model,
-//       sortable: true,
-//       cell: (row: AssetsHistoryType) => (
-//         <span
-//           data-bs-toggle="tooltip"
-//           data-bs-placement="top"
-//           title={row.model}
-//         >
-//           {row.model}
-//         </span>
-//       ),
-//       id: "model",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Location
-//         </span>
-//       ),
-//       width: columnLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.location,
-//       sortable: true,
-//       cell: (row: AssetsHistoryType) => (
-//         <span
-//           data-bs-toggle="tooltip"
-//           data-bs-placement="top"
-//           title={row.location}
-//         >
-//           {row.location}
-//         </span>
-//       ),
-//       id: "location",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Component Processor
-//         </span>
-//       ),
-//       width: columnXXXLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.component_processor,
-//       sortable: true,
-//       id: "component_processor",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Last Updated
-//         </span>
-//       ),
-//       width: columnXLargeWidth,
-//       selector: (row: AssetsHistoryType) => {
-//         const date = new Date(row.last_update);
-//         const options: Intl.DateTimeFormatOptions = {
-//           year: "numeric",
-//           month: "short",
-//           day: "numeric",
-//         };
-//         return date.toLocaleDateString("en-US", options);
-//       },
-//       sortable: true,
-//       id: "last_update",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Project
-//         </span>
-//       ),
-//       width: columnXLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.project,
-//       sortable: true,
-//       id: "project",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Address
-//         </span>
-//       ),
-//       width: columnXLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.address,
-//       sortable: true,
-//       id: "address",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Inventory NB
-//         </span>
-//       ),
-//       width: columnXLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.inventory_number,
-//       sortable: true,
-//       id: "inventory_number",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span> Username NB
-//         </span>
-//       ),
-//       width: columnXXLargeWidth,
-//       selector: (row: AssetsHistoryType) => row.alternate_username_number,
-//       sortable: true,
-//       id: "alternate_username_number",
-//     },
-//     {
-//       name: (
-//         <span>
-//           <span style={{ color: "#f0f0f0" }}>|</span>
-//         </span>
-//       ),
-//       width: "70px",
-//       cell: (row: AssetsHistoryType) => {
-//         const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-//         const handleDeleteClick = () => {
-//           setShowDeleteModal(true);
-//         };
-
-//         const confirmDelete = () => {
-//           setShowDeleteModal(false);
-//         };
-
-//         const cancelDelete = () => {
-//           setShowDeleteModal(false);
-//         };
-
-//         return (
-//           <div
-//             className={`d-flex align-items-start ${
-//               hoveredRowId === row.id ? "show" : "hide"
-//             }`}
-//           >
-//             {hoveredRowId === row.id && (
-//               <>
-//                 <button className="table-btn-action" onClick={() => {}}>
-//                   <i className="bi bi-pencil text-primary table-icon"></i>
-//                 </button>
-//                 <button
-//                   className="table-btn-action"
-//                   onClick={handleDeleteClick}
-//                 >
-//                   <i className="bi bi-x-lg text-danger table-icon"></i>
-//                 </button>
-
-//                 {showDeleteModal && (
-//                   <div
-//                     className={`modal w-100 fade ${
-//                       showDeleteModal ? "show d-block" : ""
-//                     }`}
-//                     role="dialog"
-//                     aria-hidden={!showDeleteModal}
-//                     style={{
-//                       background: showDeleteModal
-//                         ? "rgba(0,0,0,0.5)"
-//                         : "transparent",
-//                     }}
-//                   >
-//                     <div className="modal-dialog modal-dialog-centered">
-//                       <div className="modal-content p-5">
-//                         <div className="d-flex justify-content-start align-items-center mb-5">
-//                           <div className="circle-div">
-//                             <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
-//                           </div>
-//                           <div className="d-flex flex-column">
-//                             <h3>Delete assets</h3>
-//                             <p>
-//                               Are you sure you want to delete the selected
-//                               assets?
-//                             </p>
-//                           </div>
-//                         </div>
-//                         <div className="d-flex justify-content-end mt-5">
-//                           <button
-//                             onClick={cancelDelete}
-//                             className="custom-modal-cancel-btn"
-//                           >
-//                             Cancel
-//                           </button>
-//                           <button
-//                             onClick={confirmDelete}
-//                             className="custom-modal-confirm-btn"
-//                           >
-//                             Delete
-//                           </button>
-//                         </div>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 )}
-//               </>
-//             )}
-//           </div>
-//         );
-//       },
-//       sortable: false,
-//       id: "action",
-//     },
-//   ].filter(Boolean) as TableColumn<AssetsHistoryType>[];
-
-// export const columns: TableColumn<AssetsHistoryType>[] = [
-//   {
-//     name: "",
-//     sortable: true,
-//     width: columnSmallWidth,
-//     cell: (row: AssetsHistoryType) => {
-//       const backgroundColor = getBackgroundColor(
-//         row.category,
-//         assetCategories,
-//         colors
-//       );
-//       return (
-//         <span
-//           style={{
-//             backgroundColor: backgroundColor,
-//             padding: "5px",
-//             borderRadius: "3px",
-//             width: "62px",
-//             textAlign: "center",
-//           }}
-//         >
-//           {Icons[row.category.toLowerCase()] || (
-//             <i className="fa-thin fa-question"></i>
-//           )}
-//         </span>
-//       );
-//     },
-//     id: "icon",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Device
-//       </span>
-//     ),
-//     selector: (row: AssetsHistoryType) => row.name,
-//     sortable: true,
-//     width: columnLargeWidth,
-//     cell: (row: AssetsHistoryType) => (
-//       <Link
-//         to={`/assets/${row.id}`}
-//         title={row.name}
-//         style={{ color: "blue", textDecoration: "none" }}
-//       >
-//         {row.name}
-//       </Link>
-//     ),
-//     id: "name",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Type
-//       </span>
-//     ),
-//     width: columnLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.type,
-//     sortable: true,
-//     id: "type",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Status
-//       </span>
-//     ),
-//     width: columnLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.status,
-//     sortable: true,
-//     id: "status",
-//     cell: (row: AssetsHistoryType) => {
-//       return (
-//         <span
-//           style={{
-//             backgroundColor: "#e3edff",
-//             color: "#333",
-//             fontWeight: "500",
-//             padding: "5px",
-//             borderRadius: "3px",
-//           }}
-//         >
-//           {row.status}
-//         </span>
-//       );
-//     },
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Public IP
-//       </span>
-//     ),
-//     width: columnLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.public_ip,
-//     sortable: true,
-//     id: "public_ip",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Entity
-//       </span>
-//     ),
-//     selector: (row: AssetsHistoryType) => row.entity,
-//     width: columnLargeWidth,
-//     cell: (row: AssetsHistoryType) => (
-//       <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.entity}>
-//         {row.entity}
-//       </span>
-//     ),
-//     sortable: true,
-//     id: "entity",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Serial Number
-//       </span>
-//     ),
-//     width: columnXXLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.serial_number,
-//     sortable: true,
-//     cell: (row: AssetsHistoryType) => (
-//       <span
-//         data-bs-toggle="tooltip"
-//         data-bs-placement="top"
-//         title={row.serial_number}
-//         className="url-cell"
-//       >
-//         {row.serial_number}
-//       </span>
-//     ),
-//     id: "serial_number",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Model
-//       </span>
-//     ),
-//     width: columnLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.model,
-//     sortable: true,
-//     cell: (row: AssetsHistoryType) => (
-//       <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.model}>
-//         {row.model}
-//       </span>
-//     ),
-//     id: "model",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Location
-//       </span>
-//     ),
-//     width: columnLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.location,
-//     sortable: true,
-//     cell: (row: AssetsHistoryType) => (
-//       <span
-//         data-bs-toggle="tooltip"
-//         data-bs-placement="top"
-//         title={row.location}
-//       >
-//         {row.location}
-//       </span>
-//     ),
-//     id: "location",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Component Processor
-//       </span>
-//     ),
-//     width: columnXXXLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.component_processor,
-//     sortable: true,
-//     id: "component_processor",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Last Updated
-//       </span>
-//     ),
-//     width: columnXLargeWidth,
-//     selector: (row: AssetsHistoryType) => {
-//       const date = new Date(row.last_update);
-//       const options: Intl.DateTimeFormatOptions = {
-//         year: "numeric",
-//         month: "short",
-//         day: "numeric",
-//       };
-//       return date.toLocaleDateString("en-US", options);
-//     },
-//     sortable: true,
-//     id: "last_update",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Project
-//       </span>
-//     ),
-//     width: columnXLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.project,
-//     sortable: true,
-//     id: "project",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Address
-//       </span>
-//     ),
-//     width: columnXLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.address,
-//     sortable: true,
-//     id: "address",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Inventory NB
-//       </span>
-//     ),
-//     width: columnXLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.inventory_number,
-//     sortable: true,
-//     id: "inventory_number",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Username NB
-//       </span>
-//     ),
-//     width: columnXXLargeWidth,
-//     selector: (row: AssetsHistoryType) => row.alternate_username_number,
-//     sortable: true,
-//     id: "alternate_username_number",
-//   },
-//   {
-//     name: (
-//       <span>
-//         <span style={{ color: "#f0f0f0" }}>|</span> Action
-//       </span>
-//     ),
-//     width: columnMediumWidth,
-//     cell: (row: AssetsHistoryType) => {
-//       const [showDeleteModal, setShowDeleteModal] = useState(false);
-//       const [showActionColumn] = useAtom(showActionColumnAtom);
-
-//       const handleDeleteClick = () => {
-//         setShowDeleteModal(true);
-//       };
-
-//       const confirmDelete = () => {
-//         setShowDeleteModal(false);
-//       };
-
-//       const cancelDelete = () => {
-//         setShowDeleteModal(false);
-//       };
-
-//       return (
-//         <div
-//           className={`d-flex align-items-start ${
-//             showActionColumn ? "show" : "hide"
-//           }`}
-//         >
-//           <button className="table-btn-action" onClick={() => {}}>
-//             <i className="bi bi-pencil text-primary table-icon"></i>
-//           </button>
-//           <button className="table-btn-action" onClick={handleDeleteClick}>
-//             <i className="bi bi-x-lg fs-2 text-danger table-icon"></i>
-//           </button>
-
-//           {showDeleteModal && (
-//             <div
-//               className={`modal w-100 fade ${
-//                 showDeleteModal ? "show d-block" : ""
-//               }`}
-//               role="dialog"
-//               aria-hidden={!showDeleteModal}
-//               style={{
-//                 background: showDeleteModal ? "rgba(0,0,0,0.5)" : "transparent",
-//               }}
-//             >
-//               <div className="modal-dialog modal-dialog-centered">
-//                 <div className="modal-content p-5">
-//                   <div className="d-flex justify-content-start align-items-center mb-5">
-//                     <div className="circle-div">
-//                       <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
-//                     </div>
-//                     <div className="d-flex flex-column">
-//                       <h3>Delete assets</h3>
-//                       <p>
-//                         Are you sure you want to delete the selected assets?
-//                       </p>
-//                     </div>
-//                   </div>
-//                   <div className="d-flex justify-content-end mt-5">
-//                     <button
-//                       onClick={cancelDelete}
-//                       className="custom-modal-cancel-btn"
-//                     >
-//                       Cancel
-//                     </button>
-//                     <button
-//                       onClick={confirmDelete}
-//                       className="custom-modal-confirm-btn"
-//                     >
-//                       Delete
-//                     </button>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           )}
-//         </div>
-//       );
-//     },
-
-//     sortable: false,
-//     id: "action",
-//   },
-// ];
-
-export const activeFilters = ["computersFilter", "AssetCategoriesFilter"];
 
 export const AppButtons = [
   { id: 1, text: "Windows Service", icon: "bi-gear" },
@@ -1750,23 +1010,30 @@ export const Steps = [
   },
 ];
 
-const Icons: { [key: string]: JSX.Element } = {
-  computer: <FaComputer />,
-  printer: <LuPrinter />,
-  monitor: <LuMonitor />,
-  software: <i className="fa-brands fa-uncharted"></i>,
-  networkdevice: <FaNetworkWired />,
-  devices: <MdDevices />,
-  cartridgemodels: <SiInkdrop />,
-  consumablemodels: <MdLocalDrink />,
-  racks: <BsHddRack />,
-  enclosures: <MdOutlineRoomPreferences />,
-  pdus: <FaPlug />,
-  passivedevices: <FaRegCircle />,
-  unmanageddevices: <MdOutlineDeviceUnknown />,
-  cables: <MdOutlineCable />,
-  phone: <FaPhone />,
-  simcard: <FaSimCard />,
+const assignIcon = (categoryName: string) => {
+  if (categoryName.toLowerCase().includes("computer")) return <FaComputer />;
+  if (categoryName.toLowerCase().includes("printer")) return <LuPrinter />;
+  if (categoryName.toLowerCase().includes("monitor")) return <LuMonitor />;
+  if (categoryName.toLowerCase().includes("software"))
+    return <i className="fa-brands fa-uncharted"></i>;
+  if (categoryName.toLowerCase().includes("network")) return <FaNetworkWired />;
+  if (categoryName.toLowerCase().includes("devices")) return <MdDevices />;
+  if (categoryName.toLowerCase().includes("cartridge")) return <SiInkdrop />;
+  if (categoryName.toLowerCase().includes("consumable"))
+    return <MdLocalDrink />;
+  if (categoryName.toLowerCase().includes("racks")) return <BsHddRack />;
+  if (categoryName.toLowerCase().includes("enclosures"))
+    return <MdOutlineRoomPreferences />;
+  if (categoryName.toLowerCase().includes("pdus")) return <FaPlug />;
+  if (categoryName.toLowerCase().includes("passive")) return <FaRegCircle />;
+  if (categoryName.toLowerCase().includes("unmanaged"))
+    return <MdOutlineDeviceUnknown />;
+  if (categoryName.toLowerCase().includes("cables")) return <MdOutlineCable />;
+  if (categoryName.toLowerCase().includes("phone")) return <FaPhone />;
+  if (categoryName.toLowerCase().includes("simcard")) return <FaSimCard />;
+  if (categoryName.toLowerCase().includes("storage")) return <GrStorage />;
+  if (categoryName.toLowerCase().includes("modem")) return <BsModem />;
+  return <i className="fa-thin fa-question"></i>;
 };
 
 export const Actions: Record<
@@ -2063,12 +1330,12 @@ export const Actions: Record<
 };
 
 export const AssetCategoryActions: Record<string, string[]> = {
-  computer: ["Anti-Theft Actions", "Co-Reach Actions", "More Actions"],
-  monitor: ["More Actions"],
+  computers: ["Anti-Theft Actions", "Co-Reach Actions", "More Actions"],
+  monitors: ["More Actions"],
   software: ["More Actions"],
   networkdevice: ["More Actions"],
   devices: ["More Actions"],
-  printer: ["More Actions"],
+  printers: ["More Actions"],
   cartridgemodels: ["More Actions"],
   consumablemodels: ["More Actions"],
   phone: ["More Actions"],
@@ -2097,8 +1364,4 @@ export const getAvailableActions = (category: string) => {
   }, {} as Record<string, { key: string; labels: { name: string; icon: string }[] }>);
 
   return availableActions;
-};
-
-export const AssetsTemplate = {
-  computer: {},
 };

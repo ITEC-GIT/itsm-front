@@ -14,7 +14,7 @@ const ComputersListModal = ({ setSelectedDevice, closeModal }: props) => {
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
   const allDevices = useMemo(
     () =>
-      (staticData.Computers || []).map((device: any) => ({
+      (staticData.computers || []).map((device: any) => ({
         id: device.id ? Number(device.id) : 0,
         name: device.name || "",
       })),

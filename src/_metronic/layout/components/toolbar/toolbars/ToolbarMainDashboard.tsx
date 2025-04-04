@@ -19,8 +19,7 @@ const ToolbarMainDashboard = () => {
     selectedComputerDashboardAtom
   );
   useEffect(() => {
-
-    const asd=0;
+    const asd = 0;
   }, [staticData]);
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
@@ -34,7 +33,7 @@ const ToolbarMainDashboard = () => {
   );
   const locationOptions = useMemo(
     () =>
-      (staticData.Locations || []).map((location: any) => ({
+      (staticData.locations || []).map((location: any) => ({
         value: location.id ? Number(location.id) : 0,
         label: location.name || "",
       })),
@@ -53,7 +52,7 @@ const ToolbarMainDashboard = () => {
   }, [staticData, selectedBranch]);
 
   const compOptions = useMemo(() => {
-    return (staticData.Computers || [])
+    return (staticData.computers || [])
       .filter(
         (device) => !selectedBranch || device.branchid === selectedBranch.value
         //&&

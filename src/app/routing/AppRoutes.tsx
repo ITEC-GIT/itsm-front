@@ -88,6 +88,7 @@ const RoutesContent: FC = () => {
           const data = {
             ...staticDataResponse.data,
             ...usersAndAreasResponse.data,
+            ...assetCategoriesResponse.data,
           };
 
           if (typeof data === "object" && data !== null) {

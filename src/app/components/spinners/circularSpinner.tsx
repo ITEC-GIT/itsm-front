@@ -27,7 +27,7 @@ const StyledWrapper = styled.div`
   .loader::before {
     width: 100%;
     height: 100%;
-    background-image: linear-gradient(0deg, #ff00cc 0%, #333399 100%);
+    background-image: linear-gradient(0deg,rgb(19, 147, 232) 0%, #333399 100%);
     animation: load012323 2s infinite linear;
   }
 
@@ -47,4 +47,4 @@ const StyledWrapper = styled.div`
   }
 `;
 
-export default CircularSpinner;
+export  {CircularSpinner};

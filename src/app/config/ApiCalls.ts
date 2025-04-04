@@ -565,33 +565,18 @@ const fetchAndOpenFile = async (url: string) => {
 /** ************************************** Assets ******************************************/
 /** *********************************************************************************************/
 async function GetAssets(filters: any) {
-  try {
-    const response = await fetch(
-      "http://127.0.0.1:8000/inventories/assets/filter_assets",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(filters),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error: any) {
-    return errorCatch(error);
-  }
+  return await PrivateApiCallFastApi.post(`/inventories/assets`, filters, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  })
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
 }
 
 async function GetAssetCategories() {
-  return await axios
-    .get("http://127.0.0.1:8000/inventories/assets/categories")
+  return await PrivateApiCallFastApi.get(`/inventories/assets/categories`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -625,4 +610,5 @@ export {
   GetTicketAttachments,
   fetchAndOpenFile,
   GetAssetCategories,
+  GetAssets,
 };

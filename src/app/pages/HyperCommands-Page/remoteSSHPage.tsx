@@ -52,7 +52,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
 
   const locationOptions = useMemo(
     () =>
-      (staticData.Locations || []).map((location: any) => ({
+      (staticData.locations || []).map((location: any) => ({
         value: location.id ? Number(location.id) : 0,
         label: location.name || "",
       })),
@@ -71,7 +71,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   }, [staticData, selectedBranch]);
 
   const compOptions = useMemo(() => {
-    return (staticData.Computers || [])
+    return (staticData.computers || [])
       .filter(
         (device) => !selectedBranch || device.branchid === selectedBranch.value
       )
@@ -149,11 +149,11 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
 
   useEffect(() => {
     if (computerIdProp) {
-      const computer = staticData.Computers.find(
+      const computer = staticData.computers.find(
         (device) => device.id === computerIdProp
       );
       if (computer) {
-        const branch = staticData.Locations.find(
+        const branch = staticData.locations.find(
           (loc) => loc.id === computer.branchid
         );
         setSelectedBranch(

@@ -65,10 +65,12 @@ export const deepEqual = (obj1: any, obj2: any): boolean => {
 
 export const getBackgroundColor = (
   category: string,
-  categories: string[],
+  categories: any,
   colors: string[]
 ): string => {
-  const index = categories.indexOf(category);
+  const lowerCategory = category.toLowerCase();
+  const lowerCategories = categories.map((cat: any) => cat.name.toLowerCase()); //just now
+  const index = lowerCategories.indexOf(lowerCategory);
   if (index !== -1) {
     return colors[index];
   }

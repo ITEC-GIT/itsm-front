@@ -7,18 +7,7 @@ export type AssetsHistoryType = {
   serial_number: string;
   model: string;
   type: string;
-  status: string;
-  description: string;
-  caption: string;
-  // entity: string;
-  // location: string;
-  // last_update: string;
-  // component_processor: string;
-  // project: string;
-  // address: string;
-  // inventory_number: string;
-  // alternate_username_number: string;
-  // public_ip: string;
+  computer_id: number;
 };
 
 export type GetAllAssetsRequestType = {
