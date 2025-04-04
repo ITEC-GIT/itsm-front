@@ -238,7 +238,7 @@ const AssetsPage = () => {
       clearTimeout(timeoutId);
       observer.disconnect();
     };
-  }, [visibleColumns, tableContainerRef.current]);
+  }, [visibleColumns, tableContainerRef.current, isSidebarOpen]);
 
   const columnsForModal = useMemo(
     () => memoizedColumns.filter((col) => col.id !== "action"),
@@ -304,8 +304,8 @@ const AssetsPage = () => {
       <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
         <div className="row d-flex flex-column custom-main-container custom-container-height">
           <div
-            className={`d-flex flex-column ${
-              isSidebarOpen ? "col-9" : "col-12"
+            className={`cont-d-flex-column ${
+              isSidebarOpen ? "cont-custom-hide col-9" : "col-12"
             }`}
           >
             <div ref={divRef}>
@@ -445,10 +445,9 @@ const AssetsPage = () => {
 
           {isSidebarOpen && (
             <div
-              className="col-3 custom-border p-0"
+              className="col-3 custom-border overflow-auto filter-sidebar-small p-0"
               style={{
                 height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
-                overflow: "auto",
               }}
             >
               <div>
