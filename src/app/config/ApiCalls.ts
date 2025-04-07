@@ -565,18 +565,30 @@ const fetchAndOpenFile = async (url: string) => {
 /** ************************************** Assets ******************************************/
 /** *********************************************************************************************/
 async function GetAssets(filters: any) {
-  return await PrivateApiCallFastApi.post(`/inventories/assets`, filters, {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  })
+  return await PrivateApiCallFastApi.post(
+    `/inventories/assets/filter`,
+    filters,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  )
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
 
 async function GetAssetCategories() {
   return await PrivateApiCallFastApi.get(`/inventories/assets/categories`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetAssetActions(asset_type_id: number) {
+  return await PrivateApiCallFastApi.get(
+    `/inventories/assets/${asset_type_id}/actions/`
+  )
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -611,4 +623,5 @@ export {
   fetchAndOpenFile,
   GetAssetCategories,
   GetAssets,
+  GetAssetActions,
 };

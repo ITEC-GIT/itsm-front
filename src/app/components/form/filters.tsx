@@ -83,7 +83,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const [editFilterName, setEditFilterName] = useState<string>("");
 
   const userId = Number(Cookies.get("user"));
-  const filtersDbName = "savedFiltersDB";
+  const filtersDbName = "Filters";
   const handleApplyFilters = () => {
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
       return;

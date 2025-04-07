@@ -46,8 +46,8 @@ const AssetsPage = () => {
     return assetsDataPro.filter((entry: AssetsHistoryType) => {
       return keywords.every(
         (keyword) =>
-          entry.category.toLowerCase().includes(keyword) ||
-          entry.name.toLowerCase().includes(keyword) ||
+          entry.category?.name.toLowerCase().includes(keyword) ||
+          entry.name?.toLowerCase().includes(keyword) ||
           entry.type?.toLowerCase().includes(keyword) ||
           entry.model?.toLowerCase().includes(keyword) ||
           entry.manufacturer?.toLowerCase().includes(keyword) ||
@@ -73,6 +73,7 @@ const AssetsPage = () => {
     model: true,
     type: true,
     computer: true,
+    date_mod: true,
   });
 
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false);
@@ -169,7 +170,7 @@ const AssetsPage = () => {
   };
 
   const memoizedColumns = useMemo(() => {
-    return getColumns();
+    return getColumns(setFilters);
   }, []);
 
   useEffect(() => {
@@ -255,7 +256,7 @@ const AssetsPage = () => {
   useEffect(() => {
     const mapFilters = (currentFilters: any) => {
       const mappedFilters: any = {};
-
+      console.log("currentFilters ==>>", currentFilters);
       Object.entries(currentFilters).forEach(([key, value]) => {
         if (value === undefined || value === null) return;
 
@@ -275,17 +276,15 @@ const AssetsPage = () => {
       return mappedFilters;
     };
 
-    console.log("Filters before mapping:", filters);
-
     const fetchAssets = async () => {
       try {
         setLoading(true);
+
         const mappedFilters = mapFilters(filters);
-        console.log("Mapped filters:", mappedFilters);
 
         const data = await GetAssets(mappedFilters);
         if (data.status === 200) {
-          setAssetsData(data.data);
+          setAssetsData(data.data.data);
           setError(null);
         }
       } catch (err) {
@@ -455,6 +454,7 @@ const AssetsPage = () => {
                   isOpen={isSidebarOpen}
                   toggleSidebar={toggleSidebar}
                   activeFilters={activeFilters}
+                  filters={filters}
                   saveFilters={setFilters}
                   filtersStoreName={"assetsFilters"}
                 />

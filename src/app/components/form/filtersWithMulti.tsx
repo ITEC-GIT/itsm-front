@@ -19,6 +19,7 @@ interface FilterSidebarProps {
   toggleSidebar: () => void;
   activeFilters: string[];
   filtersStoreName: string;
+  filters: filterType;
   saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
   initialFilters?: any;
 }
@@ -54,6 +55,7 @@ const filtersOptions: FiltersTitleProps[] = [
 
 const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
   isOpen,
+  filters,
   toggleSidebar,
   activeFilters,
   filtersStoreName,
@@ -72,7 +74,7 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
   const [editFilterName, setEditFilterName] = useState<string>("");
 
   const userId = Number(Cookies.get("user"));
-  const filtersDbName = "savedFiltersDB";
+  const filtersDbName = "Filters";
 
   const handleApplyFilters = () => {
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
@@ -111,6 +113,7 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
       ...filtersSelection,
     };
     saveFilters(wholeFilter);
+    // toggleSidebar();
     // handleClearFilters();
   };
 
@@ -118,7 +121,7 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
     setSelectedFilters({});
     setStartDate("");
     setEndDate("");
-    saveFilters(initialFilters);
+    saveFilters(initialFilters ?? {});
   };
 
   const handleFilterChange = (
@@ -259,6 +262,41 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
     fetchData();
     loadSavedFilters();
   }, [staticData]);
+
+  useEffect(() => {
+    if (
+      isOpen &&
+      filters &&
+      Object.keys(filters).length > 0 &&
+      Object.keys(filterData).length > 0
+    ) {
+      const initializedFilters: Record<string, FilterValue[]> = {};
+
+      Object.entries(filters).forEach(([key, value]) => {
+        const filterOption = filtersOptions.find(
+          (opt) => opt.name.toLowerCase() === key.toLowerCase()
+        );
+
+        if (filterOption && filterData[filterOption.id]) {
+          const matchedItems = Array.isArray(value) ? value : [value];
+
+          const selected = matchedItems
+            .map((val) =>
+              filterData[filterOption.id].find(
+                (item: FilterValue) => Number(item.value) === Number(val)
+              )
+            )
+            .filter(Boolean);
+
+          if (selected.length > 0) {
+            initializedFilters[filterOption.id] = selected;
+          }
+        }
+      });
+
+      setSelectedFilters(initializedFilters);
+    }
+  }, [isOpen, filterData, filters]);
 
   return (
     <div>

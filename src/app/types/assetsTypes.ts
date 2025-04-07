@@ -1,23 +1,24 @@
 export type AssetsHistoryType = {
   id: number;
   name: string;
-  category: string;
+  category: {
+    id: number;
+    name: string;
+  };
   hash: string;
   manufacturer: string;
   serial_number: string;
   model: string;
   type: string;
-  computer_id: number;
+  computer: {
+    id: number;
+    name: string;
+  };
+  date_mode: string;
 };
 
 export type GetAllAssetsRequestType = {
-  user?: number;
   computer?: number;
-  status?: string;
-  order?: string;
-  date_from?: string;
-  date_to?: string;
-  range?: string;
   idgt?: number;
 };
 

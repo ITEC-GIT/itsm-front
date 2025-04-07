@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { AssetsHistoryType } from "../types/assetsTypes";
+import {
+  AssetsHistoryType,
+  GetAllAssetsRequestType as FilterType,
+} from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
 import { Link } from "react-router-dom";
 import { getBackgroundColor } from "../../utils/custom";
@@ -55,11 +58,13 @@ const colors = [
   "#e0e0e0",
 ];
 
-export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
+export const getColumns = (
+  triggerFilters: React.Dispatch<React.SetStateAction<FilterType>>
+): TableColumn<AssetsHistoryType>[] =>
   [
     {
       name: "",
-      width: columnXLargeWidth,
+      width: columnXXLargeWidth,
       cell: (row: AssetsHistoryType) => {
         const [showActionModal, setShowActionModal] = useState(false);
         const [staticData] = useAtom(staticDataAtom);
@@ -67,7 +72,7 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
         const assetCategories =
           staticData["assetCategories" as keyof typeof staticData] || [];
         const backgroundColor = getBackgroundColor(
-          row.category,
+          row.category.name,
           assetCategories,
           colors
         );
@@ -103,7 +108,7 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
                 backgroundColor: backgroundColor,
               }}
             >
-              {assignIcon(row.category.toLowerCase()) || (
+              {assignIcon(row.category.name.toLowerCase()) || (
                 <i className="fa-thin fa-question"></i>
               )}
             </span>
@@ -111,7 +116,7 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
               <ActionModal
                 isOpen={showActionModal}
                 onClose={() => setShowActionModal(false)}
-                category={row.category.toLowerCase()}
+                category={row.category.name.toLowerCase()}
                 assetId={row.id}
               />
             )}
@@ -150,7 +155,7 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
           <span style={{ color: "#f0f0f0" }}>|</span> Category
         </span>
       ),
-      selector: (row: AssetsHistoryType) => row.category.toLowerCase(),
+      selector: (row: AssetsHistoryType) => row.category.name.toLowerCase(),
       sortable: true,
       width: columnXXLargeWidth,
 
@@ -235,18 +240,47 @@ export const getColumns = (): TableColumn<AssetsHistoryType>[] =>
         </span>
       ),
       width: columnXXLargeWidth,
-      selector: (row: AssetsHistoryType) => row.model,
+      selector: (row: AssetsHistoryType) => {
+        row.computer?.name;
+      },
       sortable: true,
       cell: (row: AssetsHistoryType) => (
         <span
+          className="cursor-pointer"
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title={row.model}
+          title={row.computer?.name}
+          onClick={() => triggerFilters({ computer: row.computer.id })}
         >
-          {row.computer_id}
+          {row.computer?.name}
         </span>
       ),
       id: "computer",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Modified date
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.date_mode,
+      sortable: true,
+      cell: (row: AssetsHistoryType) => {
+        const formattedDate = new Date(row.date_mode).toLocaleDateString(
+          "en-GB"
+        );
+        return (
+          <span
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title={row.date_mode}
+          >
+            {formattedDate}
+          </span>
+        );
+      },
+      id: "date_mod",
     },
   ].filter(Boolean) as TableColumn<AssetsHistoryType>[];
 
@@ -1011,29 +1045,43 @@ export const Steps = [
 ];
 
 const assignIcon = (categoryName: string) => {
-  if (categoryName.toLowerCase().includes("computer")) return <FaComputer />;
-  if (categoryName.toLowerCase().includes("printer")) return <LuPrinter />;
-  if (categoryName.toLowerCase().includes("monitor")) return <LuMonitor />;
+  if (categoryName.toLowerCase().includes("computer"))
+    return <FaComputer className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("printer"))
+    return <LuPrinter className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("monitor"))
+    return <LuMonitor className="table-icon-color" />;
   if (categoryName.toLowerCase().includes("software"))
-    return <i className="fa-brands fa-uncharted"></i>;
-  if (categoryName.toLowerCase().includes("network")) return <FaNetworkWired />;
-  if (categoryName.toLowerCase().includes("devices")) return <MdDevices />;
-  if (categoryName.toLowerCase().includes("cartridge")) return <SiInkdrop />;
+    return <i className="fa-brands fa-uncharted table-icon-color"></i>;
+  if (categoryName.toLowerCase().includes("network"))
+    return <FaNetworkWired className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("devices"))
+    return <MdDevices className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("cartridge"))
+    return <SiInkdrop className="table-icon-color" />;
   if (categoryName.toLowerCase().includes("consumable"))
-    return <MdLocalDrink />;
-  if (categoryName.toLowerCase().includes("racks")) return <BsHddRack />;
+    return <MdLocalDrink className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("racks"))
+    return <BsHddRack className="table-icon-color" />;
   if (categoryName.toLowerCase().includes("enclosures"))
-    return <MdOutlineRoomPreferences />;
-  if (categoryName.toLowerCase().includes("pdus")) return <FaPlug />;
-  if (categoryName.toLowerCase().includes("passive")) return <FaRegCircle />;
+    return <MdOutlineRoomPreferences className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("pdus"))
+    return <FaPlug className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("passive"))
+    return <FaRegCircle className="table-icon-color" />;
   if (categoryName.toLowerCase().includes("unmanaged"))
-    return <MdOutlineDeviceUnknown />;
-  if (categoryName.toLowerCase().includes("cables")) return <MdOutlineCable />;
-  if (categoryName.toLowerCase().includes("phone")) return <FaPhone />;
-  if (categoryName.toLowerCase().includes("simcard")) return <FaSimCard />;
-  if (categoryName.toLowerCase().includes("storage")) return <GrStorage />;
-  if (categoryName.toLowerCase().includes("modem")) return <BsModem />;
-  return <i className="fa-thin fa-question"></i>;
+    return <MdOutlineDeviceUnknown className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("cables"))
+    return <MdOutlineCable className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("phone"))
+    return <FaPhone className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("simcard"))
+    return <FaSimCard className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("storage"))
+    return <GrStorage className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("modem"))
+    return <BsModem className="table-icon-color" />;
+  return <i className="fa-thin fa-question table-icon-color"></i>;
 };
 
 export const Actions: Record<
