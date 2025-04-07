@@ -1,64 +1,70 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { devicesVNC } from "../../data/hyperCommands";
 
 import { DeviceRemoteConsoleType } from "../../types/devicesTypes";
 import { ComputersListModal } from "../../components/modal/computersList";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
-import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 
-const RemoteConsolePage = ({ computerIdProp }: { computerIdProp?: number }) => {
-  const [sessionActive, setSessionActive] = useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertVariant, setAlertVariant] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
+type RemoteConsolePageProps = {
+  computerIdProp?: number;
+};
+
+const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
+  const [sessionActive, setSessionActive] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
   const [devices, setDevices] = useState<any[]>(devicesVNC);
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] =
     useState<DeviceRemoteConsoleType | null>(null);
+
+  const vncUrl = "https://cobalt.pulsar.ao/ajax/vnc.php";
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const devicesPerPage = 8;
-  const totalDevices = devices.length;
-  const totalPages = Math.ceil(totalDevices / devicesPerPage);
-
   const handleLaunchConsole = () => {
-    if (sessionActive) {
-      setAlertMessage("A session is already active!");
-      setAlertVariant("warning");
-      return;
-    }
     setSessionActive(true);
-    setAlertMessage("Console session started successfully!");
-    setAlertVariant("success");
   };
 
   const handleEndSession = () => {
     setSessionActive(false);
-    setAlertMessage("Console session ended successfully.");
-    setAlertVariant("success");
-    //for vnc implementation
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const handleDisconnectDevice = (deviceId: number) => {
-    const updatedDevices = devices.map((device) =>
-      device.id === deviceId ? { ...device, isConnected: false } : device
+  const toggleDeviceConnection = (deviceId: number) => {
+    setDevices((prevDevices) =>
+      prevDevices.map((device) => {
+        if (device.id === deviceId) {
+          const newConnectionState = !device.isConnected;
+          setSessionActive(newConnectionState);
+          return { ...device, isConnected: newConnectionState };
+        }
+        return device;
+      })
     );
-    setDevices(updatedDevices);
-    handleEndSession();
   };
 
-  const currentDevices = devices.slice(
-    (currentPage - 1) * devicesPerPage,
-    currentPage * devicesPerPage
-  );
-  const vncUrl = "https://cobalt.pulsar.ao/ajax/vnc.php";
+  const renderDeviceButton = (device: DeviceRemoteConsoleType) => {
+    if (!device.isActive) return null;
+
+    return (
+      <div className="text-center mb-4">
+        <button
+          className={`btn p-2 ${
+            device.isConnected ? "btn-danger" : "btn-primary"
+          }`}
+          onClick={() => toggleDeviceConnection(device.id)}
+        >
+          {device.isConnected ? "Disconnect" : "Connect"}
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
@@ -74,22 +80,6 @@ const RemoteConsolePage = ({ computerIdProp }: { computerIdProp?: number }) => {
             </div>
           )}
 
-          {alertMessage && (
-            <div
-              className={`alert alert-${alertVariant} alert-dismissible fade show`}
-              role="alert"
-            >
-              {alertMessage}
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="alert"
-                aria-label="Close"
-                onClick={() => setAlertMessage("")}
-              ></button>
-            </div>
-          )}
-
           <button
             type="button"
             className="btn custom-action-btn"
@@ -98,88 +88,62 @@ const RemoteConsolePage = ({ computerIdProp }: { computerIdProp?: number }) => {
             <div className="custom-btn-text">Start Remote Session</div>
           </button>
 
-          {sessionActive && (
-            <div className="alert alert-success mt-3" role="alert">
-              <strong>Console is active!</strong> You can now manage the remote
-              server.
-            </div>
-          )}
           <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 mt-4">
-            {currentDevices.map((device) => (
+            {devices.map((device) => (
               <div key={device.id} className="col">
                 <div
-                  className={`card h-100 border-light ${
+                  className={`card h-100 border-0 d-flex flex-column ${
                     device.isActive
                       ? "hyper-console-card"
-                      : "hyper-console-disabled-card"
-                  } d-flex flex-column`}
+                      : "hyper-console-disabled-card disconnect-bg"
+                  }`}
+                  style={{ minHeight: "100px" }}
                 >
-                  <div className="card-header bg-light">
-                    <div className="card-title mb-4 d-flex flex-column align-items-start justify-content-start w-100">
+                  <div
+                    className={`card-header ${
+                      device.isActive ? "bg-light" : "disconnect-bg border-0"
+                    }`}
+                    style={{ height: "80px" }} // Fixed height for header
+                  >
+                    <div className="card-title mb-4 d-flex flex-column align-items-start w-100">
                       <h4 className="card-text w-100">{device.name}</h4>
                       <div className="w-100">
-                        <span className="badge bg-primary text-white rounded-pill fs-6 fw-medium">
+                        <span
+                          className={`badge text-white rounded-pill fs-6 fw-medium 
+                       bg-primary
+                      `}
+                        >
                           {device.hostname}
                         </span>
                       </div>
                     </div>
 
-                    <div
-                      className="position-absolute top-0 end-0 mt-2 me-2"
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="top"
-                      title={
-                        device.isConnected && device.isActive
-                          ? "Active and Connected"
-                          : !device.isActive
-                          ? "Inactive"
-                          : "Active but Not Connected"
-                      }
-                    >
-                      {device.isConnected && device.isActive ? (
-                        <i
-                          className="bi bi-stop-btn text-danger pulse-animation fs-3"
-                          title="Active and Connected"
-                        ></i>
-                      ) : !device.isActive ? (
-                        <i
-                          className="bi bi-circle-fill text-dark fs-4"
-                          title="Inactive"
-                        ></i>
-                      ) : (
-                        <i
-                          className="bi bi-circle-fill text-success fs-4"
-                          title="Active but Not Connected"
-                        ></i>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="card-body d-flex flex-column justify-content-center align-items-center">
-                    <div>
-                      <div className="text-center mb-2">
-                        <i className="bi bi-display text-black fs-1"></i>
+                    {device.isActive && !device.isConnected && (
+                      <div className="position-absolute top-0 end-0 mt-2 me-2">
+                        <i className="bi bi-circle-fill text-success fs-4"></i>
                       </div>
-
-                      {device.isConnected && device.isActive && (
-                        <div className="text-center mb-4">
-                          <button
-                            className="btn btn-danger p-2"
-                            onClick={() => handleDisconnectDevice(device.id)}
-                          >
-                            Disconnect
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
 
-                  {!device.isConnected && (
-                    <div className="d-flex flex-column text-center pt-2 bg-light">
-                      <h6>Last connected: </h6>
-                      <p className="text-muted">{device.lastConnected}</p>
-                    </div>
-                  )}
+                  <div
+                    className="card-body d-flex flex-column justify-content-center align-items-center"
+                    style={{ height: "100px" }} // Fixed height for body
+                  >
+                    <i className="bi bi-display text-black fs-1 mb-2"></i>
+                    {renderDeviceButton(device)}
+                  </div>
+
+                  {/* Always render this section but control visibility */}
+                  <div
+                    className="d-flex flex-column text-center"
+                    style={{
+                      height: "50px",
+                      visibility: device.isConnected ? "hidden" : "visible",
+                    }}
+                  >
+                    <h6>Last connected</h6>
+                    <p className="text-muted">{device.lastConnected}</p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -189,6 +153,7 @@ const RemoteConsolePage = ({ computerIdProp }: { computerIdProp?: number }) => {
 
       {isModalOpen && (
         <ComputersListModal
+          isOpen={isModalOpen}
           setSelectedDevice={setSelectedDevice}
           closeModal={closeModal}
         />
