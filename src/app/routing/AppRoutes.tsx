@@ -47,7 +47,8 @@ const RoutesContent: FC = () => {
             const userName = user.user_name;
         }
     }, [user]);
-    const { messages } = useWebSocket(Number(user?.user_id));
+    // const { messages } = useWebSocket(Number(user?.user_id));
+    const { messages, socket } = useWebSocket(Number(user?.user_id), user?.access_token);
 
     const navigate = useNavigate();
     const [staticData, setStaticData] = useAtom(staticDataAtom);
