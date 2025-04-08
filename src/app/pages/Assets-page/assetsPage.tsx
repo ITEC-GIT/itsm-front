@@ -16,7 +16,16 @@ import { GetAssets } from "../../config/ApiCalls.ts";
 import { CircularSpinner } from "../../components/spinners/circularSpinner.tsx";
 import { FilterSidebarMulti } from "../../components/form/filtersWithMulti.tsx";
 import { FilterButton } from "../../components/form/filterButton.tsx";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { capitalize } from "../../../utils/custom.ts";
+import { exportToExcel } from "../../../utils/excel.ts";
 
+interface ExcelColumn {
+  key: string;
+  header: string;
+  width?: number;
+}
 const AssetsPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -169,6 +178,30 @@ const AssetsPage = () => {
     setColumnVisibility(newVisibility);
   };
 
+  const handleDownload = () => {
+    const transformedData = filteredData.map((item) => ({
+      ...item,
+      categoryName: item.category?.name ? capitalize(item.category.name) : "",
+      computerName: item.computer?.name || "",
+      formattedDate: item.date_mode
+        ? new Date(item.date_mode).toLocaleDateString("en-GB")
+        : "",
+    }));
+
+    const exportColumns: ExcelColumn[] = [
+      { key: "name", header: "Asset Name", width: 40 },
+      { key: "serial_number", header: "Serial Number", width: 30 },
+      { key: "categoryName", header: "Category", width: 40 },
+      { key: "manufacturer", header: "Manufacturer", width: 40 },
+      { key: "model", header: "Model", width: 30 },
+      { key: "type", header: "Type", width: 30 },
+      { key: "formattedDate", header: "Modified Date", width: 20 },
+      { key: "computerName", header: "Parent Asset", width: 40 },
+    ];
+
+    exportToExcel(transformedData, exportColumns, "Assets");
+  };
+
   const memoizedColumns = useMemo(() => {
     return getColumns(setFilters);
   }, []);
@@ -314,7 +347,7 @@ const AssetsPage = () => {
 
               <div className="row justify-content-between p-3">
                 <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
-                  <button className="btn custom-btn">
+                  <button className="btn custom-btn" onClick={handleDownload}>
                     <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
                     <span className="custom-btn-text">Download</span>
                   </button>
@@ -334,13 +367,13 @@ const AssetsPage = () => {
                     onVisibilityChange={handleVisibilityChange}
                     buttonRef={btnRef}
                   />
-                  <button
+                  {/* <button
                     className="btn custom-btn"
                     onClick={toggleAddAssetModal}
                   >
                     <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
                     <span className="custom-btn-text">Asset</span>
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">

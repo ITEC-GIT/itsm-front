@@ -76,3 +76,6 @@ export const getBackgroundColor = (
   }
   return "#e8e9e9";
 };
+
+export const capitalize = (str: string) =>
+  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

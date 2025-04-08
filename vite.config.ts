@@ -3,10 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react({
-    }),
-  ],
+  plugins: [react({})],
   server: {
     host: "0.0.0.0",
     cors: {
@@ -15,8 +12,12 @@ export default defineConfig({
     },
   },
 
-  base:  process.env.VITE_BASE_URL || "/",
+  base: process.env.VITE_BASE_URL || "/",
   build: {
     chunkSizeWarningLimit: 3000,
+  },
+  optimizeDeps: {
+    include: ["xlsx", "file-saver"],
+    exclude: ["xlsx/dist/xlsx.full.min.js"],
   },
 });
