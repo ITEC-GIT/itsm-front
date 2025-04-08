@@ -4,8 +4,8 @@ import { StatCard } from "./assetCard";
 const AssetSummaryComponent = () => {
   return (
     <div
-      className="row vertical-scroll p-2"
-      // style={{ backgroundColor: "rgba(246,248,251,255)" }}
+      className="row none-scroll-width vertical-scroll"
+      style={{ padding: "5px" }}
     >
       <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
         <StatCard

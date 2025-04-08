@@ -122,9 +122,6 @@
 
 .vertical-scroll {
   overflow-y: auto !important;
-  max-height: 68vh !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
 }
 
 .net-traffic-element {
@@ -160,9 +157,9 @@
   font-size: 1.5rem !important;
 }
 
-.app-row {
-  height: 68vh !important;
-}
+// .app-row {
+//   height: 200px !important;
+// }
 
 //nav
 
@@ -337,4 +334,16 @@
   100% {
     transform: scale(1);
   }
+}
+
+//grid
+.custom-grid-item {
+  background-color: $btn-bg-color !important;
+  border-radius: 5px !important;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out !important;
+}
+
+.custom-grid-item:hover {
+  background-color: #949599 !important;
+  border: 1px solid rgb(201, 194, 194) !important;
 }

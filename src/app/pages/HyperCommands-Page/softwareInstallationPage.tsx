@@ -24,7 +24,6 @@ import { SearchComponent } from "../../components/form/search.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSidebar } from "../../components/form/filters.tsx";
 import { useAtom, useAtomValue } from "jotai";
-import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar.ts";
 import { FilterButton } from "../../components/form/filterButton.tsx";
 
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms.ts";
@@ -73,23 +72,14 @@ const SoftwareInstallationPage = ({
     order: "desc",
   });
 
-  const [toggleInstance] = useAtom(sidebarToggleAtom);
-
   const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<SoftwareHistoryType>[]
   >([]);
 
-  const handleToggle = () => {
-    if (toggleInstance) {
-      toggleInstance.toggle();
-    }
-  };
-
   const toggleSidebar = () => {
     setShowForm(false);
     setIsSidebarOpen((prevState) => !prevState);
-    handleToggle();
   };
 
   const fetchData = async (filters: filterType) => {
@@ -282,7 +272,7 @@ const SoftwareInstallationPage = ({
           // } else if (col.id === "id") {
           //   newWidths[col.id as string] = col.width || "auto";
           // } else {
-            newWidths[col.id as string] = "50%";
+          newWidths[col.id as string] = "50%";
           // }
         });
       } else if (visibleCount > 2) {
@@ -296,25 +286,25 @@ const SoftwareInstallationPage = ({
             // } else if (col.id === "id") {
             //   newWidths[col.id as string] = col.width || "auto";
             // } else {
-              if (col.width) {
-                const pixelWidth = parseInt(col.width, 10);
+            if (col.width) {
+              const pixelWidth = parseInt(col.width, 10);
 
-                if (!isNaN(pixelWidth)) {
-                  const columnPercentageWidth = Math.round(
-                    (pixelWidth / containerWidth) * 100
-                  );
+              if (!isNaN(pixelWidth)) {
+                const columnPercentageWidth = Math.round(
+                  (pixelWidth / containerWidth) * 100
+                );
 
-                  if (columnPercentageWidth < baseWidthPercentage) {
-                    newWidths[col.id as string] = `${baseWidthPercentage}%`;
-                  } else {
-                    newWidths[col.id as string] = col.width;
-                  }
-                } else {
+                if (columnPercentageWidth < baseWidthPercentage) {
                   newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                } else {
+                  newWidths[col.id as string] = col.width;
                 }
               } else {
                 newWidths[col.id as string] = `${baseWidthPercentage}%`;
               }
+            } else {
+              newWidths[col.id as string] = `${baseWidthPercentage}%`;
+            }
             // }
           });
         }
@@ -339,6 +329,8 @@ const SoftwareInstallationPage = ({
   const [height, setHeight] = useState(0);
   const pagRef = useRef<HTMLDivElement>(null);
   const [pagHeight, setPagHeight] = useState(0);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const [filtersHeight, setFiltersHeight] = useState(0);
 
   useEffect(() => {
     if (divRef.current) {
@@ -349,7 +341,11 @@ const SoftwareInstallationPage = ({
       const rect = pagRef.current.getBoundingClientRect();
       setPagHeight(Math.round(rect.height));
     }
-  }, [divRef.current, pagRef.current]);
+    if (filtersRef.current) {
+      const rect = filtersRef.current.getBoundingClientRect();
+      setFiltersHeight(Math.round(rect.height));
+    }
+  }, [divRef.current, pagRef.current, filtersRef.current]);
 
   return (
     <AnimatedRouteWrapper>
@@ -359,8 +355,8 @@ const SoftwareInstallationPage = ({
           // style={{ overflowY: "auto" }}
         >
           <div
-            className={`d-flex flex-column ${
-              isSidebarOpen ? "col-9" : "col-12"
+            className={`cont-d-flex-column ${
+              isSidebarOpen ? "cont-custom-hide col-9" : "col-12"
             }`}
           >
             <div ref={divRef}>
@@ -397,26 +393,22 @@ const SoftwareInstallationPage = ({
             </div>
             <div>
               <div
-                className="tab-content"
+                className="tab-content d-flex flex-column flex-grow-1 overflow-auto"
                 style={{
-                  // backgroundColor: "red",
                   padding: "10px",
-                  // height: `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px)`,
-                  // height: "100px",
                   height:
                     activeTab === "installation"
                       ? `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px)`
-                      : `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - ${pagHeight}px)`,
-                  overflow: "auto",
-                  flexGrow: 1,
-                  display: "flex",
-                  flexDirection: "column",
+                      : "",
+                  // `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - ${pagHeight}px)`,
                 }}
               >
                 {activeTab === "installation" && (
                   <div
-                    className="d-flex flex-column overflow-auto"
-                    style={{ maxHeight: "100%", flexGrow: 1 }}
+                    className="d-flex flex-column flex-grow-1 overflow-auto none-scroll-width"
+                    style={{
+                      maxHeight: "100%",
+                    }}
                   >
                     <Wizard
                       steps={steps}
@@ -442,14 +434,17 @@ const SoftwareInstallationPage = ({
 
                 {activeTab === "history" && (
                   <div
-                    className="d-flex flex-column overflow-auto"
-                    style={{
-                      maxHeight: "100%",
-                      flexGrow: 1,
-                      position: "relative",
-                    }}
+                    className="d-flex flex-column flex-grow-1 position-relative overflow-auto none-scroll-width "
+                    style={
+                      {
+                        // maxHeight: "100%",
+                      }
+                    }
                   >
-                    <div className="d-flex align-items-center justify-content-between">
+                    <div
+                      ref={filtersRef}
+                      className="d-flex align-items-center justify-content-between p-2"
+                    >
                       <div>
                         {showUpdateAlert && (
                           <div
@@ -479,24 +474,33 @@ const SoftwareInstallationPage = ({
                         <FilterButton toggleSidebar={toggleSidebar} />
                       </div>
                     </div>
-
                     <div
-                      className="mt-5"
-                      // style={{ width: "100%", overflowX: "auto" }}
-                      ref={tableContainerRef}
+                      style={{
+                        height: `calc(100vh - var(--bs-app-header-height) - 50px - ${height}px - ${pagHeight}px - ${filtersHeight}px)`,
+                        overflow: "auto",
+                      }}
                     >
-                      <DataTable
-                        columns={visibleColumns.map((col) => ({
-                          ...col,
-                          width: columnWidths[col.id as string],
-                        }))}
-                        data={getCurrentPageRecords}
-                        persistTableHead={true}
-                        responsive
-                        highlightOnHover
-                        customStyles={customStyles}
-                        sortIcon={sortIcon}
-                      />
+                      <div
+                        ref={tableContainerRef}
+                        style={{
+                          flex: 1,
+                        }}
+                      >
+                        <DataTable
+                          columns={visibleColumns.map((col) => ({
+                            ...col,
+                            width: columnWidths[col.id as string],
+                          }))}
+                          data={getCurrentPageRecords}
+                          persistTableHead={true}
+                          responsive
+                          highlightOnHover
+                          customStyles={customStyles}
+                          sortIcon={sortIcon}
+                          fixedHeader
+                          fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - 50px - ${height}px - ${pagHeight}px - ${filtersHeight}px)`}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -505,16 +509,7 @@ const SoftwareInstallationPage = ({
               {activeTab === "history" && (
                 <div
                   ref={pagRef}
-                  className="d-flex justify-content-end align-items-center"
-                  style={{
-                    position: "sticky",
-                    bottom: 0,
-                    height: "40px",
-                    // top: "100%",
-                    // right: "0",
-                    width: "100%",
-                    zIndex: "2000",
-                  }}
+                  className="sticky-pagination d-flex justify-content-end align-items-center"
                 >
                   <button
                     className="btn btn-sm btn-light me-2"
@@ -566,10 +561,9 @@ const SoftwareInstallationPage = ({
 
           {isSidebarOpen && (
             <div
-              className="col-3 custom-border"
+              className="col-3 custom-border overflow-auto filter-sidebar-small p-0"
               style={{
                 height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
-                overflow: "auto",
               }}
             >
               <div>
@@ -578,6 +572,7 @@ const SoftwareInstallationPage = ({
                   toggleSidebar={toggleSidebar}
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
+                  filtersStoreName={"softwareFilters"}
                 />
               </div>
             </div>

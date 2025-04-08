@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchComponent } from "../../components/form/search";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { useAtom } from "jotai";
-import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import {
   AssetsHistoryType,
   GetAllAssetsRequestType as FilterType,
@@ -11,7 +10,7 @@ import { customStyles, sortIcon } from "../../data/dataTable";
 import { debounce } from "lodash";
 import { FilterSidebar } from "../../components/form/filters";
 import { ColumnVisibility } from "../../types/common";
-import ColumnModal from "../../components/modal/columns";
+import ColumnsModal from "../../components/modal/columns";
 import clsx from "clsx";
 import { activeFilters, getColumns, mockData } from "../../data/assets";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +23,8 @@ const AssetsPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
+  const btnRef = useRef<HTMLButtonElement>(null);
+
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [ShowActionColumn, setShowActionColumn] = useAtom(showActionColumnAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -33,7 +34,7 @@ const AssetsPage = () => {
   });
 
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
-    id: true,
+    icon: true,
     name: true,
     entity: false,
     serial_number: true,
@@ -52,7 +53,6 @@ const AssetsPage = () => {
   });
 
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [toggleInstance] = useAtom(sidebarToggleAtom);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false);
@@ -63,15 +63,8 @@ const AssetsPage = () => {
     setIsColumnModalOpen((prevState) => !prevState);
   };
 
-  const handleToggle = () => {
-    if (toggleInstance) {
-      toggleInstance.toggle();
-    }
-  };
-
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
-    handleToggle();
   };
 
   const toggleAddAssetModal = () => {
@@ -241,12 +234,21 @@ const AssetsPage = () => {
                     <span className="custom-btn-text">Download</span>
                   </button>
                   <button
+                    ref={btnRef}
                     className="btn custom-btn"
                     onClick={toggleColumnModal}
                   >
                     <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
                     <span className="custom-btn-text">Columns</span>
                   </button>
+                  <ColumnsModal
+                    isOpen={isColumnModalOpen}
+                    onClose={toggleColumnModal}
+                    columns={columnsForModal}
+                    initialVisibility={columnVisibility}
+                    onVisibilityChange={handleVisibilityChange}
+                    buttonRef={btnRef}
+                  />
                   <button
                     className="btn custom-btn"
                     onClick={toggleAddAssetModal}
@@ -254,13 +256,6 @@ const AssetsPage = () => {
                     <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
                     <span className="custom-btn-text">Asset</span>
                   </button>
-                  <ColumnModal
-                    isOpen={isColumnModalOpen}
-                    onClose={toggleColumnModal}
-                    columns={columnsForModal}
-                    initialVisibility={columnVisibility}
-                    onVisibilityChange={handleVisibilityChange}
-                  />
                 </div>
 
                 <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
@@ -286,7 +281,7 @@ const AssetsPage = () => {
             <div
               style={{
                 height: `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - 40px)`,
-                overflow: "auto",
+                overflow: "hidden",
               }}
             >
               <div
@@ -294,7 +289,7 @@ const AssetsPage = () => {
                 ref={tableContainerRef}
                 style={{
                   flex: 1,
-                  overflow: "auto",
+                  // overflow: "auto",
                 }}
               >
                 <DataTable
@@ -310,22 +305,13 @@ const AssetsPage = () => {
                   sortIcon={sortIcon}
                   onRowMouseEnter={(row) => handleMouseEnter(row.id)}
                   onRowMouseLeave={handleMouseLeave}
+                  fixedHeader
+                  fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
                 />
               </div>
             </div>
 
-            <div
-              className="d-flex justify-content-end align-items-center"
-              style={{
-                position: "sticky",
-                bottom: 0,
-                height: "40px",
-                // top: "100%",
-                // right: "0",
-                width: "100%",
-                zIndex: "2000",
-              }}
-            >
+            <div className="sticky-pagination d-flex justify-content-end align-items-center">
               <button
                 className="btn btn-sm btn-light me-2"
                 onClick={handleFirstPage}
@@ -386,6 +372,7 @@ const AssetsPage = () => {
                   toggleSidebar={toggleSidebar}
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
+                  filtersStoreName={"assetsFilters"}
                 />
               </div>
             </div>

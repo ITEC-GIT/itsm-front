@@ -1,7 +1,7 @@
 @import "./custom/variables";
 
-.content-background{
-  background-color: #DDE2E6 !important;
+.content-background {
+  background-color: #dde2e6 !important;
   padding-top: 20px !important;
 }
 
@@ -97,11 +97,35 @@
 .custom-badge-value {
   color: orange; /* or any other shade of gold you prefer */
   margin-left: 4px; /* Adjust the spacing as needed */
-
 }
 .animated-wrapper {
   width: 100%;
   height: 100%; /* Full viewport height */
   display: flex;
   flex-direction: column;
+}
+
+//scrolling
+
+.none-scroll-width {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.cont-d-flex-column {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+@media (max-width: 700px) {
+  .cont-custom-hide {
+    display: none !important;
+  }
+
+  .filter-sidebar-small {
+    position: relative !important;
+    right: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
 }

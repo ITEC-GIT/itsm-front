@@ -18,6 +18,7 @@ interface FilterSidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
   activeFilters: string[];
+  filtersStoreName: string;
   saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
 }
 
@@ -59,6 +60,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   isOpen,
   toggleSidebar,
   activeFilters,
+  filtersStoreName,
   saveFilters,
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
@@ -73,10 +75,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const [editFilterName, setEditFilterName] = useState<string>("");
 
   const userId = Number(Cookies.get("user"));
-  const staticDbName = "JotaiDB";
   const filtersDbName = "savedFiltersDB";
-  const filtersStoreName = "softwareFilters";
-
   const handleApplyFilters = () => {
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
       return;
@@ -330,7 +329,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         })}
       </div>
 
-      <div className="d-flex justify-content-between mt-3 p-3">
+      <div className="row d-flex justify-content-between m-0 gap-2 p-3">
         <button
           className="btn custom-btn p-3 blue-bg-btn"
           onClick={handleClearFilters}
