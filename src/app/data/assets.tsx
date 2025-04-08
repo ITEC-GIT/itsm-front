@@ -284,32 +284,14 @@ export const getColumns = (
     },
   ].filter(Boolean) as TableColumn<AssetsHistoryType>[];
 
-export const AppButtons = [
-  { id: 1, text: "Windows Service", icon: "bi-gear" },
-  { id: 2, text: "All Processes", icon: "bi-list" },
-  { id: 3, text: "Software", icon: "bi-window" },
-  { id: 4, text: "Managed Software", icon: "bi-code-slash" },
-  { id: 5, text: "Registry Editor", icon: "bi-box" },
-  { id: 6, text: "File Explorer", icon: "bi-folder" },
-];
-
-export const PoliciesButtons = [
-  { id: 1, text: "Antivirus", icon: "bi-shield-x" },
-  { id: 2, text: "Software Management", icon: "bi-folder" },
-  { id: 3, text: "Remote Desktop", icon: "bi-window" },
-];
+export const AppButtons = [{ id: 3, text: "Software", icon: "bi-window" }];
 
 export const DetailsButtons = [
-  { id: 1, text: "CPU", icon: "bi bi-cpu" },
-  { id: 2, text: "Memory", icon: "bi bi-memory" },
-  { id: 3, text: "Disk volume", icon: "bi bi-hdd-stack" },
-  { id: 4, text: "Open ports", icon: "bi bi-box-seam" },
-  { id: 5, text: "User log", icon: "bi bi-person-lines-fill" },
-  { id: 6, text: "Event log", icon: "bi bi-calendar-event" },
-  { id: 7, text: "Network adapters", icon: "bi bi-ethernet" },
-  { id: 8, text: "Hardware & misc", icon: "bi bi-gear" },
-  { id: 9, text: "Video card", icon: "bi bi-display" },
-  { id: 10, text: "Sound card", icon: "bi bi-speaker" },
+  { id: 1, text: "Hardware & misc", icon: "bi bi-gear" },
+  { id: 2, text: "Network ports", icon: "bi bi-ethernet" },
+  { id: 3, text: "Antivirus", icon: "bi-shield-x" },
+  { id: 4, text: "Operating System", icon: "bi-gear-wide-connected" },
+  { id: 5, text: "Disk volume", icon: "bi bi-hdd-stack" },
 ];
 
 export const AssetFields = [
