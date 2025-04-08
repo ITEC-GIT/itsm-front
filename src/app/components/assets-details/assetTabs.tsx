@@ -103,7 +103,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
             Apps
           </button>
         </li>
-        <li className="nav-item" role="presentation">
+        {/* <li className="nav-item" role="presentation">
           <button
             className={`nav-link text-gray tab-text ${
               selectedTab === "policies" ? "active text-active-bold" : ""
@@ -118,7 +118,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
             <i className="bi bi-window-x me-2"></i>
             Policies
           </button>
-        </li>
+        </li> */}
         <li className="nav-item" role="presentation">
           <button
             className={`nav-link text-gray tab-text ml-2 ${
@@ -162,7 +162,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               id="details"
               role="tabpanel"
             >
-              <AssetDetailsComponent />
+              <AssetDetailsComponent devHeight={totalHeight} />
             </div>
             <div
               className={`tab-pane fade ${
@@ -184,7 +184,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
             >
               <AssetAppsComponent />
             </div>
-            <div
+            {/* <div
               className={`tab-pane fade ${
                 selectedTab === "policies" ? "show active" : ""
               }`}
@@ -192,7 +192,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               role="tabpanel"
             >
               <AssetPoliciesComponent />
-            </div>
+            </div> */}
             <div
               className={`tab-pane fade ${
                 selectedTab === "tree" ? "show active" : ""
