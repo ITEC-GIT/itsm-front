@@ -388,7 +388,7 @@ const AssetsPage = () => {
             </div>
             <div
               style={{
-                height: `calc(100vh - var(--bs-app-header-height) - 40px - ${height}px - 40px)`,
+                height: `calc(100vh - var(--bs-app-header-height) - 31px - ${height}px - 40px)`,
                 overflow: "hidden",
               }}
             >

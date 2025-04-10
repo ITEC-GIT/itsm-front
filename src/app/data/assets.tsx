@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   AssetsHistoryType,
+  AssetSoftwaresType,
   GetAllAssetsRequestType as FilterType,
 } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
@@ -1183,3 +1184,176 @@ export const getAvailableActions = (category: string) => {
 
   return availableActions;
 };
+
+//asset details
+export const getAssetSoftwaresColumns = (
+  hoveredHash: string | null
+): TableColumn<AssetSoftwaresType>[] =>
+  [
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Name
+        </span>
+      ),
+      selector: (row: AssetSoftwaresType) => row.name,
+      sortable: true,
+      width: columnXXXLargeWidth,
+      cell: (row: AssetSoftwaresType) => {
+        return <span>{row.name}</span>;
+      },
+      id: "name",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Category
+        </span>
+      ),
+      selector: (row: AssetSoftwaresType) => row.category,
+      sortable: true,
+      width: columnXXLargeWidth,
+      id: "category",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Version
+        </span>
+      ),
+      width: columnXLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.version,
+      sortable: true,
+      id: "version",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Architecture
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.architecture,
+      sortable: true,
+      cell: (row: AssetSoftwaresType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.architecture}
+        >
+          {row.architecture}
+        </span>
+      ),
+      id: "arch",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Installed date
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.install_date,
+      sortable: true,
+      cell: (row: AssetSoftwaresType) => {
+        const formattedDate = new Date(row.install_date).toLocaleDateString(
+          "en-GB"
+        );
+        return <span>{formattedDate}</span>;
+      },
+      id: "install_date",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span>
+        </span>
+      ),
+      width: "70px",
+      cell: (row: AssetSoftwaresType) => {
+        const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+        const handleDeleteClick = () => {
+          setShowDeleteModal(true);
+        };
+
+        const confirmDelete = () => {
+          setShowDeleteModal(false);
+        };
+
+        const cancelDelete = () => {
+          setShowDeleteModal(false);
+        };
+
+        return (
+          <div
+            className={`d-flex align-items-start ${
+              hoveredHash === row.hash ? "show" : "hide"
+            }`}
+          >
+            {hoveredHash === row.hash && (
+              <>
+                <button className="table-btn-action" onClick={() => {}}>
+                  <i className="bi bi-pencil text-primary table-icon"></i>
+                </button>
+                <button
+                  className="table-btn-action"
+                  onClick={handleDeleteClick}
+                >
+                  <i className="bi bi-x-lg text-danger table-icon"></i>
+                </button>
+
+                {showDeleteModal && (
+                  <div
+                    className={`modal w-100 fade ${
+                      showDeleteModal ? "show d-block" : ""
+                    }`}
+                    role="dialog"
+                    aria-hidden={!showDeleteModal}
+                    style={{
+                      background: showDeleteModal
+                        ? "rgba(0,0,0,0.5)"
+                        : "transparent",
+                    }}
+                  >
+                    <div className="modal-dialog modal-dialog-centered">
+                      <div className="modal-content p-5">
+                        <div className="d-flex justify-content-start align-items-center mb-5">
+                          <div className="circle-div">
+                            <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
+                          </div>
+                          <div className="d-flex flex-column">
+                            <h3>Delete assets</h3>
+                            <p>
+                              Are you sure you want to delete the selected
+                              assets?
+                            </p>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-end mt-5">
+                          <button
+                            onClick={cancelDelete}
+                            className="custom-modal-cancel-btn"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={confirmDelete}
+                            className="custom-modal-confirm-btn"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        );
+      },
+      sortable: false,
+      id: "action",
+    },
+  ].filter(Boolean) as TableColumn<AssetSoftwaresType>[];

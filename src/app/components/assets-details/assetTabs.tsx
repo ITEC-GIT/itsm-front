@@ -156,16 +156,16 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               <AssetSummaryComponent />
             </div>
             <div
-              className={`tab-pane fade ${
+              className={`tab-pane fade  h-100 ${
                 selectedTab === "details" ? "show active" : ""
               }`}
               id="details"
               role="tabpanel"
             >
-              <AssetDetailsComponent devHeight={totalHeight} />
+              <AssetDetailsComponent />
             </div>
             <div
-              className={`tab-pane fade ${
+              className={`tab-pane fade  h-100 ${
                 selectedTab === "tickets" ? "show active" : ""
               }`}
               id="tickets"
@@ -176,7 +176,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               </div>
             </div>
             <div
-              className={`tab-pane fade ${
+              className={`tab-pane fade  h-100 ${
                 selectedTab === "apps" ? "show active" : ""
               }`}
               id="apps"

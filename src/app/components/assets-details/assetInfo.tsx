@@ -40,9 +40,9 @@ const AssetInfoComponent = () => {
         <button className="btn custom-btn me-2 mb-2">
           <i className="bi bi-terminal"></i> Terminal
         </button>
-        <button className="btn custom-btn me-2 mb-2">
+        {/* <button className="btn custom-btn me-2 mb-2">
           <i className="bi bi-play-circle"></i> Run Script
-        </button>
+        </button> */}
         <button className="btn custom-btn me-2 mb-2">
           <i className="bi bi-tv"></i> Remote
         </button>

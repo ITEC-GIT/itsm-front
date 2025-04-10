@@ -8,7 +8,7 @@ const AntivirusComponent = () => <div>Antivirus</div>;
 const OperatingSystemComponent = () => <div>Operating system</div>;
 const VolumeComponent = () => <div>Disk volume</div>;
 
-const AssetDetailsComponent = ({ devHeight }: { devHeight: number }) => {
+const AssetDetailsComponent = () => {
   const [selectedButton, setSelectedButton] = useState<number>(1);
   let renderComponent: JSX.Element;
 
@@ -34,15 +34,10 @@ const AssetDetailsComponent = ({ devHeight }: { devHeight: number }) => {
 
   return (
     <div
-      className="row none-scroll-width vertical-scroll"
+      className="row none-scroll-width vertical-scroll h-100"
       style={{ paddingTop: "5px" }}
     >
-      <div
-        className="col-2 bg-light border-end "
-        style={{
-          height: `calc(100vh - var(--bs-app-header-height) - ${devHeight}px - 5px)`,
-        }}
-      >
+      <div className="col-2 bg-light border-end h-100">
         <Sidebar
           buttons={DetailsButtons}
           selectedId={selectedButton}

@@ -17,6 +17,16 @@ export type AssetsHistoryType = {
   date_mode: string;
 };
 
+export type AssetSoftwaresType = {
+  id: number;
+  name: string;
+  hash: string;
+  version: string;
+  architecture: string;
+  category: string;
+  install_date: string;
+};
+
 export type GetAllAssetsRequestType = {
   computer?: number;
   idgt?: number;
@@ -60,3 +70,7 @@ export interface AssetsField {
 export interface FieldValues {
   [key: string]: boolean;
 }
+
+export type GetAssetSoftwaresType = {
+  computer?: number;
+};

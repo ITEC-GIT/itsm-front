@@ -593,6 +593,14 @@ async function GetAssetActions(asset_type_id: number) {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetAssetSoftwares(computerId: number) {
+  return await PrivateApiCallFastApi.get(
+    `/inventories/assets/${computerId}/softwares`
+  )
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 export {
   LoginApi,
   GetUserProfile,
@@ -624,4 +632,5 @@ export {
   GetAssetCategories,
   GetAssets,
   GetAssetActions,
+  GetAssetSoftwares,
 };

@@ -48,7 +48,6 @@ const mockAssetDetailsData: { [key: string]: AssetDetails } = {
     tags: ["portable", "design"],
     history: [{ date: "2023-11-18", action: "Assigned", user: "user2" }],
   },
-  // ... more assets
 };
 
 const AssetDetailsPage: React.FC = () => {
