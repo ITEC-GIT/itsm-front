@@ -2,6 +2,50 @@ $content-background-color: #f1f1f4;
 
 :root {
   --blue-gradient: linear-gradient(90deg, #007bff, #0056b3);
+
+  --color-light-gray: #e0e1dd;
+  --color-dark-gray: #6d6875;
+
+  --color-light-green: #99deaf;
+  --color-dark-green: #00ae47;
+
+  --color-light-red: #f78f8f;
+  --color-dark-red: #c91a20;
+
+  --color-light-blue: #b2e8eb;
+  --color-dark-blue: #0089a1;
+
+  --color-light-pink: #f2d0cf;
+  --color-dark-pink: #dc7070;
+
+  --color-light-orange: #f7d79a;
+  --color-dark-orange: #f6922b;
+
+  --color-light-yellow: #fddd64;
+  --color-dark-yellow: #b38936;
+
+  --color-dark-purple: #3b1e54;
+  --color-light-purple: #d4bee4;
+
+  --color-burgendy: #803d3b; // #800000;
+  --color-brown: #af8260; //#4e1f00;
+
+  --color-light-olive: #9ac06b;
+  --color-dark-olive: #314315;
+
+  //bargraph palette
+  --color-p1: #006e7f;
+  --color-p2: #f8cb2e;
+  --color-p3: #ee5007;
+  --color-p4: #b22727;
+
+  --color-p5: #dbd053; // #ff9b85;
+  --color-p6: #3d90d7;
+  --color-p7: #7ac6d2;
+  --color-p8: #afddff;
+  --color-p9: #b5fccd;
+  --color-p10: #6f5e53;
+  --color-p11: #ce4257;
 }
 
 $btn-border-radius: 5px;
@@ -10,3 +54,5 @@ $btn-bg-color-hover: rgba(11, 1, 20, 0.1);
 $btn-bg-color-selected: #dde2e6;
 
 $filter-sidebar-border: 1px solid #dde2e6;
+
+//landing dashboard component
