@@ -13,15 +13,11 @@ import {
 
 const ToolbarMainDashboard = () => {
   const { classes } = useLayout();
-  // const [staticData, setStaticData] = useAtom(staticDataAtom) ;
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
   const [selectedDeviceAtom, setSelectedDeviceAtom] = useAtom(
     selectedComputerDashboardAtom
   );
-  useEffect(() => {
 
-    const asd=0;
-  }, [staticData]);
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
@@ -53,7 +49,7 @@ const ToolbarMainDashboard = () => {
   }, [staticData, selectedBranch]);
 
   const compOptions = useMemo(() => {
-    return (staticData.Computers || [])
+    return (staticData.computers || [])
       .filter(
         (device) => !selectedBranch || device.branchid === selectedBranch.value
         //&&
@@ -73,7 +69,13 @@ const ToolbarMainDashboard = () => {
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
-    setSelectedDeviceAtom(Number(newValue?.value));
+
+    if (newValue === null) {
+      setSelectedDeviceAtom(undefined);
+    } else {
+      setSelectedDeviceAtom(Number(newValue.value));
+    }
+
     setActiveView(null);
   };
 

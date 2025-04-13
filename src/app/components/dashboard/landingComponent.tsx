@@ -70,251 +70,18 @@ const PieChart = ({ gradientColor, title, series }: GradientPieChartProps) => {
       style={{
         aspectRatio: "1/1",
         width: "100%",
-        height: "100%",
         position: "relative",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        height: "150px",
+        minHeight: "200px",
       }}
     >
       <ReactApexChart
         options={options}
         series={series}
         type="donut"
-        height="100%"
-        width="100%"
-      />
-    </div>
-  );
-};
-
-// const PieChart = ({ gradientColor, title, series }: GradientPieChartProps) => {
-//   const options: ApexOptions = {
-//     chart: {
-//       type: "donut",
-//       animations: { enabled: false },
-//       redrawOnParentResize: true,
-//     },
-//     colors: [gradientColor],
-//     fill: {
-//       type: "fill",
-//       // gradient: {
-//       //   gradientToColors: [gradientColor],
-//       // stops: [0, 100],
-//       // shadeIntensity: 1,
-//       // opacityFrom: 0.7,
-//       // opacityTo: 0.9,
-//       // },
-//     },
-//     plotOptions: {
-//       pie: {
-//         expandOnClick: false,
-//         donut: {
-//           size: "65%",
-//           labels: {
-//             show: false,
-//             // total: {
-//             //   show: true,
-//             //   label: title,
-//             //   color: "#333",
-//             //   fontSize: "14px",
-//             // },
-//           },
-//         },
-//       },
-//     },
-//     dataLabels: { enabled: false },
-//     legend: { show: false },
-//     responsive: [
-//       {
-//         breakpoint: 768,
-//         options: {
-//           plotOptions: {
-//             pie: { donut: { size: "60%" } },
-//           },
-//         },
-//       },
-//     ],
-//   };
-
-//   return (
-//     <div style={{ width: "100%", height: "150px", minHeight: "200px" }}>
-//       <ReactApexChart
-//         options={options}
-//         series={series}
-//         type="donut"
-//         height="100%"
-//         width="100%"
-//       />
-//     </div>
-//   );
-// };
-
-const TicketsBarChart = () => {
-  const options: ApexOptions = {
-    chart: {
-      type: "bar",
-      animations: { enabled: false },
-      redrawOnParentResize: true,
-      stacked: true,
-      toolbar: {
-        show: true,
-        tools: {
-          download: true,
-          selection: false,
-          zoom: false,
-          zoomin: false,
-          zoomout: false,
-          pan: false,
-          reset: false,
-        },
-      },
-      parentHeightOffset: 0,
-      height: "100%",
-    },
-    colors: [
-      "var(--color-p1)",
-      "var(--color-p2)",
-      "var(--color-p3)",
-      "var(--color-p4)",
-    ],
-    responsive: [
-      {
-        breakpoint: 768,
-        options: {
-          chart: {
-            toolbar: {
-              show: false,
-            },
-          },
-          legend: {
-            position: "bottom",
-            horizontalAlign: "center",
-            offsetY: 0,
-          },
-          plotOptions: {
-            bar: {
-              borderRadius: 1,
-              columnWidth: "60%",
-            },
-          },
-        },
-      },
-      {
-        breakpoint: 480,
-        options: {
-          plotOptions: {
-            bar: {
-              columnWidth: "70%",
-              dataLabels: {
-                total: {
-                  style: {
-                    fontSize: "10px",
-                  },
-                },
-              },
-            },
-          },
-          xaxis: {
-            labels: {
-              rotate: -45,
-              style: {
-                fontSize: "10px",
-              },
-            },
-          },
-        },
-      },
-    ],
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        borderRadius: 1,
-        borderRadiusApplication: "end",
-        borderRadiusWhenStacked: "last",
-        dataLabels: {
-          total: {
-            enabled: true,
-            style: {
-              fontSize: "clamp(10px, 1.2vw, 13px)",
-              fontWeight: 900,
-            },
-          },
-        },
-      },
-    },
-    xaxis: {
-      type: "datetime",
-      categories: [
-        "01/01/2011 GMT",
-        "01/02/2011 GMT",
-        "01/03/2011 GMT",
-        "01/04/2011 GMT",
-        "01/05/2011 GMT",
-        "01/06/2011 GMT",
-      ],
-      labels: {
-        style: {
-          fontSize: "clamp(10px, 1vw, 12px)",
-        },
-      },
-    },
-    yaxis: {
-      labels: {
-        style: {
-          fontSize: "clamp(10px, 1vw, 12px)",
-        },
-      },
-    },
-    legend: {
-      position: "right",
-      offsetY: 40,
-      fontSize: "clamp(10px, 1vw, 12px)",
-      // markers: {
-      //   width: 12,
-      //   height: 12,
-      //   radius: 0,
-      // },
-      itemMargin: {
-        horizontal: 5,
-        vertical: 3,
-      },
-    },
-    fill: {
-      opacity: 1,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-  };
-
-  const [state] = useState({
-    series: [
-      {
-        name: "PRODUCT A",
-        data: [44, 55, 41, 67, 22, 43],
-      },
-      {
-        name: "PRODUCT B",
-        data: [13, 23, 20, 8, 13, 27],
-      },
-      {
-        name: "PRODUCT C",
-        data: [11, 17, 15, 15, 21, 14],
-      },
-      {
-        name: "PRODUCT D",
-        data: [21, 7, 25, 13, 22, 8],
-      },
-    ],
-  });
-
-  return (
-    <div style={{ width: "100%", height: "100%", minHeight: "350px" }}>
-      <ReactApexChart
-        options={options}
-        series={state.series}
-        type="bar"
         height="100%"
         width="100%"
       />
@@ -405,14 +172,7 @@ const BarChart = () => {
       max: 12,
     },
     title: {
-      text: "Monthly Inflation in Argentina, 2002",
-      floating: true,
-      offsetY: 330,
-      align: "center",
-      style: {
-        color: "#444",
-        fontSize: "clamp(12px, 1.5vw, 14px)",
-      },
+      text: undefined,
     },
     responsive: [
       {
@@ -517,11 +277,161 @@ const HorizontalBarChart = ({ color }: { color: string }) => {
   ];
 
   return (
-    <div style={{ width: "100%", height: "250px" }}>
+    <div style={{ width: "100%", height: "300px" }}>
       <ReactApexChart
         options={options}
         series={series}
         type="bar"
+        height="100%"
+        width="100%"
+      />
+    </div>
+  );
+};
+
+const LineChart = () => {
+  const series = [
+    {
+      name: "High - 2013",
+      data: [28, 29, 33, 36, 32, 32, 33],
+    },
+    {
+      name: "Low - 2013",
+      data: [12, 11, 14, 18, 17, 13, 13],
+    },
+  ];
+
+  const options: ApexOptions = {
+    chart: {
+      type: "line",
+      height: "100%", // Changed from fixed 350 to percentage
+      dropShadow: {
+        enabled: true,
+        color: "#000",
+        top: 18,
+        left: 7,
+        blur: 10,
+        opacity: 0.2, // Reduced opacity for better mobile visibility
+      },
+      zoom: {
+        enabled: false,
+      },
+      toolbar: {
+        show: false,
+      },
+      redrawOnParentResize: true, // Essential for responsiveness
+      parentHeightOffset: 0, // Prevents overflow
+    },
+    colors: ["#77B6EA", "#545454"],
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontSize: "clamp(10px, 1.2vw, 12px)", // Responsive font size
+      },
+    },
+    stroke: {
+      curve: "smooth",
+      width: 3, // Slightly thicker lines for mobile
+    },
+    title: {
+      text: undefined,
+    },
+    grid: {
+      borderColor: "#e7e7e7",
+      row: {
+        colors: ["#f3f3f3", "transparent"],
+        opacity: 0.5,
+      },
+    },
+    markers: {
+      size: 4, // Slightly larger markers
+    },
+    xaxis: {
+      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+      title: {
+        text: "Month",
+        style: {
+          fontSize: "clamp(12px, 1.3vw, 14px)",
+        },
+      },
+      labels: {
+        style: {
+          fontSize: "clamp(10px, 1.1vw, 12px)",
+        },
+      },
+    },
+    yaxis: {
+      title: {
+        text: "Temperature",
+        style: {
+          fontSize: "clamp(12px, 1.3vw, 14px)",
+        },
+      },
+      min: 5,
+      max: 40,
+      labels: {
+        style: {
+          fontSize: "clamp(10px, 1.1vw, 12px)",
+        },
+      },
+    },
+    legend: {
+      position: "top",
+      horizontalAlign: "right",
+      floating: true,
+      offsetY: -25,
+      offsetX: -5,
+      fontSize: "clamp(12px, 1.3vw, 14px)",
+      markers: {
+        strokeWidth: 2,
+      },
+    },
+    responsive: [
+      {
+        breakpoint: 768,
+        options: {
+          chart: {
+            dropShadow: {
+              blur: 1, // Less shadow on smaller screens
+            },
+          },
+          markers: {
+            size: 3,
+          },
+          dataLabels: {
+            enabled: false, // Hide data labels on small screens
+          },
+          legend: {
+            position: "bottom",
+            horizontalAlign: "center",
+            offsetY: 0,
+            offsetX: 0,
+          },
+        },
+      },
+      {
+        breakpoint: 480,
+        options: {
+          stroke: {
+            width: 2, // Thinner lines on very small screens
+          },
+          markers: {
+            size: 2,
+          },
+          grid: {
+            show: false, // Hide grid on very small screens
+          },
+        },
+      },
+    ],
+  };
+
+  return (
+    <div style={{ width: "100%", height: "100%", minHeight: "300px" }}>
+      <ReactApexChart
+        options={options}
+        series={series}
+        type="line"
         height="100%"
         width="100%"
       />
@@ -592,217 +502,112 @@ const DashboardLanding = () => {
   return (
     <div className="container-fluid px-3 px-sm-4 py-3">
       <div className="row g-3">
-        <div className="col-12 col-lg-6">
-          <div className="row g-3">
-            {[
-              {
-                bg: "var(--color-dark-gray)",
-                color: "var(--color-light-gray)",
-                icon: "fa-cubes",
-                number: 10,
-                title: "Software",
-              },
-              {
-                bg: "var(--color-dark-red)",
-                color: "var(--color-light-red)",
-                icon: "fa-desktop",
-                number: 150,
-                title: "Computers",
-              },
-              {
-                bg: "var(--color-light-pink)",
-                color: "var(--color-dark-pink)",
-                icon: "fa-network-wired",
-                number: 33,
-                title: "Networks",
-              },
-              {
-                bg: "var(--color-light-orange)",
-                color: "var(--color-dark-orange)",
-                icon: "fa-phone",
-                number: 0,
-                title: "Phones",
-              },
-              {
-                bg: "var(--color-light-green)",
-                color: "var(--color-dark-green)",
-                icon: "fa-key",
-                number: 130,
-                title: "Licenses",
-              },
-              {
-                bg: "var(--color-dark-blue)",
-                color: "var(--color-light-blue)",
-                icon: "fa-tv",
-                number: 92,
-                title: "Monitors",
-              },
-              {
-                bg: "var(--color-light-olive)",
-                color: "var(--color-dark-olive)",
-                icon: "fa-server",
-                number: 500559,
-                title: "Racks",
-              },
-              {
-                bg: "var(--color-light-yellow)",
-                color: "var(--color-dark-yellow)",
-                icon: "fa-print",
-                number: 5,
-                title: "Printers",
-              },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="col-6 col-sm-4 col-md-3 col-lg-4 col-xl-4"
-              >
-                <StatBox {...stat} />
-              </div>
-            ))}
+        {[
+          {
+            bg: "var(--color-dark-gray)",
+            color: "var(--color-light-gray)",
+            icon: "fa-cubes",
+            number: 10,
+            title: "Software",
+          },
+          {
+            bg: "var(--color-dark-red)",
+            color: "var(--color-light-red)",
+            icon: "fa-desktop",
+            number: 150,
+            title: "Computers",
+          },
+          {
+            bg: "var(--color-light-pink)",
+            color: "var(--color-dark-pink)",
+            icon: "fa-network-wired",
+            number: 33,
+            title: "Networks",
+          },
+          {
+            bg: "var(--color-light-orange)",
+            color: "var(--color-dark-orange)",
+            icon: "fa-phone",
+            number: 0,
+            title: "Phones",
+          },
+          {
+            bg: "var(--color-light-green)",
+            color: "var(--color-dark-green)",
+            icon: "fa-key",
+            number: 130,
+            title: "Licenses",
+          },
+          {
+            bg: "var(--color-dark-blue)",
+            color: "var(--color-light-blue)",
+            icon: "fa-tv",
+            number: 92,
+            title: "Monitors",
+          },
+        ].map((stat, index) => (
+          <div key={index} className="col-6 col-sm-6 col-md-4 col-lg-2">
+            <StatBox {...stat} />
           </div>
-          <div className="row g-3 mt-1">
-            <div className="col-4">
-              <div
-                className="card p-2"
-                style={{
-                  height: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <PieChart
-                  gradientColor="#FFA955" //""
-                  title="Sales Distribution"
-                  series={[35, 40, 25]}
-                />
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="card p-2" style={{ height: "100%" }}>
-                <PieChart
-                  gradientColor="#F75A5A" //"var(--color-brown)"
-                  title="Sales Distribution"
-                  series={[35, 40, 25]}
-                />
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="card p-2" style={{ height: "100%" }}>
-                <PieChart
-                  gradientColor="#9d4edd" //"var(--color-brown)"
-                  title="Sales Distribution"
-                  series={[35, 40, 25]}
-                />
-              </div>
-            </div>
+        ))}
+      </div>
+
+      <div className="row mt-3">
+        <div className="col-12 col-sm-6 col-md-6 col-lg-3">
+          <div className="card p-2">
+            <PieChart
+              gradientColor="#FFA955"
+              title="Sales Distribution"
+              series={[35, 40, 25]}
+            />
           </div>
-          <div className="row g-3 mt-1">
-            {[
-              {
-                bg: "var(--color-light-gray)",
-                color: "var(--color-dark-gray)",
-                icon: "fa-cubes",
-                number: 10,
-                title: "Software",
-              },
-              {
-                bg: "var(--color-dark-orange)",
-                color: "var(--color-light-orange)",
-                icon: "fa-desktop",
-                number: 150,
-                title: "Computers",
-              },
-              {
-                bg: "var(--color-light-purple)",
-                color: "var(--color-dark-purple)",
-                icon: "fa-network-wired",
-                number: 33,
-                title: "Networks",
-              },
-              // {
-              //   bg: "var(--color-light-orange)",
-              //   color: "var(--color-dark-orange)",
-              //   icon: "fa-phone",
-              //   number: 0,
-              //   title: "Phones",
-              // },
-              // {
-              //   bg: "var(--color-light-green)",
-              //   color: "var(--color-dark-green)",
-              //   icon: "fa-key",
-              //   number: 130,
-              //   title: "Licenses",
-              // },
-              // {
-              //   bg: "var(--color-dark-blue)",
-              //   color: "var(--color-light-blue)",
-              //   icon: "fa-tv",
-              //   number: 92,
-              //   title: "Monitors",
-              // },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="col-6 col-sm-4 col-md-3 col-lg-4 col-xl-4"
-              >
-                <StatBox {...stat} />
-              </div>
-            ))}
+          <div className="card p-2 mt-3">
+            <PieChart
+              gradientColor="#F75A5A"
+              title="Sales Distribution"
+              series={[35, 40, 25]}
+            />
           </div>
         </div>
 
-        <div className="col-12 col-lg-6">
-          <div className="row">
-            <div className="col-12">
-              <div className="card p-3" style={{ height: "100%" }}>
-                <BarChart />
-              </div>
-            </div>
+        <div className="col-12 col-sm-6 col-md-6 col-lg-3 mt-3 mt-md-0">
+          <div className="card p-2">
+            <PieChart
+              gradientColor="#F75A5A"
+              title="Sales Distribution"
+              series={[35, 40, 25]}
+            />
           </div>
-          <div className="row mt-3 g-3">
-            {[
-              {
-                bg: "var(--color-p1)",
-                color: "var(--color-light-green)",
-                icon: "fa-cubes",
-                number: 10,
-                title: "Software",
-              },
-              {
-                bg: "var(--color-p5)",
-                color: "var(--color-p10)",
-                icon: "fa-desktop",
-                number: 150,
-                title: "Computers",
-              },
-              {
-                bg: "var(--color-p11)",
-                color: "var(--color-light-gray)",
-                icon: "fa-network-wired",
-                number: 33,
-                title: "Networks",
-              },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="col-6 col-sm-4 col-md-3 col-lg-4 col-xl-4 "
-              >
-                <StatBox {...stat} />
-              </div>
-            ))}
+          <div className="card p-2 mt-3">
+            <PieChart
+              gradientColor="#F75A5A"
+              title="Sales Distribution"
+              series={[35, 40, 25]}
+            />
           </div>
-          <div className="row mt-3">
-            <div className="col-md-6">
-              <div className="card p-2" style={{ height: "100%" }}>
-                <HorizontalBarChart color={"var(--color-dark-gray)"} />
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="card p-2" style={{ height: "100%" }}>
-                <HorizontalBarChart color={"var(--color-p5)"} />
-              </div>
-            </div>
+        </div>
+
+        <div className="col-12 col-lg-6 mt-3 mt-md-0">
+          <div className="card p-3 h-100">
+            <BarChart />
+          </div>
+        </div>
+      </div>
+
+      <div className="row mt-3">
+        <div className="col-12 col-md-4">
+          <div className="card p-2">
+            <HorizontalBarChart color={"var(--color-dark-gray)"} />
+          </div>
+        </div>
+        <div className="col-12 col-md-4 mt-3 mt-md-0">
+          <div className="card p-2">
+            <HorizontalBarChart color={"var(--color-p5)"} />
+          </div>
+        </div>
+        <div className="col-12 col-md-4 mt-3 mt-md-0">
+          <div className="card p-2">
+            <LineChart />
           </div>
         </div>
       </div>

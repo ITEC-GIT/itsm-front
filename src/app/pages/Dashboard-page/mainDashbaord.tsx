@@ -84,9 +84,6 @@ const MainDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    setSelectedDeviceAtom(undefined);
-  }, []);
 
   useEffect(() => {
     if (!toggleInstance || !toggleInstance.target) return;

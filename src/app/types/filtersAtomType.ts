@@ -34,7 +34,7 @@ type Location = {
 };
 
 export interface StaticDataType {
-  Computers: Computer[];
+  computers: Computer[];
   Departments: [];
   "Initialized softwares": number;
   Locations: Location[];

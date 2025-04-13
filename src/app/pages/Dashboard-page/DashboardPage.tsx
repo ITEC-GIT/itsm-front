@@ -7,7 +7,10 @@ import { DashboardAnalyticsType } from "../../types/dashboard";
 
 import AnalyticsDashboard from "./analyticDashboardPage";
 import { useAtom } from "jotai";
-import { dashboardViewAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
+import {
+  dashboardViewAtom,
+  selectedComputerDashboardAtom,
+} from "../../atoms/dashboard-atoms/dashboardAtom";
 import MainDashboard from "./mainDashbaord";
 import { GetDashboardAnalytics } from "../../config/ApiCalls";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
@@ -16,6 +19,9 @@ import { DashboardLanding } from "../../components/dashboard/landingComponent.ts
 const DashboardPage: FC = () => {
   const [currentView] = useAtom(dashboardViewAtom);
   const [data, setData] = useState<Partial<DashboardAnalyticsType>>({});
+  const [selectedDeviceAtom] = useAtom<number | undefined>(
+    selectedComputerDashboardAtom
+  );
 
   const fetchStatisticData = async () => {
     const res = await GetDashboardAnalytics();
@@ -32,6 +38,11 @@ const DashboardPage: FC = () => {
     fetchStatisticData();
   }, []);
 
+  useEffect(() => {
+    if (currentView === "main" && selectedDeviceAtom !== undefined) {
+    }
+  }, [currentView, selectedDeviceAtom]);
+
   return (
     <div
       className="d-flex flex-column"
@@ -40,8 +51,15 @@ const DashboardPage: FC = () => {
       }}
     >
       <ToolbarWrapper source={"dashboard"} />
-      {/* <AnalyticsDashboard /> */}
-      {currentView === "main" ? <MainDashboard /> : <AnalyticsDashboard />}
+      {currentView === "main" ? (
+        selectedDeviceAtom === undefined ? (
+          <DashboardLanding />
+        ) : (
+          <MainDashboard />
+        )
+      ) : (
+        <AnalyticsDashboard />
+      )}
     </div>
   );
 };
@@ -51,11 +69,10 @@ const DashboardWrapper: FC = () => {
   return (
     <>
       <AnimatedRouteWrapper>
-        <DashboardLanding />
-        {/* <PageTitle breadcrumbs={[]}>
+        <PageTitle breadcrumbs={[]}>
           {intl.formatMessage({ id: "MENU.DASHBOARD" })}
         </PageTitle>
-        <DashboardPage /> */}
+        <DashboardPage />
       </AnimatedRouteWrapper>
     </>
   );
