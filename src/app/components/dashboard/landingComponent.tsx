@@ -8,6 +8,7 @@ import {
 import { toast } from "react-toastify";
 import { CircularSpinner } from "../spinners/circularSpinner";
 import { DonutChart } from "./donut-chart-d3";
+import DonutChartClickable from "./donut-chart-d3 clickable";
 
 interface GradientPieChartProps {
   gradientColor: string | string[];
@@ -189,11 +190,14 @@ const BarChart = ({
       tooltip: { enabled: true },
     },
     yaxis: {
-      labels: {
-        formatter: (val) => `${val}%`,
-        style: { fontSize: "clamp(10px, 1.2vw, 12px)" },
+      title: {
+        text: undefined,
       },
-      max: 12,
+      // labels: {
+      //   formatter: (val) => `${val}%`,
+      //   style: { fontSize: "clamp(40px, 3.2vw, 50px)" },
+      // },
+      // max: 12,
     },
     responsive: [
       {
@@ -228,11 +232,6 @@ const BarChart = ({
     </div>
   );
 };
-
-interface DataItem {
-  label: string;
-  value: number;
-}
 
 interface HorizontalBarChartProps {
   gradientColor: string;
@@ -563,6 +562,7 @@ const DashboardLanding = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const labels = ["Computers", "Phones", "Racks", "Monitors", "OS"];
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -648,6 +648,11 @@ const DashboardLanding = () => {
     },
   ];
 
+  const handleStatusTrigger = (status: string | null) => {
+    console.log(status);
+    setSelectedStatus(status);
+  };
+
   const donutData = (labels: string[] = [], values: number[] = []) =>
     labels.map((label, i) => ({
       label,
@@ -667,6 +672,7 @@ const DashboardLanding = () => {
       <div className="row mt-3">
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
           <div className="card p-2" style={{ height: 250 }}>
+            <span className="text-center">Warranty Distribution</span>
             <DonutChart
               data={donutData(
                 dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels,
@@ -685,6 +691,7 @@ const DashboardLanding = () => {
             /> */}
           </div>
           <div className="card p-2 mt-3" style={{ height: 250 }}>
+            <span className="text-center">Agent installation Distribution</span>
             <DonutChart
               data={donutData(
                 dashboardData?.assets?.totalComputersAgentDistribution?.labels,
@@ -707,15 +714,9 @@ const DashboardLanding = () => {
 
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mt-3 mt-md-0">
           <div className="card p-2" style={{ height: 250 }}>
-            {/* <PieChart
-              gradientColor={["#dbd053", "#3d90d7", "#7ac6d2", "#ce4257"]}
-              title="Tickets Status Distribution"
-              labels={dashboardData?.tickets?.ticketsStatusDist?.labels}
-              series={
-                dashboardData?.tickets?.ticketsStatusDist?.series ?? [0, 0]
-              }
-            /> */}
-            <DonutChart
+            <span className="text-center">Tickets Status Distribution</span>
+            <DonutChartClickable
+              onSelect={(label) => handleStatusTrigger(label)}
               data={donutData(
                 dashboardData?.tickets?.ticketsStatusDist?.labels,
                 dashboardData?.tickets?.ticketsStatusDist?.series
@@ -723,6 +724,7 @@ const DashboardLanding = () => {
             />
           </div>
           <div className="card p-2 mt-3" style={{ height: 250 }}>
+            <span className="text-center">Tickets Category Distribution</span>
             <DonutChart
               data={[
                 { label: "Apples", value: 44 },
@@ -731,11 +733,6 @@ const DashboardLanding = () => {
                 { label: "Dates", value: 33 },
               ]}
             />
-            {/* <PieChart
-              gradientColor={["#9ac06b", "#f78f8f", "#e0e1dd"]}
-              title="Tickets Category Distribution"
-              series={[35, 40, 25]}
-            /> */}
           </div>
         </div>
 

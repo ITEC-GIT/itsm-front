@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import { wrapText } from "./donut-chart-d3";
 
 interface DonutChartProps {
   data: { label: string; value: number }[];
@@ -7,56 +8,16 @@ interface DonutChartProps {
   outerRadiusOffset?: number;
   colors?: string[];
   title?: string;
+  onSelect?: (selectedLabel: string | null) => void;
 }
 
-export function wrapText(
-  text: d3.Selection<SVGTextElement, any, SVGGElement, any>,
-  width: number
-) {
-  text.each(function () {
-    const text = d3.select(this);
-    const words = text.text().split(/\s+/).reverse();
-    let word;
-    let line: string[] = [];
-    let lineNumber = 0;
-    const lineHeight = 1.1; // ems
-    const x = text.attr("x") || 0;
-    const y = text.attr("y") || 0;
-    const dy = parseFloat(text.attr("dy") || "0");
-
-    let tspan = text
-      .text(null)
-      .append("tspan")
-      .attr("x", x)
-      .attr("y", y)
-      .attr("dy", `${dy}em`);
-
-    while ((word = words.pop())) {
-      line.push(word);
-      tspan.text(line.join(" "));
-      if (
-        (tspan.node() as SVGTextContentElement).getComputedTextLength() > width
-      ) {
-        line.pop();
-        tspan.text(line.join(" "));
-        line = [word];
-        tspan = text
-          .append("tspan")
-          .attr("x", x)
-          .attr("y", y)
-          .attr("dy", `${++lineNumber * lineHeight}em`)
-          .text(word);
-      }
-    }
-  });
-}
-
-const DonutChart: React.FC<DonutChartProps> = ({
+const DonutChartClickable: React.FC<DonutChartProps> = ({
   data,
   innerRadius = 10,
   outerRadiusOffset = 55,
   colors,
   title,
+  onSelect,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -93,7 +54,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
     const dynamicInnerRadius = radius * 0.6;
     const dynamicOuterOffset = radius * 0.1;
     const outerRadius = radius - dynamicOuterOffset;
-    // const outerRadius = Math.min(width, height) / 2 - outerRadiusOffset;
+    const labelOffset = radius * 0.01;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
@@ -134,7 +95,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
           ? outerRadius + 8
           : outerRadius
       );
-    const labelOffset = radius * 0.01;
 
     const outerArc = d3
       .arc<d3.PieArcDatum<{ label: string; value: number }>>()
@@ -157,9 +117,11 @@ const DonutChart: React.FC<DonutChartProps> = ({
       )
       .style("cursor", "pointer")
       .on("click", (event, d) => {
-        console.log("selectedIndex =>", selectedIndex);
-        console.log(d.index);
-        setSelectedIndex((prev) => (prev === d.index ? null : d.index));
+        const newIndex = selectedIndex === d.index ? null : d.index;
+        setSelectedIndex(newIndex);
+        if (onSelect) {
+          onSelect(newIndex !== null ? d.data.label : null);
+        }
       })
       .on("mousemove", (event, d) => {
         setHoveredIndex(d.index);
@@ -226,10 +188,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
       };
     });
 
-    // Sort top to bottom
     labels.sort((a, b) => a.y - b.y);
-
-    // Adjust Y values to avoid collision
     const spacing = 14;
     for (let i = 1; i < labels.length; i++) {
       if (labels[i].y - labels[i - 1].y < spacing) {
@@ -260,6 +219,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
         !containerRef.current.contains(event.target as Node)
       ) {
         setSelectedIndex(null);
+        if (onSelect) onSelect(null);
       }
     };
     document.addEventListener("click", handleOutsideClick);
@@ -297,4 +257,4 @@ const DonutChart: React.FC<DonutChartProps> = ({
   );
 };
 
-export { DonutChart };
+export default DonutChartClickable;
