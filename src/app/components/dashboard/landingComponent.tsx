@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import { GetDashboardLandingData } from "../../config/ApiCalls";
+import { toast } from "react-toastify";
+import { CircularSpinner } from "../spinners/circularSpinner";
 
 interface GradientPieChartProps {
   gradientColor: string;
@@ -499,6 +502,81 @@ const StatBox = ({
 };
 
 const DashboardLanding = () => {
+  const [dashboardData, setDashboardData] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await GetDashboardLandingData();
+  //       if (res.status === 200) {
+  //         setDashboardData(res.data);
+  //       } else {
+  //         toast.error("Failed to load dashboard data");
+  //         setError(`Unexpected status code: ${res.status}`);
+  //         console.error("API Error:", res);
+  //       }
+  //     } catch (err: any) {
+  //       toast.error(err.message || "An error occurred while fetching data.");
+  //       console.error("Network Error:", err);
+  //     }
+  //   };
+
+  //   fetchData();
+  //   const stats = [
+  //     {
+  //       bg: "var(--color-dark-gray)",
+  //       color: "var(--color-light-gray)",
+  //       icon: "fa-cubes",
+  //       number: dashboardData?.management?.totalSoftwares ?? 0,
+  //       title: "Software",
+  //     },
+  //     {
+  //       bg: "var(--color-dark-red)",
+  //       color: "var(--color-light-red)",
+  //       icon: "fa-desktop",
+  //       number: dashboardData?.assets?.totalComputers ?? 0,
+  //       title: "Computers",
+  //     },
+  //     {
+  //       bg: "var(--color-light-pink)",
+  //       color: "var(--color-dark-pink)",
+  //       icon: "fa-network-wired",
+  //       number: dashboardData?.assets?.totalNetworks ?? 0,
+  //       title: "Networks",
+  //     },
+  //     {
+  //       bg: "var(--color-light-orange)",
+  //       color: "var(--color-dark-orange)",
+  //       icon: "fa-phone",
+  //       number: dashboardData?.assets?.totalPhones ?? 0,
+  //       title: "Phones",
+  //     },
+  //     {
+  //       bg: "var(--color-light-green)",
+  //       color: "var(--color-dark-green)",
+  //       icon: "fa-key",
+  //       number: dashboardData?.management?.totalLicense ?? 0,
+  //       title: "Licenses",
+  //     },
+  //     {
+  //       bg: "var(--color-dark-blue)",
+  //       color: "var(--color-light-blue)",
+  //       icon: "fa-tv",
+  //       number: dashboardData?.assets?.totalMonitors ?? 0,
+  //       title: "Monitors",
+  //     },
+  //   ];
+  // }, []);
+
+  // if (loading)
+  //   return (
+  //     <div className="d-flex justify-content-center align-items-center h-100">
+  //       <CircularSpinner />
+  //     </div>
+  //   );
+  // if (error) return <div className="text-danger">Error: {error}</div>;
   return (
     <div className="container-fluid px-3 px-sm-4 py-3">
       <div className="row g-3">
