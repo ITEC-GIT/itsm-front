@@ -40,6 +40,45 @@ const SidebarMenuMain = () => {
         title="All Tickets"
         fontIcon="bi-layers"
       />
+
+      <SidebarMenuItemWithSub
+        to="/user-management/"
+        title="User Management"
+        icon="user-tick" //"user-square" //"security-user"
+        fontIcon="bi-layers"
+      >
+        <SidebarMenuItem
+          to="/user-management/roles"
+          title="Roles"
+          hasBullet={true}
+        />
+        <SidebarMenuItem
+          to="/user-management/users"
+          title="Users"
+          hasBullet={true}
+        />
+        <SidebarMenuItem
+          to="/user-management/groups"
+          title="Groups"
+          hasBullet={true}
+        />
+        <SidebarMenuItem
+          to="/user-management/locations"
+          title="Locations"
+          hasBullet={true}
+        />
+        <SidebarMenuItem
+          to="/user-management/alias"
+          title="Alias"
+          hasBullet={true}
+        />
+        <SidebarMenuItem
+          to="/user-management/field-rules"
+          title="Field Rules"
+          hasBullet={true}
+        />
+      </SidebarMenuItemWithSub>
+
       {/* <SidebarMenuItem to='/builder' icon='switch' title='My Tickets' fontIcon='bi-layers' />
       <SidebarMenuItem to='/builder' icon='switch' title='Due Today' fontIcon='bi-layers' />
       <SidebarMenuItem to='/builder' icon='switch' title='Knowledge Base' fontIcon='bi-layers'/> */}

@@ -15,6 +15,7 @@ import { PerformanceMonitoringPage } from "../pages/HyperCommands-Page/performan
 import { AssetsPageWrapper } from "../pages/Assets-page/assetsPage";
 import { AssetDetailsPage } from "../pages/Assets-page/assetDetailsPage";
 import { AssetCreationPage } from "../pages/Assets-page/AssetCreationPage";
+import { RolesPageWrapper } from "../pages/user-management/roles-page";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -52,6 +53,7 @@ const PrivateRoutes = () => {
         <Route path="assets/new" element={<AssetCreationPage />} />
         <Route path="tickets" element={<TicketPageWrapper />} />
         <Route path="/ticket/:id" element={<TicketsDetailPage />} />
+        <Route path="/user-management/roles" element={<RolesPageWrapper />} />
         {/* 
         <Route path='menu-test' element={<MenuTestPage />} /> */}
         {/* Lazy Modules */}

@@ -5,7 +5,6 @@ import Select from "react-select";
 import Cookies from "js-cookie";
 import { DatePicker } from "../form/datePicker";
 import { deepEqual, formatDate, getData } from "../../../utils/custom";
-import { GetAllSoftwareInstallationRequestType as filterType } from "../../types/softwareInstallationTypes";
 import {
   loadFromIndexedDB,
   removeFromIndexedDB,
@@ -13,13 +12,14 @@ import {
 } from "../../indexDB/Config";
 import { useAtom } from "jotai";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
+import { FilterType } from "../../types/common";
 
 interface FilterSidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
   activeFilters: string[];
   filtersStoreName: string;
-  saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
+  saveFilters: React.Dispatch<React.SetStateAction<FilterType>>;
 }
 
 interface FiltersTitleProps {
