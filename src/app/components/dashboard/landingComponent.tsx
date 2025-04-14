@@ -7,7 +7,7 @@ import {
 } from "../../config/ApiCalls";
 import { toast } from "react-toastify";
 import { CircularSpinner } from "../spinners/circularSpinner";
-import { DonutChart } from "./donuts-chart-d3";
+import { DonutChart } from "./donut-chart-d3";
 
 interface GradientPieChartProps {
   gradientColor: string | string[];
@@ -648,17 +648,14 @@ const DashboardLanding = () => {
     },
   ];
 
+  const donutData = (labels: string[] = [], values: number[] = []) =>
+    labels.map((label, i) => ({
+      label,
+      value: values[i] ?? 0,
+    }));
+
   return (
     <div className="container-fluid px-3 px-sm-4 py-3">
-      {/* <DonutChart
-        data={[
-          { label: "Apples", value: 44 },
-          { label: "Bananas", value: 55 },
-          { label: "Cherries", value: 13 },
-          { label: "Dates", value: 33 },
-        ]}
-      /> */}
-
       <div className="row g-3">
         {stats.map((stat, index) => (
           <div key={index} className="col-6 col-sm-6 col-md-4 col-lg-2">
@@ -668,9 +665,15 @@ const DashboardLanding = () => {
       </div>
 
       <div className="row mt-3">
-        <div className="col-12 col-sm-6 col-md-6 col-lg-3">
-          <div className="card p-2">
-            <PieChart
+        <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
+          <div className="card p-2" style={{ height: 250 }}>
+            <DonutChart
+              data={donutData(
+                dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels,
+                dashboardData?.assets?.totalAssetsInWarrentyVsOut?.series
+              )}
+            />
+            {/* <PieChart
               gradientColor={["#b2e8eb", "#0089a1"]}
               title="Warranty Distribution"
               labels={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels}
@@ -679,10 +682,16 @@ const DashboardLanding = () => {
                   0, 0,
                 ]
               }
-            />
+            /> */}
           </div>
-          <div className="card p-2 mt-3">
-            <PieChart
+          <div className="card p-2 mt-3" style={{ height: 250 }}>
+            <DonutChart
+              data={donutData(
+                dashboardData?.assets?.totalComputersAgentDistribution?.labels,
+                dashboardData?.assets?.totalComputersAgentDistribution?.series
+              )}
+            />
+            {/* <PieChart
               gradientColor={["#f7d79a", "#f6922b"]}
               title="Agent installation Distribution"
               labels={
@@ -692,31 +701,45 @@ const DashboardLanding = () => {
                 dashboardData?.assets?.totalComputersAgentDistribution
                   ?.series ?? [0, 0]
               }
-            />
+            /> */}
           </div>
         </div>
 
-        <div className="col-12 col-sm-6 col-md-6 col-lg-3 mt-3 mt-md-0">
-          <div className="card p-2">
-            <PieChart
+        <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mt-3 mt-md-0">
+          <div className="card p-2" style={{ height: 250 }}>
+            {/* <PieChart
               gradientColor={["#dbd053", "#3d90d7", "#7ac6d2", "#ce4257"]}
               title="Tickets Status Distribution"
               labels={dashboardData?.tickets?.ticketsStatusDist?.labels}
               series={
                 dashboardData?.tickets?.ticketsStatusDist?.series ?? [0, 0]
               }
+            /> */}
+            <DonutChart
+              data={donutData(
+                dashboardData?.tickets?.ticketsStatusDist?.labels,
+                dashboardData?.tickets?.ticketsStatusDist?.series
+              )}
             />
           </div>
-          <div className="card p-2 mt-3">
-            <PieChart
+          <div className="card p-2 mt-3" style={{ height: 250 }}>
+            <DonutChart
+              data={[
+                { label: "Apples", value: 44 },
+                { label: "Bananas", value: 55 },
+                { label: "Cherries", value: 13 },
+                { label: "Dates", value: 33 },
+              ]}
+            />
+            {/* <PieChart
               gradientColor={["#9ac06b", "#f78f8f", "#e0e1dd"]}
               title="Tickets Category Distribution"
               series={[35, 40, 25]}
-            />
+            /> */}
           </div>
         </div>
 
-        <div className="col-12 col-lg-6 mt-3 mt-md-0">
+        <div className="col-12 col-lg-4 col-xl-6 mt-3 mt-md-0">
           <div className="card p-3 h-100">
             <BarChart
               gradientColor={"#56b49a"}
