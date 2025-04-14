@@ -212,6 +212,22 @@ async function GetDashboardLandingData() {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetTicketCountsByStatusAndMonth(
+  status: string,
+  from_date?: Date,
+  to_date?: Date
+) {
+  return await PrivateApiCallFastApi.get(`/tickets/dashboard/status-counts/`, {
+    params: {
+      status: status,
+      from_date: from_date,
+      to_date: to_date,
+    },
+  })
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 /** *********************************************************************************************/
 
 /** ************************************** Branches *********************************************/
@@ -630,4 +646,5 @@ export {
   GetTicketAttachments,
   fetchAndOpenFile,
   GetDashboardLandingData,
+  GetTicketCountsByStatusAndMonth,
 };

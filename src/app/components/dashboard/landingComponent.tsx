@@ -1,39 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { GetDashboardLandingData } from "../../config/ApiCalls";
+import {
+  GetDashboardLandingData,
+  GetTicketCountsByStatusAndMonth,
+} from "../../config/ApiCalls";
 import { toast } from "react-toastify";
 import { CircularSpinner } from "../spinners/circularSpinner";
+import { DonutChart } from "./donuts-chart-d3";
 
 interface GradientPieChartProps {
-  gradientColor: string;
-  title: string;
-  series: number[];
+  gradientColor: string | string[];
+  title?: string;
+  series?: number[];
+  labels?: string[];
+  seriesWithData?: ApexAxisChartSeries;
 }
 
-const PieChart = ({ gradientColor, title, series }: GradientPieChartProps) => {
+const PieChart = ({
+  gradientColor,
+  title,
+  series,
+  labels,
+}: GradientPieChartProps) => {
+  const colorsArray = Array.isArray(gradientColor)
+    ? gradientColor
+    : [gradientColor];
+
   const options: ApexOptions = {
     chart: {
       type: "donut",
       animations: { enabled: false },
       redrawOnParentResize: true,
     },
-    colors: [gradientColor],
+    colors: colorsArray,
     fill: {
-      type: "gradient",
-      gradient: {
-        gradientToColors: [gradientColor],
-        stops: [0, 100],
-        shadeIntensity: 1,
-        opacityFrom: 0.7,
-        opacityTo: 0.9,
-      },
+      type: "fill",
     },
     plotOptions: {
       pie: {
         expandOnClick: false,
         donut: {
-          size: "70%", // Adjust this to control the donut hole size
+          size: "65%",
           labels: {
             show: false,
           },
@@ -42,8 +50,28 @@ const PieChart = ({ gradientColor, title, series }: GradientPieChartProps) => {
         customScale: 1.0,
       },
     },
-    dataLabels: { enabled: false },
-    legend: { show: false },
+    dataLabels: {
+      enabled: false,
+      // style: {
+      //   fontSize: "12px",
+      //   fontFamily: "Arial",
+      //   fontWeight: "bold",
+      //   colors: ["#fff"],
+      // },
+      dropShadow: {
+        enabled: false,
+      },
+      formatter: function (
+        val: string,
+        { seriesIndex }: { seriesIndex: number }
+      ) {
+        return labels ? `${labels[seriesIndex]}\n${val}%` : `${val}%`;
+      },
+    },
+    legend: {
+      show: false,
+    },
+    labels: labels || [],
     responsive: [
       {
         breakpoint: 768,
@@ -88,11 +116,32 @@ const PieChart = ({ gradientColor, title, series }: GradientPieChartProps) => {
         height="100%"
         width="100%"
       />
+      {title && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "10px",
+            left: "0",
+            right: "0",
+            textAlign: "center",
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "#666",
+          }}
+        >
+          {title}
+        </div>
+      )}
     </div>
   );
 };
 
-const BarChart = () => {
+const BarChart = ({
+  gradientColor,
+  title,
+  seriesWithData,
+  labels,
+}: GradientPieChartProps) => {
   const options: ApexOptions = {
     chart: {
       type: "bar",
@@ -100,143 +149,78 @@ const BarChart = () => {
       animations: { enabled: false },
       redrawOnParentResize: true,
       parentHeightOffset: 0,
-      toolbar: {
-        show: false,
+      toolbar: { show: false },
+      offsetY: 10,
+    },
+    title: {
+      text: title,
+      align: "center",
+      margin: 20,
+      style: {
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#666",
       },
     },
     plotOptions: {
       bar: {
         borderRadius: 1,
-        dataLabels: {
-          position: "top",
-        },
+        dataLabels: { position: "top" },
       },
     },
     dataLabels: {
       enabled: true,
-      formatter: function (val) {
-        return val + "%";
-      },
+      formatter: (val) => `${val}%`,
       offsetY: -20,
       style: {
         fontSize: "clamp(10px, 1.2vw, 12px)",
         colors: ["#56b49a"],
       },
     },
-    colors: ["#56b49a"],
+    colors: [gradientColor],
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      position: "bottom",
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
+      categories: labels,
       labels: {
-        style: {
-          fontSize: "clamp(10px, 1.2vw, 12px)",
-        },
-        rotate: -45, // Rotate labels for better fit on mobile
+        style: { fontSize: "clamp(10px, 1.2vw, 12px)" },
+        rotate: -45,
+        hideOverlappingLabels: true,
+        trim: true,
       },
-      tooltip: {
-        enabled: true,
-      },
+      tooltip: { enabled: true },
     },
     yaxis: {
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
       labels: {
-        show: true,
-        formatter: function (val) {
-          return val + "%";
-        },
-        style: {
-          fontSize: "clamp(10px, 1.2vw, 12px)",
-        },
+        formatter: (val) => `${val}%`,
+        style: { fontSize: "clamp(10px, 1.2vw, 12px)" },
       },
       max: 12,
-    },
-    title: {
-      text: undefined,
     },
     responsive: [
       {
         breakpoint: 768,
         options: {
-          plotOptions: {
-            bar: {
-              columnWidth: "60%",
-            },
-          },
-          dataLabels: {
-            offsetY: -15,
-          },
-          title: {
-            offsetY: 10,
-          },
+          chart: { offsetY: 20 },
+          plotOptions: { bar: { columnWidth: "60%" } },
+          xaxis: { labels: { rotate: -45, style: { fontSize: "10px" } } },
         },
       },
       {
         breakpoint: 480,
         options: {
-          plotOptions: {
-            bar: {
-              columnWidth: "70%",
-              borderRadius: 1,
-            },
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          xaxis: {
-            labels: {
-              rotate: -45,
-            },
-          },
+          chart: { offsetY: 30 },
+          plotOptions: { bar: { columnWidth: "70%" } },
+          xaxis: { labels: { rotate: -45, style: { fontSize: "8px" } } },
+          dataLabels: { enabled: false },
         },
       },
     ],
   };
 
-  const [state] = useState({
-    series: [
-      {
-        name: "Inflation",
-        data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
-      },
-    ],
-  });
-
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        minHeight: "350px",
-        position: "relative",
-      }}
-    >
+    <div style={{ width: "100%", height: "100%", minHeight: "350px" }}>
       <ReactApexChart
         options={options}
-        series={state.series}
+        series={seriesWithData}
         type="bar"
         height="100%"
         width="100%"
@@ -245,7 +229,31 @@ const BarChart = () => {
   );
 };
 
-const HorizontalBarChart = ({ color }: { color: string }) => {
+interface DataItem {
+  label: string;
+  value: number;
+}
+
+interface HorizontalBarChartProps {
+  gradientColor: string;
+  title?: string;
+  labels?: string[];
+  series: number[];
+  xTitle?: string;
+  yTitle?: string;
+}
+
+const HorizontalBarChart = ({
+  gradientColor,
+  title,
+  series,
+  labels = [],
+  xTitle,
+  yTitle,
+}: HorizontalBarChartProps) => {
+  const maxValue = Math.max(...series);
+  const dynamicMax = Math.ceil(maxValue * 1.1);
+
   const options: ApexOptions = {
     chart: {
       type: "bar",
@@ -257,33 +265,72 @@ const HorizontalBarChart = ({ color }: { color: string }) => {
         horizontal: true,
         barHeight: "40%",
         borderRadius: 2,
+        dataLabels: {
+          position: "center",
+        },
       },
     },
     dataLabels: {
-      enabled: true,
+      enabled: false,
+      formatter: function (val: number) {
+        return val.toString();
+      },
       style: {
         fontSize: "12px",
         colors: ["#333"],
       },
+      offsetX: 0,
     },
     xaxis: {
-      categories: ["France", "Japan", "United States", "China", "Germany"],
+      categories: labels,
+      title: {
+        text: title,
+        style: {
+          fontSize: "12px",
+        },
+      },
+      tickAmount: 4,
+      min: 0,
+      max: dynamicMax,
     },
-    colors: [color],
+    yaxis: {
+      title: {
+        text: yTitle,
+        style: {
+          fontSize: "12px",
+        },
+      },
+    },
+    colors: [gradientColor],
+    title: {
+      text: title,
+      align: "center",
+      style: {
+        fontSize: "16px",
+      },
+    },
+    tooltip: {
+      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+        const value = series[seriesIndex][dataPointIndex];
+        const label = labels[dataPointIndex];
+        return `<div style="
+        padding: 6px 10px;
+        background-color: ${gradientColor}; 
+        color: white;
+        border-radius: 4px;
+        font-size: 12px;
+      ">
+        ${label}: ${value} ${xTitle ?? ""}
+      </div>`;
+      },
+    },
   };
-
-  const series = [
-    {
-      name: "Countries",
-      data: [400, 540, 690, 1100, 1380],
-    },
-  ];
 
   return (
     <div style={{ width: "100%", height: "300px" }}>
       <ReactApexChart
         options={options}
-        series={series}
+        series={[{ data: series }]}
         type="bar"
         height="100%"
         width="100%"
@@ -292,29 +339,36 @@ const HorizontalBarChart = ({ color }: { color: string }) => {
   );
 };
 
-const LineChart = () => {
-  const series = [
-    {
-      name: "High - 2013",
-      data: [28, 29, 33, 36, 32, 32, 33],
-    },
-    {
-      name: "Low - 2013",
-      data: [12, 11, 14, 18, 17, 13, 13],
-    },
-  ];
+const LineChart = ({
+  colors,
+  series,
+  labels,
+  xTitle,
+  yTitle,
+  title,
+}: {
+  colors: string[];
+  series: any;
+  labels: string[];
+  xTitle: string;
+  yTitle: string;
+  title: string;
+}) => {
+  const allValues = series.flatMap((s: any) => s.data);
+  const maxValue = Math.max(...allValues);
+  const dynamicMax = Math.ceil(maxValue * 1.1);
 
   const options: ApexOptions = {
     chart: {
       type: "line",
-      height: "100%", // Changed from fixed 350 to percentage
+      height: "100%",
       dropShadow: {
         enabled: true,
         color: "#000",
         top: 18,
         left: 7,
         blur: 10,
-        opacity: 0.2, // Reduced opacity for better mobile visibility
+        opacity: 0.2,
       },
       zoom: {
         enabled: false,
@@ -322,37 +376,37 @@ const LineChart = () => {
       toolbar: {
         show: false,
       },
-      redrawOnParentResize: true, // Essential for responsiveness
-      parentHeightOffset: 0, // Prevents overflow
+      redrawOnParentResize: true,
+      parentHeightOffset: 0,
     },
-    colors: ["#77B6EA", "#545454"],
+    colors: colors,
     dataLabels: {
       enabled: true,
       style: {
-        fontSize: "clamp(10px, 1.2vw, 12px)", // Responsive font size
+        fontSize: "clamp(10px, 1.2vw, 12px)",
       },
     },
     stroke: {
       curve: "smooth",
-      width: 3, // Slightly thicker lines for mobile
+      width: 3,
     },
     title: {
-      text: undefined,
+      text: title,
+      align: "center",
+      style: {
+        fontSize: "16px",
+      },
     },
     grid: {
       borderColor: "#e7e7e7",
-      row: {
-        colors: ["#f3f3f3", "transparent"],
-        opacity: 0.5,
-      },
     },
     markers: {
-      size: 4, // Slightly larger markers
+      size: 4,
     },
     xaxis: {
-      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+      categories: labels,
       title: {
-        text: "Month",
+        text: xTitle,
         style: {
           fontSize: "clamp(12px, 1.3vw, 14px)",
         },
@@ -364,30 +418,33 @@ const LineChart = () => {
       },
     },
     yaxis: {
+      logarithmic: true,
       title: {
-        text: "Temperature",
+        text: yTitle,
         style: {
           fontSize: "clamp(12px, 1.3vw, 14px)",
         },
       },
-      min: 5,
-      max: 40,
-      labels: {
-        style: {
-          fontSize: "clamp(10px, 1.1vw, 12px)",
-        },
-      },
+      min: 0,
+      max: dynamicMax,
+      // labels: {
+      //   style: {
+      //     fontSize: "clamp(10px, 1.1vw, 12px)",
+      //   },
+      // },
     },
+
     legend: {
-      position: "top",
-      horizontalAlign: "right",
-      floating: true,
-      offsetY: -25,
-      offsetX: -5,
-      fontSize: "clamp(12px, 1.3vw, 14px)",
-      markers: {
-        strokeWidth: 2,
-      },
+      show: false,
+      // position: "top",
+      // horizontalAlign: "right",
+      // floating: true,
+      // offsetY: -25,
+      // offsetX: -5,
+      // fontSize: "clamp(12px, 1.3vw, 14px)",
+      // markers: {
+      //   strokeWidth: 2,
+      // },
     },
     responsive: [
       {
@@ -395,14 +452,14 @@ const LineChart = () => {
         options: {
           chart: {
             dropShadow: {
-              blur: 1, // Less shadow on smaller screens
+              blur: 1,
             },
           },
           markers: {
             size: 3,
           },
           dataLabels: {
-            enabled: false, // Hide data labels on small screens
+            enabled: false,
           },
           legend: {
             position: "bottom",
@@ -416,13 +473,13 @@ const LineChart = () => {
         breakpoint: 480,
         options: {
           stroke: {
-            width: 2, // Thinner lines on very small screens
+            width: 2,
           },
           markers: {
             size: 2,
           },
           grid: {
-            show: false, // Hide grid on very small screens
+            show: false,
           },
         },
       },
@@ -505,125 +562,105 @@ const DashboardLanding = () => {
   const [dashboardData, setDashboardData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const labels = ["Computers", "Phones", "Racks", "Monitors", "OS"];
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await GetDashboardLandingData();
-  //       if (res.status === 200) {
-  //         setDashboardData(res.data);
-  //       } else {
-  //         toast.error("Failed to load dashboard data");
-  //         setError(`Unexpected status code: ${res.status}`);
-  //         console.error("API Error:", res);
-  //       }
-  //     } catch (err: any) {
-  //       toast.error(err.message || "An error occurred while fetching data.");
-  //       console.error("Network Error:", err);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [res, ticketRes] = await Promise.all([
+          GetDashboardLandingData(),
+          GetTicketCountsByStatusAndMonth("solved"),
+        ]);
 
-  //   fetchData();
-  //   const stats = [
-  //     {
-  //       bg: "var(--color-dark-gray)",
-  //       color: "var(--color-light-gray)",
-  //       icon: "fa-cubes",
-  //       number: dashboardData?.management?.totalSoftwares ?? 0,
-  //       title: "Software",
-  //     },
-  //     {
-  //       bg: "var(--color-dark-red)",
-  //       color: "var(--color-light-red)",
-  //       icon: "fa-desktop",
-  //       number: dashboardData?.assets?.totalComputers ?? 0,
-  //       title: "Computers",
-  //     },
-  //     {
-  //       bg: "var(--color-light-pink)",
-  //       color: "var(--color-dark-pink)",
-  //       icon: "fa-network-wired",
-  //       number: dashboardData?.assets?.totalNetworks ?? 0,
-  //       title: "Networks",
-  //     },
-  //     {
-  //       bg: "var(--color-light-orange)",
-  //       color: "var(--color-dark-orange)",
-  //       icon: "fa-phone",
-  //       number: dashboardData?.assets?.totalPhones ?? 0,
-  //       title: "Phones",
-  //     },
-  //     {
-  //       bg: "var(--color-light-green)",
-  //       color: "var(--color-dark-green)",
-  //       icon: "fa-key",
-  //       number: dashboardData?.management?.totalLicense ?? 0,
-  //       title: "Licenses",
-  //     },
-  //     {
-  //       bg: "var(--color-dark-blue)",
-  //       color: "var(--color-light-blue)",
-  //       icon: "fa-tv",
-  //       number: dashboardData?.assets?.totalMonitors ?? 0,
-  //       title: "Monitors",
-  //     },
-  //   ];
-  // }, []);
+        if (res.status === 200) {
+          const mergedData = {
+            ...res.data,
+            ticketsByStatusCount: ticketRes?.data ?? [],
+          };
 
-  // if (loading)
-  //   return (
-  //     <div className="d-flex justify-content-center align-items-center h-100">
-  //       <CircularSpinner />
-  //     </div>
-  //   );
-  // if (error) return <div className="text-danger">Error: {error}</div>;
+          setDashboardData(mergedData);
+        } else {
+          toast.error("Failed to load dashboard data");
+          setError(`Unexpected status code: ${res.status}`);
+          console.error("API Error:", res);
+        }
+      } catch (err: any) {
+        toast.error(err.message || "An error occurred while fetching data.");
+        console.error("Network Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center align-items-center h-100">
+        <CircularSpinner />
+      </div>
+    );
+  if (error) return <div className="text-danger">Error: {error}</div>;
+
+  const stats = [
+    {
+      bg: "var(--color-dark-gray)",
+      color: "var(--color-light-gray)",
+      icon: "fa-ticket",
+      number: dashboardData.tickets.todaysTickets ?? 0,
+      title: "Today's Tickets",
+    },
+    {
+      bg: "var(--color-dark-red)",
+      color: "var(--color-light-red)",
+      icon: "fa-cubes",
+      number: dashboardData.management.totalSoftwares ?? 0,
+      title: "Software",
+    },
+    {
+      bg: "var(--color-light-pink)",
+      color: "var(--color-dark-pink)",
+      icon: "fa-desktop",
+      number: dashboardData?.assets?.totalComputers ?? 0,
+      title: "Computers",
+    },
+    {
+      bg: "var(--color-light-orange)",
+      color: "var(--color-dark-orange)",
+      icon: "fa-cogs",
+      number: dashboardData?.management?.totalLicense ?? 0,
+      title: "Licenses",
+    },
+    {
+      bg: "var(--color-light-green)",
+      color: "var(--color-dark-green)",
+      icon: "fa-sitemap",
+      number: dashboardData?.management?.totalDomains ?? 0,
+      title: "Domains",
+    },
+    {
+      bg: "var(--color-dark-blue)",
+      color: "var(--color-light-blue)",
+      icon: "fa-file-alt",
+      number: dashboardData?.management?.totalDocuments ?? 0,
+      title: "Documents",
+    },
+  ];
+
   return (
     <div className="container-fluid px-3 px-sm-4 py-3">
+      {/* <DonutChart
+        data={[
+          { label: "Apples", value: 44 },
+          { label: "Bananas", value: 55 },
+          { label: "Cherries", value: 13 },
+          { label: "Dates", value: 33 },
+        ]}
+      /> */}
+
       <div className="row g-3">
-        {[
-          {
-            bg: "var(--color-dark-gray)",
-            color: "var(--color-light-gray)",
-            icon: "fa-cubes",
-            number: 10,
-            title: "Software",
-          },
-          {
-            bg: "var(--color-dark-red)",
-            color: "var(--color-light-red)",
-            icon: "fa-desktop",
-            number: 150,
-            title: "Computers",
-          },
-          {
-            bg: "var(--color-light-pink)",
-            color: "var(--color-dark-pink)",
-            icon: "fa-network-wired",
-            number: 33,
-            title: "Networks",
-          },
-          {
-            bg: "var(--color-light-orange)",
-            color: "var(--color-dark-orange)",
-            icon: "fa-phone",
-            number: 0,
-            title: "Phones",
-          },
-          {
-            bg: "var(--color-light-green)",
-            color: "var(--color-dark-green)",
-            icon: "fa-key",
-            number: 130,
-            title: "Licenses",
-          },
-          {
-            bg: "var(--color-dark-blue)",
-            color: "var(--color-light-blue)",
-            icon: "fa-tv",
-            number: 92,
-            title: "Monitors",
-          },
-        ].map((stat, index) => (
+        {stats.map((stat, index) => (
           <div key={index} className="col-6 col-sm-6 col-md-4 col-lg-2">
             <StatBox {...stat} />
           </div>
@@ -634,16 +671,27 @@ const DashboardLanding = () => {
         <div className="col-12 col-sm-6 col-md-6 col-lg-3">
           <div className="card p-2">
             <PieChart
-              gradientColor="#FFA955"
-              title="Sales Distribution"
-              series={[35, 40, 25]}
+              gradientColor={["#b2e8eb", "#0089a1"]}
+              title="Warranty Distribution"
+              labels={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels}
+              series={
+                dashboardData?.assets?.totalAssetsInWarrentyVsOut?.series ?? [
+                  0, 0,
+                ]
+              }
             />
           </div>
           <div className="card p-2 mt-3">
             <PieChart
-              gradientColor="#F75A5A"
-              title="Sales Distribution"
-              series={[35, 40, 25]}
+              gradientColor={["#f7d79a", "#f6922b"]}
+              title="Agent installation Distribution"
+              labels={
+                dashboardData?.assets?.totalComputersAgentDistribution?.labels
+              }
+              series={
+                dashboardData?.assets?.totalComputersAgentDistribution
+                  ?.series ?? [0, 0]
+              }
             />
           </div>
         </div>
@@ -651,15 +699,18 @@ const DashboardLanding = () => {
         <div className="col-12 col-sm-6 col-md-6 col-lg-3 mt-3 mt-md-0">
           <div className="card p-2">
             <PieChart
-              gradientColor="#F75A5A"
-              title="Sales Distribution"
-              series={[35, 40, 25]}
+              gradientColor={["#dbd053", "#3d90d7", "#7ac6d2", "#ce4257"]}
+              title="Tickets Status Distribution"
+              labels={dashboardData?.tickets?.ticketsStatusDist?.labels}
+              series={
+                dashboardData?.tickets?.ticketsStatusDist?.series ?? [0, 0]
+              }
             />
           </div>
           <div className="card p-2 mt-3">
             <PieChart
-              gradientColor="#F75A5A"
-              title="Sales Distribution"
+              gradientColor={["#9ac06b", "#f78f8f", "#e0e1dd"]}
+              title="Tickets Category Distribution"
               series={[35, 40, 25]}
             />
           </div>
@@ -667,7 +718,17 @@ const DashboardLanding = () => {
 
         <div className="col-12 col-lg-6 mt-3 mt-md-0">
           <div className="card p-3 h-100">
-            <BarChart />
+            <BarChart
+              gradientColor={"#56b49a"}
+              title={`${dashboardData?.ticketsByStatusCount?.status} Tickets Distribution Over Time`}
+              labels={dashboardData?.ticketsByStatusCount?.dates}
+              seriesWithData={[
+                {
+                  name: `${dashboardData?.ticketsByStatusCount?.status} Tickets`,
+                  data: dashboardData?.ticketsByStatusCount?.data ?? [0, 0],
+                },
+              ]}
+            />
           </div>
         </div>
       </div>
@@ -675,17 +736,47 @@ const DashboardLanding = () => {
       <div className="row mt-3">
         <div className="col-12 col-md-4">
           <div className="card p-2">
-            <HorizontalBarChart color={"var(--color-dark-gray)"} />
+            <HorizontalBarChart
+              gradientColor={"var(--color-dark-gray)"}
+              title="Top 5 Assignees"
+              labels={dashboardData.tickets.topFiveAssigneedUser.map(
+                (user: any) => user.assignee_name
+              )}
+              series={dashboardData.tickets.topFiveAssigneedUser.map(
+                (user: any) => user.ticket_count
+              )}
+              xTitle="Tickets"
+              yTitle="Assignees"
+            />
           </div>
         </div>
         <div className="col-12 col-md-4 mt-3 mt-md-0">
           <div className="card p-2">
-            <HorizontalBarChart color={"var(--color-p5)"} />
+            <HorizontalBarChart
+              gradientColor="var(--color-p5)"
+              title="Asset Distribution"
+              series={[
+                dashboardData.assets.totalComputers,
+                dashboardData.assets.totalPhones,
+                dashboardData.assets.totalRacks,
+                dashboardData.assets.totalMonitors,
+                dashboardData.assets.totalOS,
+              ]}
+              labels={labels}
+              yTitle="Asset Type"
+            />
           </div>
         </div>
         <div className="col-12 col-md-4 mt-3 mt-md-0">
           <div className="card p-2">
-            <LineChart />
+            <LineChart
+              colors={["#c91a20", "#00ae47", "#6d6875"]}
+              series={dashboardData.tickets.totalTicketsByPriority.series}
+              labels={dashboardData.tickets.totalTicketsByPriority.months}
+              xTitle={"Month"}
+              yTitle={"Tickets"}
+              title={"Priority Distribution – Last 3 Months"}
+            />
           </div>
         </div>
       </div>
