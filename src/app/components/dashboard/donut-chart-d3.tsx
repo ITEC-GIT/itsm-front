@@ -157,8 +157,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
       )
       .style("cursor", "pointer")
       .on("click", (event, d) => {
-        console.log("selectedIndex =>", selectedIndex);
-        console.log(d.index);
         setSelectedIndex((prev) => (prev === d.index ? null : d.index));
       })
       .on("mousemove", (event, d) => {

@@ -557,12 +557,25 @@ const StatBox = ({
   );
 };
 
+const donutData = (labels: string[] = [], values: number[] = []) =>
+  labels.map((label, i) => ({
+    label,
+    value: values[i] ?? 0,
+  }));
+
 const DashboardLanding = () => {
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [userTriggered, setUserTriggered] = useState(false);
   const [dashboardData, setDashboardData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const labels = ["Computers", "Phones", "Racks", "Monitors", "OS"];
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+
+  const handleStatusTrigger = (status: string | null) => {
+    if (selectedStatus === status) return;
+    setSelectedStatus(status);
+    setUserTriggered(true);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -594,6 +607,31 @@ const DashboardLanding = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!userTriggered) return;
+
+    const fetchTicketStatusData = async () => {
+      const statusToUse = selectedStatus ?? "solved";
+      try {
+        const res = await GetTicketCountsByStatusAndMonth(statusToUse);
+        if (res.status === 200) {
+          setDashboardData((prev: any) => ({
+            ...prev,
+            ticketsByStatusCount: res.data ?? [],
+          }));
+        } else {
+          toast.error("Failed to fetch ticket status data");
+          console.error("API Error:", res);
+        }
+      } catch (err: any) {
+        toast.error(err.message || "Error fetching ticket status data");
+        console.error(err);
+      }
+    };
+
+    fetchTicketStatusData();
+  }, [selectedStatus, userTriggered]);
 
   if (loading)
     return (
@@ -647,18 +685,6 @@ const DashboardLanding = () => {
       title: "Documents",
     },
   ];
-
-  const handleStatusTrigger = (status: string | null) => {
-    console.log(status);
-    setSelectedStatus(status);
-  };
-
-  const donutData = (labels: string[] = [], values: number[] = []) =>
-    labels.map((label, i) => ({
-      label,
-      value: values[i] ?? 0,
-    }));
-
   return (
     <div className="container-fluid px-3 px-sm-4 py-3">
       <div className="row g-3">
@@ -740,7 +766,11 @@ const DashboardLanding = () => {
           <div className="card p-3 h-100">
             <BarChart
               gradientColor={"#56b49a"}
-              title={`${dashboardData?.ticketsByStatusCount?.status} Tickets Distribution Over Time`}
+              title={`${dashboardData?.ticketsByStatusCount?.status
+                ?.charAt(0)
+                .toUpperCase()}${dashboardData?.ticketsByStatusCount?.status?.slice(
+                1
+              )} Tickets Distribution Over Time`}
               labels={dashboardData?.ticketsByStatusCount?.dates}
               seriesWithData={[
                 {
