@@ -2,7 +2,6 @@
 // Main init file of global bootstrap and theme functions, mixins, variables and config
 //
 
-
 // Custom functions & mixins
 @import "./core/base/functions";
 @import "./core/base/mixins";
@@ -30,7 +29,6 @@
 // Custom layout variables
 @import "./core/layout/base/variables";
 @import "layout/variables.custom";
-
 
 // Import custom styles
 @import "./custom/ticketcard";
@@ -61,3 +59,5 @@
 
 //btn
 @import "./custom/btn.scss";
+
+@import "./custom/user-management.scss";

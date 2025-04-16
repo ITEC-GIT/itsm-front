@@ -3,16 +3,12 @@ import { SearchComponent } from "../../components/form/search";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { debounce } from "lodash";
-import { FilterSidebar } from "../../components/form/filters.tsx";
 import {
-  RolesActiveFilters,
   RolesColumnsTable,
   rolesMockData,
 } from "../../data/user-management.tsx";
-import { ColumnVisibility, FilterType } from "../../types/common.ts";
 import { customStyles, sortIcon } from "../../data/dataTable.tsx";
-import { KTIcon } from "../../../_metronic/helpers/index.ts";
-import { RoleCreationWizardModal } from "../../components/user-management/create-role-model.tsx";
+import { RoleCreationModal } from "../../components/user-management/create-role-model.tsx";
 
 const RolesPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -20,7 +16,6 @@ const RolesPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
-  const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -28,16 +23,6 @@ const RolesPage = () => {
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<RolesType>[]
   >([]);
-  const [filters, setFilters] = useState<FilterType>({
-    order: "desc",
-  });
-  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
-    name: true,
-    permissions: true,
-    supervisedBy: true,
-    users: true,
-    action: true,
-  });
 
   const handleSearchChange = debounce((query: string) => {
     setSearchQuery(query);
@@ -74,11 +59,7 @@ const RolesPage = () => {
     <AnimatedRouteWrapper>
       <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
         <div className="row d-flex flex-column custom-main-container custom-container-height">
-          <div
-            className={`d-flex flex-column ${
-              isSidebarOpen ? "col-9" : "col-12"
-            }`}
-          >
+          <div className="d-flex flex-column col-12">
             <div ref={divRef} className="row">
               <div className="col-12 d-flex align-items-center justify-content-between mb-4 ms-2">
                 <div className="d-flex justify-content-between gap-3">
@@ -107,14 +88,6 @@ const RolesPage = () => {
                     handleSearchChange(e.target.value)
                   }
                 />
-                <button
-                  className="btn custom-btn"
-                  onClick={toggleSidebar}
-                  title="Filters"
-                >
-                  <i className="bi bi-funnel custom-btn-icon"></i>
-                  Filters
-                </button>
               </div>
             </div>
 
@@ -194,29 +167,10 @@ const RolesPage = () => {
               </button>
             </div> */}
           </div>
-          {isSidebarOpen && (
-            <div
-              className="col-3 custom-border p-0"
-              style={{
-                height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
-                overflow: "auto",
-              }}
-            >
-              <div>
-                <FilterSidebar
-                  isOpen={isSidebarOpen}
-                  toggleSidebar={toggleSidebar}
-                  activeFilters={RolesActiveFilters}
-                  saveFilters={setFilters}
-                  filtersStoreName={"assetsFilters"}
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
       {isModalOpen && (
-        <RoleCreationWizardModal
+        <RoleCreationModal
           show={isModalOpen}
           onClose={toggleModelCreation}
           onSave={(data) => {

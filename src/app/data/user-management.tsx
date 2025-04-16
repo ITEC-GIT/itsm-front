@@ -1,5 +1,4 @@
 import { TableColumn } from "react-data-table-component";
-import { columnXLargeWidth } from "./dataTable";
 import { useState } from "react";
 
 export const RolesActiveFilters = [];
@@ -9,40 +8,38 @@ export const rolesMockData = [
     id: 1,
     name: "IT Administrator",
     permissions: "View All",
-    supervisedBy: "Alex Haddad",
-    users: ["Sara Karam", "Jad Mansour", "Omar Nasser"],
+    users: 3,
     actions: ["Edit", "Delete"],
   },
   {
     id: 2,
     name: "Support Technician",
     permissions: "Limited",
-    supervisedBy: "Maya Farhat",
-    users: ["Rami Sleiman", "Nour Hamdan"],
+    users: 2,
     actions: ["Edit"],
   },
   {
     id: 3,
     name: "Network Manager",
     permissions: "View All",
-    supervisedBy: "Tony Rizk",
-    users: ["Lara Youssef"],
+
+    users: 8,
     actions: ["Edit", "Delete"],
   },
   {
     id: 4,
     name: "Software Deployment",
     permissions: "Read Only",
-    supervisedBy: "Nadine Abou Jaoude",
-    users: ["Firas Khoury", "Salma Ayoub"],
+
+    users: 8,
     actions: ["Edit"],
   },
   {
     id: 5,
     name: "Guest Auditor",
     permissions: "Limited",
-    supervisedBy: "Compliance Officer",
-    users: ["External Auditor"],
+
+    users: 8,
     actions: ["View"],
   },
 ];
@@ -71,16 +68,7 @@ export const RolesColumnsTable = (
       sortable: true,
       id: "permissions",
     },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Supervised By
-        </span>
-      ),
-      selector: (row: RolesType) => row.supervisedBy,
-      sortable: true,
-      id: "supervisedBy",
-    },
+
     {
       name: (
         <span>
@@ -185,3 +173,44 @@ export const RolesColumnsTable = (
       id: "action",
     },
   ].filter(Boolean) as TableColumn<RolesType>[];
+
+export const tabs = [
+  {
+    key: "dashboard",
+    label: "Dashboard",
+    permission: "All",
+    fields: ["View Stats", "Edit Widgets"],
+  },
+  {
+    key: "hyperCommand",
+    label: "Hyper Command",
+    permission: "Read",
+    fields: ["Execute", "Schedule", "Audit Logs"],
+  },
+  {
+    key: "assets",
+    label: "Assets",
+    permission: "None",
+    fields: ["View Hardware", "Edit Hardware", "Assign Owner"],
+  },
+  {
+    key: "tickets",
+    label: "Tickets",
+    permission: "None",
+    fields: ["View Tickets", "Assign Tickets", "Close Tickets"],
+  },
+  {
+    key: "help desk",
+    label: "Help Desk",
+    permission: "All",
+    fields: ["View ", "Create", "Edit", "Delete"],
+  },
+  {
+    key: "userManagement",
+    label: "User Management",
+    permission: "Read",
+    fields: ["Add User", "Delete User", "Assign Roles"],
+  },
+] as const;
+
+export const permissions = ["All", "Read", "None"];
