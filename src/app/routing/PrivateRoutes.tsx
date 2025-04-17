@@ -21,6 +21,7 @@ import { DepartmentsPageWrapper } from "../pages/user-management/departments-pag
 import { LocationsPageWrapper } from "../pages/user-management/locations-page";
 import { ComputerAliasesPageWrapper } from "../pages/user-management/aliases-page";
 import { UsersPageWrapper } from "../pages/user-management/users-page";
+import { FieldRulesPageWrapper } from "../pages/user-management/field-rules";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -73,6 +74,10 @@ const PrivateRoutes = () => {
           element={<ComputerAliasesPageWrapper />}
         />
         <Route path="/user-management/users" element={<UsersPageWrapper />} />
+        <Route
+          path="/user-management/field-rules"
+          element={<FieldRulesPageWrapper />}
+        />
         {/* 
         <Route path='menu-test' element={<MenuTestPage />} /> */}
         {/* Lazy Modules */}

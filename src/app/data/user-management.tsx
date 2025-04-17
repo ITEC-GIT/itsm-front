@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   AliasesType,
   DepartmentsType,
+  FieldRulesType,
   GroupsType,
   LocationsType,
   RolesType,
@@ -1064,5 +1065,134 @@ export const usersMockData = [
     location: ["HQ"],
     supervisedBy: "Aly Salemeh",
     isActive: false,
+  },
+];
+
+//field rules
+export const FieldRulesColumnsTable = (
+  hoveredRowId: number | null,
+  inputRowData: Partial<FieldRulesType>,
+  handleInputChange: (field: "name" | "rule", value: string) => void,
+  handleSave: () => void,
+  handleCancel: () => void,
+  disableInputRow: boolean,
+  isHoveringInputRow: boolean
+): TableColumn<FieldRulesType>[] =>
+  [
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Field Rule Name
+        </span>
+      ),
+      cell: (row: FieldRulesType) =>
+        row.isInputRow ? (
+          <input
+            type="text"
+            className="form-control border-0 bg-transparent"
+            style={{ fontSize: "0.9rem" }}
+            value={inputRowData.name || ""}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+            placeholder="Field Rule Name"
+            disabled={disableInputRow}
+          />
+        ) : (
+          row.name
+        ),
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Field Rule
+        </span>
+      ),
+      cell: (row: FieldRulesType) =>
+        row.isInputRow ? (
+          <input
+            type="text"
+            className="form-control border-0 bg-transparent"
+            style={{ fontSize: "0.9rem" }}
+            value={inputRowData.rule || ""}
+            onChange={(e) => handleInputChange("rule", e.target.value)}
+            placeholder="Field Rule"
+            disabled={disableInputRow}
+          />
+        ) : (
+          row.rule
+        ),
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Used In Tabs
+        </span>
+      ),
+      cell: (row: FieldRulesType) =>
+        Array.isArray(row.usedInTabs) ? row.usedInTabs.join(", ") : "—",
+    },
+    {
+      name: "",
+      width: "100px",
+      cell: (row: AliasesType) =>
+        row.isInputRow ? (
+          <div className="d-flex gap-2 align-items-center">
+            {isHoveringInputRow && (
+              <>
+                <button
+                  className="table-btn-action"
+                  onClick={handleSave}
+                  disabled={disableInputRow}
+                >
+                  <i className="bi bi-check-lg text-success table-icon" />
+                </button>
+                <button className="table-btn-action" onClick={handleCancel}>
+                  <i className="bi bi-x-lg text-danger table-icon" />
+                </button>
+              </>
+            )}
+          </div>
+        ) : hoveredRowId === row.id ? (
+          <div className="d-flex gap-2">
+            <button className="table-btn-action">
+              <i className="bi bi-pencil text-primary table-icon"></i>
+            </button>
+            <button className="table-btn-action">
+              <i className="bi bi-x-lg text-danger table-icon"></i>
+            </button>
+          </div>
+        ) : null,
+    },
+  ] as TableColumn<FieldRulesType>[];
+
+export const fieldRulesMockData = [
+  {
+    id: 1,
+    name: "Create",
+    rule: "All",
+    usedInTabs: ["All"],
+  },
+  {
+    id: 2,
+    name: "Edit",
+    rule: "None",
+    usedInTabs: ["All"],
+  },
+  {
+    id: 3,
+    name: "Delete",
+    rule: "Read",
+    usedInTabs: ["General", "Assets", "Tickets"],
+  },
+  {
+    id: 4,
+    name: "Reply",
+    rule: "All",
+    usedInTabs: ["Tickets"],
+  },
+  {
+    id: 5,
+    name: "Cancel",
+    rule: "All",
+    usedInTabs: ["Software Installation"],
   },
 ];

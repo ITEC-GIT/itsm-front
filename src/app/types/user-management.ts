@@ -45,3 +45,11 @@ export type UsersType = {
   supervisedBy: string;
   isActive: boolean;
 };
+
+export type FieldRulesType = {
+  id: number;
+  name: string;
+  rule: string;
+  usedInTabs: string[];
+  isInputRow?: boolean;
+};
