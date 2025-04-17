@@ -742,11 +742,26 @@ export const aliesesMockData = [
 //users
 
 export const steps = [
-  { id: 1, title: "Basic Information", iconClass: "fa fa-id-card" },
-  { id: 2, title: "Roles & Status", iconClass: "fa fa-user-shield" },
-  { id: 3, title: "Groups & Departments", iconClass: "fa fa-layer-group" },
-  { id: 4, title: "Location Assignment", iconClass: "fa fa-map-marker-alt" },
-  { id: 5, title: "Supervision", iconClass: "fa fa-user-tie" },
+  {
+    id: 1,
+    title: "Basic Info",
+    iconClass: "fa fa-user-circle",
+  },
+  {
+    id: 2,
+    title: "Role Assignment & Supervision",
+    iconClass: "fa fa-shield-alt",
+  },
+  {
+    id: 3,
+    title: "Workplace Assignment",
+    iconClass: "fa fa-sitemap",
+  },
+  {
+    id: 4,
+    title: "Profile Summary",
+    iconClass: "fa fa-id-badge",
+  },
 ];
 
 const gradientColors = [

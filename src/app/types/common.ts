@@ -20,7 +20,7 @@ export type FilterType = {
 };
 
 export type OptionsType = {
-  value: string;
+  value: number;
   label: string;
 };
 

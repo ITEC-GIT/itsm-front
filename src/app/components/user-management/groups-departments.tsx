@@ -1,98 +1,112 @@
-import React, { useState } from "react";
+import Select from "react-select";
 
 interface GroupDeptStepProps {
   selectedGroups: number[];
   selectedDepartments: number[];
-  onToggle: (type: "group" | "department", value: number) => void;
+  selectedLocation: number | null;
+  onGroupsChange: (groupIds: number[] | []) => void;
+  onDepartmentsChange: (depIds: number[] | []) => void;
+  onLocationChange: (locationId: number | null) => void;
 }
 
 const GroupsAndDepartmentsStep = ({
   selectedGroups,
   selectedDepartments,
-  onToggle,
+  selectedLocation,
+  onGroupsChange,
+  onDepartmentsChange,
+  onLocationChange,
 }: GroupDeptStepProps) => {
-  const [active, setActive] = useState<"group" | "department">("group");
-
-  const [groupsOption, setGroupsOption] = useState([
+  const groupsOption = [
     { id: 1, name: "Administrators" },
     { id: 2, name: "Managers" },
     { id: 3, name: "Staff" },
     { id: 4, name: "Contractors" },
-    { id: 5, name: "Administrators" },
-    { id: 6, name: "Managers" },
-    { id: 7, name: "Staff" },
-    { id: 8, name: "Contractors" },
-  ]);
+  ];
 
-  const [departmentsOption, setDepartmentsOption] = useState([
+  const departmentsOption = [
     { id: 1, name: "IT" },
     { id: 2, name: "HR" },
     { id: 3, name: "Finance" },
     { id: 4, name: "Logistics" },
-    { id: 11, name: "IT" },
-    { id: 12, name: "HR" },
-    { id: 31, name: "Finance" },
-    { id: 41, name: "Logistics" },
-  ]);
+  ];
 
-  const renderOptions = (
-    items: { id: number; name: string }[],
-    selected: number[],
+  const locationOptions = [
+    { value: 1, label: "Beirut HQ" },
+    { value: 2, label: "Tripoli Office" },
+    { value: 3, label: "Jounieh Branch" },
+  ];
+
+  const handleMultiSelectChange = (
+    selected: any,
     type: "group" | "department"
-  ) => (
-    <div className="mt-4">
-      {items.map((item) => (
-        <div
-          key={item.id}
-          className="border rounded p-3 mb-3 d-flex align-items-center"
-          style={{ cursor: "pointer" }}
-        >
-          <input
-            className="form-check-input form-check-sm me-2"
-            type="checkbox"
-            checked={selected.includes(item.id)}
-            onChange={() => onToggle(type, item.id)}
-            id={`${type}-${item.id}`}
-            style={{ transform: "scale(0.85)" }}
-          />
-          <label
-            className="form-check-label fw-bold"
-            htmlFor={`${type}-${item.id}`}
-            style={{ cursor: "pointer" }}
-          >
-            {item.name}
-          </label>
-        </div>
-      ))}
-    </div>
-  );
+  ) => {
+    const ids = selected ? selected.map((item: any) => item.value) : [];
+    if (type === "group") onGroupsChange(ids);
+    else onDepartmentsChange(ids);
+  };
+
+  const mapOptions = (items: { id: number; name: string }[]) =>
+    items.map((item) => ({ value: item.id, label: item.name }));
 
   return (
-    <div>
-      <div className="d-flex mb-3 gap-2 bg-light border-radius-12">
-        <button
-          className={`btn flex-fill fw-bold border-radius-12 ${
-            active === "group" ? "bg-white " : "btn-light"
-          }`}
-          onClick={() => setActive("group")}
-        >
-          Groups
-        </button>
-        <button
-          className={`btn flex-fill fw-bold border-radius-12 ${
-            active === "department" ? "bg-white  " : "btn-light"
-          }`}
-          onClick={() => setActive("department")}
-        >
-          Departments
-        </button>
+    <div className="container-fluid">
+      <div className="row mt-5">
+        <div className="col-md-6">
+          <div className="mb-4">
+            <label className="form-label fw-bold">Select Groups</label>
+            <Select
+              options={mapOptions(groupsOption)}
+              value={mapOptions(groupsOption).filter((opt) =>
+                selectedGroups.includes(opt.value)
+              )}
+              onChange={(selected) =>
+                handleMultiSelectChange(selected, "group")
+              }
+              isMulti
+              placeholder="Select one or more groups"
+              classNamePrefix="select"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="form-label fw-bold required">
+              Select Departments
+            </label>
+            <Select
+              options={mapOptions(departmentsOption)}
+              value={mapOptions(departmentsOption).filter((opt) =>
+                selectedDepartments.includes(opt.value)
+              )}
+              onChange={(selected) =>
+                handleMultiSelectChange(selected, "department")
+              }
+              isMulti
+              placeholder="Select one or more departments"
+              classNamePrefix="select"
+            />
+          </div>
+
+          <div>
+            <label className="form-label fw-bold">Select Location</label>
+            <Select
+              options={locationOptions}
+              value={
+                locationOptions.find((opt) => opt.value === selectedLocation) ||
+                null
+              }
+              onChange={(selected) =>
+                selected
+                  ? onLocationChange(selected.value)
+                  : onLocationChange(null)
+              }
+              placeholder="Select a location..."
+              isClearable
+              classNamePrefix="select"
+            />
+          </div>
+        </div>
       </div>
-
-      <h5 className=" mt-5">A user can belong to multiple {active}.</h5>
-
-      {active === "group"
-        ? renderOptions(groupsOption, selectedGroups, "group")
-        : renderOptions(departmentsOption, selectedDepartments, "department")}
     </div>
   );
 };
