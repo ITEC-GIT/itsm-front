@@ -1,28 +1,28 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { SearchComponent } from "../../components/form/search";
+import { useEffect, useRef, useState } from "react";
+import { SearchComponent } from "../../components/form/search.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { debounce } from "lodash";
 import {
-  RolesColumnsTable,
-  rolesMockData,
+  UsersColumnsTable,
+  usersMockData,
 } from "../../data/user-management.tsx";
 import { customStyles, sortIcon } from "../../data/dataTable.tsx";
-import { RoleCreationModal } from "../../components/user-management/create-role-model.tsx";
-import { AddButton } from "../../components/form/customAddButton.tsx";
-import { RolesType } from "../../types/user-management.ts";
+import { UsersType } from "../../types/user-management.ts";
+import { UserCreationModal } from "../../components/user-management/create-user-model.tsx";
 
-const RolesPage = () => {
+const UsersPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<
-    TableColumn<RolesType>[]
+    TableColumn<UsersType>[]
   >([]);
 
   const handleSearchChange = debounce((query: string) => {
@@ -49,8 +49,64 @@ const RolesPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    setVisibleColumns(RolesColumnsTable(hoveredRowId));
+    setVisibleColumns(UsersColumnsTable(hoveredRowId));
   }, [hoveredRowId]);
+
+  useEffect(() => {
+    const calculateWidths = () => {
+      const columnsWithoutAction = visibleColumns.filter(
+        (col) => col.id !== "action" && col.id !== "id"
+      );
+      const visibleCount = visibleColumns.length;
+      const newWidths: Record<string, string> = {};
+
+      if (visibleCount === 2) {
+        columnsWithoutAction.forEach((col: TableColumn<UsersType>) => {
+          newWidths[col.id as string] = "50%";
+        });
+      } else if (visibleCount > 2) {
+        const baseWidthPercentage = Math.ceil(100 / visibleCount);
+
+        if (tableContainerRef.current) {
+          const containerWidth = tableContainerRef.current.clientWidth;
+
+          columnsWithoutAction.forEach((col: TableColumn<UsersType>) => {
+            if (col.width) {
+              const pixelWidth = parseInt(col.width, 10);
+
+              if (!isNaN(pixelWidth)) {
+                const columnPercentageWidth =
+                  Math.round((pixelWidth / containerWidth) * 100) + 0.05;
+
+                if (columnPercentageWidth < baseWidthPercentage) {
+                  newWidths[col.id as string] = `${baseWidthPercentage}%`;
+                } else {
+                  newWidths[col.id as string] = col.width;
+                }
+              } else {
+                newWidths[col.id as string] = `${baseWidthPercentage}%`;
+              }
+            } else {
+              newWidths[col.id as string] = `${baseWidthPercentage}%`;
+            }
+          });
+        }
+      }
+
+      setColumnWidths(newWidths);
+    };
+
+    calculateWidths();
+
+    const observer = new ResizeObserver(calculateWidths);
+    if (tableContainerRef.current) {
+      observer.observe(tableContainerRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [visibleColumns]);
 
   return (
     <AnimatedRouteWrapper>
@@ -61,21 +117,20 @@ const RolesPage = () => {
               <div className="col-12 d-flex align-items-center justify-content-between mb-4 ms-2">
                 <div className="d-flex justify-content-between gap-3">
                   <div className="symbol symbol-50px ">
-                    <h2>🗝️ Role Management</h2>
+                    <h2>👥 Users</h2>
                     <span className="text-muted fs-6">
-                      Create and manage user roles and permissions
+                      Create and manage users
                     </span>
                   </div>
                 </div>
               </div>
               <div className="col-12 d-flex justify-content-end mb-3">
-                {/* <AddButton text="Add New Role" onClick={toggleModelCreation} /> */}
                 <button
                   onClick={toggleModelCreation}
                   className="btn btn-gradient-add d-flex align-items-center gap-2 px-4 py-2"
                 >
                   <i className="bi bi-plus fs-1 text-white"></i>
-                  <span className="d-none d-sm-inline">Add New Role</span>
+                  <span className="d-none d-sm-inline">Add New User</span>
                 </button>
               </div>
 
@@ -104,8 +159,11 @@ const RolesPage = () => {
                 }}
               >
                 <DataTable
-                  columns={visibleColumns}
-                  data={rolesMockData}
+                  columns={visibleColumns.map((col) => ({
+                    ...col,
+                    width: columnWidths[col.id as string],
+                  }))}
+                  data={usersMockData}
                   persistTableHead={true}
                   responsive
                   highlightOnHover
@@ -168,21 +226,18 @@ const RolesPage = () => {
         </div>
       </div>
       {isModalOpen && (
-        <RoleCreationModal
+        <UserCreationModal
           show={isModalOpen}
           onClose={toggleModelCreation}
-          onSave={(data) => {
-            console.log("Created Role:", data);
-            toggleModelCreation();
-          }}
+          onSave={toggleModelCreation}
         />
       )}
     </AnimatedRouteWrapper>
   );
 };
 
-const RolesPageWrapper = () => {
-  return <RolesPage />;
+const UsersPageWrapper = () => {
+  return <UsersPage />;
 };
 
-export { RolesPageWrapper };
+export { UsersPageWrapper };

@@ -63,12 +63,17 @@ const SidebarMenuMain = () => {
           hasBullet={true}
         />
         <SidebarMenuItem
+          to="/user-management/departments"
+          title="Departments"
+          hasBullet={true}
+        />
+        <SidebarMenuItem
           to="/user-management/locations"
           title="Locations"
           hasBullet={true}
         />
         <SidebarMenuItem
-          to="/user-management/alias"
+          to="/user-management/aliases"
           title="Alias"
           hasBullet={true}
         />

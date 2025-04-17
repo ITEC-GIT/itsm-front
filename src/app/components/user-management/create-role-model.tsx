@@ -49,12 +49,11 @@ const RoleCreationModal = ({
       {permissions.map((perm, index) => (
         <button
           key={`${uniqueKey}_${perm}`}
-          className="btn "
+          className="btn fw-900"
           type="button"
           style={{
-            backgroundColor: currentPermission === perm ? "#6c737c" : "#e1e2e5",
+            backgroundColor: currentPermission === perm ? "#064884" : "#e1e2e5",
             color: currentPermission === perm ? "white" : "#6c737c",
-            fontWeight: "900",
           }}
           onClick={() => onChange(perm as AccessLevel)}
         >
@@ -183,7 +182,7 @@ const RoleCreationModal = ({
                       className="text-danger"
                       style={{ fontSize: "0.875rem" }}
                     >
-                      Please provide a valid destination (starts with "/").
+                      Please provide a valid role name
                     </small>
                   )}
                 </div>
@@ -249,7 +248,10 @@ const RoleCreationModal = ({
             </div>
           </div>
           <div className="d-flex justify-content-end align-items-center p-5">
-            <button className="btn btn-sm btn-primary" onClick={handleSave}>
+            <button
+              className="btn btn-sm text-white fw-900 bg-dark-blue-btn fs-5"
+              onClick={handleSave}
+            >
               Save
             </button>
           </div>

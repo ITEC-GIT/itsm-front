@@ -1,29 +1,80 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SearchComponent } from "../../components/form/search";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { debounce } from "lodash";
 import {
-  RolesColumnsTable,
-  rolesMockData,
+  AliasesColumnsTable,
+  aliesesMockData,
+  computersList,
 } from "../../data/user-management.tsx";
 import { customStyles, sortIcon } from "../../data/dataTable.tsx";
-import { RoleCreationModal } from "../../components/user-management/create-role-model.tsx";
-import { AddButton } from "../../components/form/customAddButton.tsx";
-import { RolesType } from "../../types/user-management.ts";
+import { AliasesType } from "../../types/user-management.ts";
 
-const RolesPage = () => {
+const ComputerAliasesPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<
-    TableColumn<RolesType>[]
+    TableColumn<AliasesType>[]
   >([]);
+  const [editingRowId, setEditingRowId] = useState<number | null>(null);
+
+  const [tableData, setTableData] = useState<AliasesType[]>([
+    {
+      id: -1,
+      alias: "",
+      computer: "",
+      isInputRow: true,
+    },
+    ...aliesesMockData,
+  ]);
+
+  const [newRowInput, setNewRowInput] = useState<Partial<AliasesType>>({});
+  const [isHoveringInputRow, setIsHoveringInputRow] = useState(false);
+
+  const handleNewRowInputChange = (
+    field: "computer" | "alias",
+    value: string
+  ) => {
+    setNewRowInput((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSaveNewRow = () => {
+    if (!newRowInput.computer || !newRowInput.alias) return;
+
+    const computerLabel =
+      computersList.find((c) => c.id.toString() === newRowInput.computer)
+        ?.name || "Unknown";
+
+    const newGroup: AliasesType = {
+      id: Date.now(),
+      computer: computerLabel,
+      alias: newRowInput.alias,
+    };
+
+    const updatedData = [
+      {
+        id: -1,
+        computer: "",
+        alias: "",
+        isInputRow: true,
+      },
+      ...tableData.filter((row) => !row.isInputRow),
+      newGroup,
+    ];
+
+    setTableData(updatedData);
+    setNewRowInput({});
+  };
+
+  const handleCancelAddRow = () => {
+    setNewRowInput({});
+  };
 
   const handleSearchChange = debounce((query: string) => {
     setSearchQuery(query);
@@ -37,10 +88,6 @@ const RolesPage = () => {
     setHoveredRowId(null);
   };
 
-  const toggleModelCreation = () => {
-    setIsModalOpen((prevState) => !prevState);
-  };
-
   useEffect(() => {
     if (divRef.current) {
       const rect = divRef.current.getBoundingClientRect();
@@ -49,7 +96,17 @@ const RolesPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    setVisibleColumns(RolesColumnsTable(hoveredRowId));
+    setVisibleColumns(
+      AliasesColumnsTable(
+        hoveredRowId,
+        newRowInput,
+        handleNewRowInputChange,
+        handleSaveNewRow,
+        handleCancelAddRow,
+        editingRowId !== null,
+        isHoveringInputRow
+      )
+    );
   }, [hoveredRowId]);
 
   return (
@@ -61,22 +118,12 @@ const RolesPage = () => {
               <div className="col-12 d-flex align-items-center justify-content-between mb-4 ms-2">
                 <div className="d-flex justify-content-between gap-3">
                   <div className="symbol symbol-50px ">
-                    <h2>🗝️ Role Management</h2>
+                    <h2> 🖧 Computer Aliases</h2>
                     <span className="text-muted fs-6">
-                      Create and manage user roles and permissions
+                      Manage Computer aliases
                     </span>
                   </div>
                 </div>
-              </div>
-              <div className="col-12 d-flex justify-content-end mb-3">
-                {/* <AddButton text="Add New Role" onClick={toggleModelCreation} /> */}
-                <button
-                  onClick={toggleModelCreation}
-                  className="btn btn-gradient-add d-flex align-items-center gap-2 px-4 py-2"
-                >
-                  <i className="bi bi-plus fs-1 text-white"></i>
-                  <span className="d-none d-sm-inline">Add New Role</span>
-                </button>
               </div>
 
               <div className="col-12 d-flex justify-content-end align-items-center gap-2">
@@ -100,19 +147,41 @@ const RolesPage = () => {
                 ref={tableContainerRef}
                 style={{
                   flex: 1,
-                  // overflow: "auto",
                 }}
               >
                 <DataTable
-                  columns={visibleColumns}
-                  data={rolesMockData}
-                  persistTableHead={true}
+                  columns={AliasesColumnsTable(
+                    hoveredRowId,
+                    newRowInput,
+                    handleNewRowInputChange,
+                    handleSaveNewRow,
+                    handleCancelAddRow,
+                    editingRowId !== null,
+                    isHoveringInputRow
+                  )}
+                  data={tableData}
+                  persistTableHead
                   responsive
                   highlightOnHover
+                  conditionalRowStyles={[
+                    {
+                      when: (row: any) => row.isInputRow,
+                      style: {
+                        backgroundColor: "#eeeeee",
+                        border: "none !important",
+                      },
+                    },
+                  ]}
                   customStyles={customStyles}
                   sortIcon={sortIcon}
-                  onRowMouseEnter={(row) => handleMouseEnter(row.id)}
-                  onRowMouseLeave={handleMouseLeave}
+                  onRowMouseEnter={(row) => {
+                    handleMouseEnter(row.id);
+                    if (row.id === -1) setIsHoveringInputRow(true);
+                  }}
+                  onRowMouseLeave={(row) => {
+                    handleMouseLeave();
+                    if (row.id === -1) setIsHoveringInputRow(false);
+                  }}
                   fixedHeader
                   fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
                 />
@@ -167,22 +236,12 @@ const RolesPage = () => {
           </div>
         </div>
       </div>
-      {isModalOpen && (
-        <RoleCreationModal
-          show={isModalOpen}
-          onClose={toggleModelCreation}
-          onSave={(data) => {
-            console.log("Created Role:", data);
-            toggleModelCreation();
-          }}
-        />
-      )}
     </AnimatedRouteWrapper>
   );
 };
 
-const RolesPageWrapper = () => {
-  return <RolesPage />;
+const ComputerAliasesPageWrapper = () => {
+  return <ComputerAliasesPage />;
 };
 
-export { RolesPageWrapper };
+export { ComputerAliasesPageWrapper };
