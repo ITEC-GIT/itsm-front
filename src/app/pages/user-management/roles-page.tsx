@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SearchComponent } from "../../components/form/search";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
@@ -9,7 +9,6 @@ import {
 } from "../../data/user-management.tsx";
 import { customStyles, sortIcon } from "../../data/dataTable.tsx";
 import { RoleCreationModal } from "../../components/user-management/create-role-model.tsx";
-import { AddButton } from "../../components/form/customAddButton.tsx";
 import { RolesType } from "../../types/user-management.ts";
 
 const RolesPage = () => {
