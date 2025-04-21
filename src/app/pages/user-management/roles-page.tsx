@@ -13,7 +13,7 @@ import { RolesType } from "../../types/user-management.ts";
 
 const RolesPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-
+  const [editRoleData, setEditRoleData] = useState<RolesType | null>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
@@ -23,6 +23,11 @@ const RolesPage = () => {
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<RolesType>[]
   >([]);
+
+  const handleEditClick = (role: RolesType) => {
+    setEditRoleData(role);
+    setIsModalOpen(true);
+  };
 
   const handleSearchChange = debounce((query: string) => {
     setSearchQuery(query);
@@ -37,6 +42,7 @@ const RolesPage = () => {
   };
 
   const toggleModelCreation = () => {
+    setEditRoleData(null);
     setIsModalOpen((prevState) => !prevState);
   };
 
@@ -48,7 +54,7 @@ const RolesPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    setVisibleColumns(RolesColumnsTable(hoveredRowId));
+    setVisibleColumns(RolesColumnsTable(hoveredRowId, handleEditClick));
   }, [hoveredRowId]);
 
   return (
@@ -174,6 +180,7 @@ const RolesPage = () => {
             console.log("Created Role:", data);
             toggleModelCreation();
           }}
+          editRoleData={editRoleData}
         />
       )}
     </AnimatedRouteWrapper>

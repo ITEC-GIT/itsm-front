@@ -1,14 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { CustomReactSelect } from "../form/custom-react-select";
+import { UserFormData } from "./create-user-model";
 
 interface BasicInformationFormProps {
-  formData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    username: string;
-    password: string;
-    profileImage?: string | null;
-  };
+  formData: UserFormData;
   onChange: (field: string, value: string) => void;
 }
 
@@ -16,11 +11,21 @@ const BasicInformationForm = ({
   formData,
   onChange,
 }: BasicInformationFormProps) => {
+  const catOption = ["issuer", "assignee", "admin"];
+
+  const categoryOptions = catOption.map((item, index) => ({
+    value: index + 1,
+    label: item,
+  }));
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+
     if (!validTypes.includes(file.type)) {
       alert("Only PNG, JPG, and JPEG files are allowed.");
       return;
@@ -78,68 +83,82 @@ const BasicInformationForm = ({
 
       <div className="row g-3 ">
         <div className="col-md-6">
-          <label className="form-label fw-bold">First Name</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter first name"
-            value={formData.firstName}
-            onChange={(e) => onChange("firstName", e.target.value)}
-            autoComplete="given-name"
-            required
-          />
+          <div className="mb-5">
+            <label className="form-label fw-bold required">Name</label>
+            <input
+              type="text"
+              className="form-control custom-placeholder custom-input-height"
+              placeholder="Enter Name"
+              value={formData.name}
+              onChange={(e) => onChange("name", e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label className="form-label fw-bold required">Username</label>
+            <input
+              type="text"
+              className="form-control custom-placeholder"
+              placeholder="Choose a username"
+              value={formData.username}
+              onChange={(e) => onChange("username", e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label className="form-label fw-bold required">Password</label>
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control custom-placeholder"
+                placeholder="Enter a secure password"
+                value={formData.password}
+                onChange={(e) => onChange("password", e.target.value)}
+                autoComplete="new-password"
+                required
+              />
+              <span
+                className="input-group-text"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                <i className={`bi bi-eye${showPassword ? "-slash" : ""}`}></i>
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="col-md-6">
-          <label className="form-label fw-bold">Last Name</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter last name"
-            value={formData.lastName}
-            onChange={(e) => onChange("lastName", e.target.value)}
-            autoComplete="family-name"
-            required
-          />
-        </div>
+          <div className="mb-5">
+            <label className="form-label fw-bold">User Category</label>
+            <CustomReactSelect
+              isMulti={false}
+              options={categoryOptions}
+              value={
+                categoryOptions.find(
+                  (opt) => opt.label === formData.userCategory
+                ) || null
+              }
+              onChange={(selectedOption) => {
+                onChange("userCategory", selectedOption?.label || "");
+              }}
+              placeholder="Select user category"
+            />
+          </div>
 
-        <div className="col-md-6">
-          <label className="form-label fw-bold">Email</label>
-          <input
-            type="email"
-            className="form-control"
-            placeholder="Enter email address"
-            value={formData.email}
-            onChange={(e) => onChange("email", e.target.value)}
-            autoComplete="email"
-            required
-          />
-        </div>
-
-        <div className="col-md-6">
-          <label className="form-label fw-bold required">Username</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Choose a username"
-            value={formData.username}
-            onChange={(e) => onChange("username", e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </div>
-
-        <div className="col-md-6">
-          <label className="form-label fw-bold required">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            placeholder="Enter a secure password"
-            value={formData.password}
-            onChange={(e) => onChange("password", e.target.value)}
-            autoComplete="new-password"
-            required
-          />
+          <div className="mb-5">
+            <label className="form-label fw-bold">Email</label>
+            <input
+              type="email"
+              className="form-control custom-placeholder"
+              placeholder="Enter email address"
+              value={formData.email}
+              onChange={(e) => onChange("email", e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </div>
         </div>
       </div>
     </div>

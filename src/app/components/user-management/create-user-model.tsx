@@ -3,9 +3,33 @@ import { steps } from "../../data/user-management";
 import { StepNavigation } from "../form/wizard";
 import { BasicInformationForm } from "./basic-info";
 import { GroupsAndDepartmentsStep } from "./groups-departments";
-import { RoleStatusStep } from "./roles-status";
+import { RolesWorkstationStep } from "./roles-workstation";
 import { NextButton, BackButton, SaveButton } from "../form/stepsButton";
-
+import { UserProfileForm } from "./user-profile";
+export interface UserFormData {
+  name: string;
+  email: string;
+  username: string;
+  password: string;
+  userCategory: string;
+  preferredName: string;
+  profileImage: string;
+  phoneNb: string;
+  phoneNb2: string;
+  mobile: string;
+  comment: string;
+  title: {
+    id: number;
+    title: string;
+  };
+  rolesId: number[];
+  supervisorId: number | null;
+  supervisedByRoleIds: number[];
+  groupIds: number[];
+  departmentIds: number[];
+  locationId: number | null;
+  isActive: boolean;
+}
 interface UserCreationModalProps {
   show: boolean;
   onClose: () => void;
@@ -18,14 +42,31 @@ const UserCreationModal = ({
 }: UserCreationModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+  const [formData, setFormData] = useState<UserFormData>({
+    name: "",
     email: "",
     username: "",
     password: "",
+    userCategory: "",
+    preferredName: "",
     profileImage: "",
+    phoneNb: "",
+    phoneNb2: "",
+    mobile: "",
+    title: {
+      id: 0,
+      title: "",
+    },
+    rolesId: [] as number[],
+    supervisorId: null as number | null,
+    supervisedByRoleIds: [] as number[],
+    groupIds: [] as number[],
+    departmentIds: [] as number[],
+    locationId: null as number | null,
+    isActive: true,
+    comment: "",
   });
+
   const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<number[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
@@ -128,7 +169,7 @@ const UserCreationModal = ({
             <h3 className="modal-title fw-bold mb-1">Add New User</h3>
           </div>
 
-          <div className="modal-body" style={{ height: "60vh" }}>
+          <div className="modal-body" style={{ maxHeight: "75vh" }}>
             <div ref={stepsRef}>
               <StepNavigation steps={steps} currentStep={currentStep} />
             </div>
@@ -137,7 +178,7 @@ const UserCreationModal = ({
               {currentStep === 1 && (
                 <div
                   style={{
-                    height: `calc(60vh - ${height}px - ${btnsHeight}px )`,
+                    height: `calc(75vh - ${height}px - 48px )`,
                     overflowY: "auto",
                   }}
                 >
@@ -150,53 +191,60 @@ const UserCreationModal = ({
               {currentStep === 2 && (
                 <div
                   style={{
-                    height: `calc(60vh - ${height}px - ${btnsHeight}px )`,
+                    height: `calc(75vh - ${height}px - 48px )`,
                     overflowY: "auto",
                   }}
                 >
-                  <RoleStatusStep
+                  <RolesWorkstationStep
+                    formData={formData}
+                    onChange={handleInputChange}
+                  />
+
+                  {/* <RoleStatusStep
                     selectedSupervisorId={selectedSupervisorId}
                     onSupervisorChange={setSelectedSupervisorId}
                     selectedSupervisedByRoleIds={selectedSupervisedByRoleIds}
                     onSupervisedByRoleChange={setSelectedSupervisedByRoleIds}
                     selectedRoleIds={selectedRoles}
-                    onToggleStatus={setStatus}
                     onRolesChange={setSelectedRoles}
-                  />
-                </div>
-              )}
-              {currentStep === 3 && (
-                <div
-                  style={{
-                    height: `calc(60vh - ${height}px - ${btnsHeight}px )`,
-                    overflowY: "auto",
-                  }}
-                >
-                  <GroupsAndDepartmentsStep
                     selectedGroups={selectedGroups}
                     selectedDepartments={selectedDepartments}
                     selectedLocation={selectedLocation}
                     onGroupsChange={setSelectedGroups}
                     onDepartmentsChange={setSelectedDepartments}
                     onLocationChange={setSelectedLocation}
+                  /> */}
+                </div>
+              )}
+              {currentStep === 3 && (
+                <div
+                  style={{
+                    height: `calc(75vh - ${height}px - 48px )`,
+                    overflowY: "auto",
+                  }}
+                >
+                  <UserProfileForm
+                    formData={formData}
+                    onChange={handleInputChange}
+                    onToggleStatus={setStatus}
                   />
                 </div>
               )}
-              {/* {currentStep === 4 && (
-                <div className="mb-4">
-                  
-              )} */}
             </div>
           </div>
 
           <div
-            ref={btnsRef}
             className="d-flex flex-wrap justify-content-between align-items-center gap-2 px-5 pb-4"
+            style={{
+              height: "48px",
+            }}
           >
-            <BackButton onClick={handleBack} disable={currentStep === 1} />
+            <div>
+              {currentStep !== 1 && <BackButton onClick={handleBack} />}
+            </div>
 
             <div className="d-flex gap-2">
-              {currentStep === 3 && (
+              {currentStep === 2 && (
                 <button
                   className="btn btn-outline-secondary"
                   onClick={handleSave}

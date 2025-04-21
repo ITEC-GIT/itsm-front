@@ -22,6 +22,7 @@ import { LocationsPageWrapper } from "../pages/user-management/locations-page";
 import { ComputerAliasesPageWrapper } from "../pages/user-management/aliases-page";
 import { UsersPageWrapper } from "../pages/user-management/users-page";
 import { FieldRulesPageWrapper } from "../pages/user-management/field-rules";
+import { SettingsPageWrapper } from "../pages/user-management/settings-page";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -77,6 +78,10 @@ const PrivateRoutes = () => {
         <Route
           path="/user-management/field-rules"
           element={<FieldRulesPageWrapper />}
+        />
+        <Route
+          path="/user-management/settings"
+          element={<SettingsPageWrapper />}
         />
         {/* 
         <Route path='menu-test' element={<MenuTestPage />} /> */}

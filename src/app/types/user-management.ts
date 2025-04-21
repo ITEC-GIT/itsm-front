@@ -24,6 +24,7 @@ export type LocationsType = {
   id: number;
   name: string;
   address: string;
+  state: string;
   departments: number;
   employees: number;
   isInputRow?: boolean;

@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { permissions, tabs } from "../../data/user-management";
+import {
+  fieldRulesMockData,
+  permissions,
+  tabs,
+} from "../../data/user-management";
 import { FiChevronDown, FiChevronRight, FiX } from "react-icons/fi";
+import { RolesType } from "../../types/user-management";
+import { CustomReactSelect } from "../form/custom-react-select";
 interface RolePermissionFields {
   [field: string]: string;
 }
@@ -12,16 +18,20 @@ interface RolePermissions {
   };
 }
 
+type AccessLevel = (typeof permissions)[number];
+
 interface RoleCreationModalProps {
   show: boolean;
   onClose: () => void;
   onSave: (data: { roleName: string; permissions: RolePermissions }) => void;
+  editRoleData?: RolesType | null;
 }
 
 const RoleCreationModal = ({
   show,
   onClose,
   onSave,
+  editRoleData,
 }: RoleCreationModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [roleName, setRoleName] = useState<string>("");
@@ -38,7 +48,18 @@ const RoleCreationModal = ({
     };
   }>({});
 
-  type AccessLevel = (typeof permissions)[number];
+  const availableFieldsMap: {
+    [tabKey: string]: { value: number; label: string }[];
+  } = {
+    general: fieldRulesMockData.map((item) => ({
+      value: item.id,
+      label: item.name,
+    })),
+  };
+
+  const [newFieldDrafts, setNewFieldDrafts] = useState<{
+    [tabKey: string]: { name: number; label: string; access: AccessLevel }[];
+  }>({});
 
   const renderPermissionToggle = (
     uniqueKey: string,
@@ -89,17 +110,21 @@ const RoleCreationModal = ({
 
   useEffect(() => {
     if (show) {
-      const initialState = Object.fromEntries(
-        tabs.map((tab) => [
-          tab.key,
-          {
-            fields: Object.fromEntries(
-              tab.fields.map((field) => [field, tab.permission])
-            ),
-          },
-        ])
-      );
-      setPermissionsState(initialState);
+      if (editRoleData) {
+        setRoleName(editRoleData.name);
+      } else {
+        const initialState = Object.fromEntries(
+          tabs.map((tab) => [
+            tab.key,
+            {
+              fields: Object.fromEntries(
+                tab.fields.map((field) => [field, tab.permission])
+              ),
+            },
+          ])
+        );
+        setPermissionsState(initialState);
+      }
     }
   }, [show]);
 
@@ -109,7 +134,10 @@ const RoleCreationModal = ({
         modalRef.current &&
         !modalRef.current.contains(event.target as Node)
       ) {
+        setRoleName("");
         onClose();
+
+        //should initialize the tabs
       }
     };
 
@@ -228,7 +256,33 @@ const RoleCreationModal = ({
                     </div>
 
                     {accordionOpen[tab.key] && (
-                      <div className="permission-details ">
+                      <div
+                        className="permission-details"
+                        style={{
+                          maxHeight: "300px",
+                          overflowY: "auto",
+                          scrollbarWidth: "none",
+                        }}
+                      >
+                        {editRoleData && (
+                          <div className="d-flex justify-content-end">
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => {
+                                setNewFieldDrafts((prev) => ({
+                                  ...prev,
+                                  [tab.key]: [
+                                    ...(prev[tab.key] || []),
+                                    { name: -1, label: "", access: "All" },
+                                  ],
+                                }));
+                              }}
+                            >
+                              <i className="bi bi-plus-circle"></i> Add Field
+                            </button>
+                          </div>
+                        )}
+
                         {tab.fields.map((field) => (
                           <div key={field} className="permission-field">
                             <label className="field-label">{field}</label>
@@ -237,6 +291,57 @@ const RoleCreationModal = ({
                               permissionsState[tab.key]?.fields?.[field] ||
                                 "None",
                               (perm) => handleFieldChange(tab.key, field, perm)
+                            )}
+                          </div>
+                        ))}
+
+                        {(newFieldDrafts[tab.key] || []).map((draft, index) => (
+                          <div
+                            key={`${tab.key}_draft_${index}`}
+                            className="permission-field mb-2 d-flex align-items-center gap-2"
+                          >
+                            <div style={{ width: "200px" }}>
+                              <CustomReactSelect
+                                options={(
+                                  availableFieldsMap[tab.key] || []
+                                ).filter((option) => {
+                                  const usedFields = Object.values(
+                                    permissionsState
+                                  ).flatMap((tab) => Object.keys(tab.fields));
+                                  return !usedFields.includes(option.label);
+                                })}
+                                value={
+                                  draft.name !== -1
+                                    ? { label: draft.label, value: draft.name }
+                                    : null
+                                }
+                                onChange={(selectedOption) => {
+                                  setNewFieldDrafts((prev) => {
+                                    const updated = [...(prev[tab.key] || [])];
+                                    updated[index] = {
+                                      ...updated[index],
+                                      name: selectedOption?.value ?? -1,
+                                      label: selectedOption?.label ?? "",
+                                    };
+                                    return { ...prev, [tab.key]: updated };
+                                  });
+                                }}
+                                placeholder="Select Field"
+                              />
+                            </div>
+                            {renderPermissionToggle(
+                              `${tab.key}_new_${index}`,
+                              draft.access,
+                              (perm) => {
+                                setNewFieldDrafts((prev) => {
+                                  const updated = [...(prev[tab.key] || [])];
+                                  updated[index] = {
+                                    ...updated[index],
+                                    access: perm,
+                                  };
+                                  return { ...prev, [tab.key]: updated };
+                                });
+                              }
                             )}
                           </div>
                         ))}

@@ -15,6 +15,8 @@ import {
   columnXLargeWidth,
   columnXXLargeWidth,
 } from "./dataTable";
+import { FaComputer } from "react-icons/fa6";
+import { LuMonitor } from "react-icons/lu";
 
 //roles
 export const RolesActiveFilters = [];
@@ -59,7 +61,8 @@ export const rolesMockData = [
   },
 ];
 export const RolesColumnsTable = (
-  hoveredRowId: number | null
+  hoveredRowId: number | null,
+  handleEditClick: (row: RolesType) => void
 ): TableColumn<RolesType>[] =>
   [
     {
@@ -123,7 +126,10 @@ export const RolesColumnsTable = (
           >
             {hoveredRowId === row.id && (
               <>
-                <button className="table-btn-action" onClick={() => {}}>
+                <button
+                  className="table-btn-action"
+                  onClick={() => handleEditClick(row)}
+                >
                   <i className="bi bi-pencil text-primary table-icon"></i>
                 </button>
                 <button
@@ -465,7 +471,10 @@ export const depsMockData = [
 export const LocationsColumnsTable = (
   hoveredRowId: number | null,
   inputRowData: Partial<LocationsType>,
-  handleInputChange: (field: "name" | "address", value: string) => void,
+  handleInputChange: (
+    field: "name" | "address" | "state",
+    value: string
+  ) => void,
   handleSave: () => void,
   handleCancel: () => void,
   disableInputRow: boolean,
@@ -508,6 +517,27 @@ export const LocationsColumnsTable = (
             value={inputRowData.address || ""}
             onChange={(e) => handleInputChange("address", e.target.value)}
             placeholder="Address"
+            disabled={disableInputRow}
+          />
+        ) : (
+          row.address
+        ),
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> State
+        </span>
+      ),
+      selector: (row: LocationsType) =>
+        row.isInputRow ? (
+          <input
+            type="text"
+            className="form-control border-0 bg-transparent"
+            style={{ fontSize: "0.9rem" }}
+            value={inputRowData.state || ""}
+            onChange={(e) => handleInputChange("state", e.target.value)}
+            placeholder="State"
             disabled={disableInputRow}
           />
         ) : (
@@ -575,6 +605,7 @@ export const locationsMockData = [
     id: 1,
     name: "IT Administrator",
     address: "address",
+    state: "state",
     departments: 9,
     employees: 3,
   },
@@ -582,6 +613,7 @@ export const locationsMockData = [
     id: 2,
     name: "Support Technician",
     address: "address",
+    state: "state",
     departments: 9,
     employees: 3,
   },
@@ -589,6 +621,7 @@ export const locationsMockData = [
     id: 3,
     name: "Network Manager",
     address: "address",
+    state: "state",
     departments: 9,
     employees: 3,
   },
@@ -596,6 +629,7 @@ export const locationsMockData = [
     id: 4,
     name: "Software Deployment",
     address: "address",
+    state: "state",
     departments: 9,
     employees: 3,
   },
@@ -603,6 +637,7 @@ export const locationsMockData = [
     id: 5,
     name: "Guest Auditor",
     address: "address",
+    state: "state",
     departments: 9,
     employees: 3,
   },
@@ -641,7 +676,7 @@ export const AliasesColumnsTable = (
         row.isInputRow ? (
           <Select
             classNamePrefix="react-select"
-            className="form-select-container w-50"
+            className="form-select-container w-100"
             options={computerOptions}
             isDisabled={disableInputRow}
             value={computerOptions.find(
@@ -654,7 +689,17 @@ export const AliasesColumnsTable = (
             isClearable
           />
         ) : (
-          row.computer
+          <>
+            <span
+              className="category-span me-5"
+              style={{
+                backgroundColor: "#e0e0e0", //"#d9d3cb", //
+              }}
+            >
+              <LuMonitor />
+            </span>
+            {row.computer}
+          </>
         ),
     },
     {
@@ -750,16 +795,11 @@ export const steps = [
   },
   {
     id: 2,
-    title: "Role Assignment & Supervision",
+    title: "Role Mapping and Workstation",
     iconClass: "fa fa-shield-alt",
   },
   {
     id: 3,
-    title: "Workplace Assignment",
-    iconClass: "fa fa-sitemap",
-  },
-  {
-    id: 4,
     title: "Profile Summary",
     iconClass: "fa fa-id-badge",
   },

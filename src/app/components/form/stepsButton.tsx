@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-const BackButton = ({ onClick, disable }: { onClick: any; disable: any }) => {
+const BackButton = ({ onClick }: { onClick: any }) => {
   return (
     <BackStyledWrapper>
-      <button className="text-dark" onClick={onClick} disabled={disable}>
+      <button className="text-dark" onClick={onClick}>
         <svg
           height={16}
           width={16}
@@ -93,7 +93,7 @@ const NextStyledWrapper = styled.div`
     margin-left: 5px;
     margin-right: 5px;
     font-size: 20px;
-    color:white
+    color: white;
   }
 
   button:hover > svg {

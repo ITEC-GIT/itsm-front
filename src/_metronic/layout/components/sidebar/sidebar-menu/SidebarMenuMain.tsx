@@ -82,6 +82,11 @@ const SidebarMenuMain = () => {
           title="Field Rules"
           hasBullet={true}
         />
+        <SidebarMenuItem
+          to="/user-management/settings"
+          title="Settings"
+          hasBullet={true}
+        />
       </SidebarMenuItemWithSub>
 
       {/* <SidebarMenuItem to='/builder' icon='switch' title='My Tickets' fontIcon='bi-layers' />

@@ -28,6 +28,7 @@ const LocationsPage = () => {
       id: -1,
       name: "",
       address: "",
+      state: "",
       departments: 0,
       employees: 0,
       isInputRow: true,
@@ -39,7 +40,7 @@ const LocationsPage = () => {
   const [isHoveringInputRow, setIsHoveringInputRow] = useState(false);
 
   const handleNewRowInputChange = (
-    field: "name" | "address",
+    field: "name" | "address" | "state",
     value: string
   ) => {
     setNewRowInput((prev) => ({ ...prev, [field]: value }));
@@ -52,6 +53,7 @@ const LocationsPage = () => {
       id: Date.now(),
       name: newRowInput.name,
       address: newRowInput.address || "",
+      state: newRowInput.state || "",
       departments: 0,
       employees: 0,
     };
@@ -61,6 +63,7 @@ const LocationsPage = () => {
         id: -1,
         name: "",
         address: "",
+        state: "",
         departments: 0,
         employees: 0,
         isInputRow: true,
