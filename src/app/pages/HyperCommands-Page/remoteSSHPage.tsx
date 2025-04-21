@@ -71,7 +71,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   }, [staticData, selectedBranch]);
 
   const compOptions = useMemo(() => {
-    return (staticData.Computers || [])
+    return (staticData.computers || [])
       .filter(
         (device) => !selectedBranch || device.branchid === selectedBranch.value
       )
@@ -149,7 +149,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
 
   useEffect(() => {
     if (computerIdProp) {
-      const computer = staticData.Computers.find(
+      const computer = staticData.computers.find(
         (device) => device.id === computerIdProp
       );
       if (computer) {
