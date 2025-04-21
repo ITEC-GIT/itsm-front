@@ -2,34 +2,35 @@ import { useIntl } from "react-intl";
 import { KTIcon } from "../../../../helpers";
 import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
 import { SidebarMenuItem } from "./SidebarMenuItem";
+import sidebarMenu from "../../../../../app/config/sidebar-menu.json";
 
 const SidebarMenuMain = () => {
   const intl = useIntl();
-
+  const t = sidebarMenu;
   return (
     <>
       <SidebarMenuItem
         to="/dashboard"
         icon="element-11"
-        title={intl.formatMessage({ id: "MENU.DASHBOARD" })}
+        title={t.dashboard}
         fontIcon="bi-app-indicator"
       />
       <SidebarMenuItem
         to="/hyper-commands"
         icon="switch"
-        title="Hyper Commands"
+        title={t.hyperCommands}
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
         to="/assets"
         icon="switch"
-        title="Assets"
+        title={t.assets}
         fontIcon="bi-layers"
       />
       <div className="menu-item">
         <div className="menu-content pt-8 pb-2">
           <span className="menu-section text-muted text-uppercase fs-8 ls-1">
-            Tickets
+            {t.ticketsSection}
           </span>
         </div>
       </div>
@@ -37,54 +38,54 @@ const SidebarMenuMain = () => {
       <SidebarMenuItem
         to="/tickets"
         icon="switch"
-        title="All Tickets"
+        title={t.allTickets}
         fontIcon="bi-layers"
       />
 
       <SidebarMenuItemWithSub
         to="/user-management/"
-        title="User Management"
+        title={t.userManagement}
         icon="user-tick" //"user-square" //"security-user"
         fontIcon="bi-layers"
       >
         <SidebarMenuItem
-          to="/user-management/roles"
-          title="Roles"
+          to="/user-management/users"
+          title={t.users}
           hasBullet={true}
         />
         <SidebarMenuItem
-          to="/user-management/users"
-          title="Users"
+          to="/user-management/roles"
+          title={t.roles}
           hasBullet={true}
         />
         <SidebarMenuItem
           to="/user-management/groups"
-          title="Groups"
+          title={t.groups}
           hasBullet={true}
         />
         <SidebarMenuItem
           to="/user-management/departments"
-          title="Departments"
+          title={t.departments}
           hasBullet={true}
         />
         <SidebarMenuItem
           to="/user-management/locations"
-          title="Locations"
+          title={t.locations}
           hasBullet={true}
         />
         <SidebarMenuItem
           to="/user-management/aliases"
-          title="Alias"
+          title={t.aliases}
           hasBullet={true}
         />
         <SidebarMenuItem
           to="/user-management/field-rules"
-          title="Field Rules"
+          title={t.fieldRules}
           hasBullet={true}
         />
         <SidebarMenuItem
           to="/user-management/settings"
-          title="Settings"
+          title={t.settings}
           hasBullet={true}
         />
       </SidebarMenuItemWithSub>

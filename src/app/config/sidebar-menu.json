@@ -1,0 +1,16 @@
+{
+  "dashboard": "Dashboard",
+  "hyperCommands": "Hyper Commands",
+  "assets": "Assets",
+  "ticketsSection": "Tickets",
+  "allTickets": "All Tickets",
+  "userManagement": "User Management",
+  "users": "Users",
+  "roles": "Roles",
+  "groups": "Groups",
+  "departments": "Departments",
+  "locations": "Locations",
+  "aliases": "Alias",
+  "fieldRules": "Field Rules",
+  "settings": "Settings"
+}
