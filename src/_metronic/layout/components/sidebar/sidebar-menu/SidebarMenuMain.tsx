@@ -78,11 +78,11 @@ const SidebarMenuMain = () => {
           title={t.aliases}
           hasBullet={true}
         />
-        <SidebarMenuItem
+        {/* <SidebarMenuItem
           to="/user-management/field-rules"
           title={t.fieldRules}
           hasBullet={true}
-        />
+        /> */}
         <SidebarMenuItem
           to="/user-management/settings"
           title={t.settings}

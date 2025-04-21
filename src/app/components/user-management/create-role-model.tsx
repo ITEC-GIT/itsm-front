@@ -229,14 +229,14 @@ const RoleCreationModal = ({
                     <div className="permission-header">
                       <button
                         className="accordion-toggle"
-                        onClick={() => toggleAccordion(tab.key)}
+                        // onClick={() => toggleAccordion(tab.key)}
                         aria-expanded={accordionOpen[tab.key]}
                       >
-                        {accordionOpen[tab.key] ? (
+                        {/* {accordionOpen[tab.key] ? (
                           <FiChevronDown className="accordion-icon" />
-                        ) : (
-                          <FiChevronRight className="accordion-icon" />
-                        )}
+                        ) : ( */}
+                        <FiChevronRight className="accordion-icon" />
+                        {/* )} */}
                         <span className="permission-title">{tab.label}</span>
                       </button>
 
