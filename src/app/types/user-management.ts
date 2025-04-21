@@ -16,6 +16,7 @@ export type GroupsType = {
 export type DepartmentsType = {
   id: number;
   name: string;
+  location: string;
   members: number;
   isInputRow?: boolean;
 };

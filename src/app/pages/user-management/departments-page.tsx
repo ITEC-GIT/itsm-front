@@ -28,6 +28,7 @@ const DepartmentsPage = () => {
     {
       id: -1,
       name: "",
+      location: "",
       members: 0,
       isInputRow: true,
     },
@@ -37,7 +38,10 @@ const DepartmentsPage = () => {
   const [newRowInput, setNewRowInput] = useState<Partial<DepartmentsType>>({});
   const [isHoveringInputRow, setIsHoveringInputRow] = useState(false);
 
-  const handleNewRowInputChange = (field: "name", value: string) => {
+  const handleNewRowInputChange = (
+    field: "name" | "location",
+    value: string
+  ) => {
     setNewRowInput((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -47,6 +51,7 @@ const DepartmentsPage = () => {
     const newdep: DepartmentsType = {
       id: Date.now(),
       name: newRowInput.name,
+      location: newRowInput.location || "",
       members: 0,
     };
 
@@ -54,7 +59,7 @@ const DepartmentsPage = () => {
       {
         id: -1,
         name: "",
-        description: "",
+        location: "",
         members: 0,
         isInputRow: true,
       },

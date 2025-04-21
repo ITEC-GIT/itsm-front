@@ -365,10 +365,37 @@ export const groupsMockData = [
 ];
 
 //department
+
+export const locationsOptions = [
+  {
+    id: 1,
+    name: "IT Administrator",
+  },
+  {
+    id: 2,
+    name: "Support Technician",
+  },
+  {
+    id: 3,
+    name: "Network Manager",
+  },
+  {
+    id: 4,
+    name: "Software Deployment",
+  },
+  {
+    id: 5,
+    name: "Guest Auditor",
+  },
+].map((location) => ({
+  value: location.id.toString(),
+  label: location.name,
+}));
+
 export const DepartmentsColumnsTable = (
   hoveredRowId: number | null,
   inputRowData: Partial<DepartmentsType>,
-  handleInputChange: (field: "name", value: string) => void,
+  handleInputChange: (field: "name" | "location", value: string) => void,
   handleSave: () => void,
   handleCancel: () => void,
   disableInputRow: boolean,
@@ -394,6 +421,32 @@ export const DepartmentsColumnsTable = (
           />
         ) : (
           row.name
+        ),
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Location
+        </span>
+      ),
+      cell: (row: DepartmentsType) =>
+        row.isInputRow ? (
+          <Select
+            classNamePrefix="react-select"
+            className="form-select-container w-100"
+            options={locationsOptions}
+            isDisabled={disableInputRow}
+            value={locationsOptions.find(
+              (opt) => opt.value === inputRowData.location
+            )}
+            onChange={(selected) =>
+              handleInputChange("location", selected?.value || "")
+            }
+            placeholder="Select Location"
+            isClearable
+          />
+        ) : (
+          <>{row.location}</>
         ),
     },
     {
@@ -443,26 +496,31 @@ export const depsMockData = [
   {
     id: 1,
     name: "IT Administrator",
+    location: "location1",
     members: 3,
   },
   {
     id: 2,
     name: "Support Technician",
+    location: "location1",
     members: 3,
   },
   {
     id: 3,
     name: "Network Manager",
+    location: "location1",
     members: 709,
   },
   {
     id: 4,
     name: "Software Deployment",
+    location: "location1",
     members: 7,
   },
   {
     id: 5,
     name: "Guest Auditor",
+    location: "location1",
     members: 133,
   },
 ];
