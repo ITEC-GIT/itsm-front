@@ -647,7 +647,8 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
       <div className="d-flex justify-content-between">
         {steps.map((stepItem, index) => (
           <div key={stepItem.id} className="step-title">
-            Step {index + 1}: {stepItem.title}
+            {/* Step {index + 1}:  */}
+            {stepItem.title}
           </div>
         ))}
       </div>

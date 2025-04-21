@@ -43,19 +43,19 @@ PrivateApiCallFastApi.interceptors.request.use(
 );
 
 
-PrivateApiCallFastApi.interceptors.response.use(
-    (res: any) => {
-        return res;
-    },
-    (error: any) => {
-        if (error.response?.status === 401) {
-            window.location.href = "/auth/login";
-            Cookies.set("isAuthenticated", "false");
-            Cookies.remove("access_token");
-        }
-        throw error;
-    }
-);
+// PrivateApiCallFastApi.interceptors.response.use(
+//     (res: any) => {
+//         return res;
+//     },
+//     (error: any) => {
+//         if (error.response?.status === 401) {
+//             window.location.href = "/auth/login";
+//             Cookies.set("isAuthenticated", "false");
+//             Cookies.remove("access_token");
+//         }
+//         throw error;
+//     }
+// );
 
 PublicApiCallFastApi.interceptors.request.use(
     (req: any) => {
@@ -74,19 +74,19 @@ PublicApiCallFastApi.interceptors.request.use(
     }
 );
 
-PublicApiCallFastApi.interceptors.response.use(
-    (res: any) => {
-        return res;
-    },
-    (error: any) => {
-        if (error.response?.status === 401) {
-            window.location.href = "/auth/login";
-            Cookies.set("isAuthenticated", "false");
-            Cookies.remove("access_token");
-        }
-        throw error;
-    }
-);
+// PublicApiCallFastApi.interceptors.response.use(
+//     (res: any) => {
+//         return res;
+//     },
+//     (error: any) => {
+//         if (error.response?.status === 401) {
+//             window.location.href = "/auth/login";
+//             Cookies.set("isAuthenticated", "false");
+//             Cookies.remove("access_token");
+//         }
+//         throw error;
+//     }
+// );
 
 PrivateApiCall.interceptors.request.use(
   (req: any) => {
