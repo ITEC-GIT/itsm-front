@@ -141,8 +141,22 @@ const BarChart = ({
   gradientColor,
   title,
   seriesWithData,
-  labels,
+  labels = [],
 }: GradientPieChartProps) => {
+  const isSeriesEmpty =
+    !Array.isArray(seriesWithData) ||
+    !seriesWithData.length ||
+    !Array.isArray(seriesWithData[0]?.data) ||
+    seriesWithData[0].data.every((v) => typeof v === "number" && v === 0);
+
+  const safeSeries = isSeriesEmpty ? [] : seriesWithData;
+  const safeLabels =
+    isSeriesEmpty ||
+    !Array.isArray(labels) ||
+    labels.length !== safeSeries[0]?.data?.length
+      ? []
+      : labels;
+
   const options: ApexOptions = {
     chart: {
       type: "bar",
@@ -180,7 +194,7 @@ const BarChart = ({
     },
     colors: [gradientColor],
     xaxis: {
-      categories: labels,
+      categories: safeLabels,
       labels: {
         style: { fontSize: "clamp(10px, 1.2vw, 12px)" },
         rotate: -45,
@@ -190,14 +204,13 @@ const BarChart = ({
       tooltip: { enabled: true },
     },
     yaxis: {
-      title: {
-        text: undefined,
-      },
-      // labels: {
-      //   formatter: (val) => `${val}%`,
-      //   style: { fontSize: "clamp(40px, 3.2vw, 50px)" },
-      // },
-      // max: 12,
+      title: { text: undefined },
+    },
+    noData: {
+      text: "No data available",
+      align: "center",
+      verticalAlign: "middle",
+      style: { color: "#ccc", fontSize: "14px" },
     },
     responsive: [
       {
@@ -224,7 +237,7 @@ const BarChart = ({
     <div style={{ width: "100%", height: "100%", minHeight: "350px" }}>
       <ReactApexChart
         options={options}
-        series={seriesWithData}
+        series={safeSeries}
         type="bar"
         height="100%"
         width="100%"
@@ -250,8 +263,17 @@ const HorizontalBarChart = ({
   xTitle,
   yTitle,
 }: HorizontalBarChartProps) => {
-  const maxValue = Math.max(...series);
-  const dynamicMax = Math.ceil(maxValue * 1.1);
+  const isSeriesEmpty =
+    Array.isArray(series) &&
+    series.every((v) => typeof v === "number" && v === 0);
+
+  const safeSeries = isSeriesEmpty ? [] : [{ data: series }];
+  const safeLabels = isSeriesEmpty ? [] : labels;
+
+  const dynamicMax =
+    safeSeries.length > 0
+      ? Math.ceil(Math.max(...safeSeries.map((item) => item.data).flat()) * 1.1)
+      : undefined;
 
   const options: ApexOptions = {
     chart: {
@@ -264,29 +286,19 @@ const HorizontalBarChart = ({
         horizontal: true,
         barHeight: "40%",
         borderRadius: 2,
-        dataLabels: {
-          position: "center",
-        },
+        dataLabels: { position: "center" },
       },
     },
     dataLabels: {
       enabled: false,
-      formatter: function (val: number) {
-        return val.toString();
-      },
-      style: {
-        fontSize: "12px",
-        colors: ["#333"],
-      },
-      offsetX: 0,
+      formatter: (val) => val.toString(),
+      style: { fontSize: "12px", colors: ["#333"] },
     },
     xaxis: {
-      categories: labels,
+      categories: safeLabels,
       title: {
-        text: title,
-        style: {
-          fontSize: "12px",
-        },
+        text: xTitle,
+        style: { fontSize: "12px" },
       },
       tickAmount: 4,
       min: 0,
@@ -295,33 +307,34 @@ const HorizontalBarChart = ({
     yaxis: {
       title: {
         text: yTitle,
-        style: {
-          fontSize: "12px",
-        },
+        style: { fontSize: "12px" },
       },
     },
     colors: [gradientColor],
     title: {
       text: title,
       align: "center",
-      style: {
-        fontSize: "16px",
-      },
+      style: { fontSize: "16px" },
     },
     tooltip: {
-      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-        const value = series[seriesIndex][dataPointIndex];
-        const label = labels[dataPointIndex];
+      custom: function ({ series, seriesIndex, dataPointIndex }) {
+        const value = series?.[seriesIndex]?.[dataPointIndex] ?? "N/A";
+        const label = safeLabels?.[dataPointIndex] ?? "N/A";
         return `<div style="
-        padding: 6px 10px;
-        background-color: ${gradientColor}; 
-        color: white;
-        border-radius: 4px;
-        font-size: 12px;
-      ">
-        ${label}: ${value} ${xTitle ?? ""}
-      </div>`;
+          padding: 6px 10px;
+          background-color: ${gradientColor};
+          color: white;
+          border-radius: 4px;
+          font-size: 12px;">
+          ${label}: ${value} ${xTitle ?? ""}
+        </div>`;
       },
+    },
+    noData: {
+      text: "No data available",
+      align: "center",
+      verticalAlign: "middle",
+      style: { color: "#ccc", fontSize: "14px" },
     },
   };
 
@@ -329,7 +342,7 @@ const HorizontalBarChart = ({
     <div style={{ width: "100%", height: "300px" }}>
       <ReactApexChart
         options={options}
-        series={[{ data: series }]}
+        series={safeSeries.length > 0 ? safeSeries : []}
         type="bar"
         height="100%"
         width="100%"
@@ -347,15 +360,35 @@ const LineChart = ({
   title,
 }: {
   colors: string[];
-  series: any;
+  series: { name: string; data: number[] }[];
   labels: string[];
   xTitle: string;
   yTitle: string;
   title: string;
 }) => {
-  const allValues = series.flatMap((s: any) => s.data);
-  const maxValue = Math.max(...allValues);
-  const dynamicMax = Math.ceil(maxValue * 1.1);
+  const isSeriesEmpty =
+    !Array.isArray(series) ||
+    !series.length ||
+    !Array.isArray(series[0]?.data) ||
+    series.every((s) => s.data.every((v) => v === 0 || !isFinite(v)));
+
+  const safeSeries = isSeriesEmpty
+    ? []
+    : series.map((s) => ({
+        name: s.name ?? "Series",
+        data: s.data.map((v) => (isFinite(v) ? v : 0)),
+      }));
+
+  const safeLabels =
+    isSeriesEmpty ||
+    !Array.isArray(labels) ||
+    labels.length !== safeSeries[0]?.data?.length
+      ? []
+      : labels;
+
+  const allValues = safeSeries.flatMap((s) => s.data ?? []);
+  const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
+  const dynamicMax = Math.ceil(maxValue * 1.1) || 1;
 
   const options: ApexOptions = {
     chart: {
@@ -369,16 +402,12 @@ const LineChart = ({
         blur: 10,
         opacity: 0.2,
       },
-      zoom: {
-        enabled: false,
-      },
-      toolbar: {
-        show: false,
-      },
+      zoom: { enabled: false },
+      toolbar: { show: false },
       redrawOnParentResize: true,
       parentHeightOffset: 0,
     },
-    colors: colors,
+    colors,
     dataLabels: {
       enabled: true,
       style: {
@@ -403,7 +432,7 @@ const LineChart = ({
       size: 4,
     },
     xaxis: {
-      categories: labels,
+      categories: safeLabels,
       title: {
         text: xTitle,
         style: {
@@ -417,7 +446,7 @@ const LineChart = ({
       },
     },
     yaxis: {
-      logarithmic: true,
+      logarithmic: !isSeriesEmpty,
       title: {
         text: yTitle,
         style: {
@@ -426,24 +455,18 @@ const LineChart = ({
       },
       min: 0,
       max: dynamicMax,
-      // labels: {
-      //   style: {
-      //     fontSize: "clamp(10px, 1.1vw, 12px)",
-      //   },
-      // },
     },
-
     legend: {
       show: false,
-      // position: "top",
-      // horizontalAlign: "right",
-      // floating: true,
-      // offsetY: -25,
-      // offsetX: -5,
-      // fontSize: "clamp(12px, 1.3vw, 14px)",
-      // markers: {
-      //   strokeWidth: 2,
-      // },
+    },
+    noData: {
+      text: "No data available",
+      align: "center",
+      verticalAlign: "middle",
+      style: {
+        color: "#ccc",
+        fontSize: "14px",
+      },
     },
     responsive: [
       {
@@ -489,7 +512,7 @@ const LineChart = ({
     <div style={{ width: "100%", height: "100%", minHeight: "300px" }}>
       <ReactApexChart
         options={options}
-        series={series}
+        series={safeSeries}
         type="line"
         height="100%"
         width="100%"
@@ -705,36 +728,17 @@ const DashboardLanding = () => {
                 dashboardData?.assets?.totalAssetsInWarrentyVsOut?.series
               )}
             />
-            {/* <PieChart
-              gradientColor={["#b2e8eb", "#0089a1"]}
-              title="Warranty Distribution"
-              labels={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels}
-              series={
-                dashboardData?.assets?.totalAssetsInWarrentyVsOut?.series ?? [
-                  0, 0,
-                ]
-              }
-            /> */}
           </div>
           <div className="card p-2 mt-3" style={{ height: 250 }}>
             <span className="text-center">Agent installation Distribution</span>
             <DonutChart
               data={donutData(
-                dashboardData?.assets?.totalComputersAgentDistribution?.labels,
-                dashboardData?.assets?.totalComputersAgentDistribution?.series
+                dashboardData?.assets?.totalComputersAgentDistribution
+                  ?.labels ?? [],
+                dashboardData?.assets?.totalComputersAgentDistribution
+                  ?.series ?? []
               )}
             />
-            {/* <PieChart
-              gradientColor={["#f7d79a", "#f6922b"]}
-              title="Agent installation Distribution"
-              labels={
-                dashboardData?.assets?.totalComputersAgentDistribution?.labels
-              }
-              series={
-                dashboardData?.assets?.totalComputersAgentDistribution
-                  ?.series ?? [0, 0]
-              }
-            /> */}
           </div>
         </div>
 
@@ -744,8 +748,8 @@ const DashboardLanding = () => {
             <DonutChartClickable
               onSelect={(label) => handleStatusTrigger(label)}
               data={donutData(
-                dashboardData?.tickets?.ticketsStatusDist?.labels,
-                dashboardData?.tickets?.ticketsStatusDist?.series
+                dashboardData?.tickets?.ticketsStatusDist?.labels ?? [],
+                dashboardData?.tickets?.ticketsStatusDist?.series ?? []
               )}
             />
           </div>
@@ -771,11 +775,17 @@ const DashboardLanding = () => {
                 .toUpperCase()}${dashboardData?.ticketsByStatusCount?.status?.slice(
                 1
               )} Tickets Distribution Over Time`}
-              labels={dashboardData?.ticketsByStatusCount?.dates}
+              labels={
+                dashboardData?.ticketsByStatusCount?.dates?.length
+                  ? dashboardData.ticketsByStatusCount.dates
+                  : []
+              }
               seriesWithData={[
                 {
-                  name: `${dashboardData?.ticketsByStatusCount?.status} Tickets`,
-                  data: dashboardData?.ticketsByStatusCount?.data ?? [0, 0],
+                  name: "Tickets",
+                  data: dashboardData?.ticketsByStatusCount?.data?.length
+                    ? dashboardData.ticketsByStatusCount.data
+                    : [0],
                 },
               ]}
             />
@@ -789,12 +799,8 @@ const DashboardLanding = () => {
             <HorizontalBarChart
               gradientColor={"var(--color-dark-gray)"}
               title="Top 5 Assignees"
-              labels={dashboardData.tickets.topFiveAssigneedUser.map(
-                (user: any) => user.assignee_name
-              )}
-              series={dashboardData.tickets.topFiveAssigneedUser.map(
-                (user: any) => user.ticket_count
-              )}
+              labels={dashboardData.tickets.topFiveAssigneedUser.labels ?? []}
+              series={dashboardData.tickets.topFiveAssigneedUser.series ?? []}
               xTitle="Tickets"
               yTitle="Assignees"
             />
@@ -812,8 +818,9 @@ const DashboardLanding = () => {
                 dashboardData.assets.totalMonitors,
                 dashboardData.assets.totalOS,
               ]}
-              labels={labels}
+              labels={labels ?? []}
               yTitle="Asset Type"
+              xTitle="Count"
             />
           </div>
         </div>
@@ -821,8 +828,8 @@ const DashboardLanding = () => {
           <div className="card p-2">
             <LineChart
               colors={["#c91a20", "#00ae47", "#6d6875"]}
-              series={dashboardData.tickets.totalTicketsByPriority.series}
-              labels={dashboardData.tickets.totalTicketsByPriority.months}
+              series={dashboardData.tickets.totalTicketsByPriority.series ?? []}
+              labels={dashboardData.tickets.totalTicketsByPriority.months ?? []}
               xTitle={"Month"}
               yTitle={"Tickets"}
               title={"Priority Distribution – Last 3 Months"}

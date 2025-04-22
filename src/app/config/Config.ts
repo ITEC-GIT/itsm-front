@@ -2,22 +2,22 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const PublicApiCall = axios.create({
-  baseURL: 'https://cobalt.pulsar.ao/apirest.php'
+  baseURL: "https://cobalt.pulsar.ao/apirest.php",
 });
 
 export const PrivateApiCall = axios.create({
-  baseURL: 'https://cobalt.pulsar.ao/apirest.php',
+  baseURL: "https://cobalt.pulsar.ao/apirest.php",
   withCredentials: true,
 });
 export const PublicApiCallFastApi = axios.create({
-    baseURL: 'http://127.0.0.1:8000'
+  baseURL: "http://127.0.0.1:8000",
 });
 
 export const PrivateApiCallFastApi = axios.create({
-    baseURL: 'http://127.0.0.1:8000'
+  baseURL: "http://127.0.0.1:8000",
 });
 export const ImageUploadApiCall = axios.create({
-    baseURL: 'http://localhost:3007'
+  baseURL: "http://localhost:3007",
 });
 
 export function getSessionTokenFromCookie() {
@@ -25,68 +25,65 @@ export function getSessionTokenFromCookie() {
   return match ? match[1] : null;
 }
 
-
 PrivateApiCallFastApi.interceptors.request.use(
-    (req: any) => {
-        const sessionToken = getSessionTokenFromCookie(); // Get token from cookie or local storage
-        if (sessionToken) {
-            req.headers["Authorization"] = `Bearer ${sessionToken}`; // Use Bearer token
-        }
-
-        req.headers["Content-Range"] = "bytes 0-499/10000";
-
-        return req;
-    },
-    (err: any) => {
-        return Promise.reject(err);
+  (req: any) => {
+    const sessionToken = getSessionTokenFromCookie(); // Get token from cookie or local storage
+    if (sessionToken) {
+      req.headers["Authorization"] = `Bearer ${sessionToken}`; // Use Bearer token
     }
+
+    req.headers["Content-Range"] = "bytes 0-499/10000";
+
+    return req;
+  },
+  (err: any) => {
+    return Promise.reject(err);
+  }
 );
 
-
-// PrivateApiCallFastApi.interceptors.response.use(
-//     (res: any) => {
-//         return res;
-//     },
-//     (error: any) => {
-//         if (error.response?.status === 401) {
-//             window.location.href = "/auth/login";
-//             Cookies.set("isAuthenticated", "false");
-//             Cookies.remove("access_token");
-//         }
-//         throw error;
-//     }
-// );
+PrivateApiCallFastApi.interceptors.response.use(
+  (res: any) => {
+    return res;
+  },
+  (error: any) => {
+    if (error.response?.status === 401) {
+      window.location.href = "/auth/login";
+      Cookies.set("isAuthenticated", "false");
+      Cookies.remove("access_token");
+    }
+    throw error;
+  }
+);
 
 PublicApiCallFastApi.interceptors.request.use(
-    (req: any) => {
-        // const sessionToken = getSessionTokenFromCookie();
-        // if (sessionToken) {
-        //     req.headers["Authorization"] = `Bearer ${sessionToken}`; // Use Bearer token
-        // }
+  (req: any) => {
+    // const sessionToken = getSessionTokenFromCookie();
+    // if (sessionToken) {
+    //     req.headers["Authorization"] = `Bearer ${sessionToken}`; // Use Bearer token
+    // }
 
+    req.headers["Content-Range"] = "bytes 0-499/10000";
 
-        req.headers["Content-Range"] = "bytes 0-499/10000";
-
-        return req;
-    },
-    (err: any) => {
-        throw err;
-    }
+    return req;
+  },
+  (err: any) => {
+    throw err;
+  }
 );
 
-// PublicApiCallFastApi.interceptors.response.use(
-//     (res: any) => {
-//         return res;
-//     },
-//     (error: any) => {
-//         if (error.response?.status === 401) {
-//             window.location.href = "/auth/login";
-//             Cookies.set("isAuthenticated", "false");
-//             Cookies.remove("access_token");
-//         }
-//         throw error;
-//     }
-// );
+PublicApiCallFastApi.interceptors.response.use(
+  (res: any) => {
+    return res;
+  },
+  (error: any) => {
+    if (error.response?.status === 401) {
+      window.location.href = "/auth/login";
+      Cookies.set("isAuthenticated", "false");
+      Cookies.remove("access_token");
+    }
+    throw error;
+  }
+);
 
 PrivateApiCall.interceptors.request.use(
   (req: any) => {
@@ -107,7 +104,6 @@ PrivateApiCall.interceptors.request.use(
   }
 );
 
-
 PublicApiCall.interceptors.request.use(
   (req: any) => {
     const sessionToken = getSessionTokenFromCookie();
@@ -127,17 +123,17 @@ PublicApiCall.interceptors.request.use(
   }
 );
 PrivateApiCall.interceptors.response.use(
-    (res: any) => {
-        return res;
-    },
-    (error: any) => {
-        if (error.response?.status === 401) {
-            // window.location.href = "/auth/login";
-            // Cookies.set("isAuthenticated", "false");
-            // Cookies.remove("access_token");
-        }
-        throw error;
+  (res: any) => {
+    return res;
+  },
+  (error: any) => {
+    if (error.response?.status === 401) {
+      // window.location.href = "/auth/login";
+      // Cookies.set("isAuthenticated", "false");
+      // Cookies.remove("access_token");
     }
+    throw error;
+  }
 );
 
 PublicApiCall.interceptors.response.use(

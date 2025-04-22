@@ -52,61 +52,61 @@ const RoutesContent: FC = () => {
     const navigate = useNavigate();
     const [staticData, setStaticData] = useAtom(staticDataAtom);
 
-    // useEffect(() => {
-    //     if (getSessionTokenFromCookie() == null && !isAuthAtom) {
-    //         setCurrentUser(null);
-    //         navigate("/auth/login");
-    //     } else {
-    //         const fetchStaticDataWithAtom = async () => {
-    //             try {
-    //                 const [usersAndAreasResponse, staticDataResponse] = await Promise.all(
-    //                     [GetUsersAndAreas(), GetStaticData()]
-    //                 );
+    useEffect(() => {
+        if (getSessionTokenFromCookie() == null && !isAuthAtom) {
+            setCurrentUser(null);
+            navigate("/auth/login");
+        } else {
+            const fetchStaticDataWithAtom = async () => {
+                try {
+                    const [usersAndAreasResponse, staticDataResponse] = await Promise.all(
+                        [GetUsersAndAreas(), GetStaticData()]
+                    );
 
-    //                 if (
-    //                     usersAndAreasResponse.status !== 200 ||
-    //                     staticDataResponse.status !== 200
-    //                 ) {
-    //                     throw new Error(
-    //                         `Network response was not ok: 
-    //         UsersAndAreas: ${usersAndAreasResponse.status} ${usersAndAreasResponse.statusText}, 
-    //         StaticData: ${staticDataResponse.status} ${staticDataResponse.statusText}`
-    //                     );
-    //                 }
+                    if (
+                        usersAndAreasResponse.status !== 200 ||
+                        staticDataResponse.status !== 200
+                    ) {
+                        throw new Error(
+                            `Network response was not ok: 
+            UsersAndAreas: ${usersAndAreasResponse.status} ${usersAndAreasResponse.statusText}, 
+            StaticData: ${staticDataResponse.status} ${staticDataResponse.statusText}`
+                        );
+                    }
 
-    //                 const data = {
-    //                     ...staticDataResponse.data,
-    //                     ...usersAndAreasResponse.data,
-    //                 };
+                    const data = {
+                        ...staticDataResponse.data,
+                        ...usersAndAreasResponse.data,
+                    };
 
-    //                 if (typeof data === "object" && data !== null) {
-    //                     setStaticData(data);
-    //                 } else {
-    //                     console.error("Invalid data received from the API:", data);
-    //                 }
-    //             } catch (error) {
-    //                 console.error("Error checking IndexedDB or fetching data:", error);
-    //             }
-    //         };
-    //         fetchStaticDataWithAtom();
-    //         setCurrentUser(getSessionTokenFromCookie());
-    //     }
-    // }, [isAuthAtom, navigate]);
+                    if (typeof data === "object" && data !== null) {
+                        setStaticData(data);
+                    } else {
+                        console.error("Invalid data received from the API:", data);
+                    }
+                } catch (error) {
+                    console.error("Error checking IndexedDB or fetching data:", error);
+                }
+            };
+            fetchStaticDataWithAtom();
+            setCurrentUser(getSessionTokenFromCookie());
+        }
+    }, [isAuthAtom, navigate]);
 
-    // useEffect(() => {
-    //     const handleBroadcast = (event: MessageEvent) => {
-    //         if (event.data === "logout") {
-    //             setCurrentUser(null);
-    //             navigate("/auth/login");
-    //         }
-    //     };
+    useEffect(() => {
+        const handleBroadcast = (event: MessageEvent) => {
+            if (event.data === "logout") {
+                setCurrentUser(null);
+                navigate("/auth/login");
+            }
+        };
 
-    //     authChannel.addEventListener("message", handleBroadcast);
+        authChannel.addEventListener("message", handleBroadcast);
 
-    //     return () => {
-    //         authChannel.removeEventListener("message", handleBroadcast);
-    //     };
-    // }, [navigate]);
+        return () => {
+            authChannel.removeEventListener("message", handleBroadcast);
+        };
+    }, [navigate]);
 
     const fetchStaticData = async (user: any) => {
         try {
@@ -160,45 +160,45 @@ const RoutesContent: FC = () => {
     const [isCurrentUserMaster, setIsCurrentUserMaster] = useAtom(
         isCurrentUserMasterAtom
     );
-    // useEffect(() => {
-    //     const sessionCookie = getSessionTokenFromCookie()
-    //     if (sessionCookie == null && !isAuthAtom) {
-    //         setCurrentUser(null);
-    //         navigate("/auth/login");
-    //     } else {
-    //         refetch();
-    //         setCurrentUser(sessionCookie);
-    //     }
-    // }, [isAuthAtom, navigate]);
-    // useEffect(() => {
-    //     if (userBranches && userBranches.data) {
-    //         setItsmBranches((prev) =>
-    //             prev !== userBranches.data.areas
-    //                 ? userBranches.data.areas
-    //                 : prev
-    //         );
-    //         setItsmSlaves((prev) =>
-    //             prev !== userBranches.data.requesters
-    //                 ? userBranches.data.requesters
-    //                 : prev
-    //         );
-    //         setItsmMaster((prev) =>
-    //             prev !== userBranches.data.assignees
-    //                 ? userBranches.data.assignees
-    //                 : prev
-    //         );
-    //         const currentUser = user.user_name;
+    useEffect(() => {
+        const sessionCookie = getSessionTokenFromCookie()
+        if (sessionCookie == null && !isAuthAtom) {
+            setCurrentUser(null);
+            navigate("/auth/login");
+        } else {
+            refetch();
+            setCurrentUser(sessionCookie);
+        }
+    }, [isAuthAtom, navigate]);
+    useEffect(() => {
+        if (userBranches && userBranches.data) {
+            setItsmBranches((prev) =>
+                prev !== userBranches.data.areas
+                    ? userBranches.data.areas
+                    : prev
+            );
+            setItsmSlaves((prev) =>
+                prev !== userBranches.data.requesters
+                    ? userBranches.data.requesters
+                    : prev
+            );
+            setItsmMaster((prev) =>
+                prev !== userBranches.data.assignees
+                    ? userBranches.data.assignees
+                    : prev
+            );
+            const currentUser = user.user_name;
 
-    //         const currentAssignee = userBranches.data.assignees.find(
-    //             (assignee: { name: string; is_admin: number }) => assignee.name === currentUser
-    //         );
-    //         // fetchStaticData(currentUser);
+            const currentAssignee = userBranches.data.assignees.find(
+                (assignee: { name: string; is_admin: number }) => assignee.name === currentUser
+            );
+            // fetchStaticData(currentUser);
 
-    //         const isAdmin = currentAssignee ? currentAssignee.is_admin === 1 : false;
-    //         setIsCurrentUserMaster(isAdmin);
-    //         const x = 0;
-    //     }
-    // }, [userBranches, setItsmBranches, setItsmSlaves]);
+            const isAdmin = currentAssignee ? currentAssignee.is_admin === 1 : false;
+            setIsCurrentUserMaster(isAdmin);
+            const x = 0;
+        }
+    }, [userBranches, setItsmBranches, setItsmSlaves]);
 
     return (
     <AnimatePresence mode="wait" initial={false} >

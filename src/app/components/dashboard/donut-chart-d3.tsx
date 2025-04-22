@@ -58,6 +58,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   colors,
   title,
 }) => {
+  console.log("data ==>>", data);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -65,6 +66,11 @@ const DonutChart: React.FC<DonutChartProps> = ({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const hasNoData =
+    !Array.isArray(data) ||
+    data.length === 0 ||
+    data.every((d) => !d.value || d.value === 0);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -86,6 +92,20 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
   useEffect(() => {
     if (!svgRef.current || !dimensions.width || !dimensions.height) return;
+    const svg = d3.select(svgRef.current);
+
+    if (hasNoData) {
+      svg
+        .append("text")
+        .attr("x", dimensions.width / 2)
+        .attr("y", dimensions.height / 2)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "14px")
+        .attr("fill", "#999")
+        .text("No data available");
+      return;
+    }
 
     const width = dimensions.width;
     const height = dimensions.height;
@@ -95,7 +115,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
     const outerRadius = radius - dynamicOuterOffset;
     // const outerRadius = Math.min(width, height) / 2 - outerRadiusOffset;
 
-    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     if (title) {

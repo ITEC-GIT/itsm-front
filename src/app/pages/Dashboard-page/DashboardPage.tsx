@@ -51,15 +51,16 @@ const DashboardPage: FC = () => {
       }}
     >
       <ToolbarWrapper source={"dashboard"} />
-      {currentView === "main" ? (
-        selectedDeviceAtom === undefined ? (
-          <DashboardLanding />
-        ) : (
-          <MainDashboard />
-        )
+
+      {/* {currentView === "main" ? ( )*/}
+      {selectedDeviceAtom === undefined ? (
+        <DashboardLanding />
       ) : (
-        <AnalyticsDashboard />
+        <MainDashboard />
       )}
+      {/* : (
+        <AnalyticsDashboard />
+      )} */}
     </div>
   );
 };

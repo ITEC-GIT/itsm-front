@@ -201,13 +201,13 @@ async function GetTicketsViewById(range: string, order: string, idgt?: number) {
 /** ********************************************************************************************/
 
 async function GetDashboardAnalytics() {
-  return await PrivateApiCall.get(`/AnalyticsDashboard/`)
+  return await PrivateApiCall.get(`/AnalyticsDashboard`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
 
 async function GetDashboardLandingData() {
-  return await PrivateApiCallFastApi.get(`/dashboard/metrics/`)
+  return await PrivateApiCallFastApi.get(`/dashboard/metrics`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -217,7 +217,7 @@ async function GetTicketCountsByStatusAndMonth(
   from_date?: Date,
   to_date?: Date
 ) {
-  return await PrivateApiCallFastApi.get(`/tickets/dashboard/status-counts/`, {
+  return await PrivateApiCallFastApi.get(`/dashboard/status-counts`, {
     params: {
       status: status,
       from_date: from_date,
