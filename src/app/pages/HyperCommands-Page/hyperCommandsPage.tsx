@@ -18,7 +18,7 @@ const HyperCommandsPage: FC = () => {
 
       <Content>
         <div className="container hyper-container py-5">
-          <div className="row hyper-row g-4">
+          <div className="row hyper-row g-4 d-flex justify-content-center">
             {actions.map((action, index) => (
               <div
                 className="col-12 hyper-col col-sm-6 col-lg-3"
@@ -54,11 +54,11 @@ const HyperCommandsWrapper: FC = () => {
   const intl = useIntl();
   return (
     <>
-        <AnimatedRouteWrapper>
-
+      <AnimatedRouteWrapper>
+        
         <PageTitle breadcrumbs={[]}>Hyper Comamnds</PageTitle>
-      <HyperCommandsPage />
-        </AnimatedRouteWrapper>
+        <HyperCommandsPage />
+      </AnimatedRouteWrapper>
     </>
   );
 };
