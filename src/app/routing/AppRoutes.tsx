@@ -174,8 +174,8 @@ const RoutesContent: FC = () => {
     useEffect(() => {
         if (userBranches && userBranches.data) {
             setItsmBranches((prev) =>
-                prev !== userBranches.data.areas
-                    ? userBranches.data.areas
+                prev !== userBranches.data.branches
+                    ? userBranches.data.branches
                     : prev
             );
             setItsmSlaves((prev) =>

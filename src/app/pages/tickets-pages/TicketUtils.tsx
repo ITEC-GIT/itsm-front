@@ -213,6 +213,8 @@ export const CustomQuillImageClipboard = forwardRef<ReactQuill, CustomQuillProps
                             // Upload the image to the server
                             const formData = new FormData();
                             formData.append("file", file);
+                            formData.append("filetype", "reply");
+                            console.log(formData)
                             const data: ImageUploadResponse = await PostReplyImages(formData) as ImageUploadResponse;
                             const imageUrl = data.url; // URL of the uploaded image
                             // setCountOfPasted((prev) => prev + 1);                             // Add the base64 and URL to the imageMap

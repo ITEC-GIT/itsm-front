@@ -119,7 +119,7 @@ const CustomFilterFrontDataDropdown: React.FC<
     () =>
       ItsmBranches.map((item) => ({
         value: item.id,
-        label: item.name,
+        label: item.value,
       })),
     [ItsmBranches]
   );

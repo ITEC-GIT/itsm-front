@@ -82,14 +82,9 @@ const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
 
 const UpdateTicket = async (body: UpdateTicketRequestBody): Promise<any> => {
     try {
-        const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
-        const sessionToken = getSessionTokenFromCookie();
 
-
-        const response = await PrivateApiCallFastApi.post("/tickets/update_ticket", body, {
+        const response = await PrivateApiCallFastApi.put("/tickets/update_ticket", body, {
             headers: {
-                "App-Token": appToken,
-                "Session-Token": sessionToken,
                 "Content-Type": "application/json",
             },
         });
@@ -451,7 +446,7 @@ async function UpdateActions(ticketId: number, ticketStatusId: number, ticketUrg
         "due_date": ""
     }
 
-    const response = await PrivateApiCall.post("/UpdateTicket", ticketUpdateBody, {
+    const response = await PrivateApiCall.put("/update_ticket", ticketUpdateBody, {
         headers: {
             "App-Token": appToken,
             "Session-Token": sessionToken,
@@ -473,7 +468,7 @@ async function UpdateStarred(ticketId: number, starred: number) {
         "starred": starred
     }
 
-    const response = await PrivateApiCallFastApi.post("/tickets/UpdateTicket", ticketStarredBody, {
+    const response = await PrivateApiCallFastApi.put("/tickets/update_ticket", ticketStarredBody, {
         headers: {
             "App-Token": appToken,
             "Session-Token": sessionToken,
@@ -518,7 +513,7 @@ async function bulkDeleteImages(urlsToDelete: any) {
         const nginxServer = import.meta.env.VITE_APP_ITSM_NGINX_IMAGES_URL;
 
         // Send the list of URLs in the DELETE request
-        const response = await fetch(`${nginxServer}/delete-images`, {
+        const response = await fetch(`${nginxServer}/delete_reply_images`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
