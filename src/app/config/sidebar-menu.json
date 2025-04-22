@@ -1,6 +1,9 @@
 {
   "dashboard": "Dashboard",
   "hyperCommands": "Hyper Commands",
+  "hyperCommands-software": "Software Installation",
+  "hyperCommands-ssh": "Remote SSH",
+  "hyperCommands-vnc": "Remote Console",
   "assets": "Assets",
   "ticketsSection": "Tickets",
   "allTickets": "All Tickets",
