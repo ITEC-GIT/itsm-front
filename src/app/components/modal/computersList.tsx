@@ -31,7 +31,7 @@ const ComputersListModal = ({
               ? item.label.toLowerCase()
               : item.name?.toLowerCase() ?? "",
           id: item.id,
-          name: item.name || item.label, // ensure name exists
+          name: item.name || item.label,
         }))
       : [];
   }, [computersAtom]);

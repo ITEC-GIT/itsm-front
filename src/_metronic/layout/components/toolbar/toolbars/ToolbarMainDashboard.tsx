@@ -13,14 +13,10 @@ import {
 
 const ToolbarMainDashboard = () => {
   const { classes } = useLayout();
-  // const [staticData, setStaticData] = useAtom(staticDataAtom) ;
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
   const [selectedDeviceAtom, setSelectedDeviceAtom] = useAtom(
     selectedComputerDashboardAtom
   );
-  useEffect(() => {
-    const asd = 0;
-  }, [staticData]);
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
@@ -72,76 +68,64 @@ const ToolbarMainDashboard = () => {
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
-    setSelectedDeviceAtom(Number(newValue?.value));
+
+    if (newValue === null) {
+      setSelectedDeviceAtom(undefined);
+    } else {
+      setSelectedDeviceAtom(Number(newValue.value));
+    }
+
     setActiveView(null);
   };
 
   return (
-    <div
-      id="kt_app_toolbar_container"
-      className={clsx("app-container ", classes.toolbarContainer.join(" "))}
-    >
-      <div className="filters-Container">
-        <div>
-          <Select
-            className="select-dashboard"
-            options={locationOptions}
-            value={selectedBranch}
-            onChange={handleBranchChange}
-            placeholder="Select Branch"
-            isClearable
-            styles={{
-              menu: (base) => ({
-                ...base,
-                zIndex: 3000,
-              }),
-            }}
-          />
-        </div>
+    <div className="row justify-content-end mt-2 ">
+      <div className="col-4 col-lg-3 col-xl-2">
+        <Select
+          options={locationOptions}
+          value={selectedBranch}
+          onChange={handleBranchChange}
+          placeholder="Select Branch"
+          isClearable
+          styles={{
+            menu: (base) => ({
+              ...base,
+              zIndex: 3000,
+            }),
+          }}
+        />
+      </div>
 
-        <div>
-          <Select
-            className="select-dashboard"
-            options={userOptions}
-            value={selectedUser}
-            onChange={(newValue) => setSelectedUser(newValue)}
-            placeholder="Select User"
-            isClearable
-            styles={{
-              menu: (base) => ({
-                ...base,
-                zIndex: 3000,
-              }),
-            }}
-          />
-        </div>
+      <div className="col-4 col-lg-3 col-xl-2">
+        <Select
+          options={userOptions}
+          value={selectedUser}
+          onChange={(newValue) => setSelectedUser(newValue)}
+          placeholder="Select User"
+          isClearable
+          styles={{
+            menu: (base) => ({
+              ...base,
+              zIndex: 3000,
+            }),
+          }}
+        />
+      </div>
 
-        <div>
-          <Select
-            className="select-dashboard"
-            options={compOptions}
-            value={selectedDevice}
-            onChange={handleDeviceChange}
-            placeholder="Select Device"
-            isClearable
-            styles={{
-              menu: (base) => ({
-                ...base,
-                zIndex: 3000,
-              }),
-            }}
-          />
-        </div>
-
-        {/* <div className="search-input-wrapper">
-          <input
-            type="text"
-            id="search-input"
-            className="form-control search-input"
-            placeholder="Search..."
-            onChange={handleSearchChange}
-          />
-        </div> */}
+      <div className="col-4 col-lg-3 col-xl-2">
+        <Select
+          options={compOptions}
+          value={selectedDevice}
+          onChange={handleDeviceChange}
+          placeholder="Select Device"
+          isClearable
+          styles={{
+            menu: (base) => ({
+              ...base,
+              zIndex: 3000,
+            }),
+          }}
+        />
       </div>
     </div>
   );

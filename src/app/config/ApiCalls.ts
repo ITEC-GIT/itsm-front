@@ -60,7 +60,38 @@ async function LoginApi(login: string, password: string) {
     .catch((error: any) => errorCatch(error));
 }
 
-const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {};
+const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
+  try {
+    const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
+    const sessionToken = getSessionTokenFromCookie();
+    const params: any = {
+      range: body.range,
+      order: body.order,
+    };
+    if (body.starred === 1) {
+      const asd = 0;
+    }
+    if (body.idgt !== undefined) {
+      params.idgt = body.idgt;
+    }
+    const response = await PrivateApiCallFastApi.post(
+      "/tickets/filter_tickets",
+      body,
+      {
+        headers: {
+          "App-Token": appToken,
+          "Session-Token": sessionToken,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data; // Return only the data
+  } catch (error: any) {
+    errorCatch(error); // Use your existing error handler
+    throw error; // Rethrow the error for additional handling if necessary
+  }
+};
 
 const UpdateTicket = async (body: UpdateTicketRequestBody): Promise<any> => {
   try {
@@ -170,7 +201,29 @@ async function GetTicketsViewById(range: string, order: string, idgt?: number) {
 /** ********************************************************************************************/
 
 async function GetDashboardAnalytics() {
-  return await PrivateApiCall.get(`/AnalyticsDashboard/`)
+  return await PrivateApiCall.get(`/AnalyticsDashboard`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetDashboardLandingData() {
+  return await PrivateApiCallFastApi.get(`/dashboard/metrics`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetTicketCountsByStatusAndMonth(
+  status: string,
+  from_date?: Date,
+  to_date?: Date
+) {
+  return await PrivateApiCallFastApi.get(`/dashboard/status-counts`, {
+    params: {
+      status: status,
+      from_date: from_date,
+      to_date: to_date,
+    },
+  })
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -633,4 +686,6 @@ export {
   GetAssets,
   GetAssetActions,
   GetAssetSoftwares,
+  GetDashboardLandingData,
+  GetTicketCountsByStatusAndMonth,
 };

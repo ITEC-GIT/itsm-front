@@ -20,13 +20,13 @@ export const actions = [
       "Access the graphical interface or hardware-level console of a remote machine for complete control.",
     icon: "bi-display",
   },
-  {
-    title: "Performance Monitoring",
-    action: "performance-monitoring",
-    description:
-      "Monitor system metrics like CPU, memory, and disk usage in real-time to ensure optimal performance.",
-    icon: "bi-graph-up",
-  },
+  // {
+  //   title: "Performance Monitoring",
+  //   action: "performance-monitoring",
+  //   description:
+  //     "Monitor system metrics like CPU, memory, and disk usage in real-time to ensure optimal performance.",
+  //   icon: "bi-graph-up",
+  // },
 ];
 
 export const devicesVNC = [

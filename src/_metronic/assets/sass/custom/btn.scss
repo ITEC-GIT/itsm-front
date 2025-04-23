@@ -227,3 +227,19 @@
   font-size: 5rem !important;
   animation: pulse 1s infinite ease-in-out !important; //pulse or bounce
 }
+
+//user management
+.btn-gradient-add {
+  background: #064884 !important;
+  // background: $btn-bg-color !important;
+  border-radius: $btn-border-radius !important;
+  color: white !important;
+  padding: 5px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-gradient-add:hover {
+  transform: scale(1.05) !important;
+}

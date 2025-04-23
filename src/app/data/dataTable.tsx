@@ -14,7 +14,7 @@ export const customStyles = {
     style: {
       fontSize: "14px",
       minHeight: "48px",
-      borderBottom: "none",
+      borderBottom: "none !important",
     },
   },
   headCells: {
@@ -24,9 +24,8 @@ export const customStyles = {
       fontWeight: "500",
       padding: "5px 5px",
       background: "white",
-      borderBottom: "1px solid rgb(222, 222, 222)",
-      paddingLeft: "24px",
-      borderTop: "1px solid rgb(222, 222, 222)",
+      border: "none",
+      paddingLeft: "24px",    
     },
   },
   table: {
@@ -39,7 +38,7 @@ export const customStyles = {
     style: {
       paddingLeft: "8px",
       paddingRight: "8px",
-      borderBottom: "1px solid transparent",
+      borderBottom: "none",
     },
   },
 };

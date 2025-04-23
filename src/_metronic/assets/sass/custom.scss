@@ -129,3 +129,43 @@
     box-shadow: none !important;
   }
 }
+
+.fw-900 {
+  font-weight: 900 !important;
+}
+
+.bg-dark-blue-btn {
+  background-color: $btn-bg-dark-blue-color !important;
+}
+
+.border-radius-12 {
+  border-radius: 12px;
+}
+
+.react-select__control {
+  border: none !important;
+}
+
+.react-select__control--is-focused {
+  box-shadow: none !important;
+}
+
+.category-span {
+  padding: 5px !important;
+  border-radius: 3px !important;
+  width: 62px !important;
+  text-align: center !important;
+}
+
+//
+.custom-placeholder::placeholder {
+  color: #4b5675 !important;
+  font-size: 1rem !important;
+  opacity: 0.5 !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+}
+
+.custom-input-height {
+  height: 42px;
+}

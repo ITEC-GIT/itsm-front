@@ -15,6 +15,14 @@ import { PerformanceMonitoringPage } from "../pages/HyperCommands-Page/performan
 import { AssetsPageWrapper } from "../pages/Assets-page/assetsPage";
 import { AssetDetailsPage } from "../pages/Assets-page/assetDetailsPage";
 import { AssetCreationPage } from "../pages/Assets-page/AssetCreationPage";
+import { RolesPageWrapper } from "../pages/user-management/roles-page";
+import { GroupsPageWrapper } from "../pages/user-management/groups-page";
+import { DepartmentsPageWrapper } from "../pages/user-management/departments-page";
+import { LocationsPageWrapper } from "../pages/user-management/locations-page";
+import { ComputerAliasesPageWrapper } from "../pages/user-management/aliases-page";
+import { UsersPageWrapper } from "../pages/user-management/users-page";
+import { FieldRulesPageWrapper } from "../pages/user-management/field-rules";
+import { SettingsPageWrapper } from "../pages/user-management/settings-page";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -52,6 +60,29 @@ const PrivateRoutes = () => {
         <Route path="assets/new" element={<AssetCreationPage />} />
         <Route path="tickets" element={<TicketPageWrapper />} />
         <Route path="/ticket/:id" element={<TicketsDetailPage />} />
+        <Route path="/user-management/roles" element={<RolesPageWrapper />} />
+        <Route path="/user-management/groups" element={<GroupsPageWrapper />} />
+        <Route
+          path="/user-management/departments"
+          element={<DepartmentsPageWrapper />}
+        />
+        <Route
+          path="/user-management/locations"
+          element={<LocationsPageWrapper />}
+        />
+        <Route
+          path="/user-management/aliases"
+          element={<ComputerAliasesPageWrapper />}
+        />
+        <Route path="/user-management/users" element={<UsersPageWrapper />} />
+        <Route
+          path="/user-management/field-rules"
+          element={<FieldRulesPageWrapper />}
+        />
+        <Route
+          path="/user-management/settings"
+          element={<SettingsPageWrapper />}
+        />
         {/* 
         <Route path='menu-test' element={<MenuTestPage />} /> */}
         {/* Lazy Modules */}
