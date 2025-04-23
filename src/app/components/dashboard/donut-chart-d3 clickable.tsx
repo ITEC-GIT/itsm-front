@@ -27,6 +27,11 @@ const DonutChartClickable: React.FC<DonutChartProps> = ({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const hasNoData =
+    !Array.isArray(data) ||
+    data.length === 0 ||
+    data.every((d) => !d.value || d.value === 0);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -58,6 +63,19 @@ const DonutChartClickable: React.FC<DonutChartProps> = ({
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
+
+    if (hasNoData) {
+      svg
+        .append("text")
+        .attr("x", dimensions.width / 2)
+        .attr("y", dimensions.height / 2)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "14px")
+        .attr("fill", "#999")
+        .text("No data available");
+      return;
+    }
 
     if (title) {
       svg

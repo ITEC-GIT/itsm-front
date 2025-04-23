@@ -92,7 +92,17 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
   useEffect(() => {
     if (!svgRef.current || !dimensions.width || !dimensions.height) return;
+
+    const width = dimensions.width;
+    const height = dimensions.height;
+    const radius = Math.min(width, height) / 3;
+    const dynamicInnerRadius = radius * 0.6;
+    const dynamicOuterOffset = radius * 0.1;
+    const outerRadius = radius - dynamicOuterOffset;
+    // const outerRadius = Math.min(width, height) / 2 - outerRadiusOffset;
+
     const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
 
     if (hasNoData) {
       svg
@@ -106,16 +116,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
         .text("No data available");
       return;
     }
-
-    const width = dimensions.width;
-    const height = dimensions.height;
-    const radius = Math.min(width, height) / 3;
-    const dynamicInnerRadius = radius * 0.6;
-    const dynamicOuterOffset = radius * 0.1;
-    const outerRadius = radius - dynamicOuterOffset;
-    // const outerRadius = Math.min(width, height) / 2 - outerRadiusOffset;
-
-    svg.selectAll("*").remove();
 
     if (title) {
       svg

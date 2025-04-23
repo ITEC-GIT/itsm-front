@@ -556,7 +556,7 @@ const StatBox = ({
           {number.toLocaleString()}
         </p>
         <p
-          className="m-0 mt-1 text-truncate"
+          className="m-0 mt-1"
           style={{
             color,
             fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
@@ -756,12 +756,10 @@ const DashboardLanding = () => {
           <div className="card p-2 mt-3" style={{ height: 250 }}>
             <span className="text-center">Tickets Category Distribution</span>
             <DonutChart
-              data={[
-                { label: "Apples", value: 44 },
-                { label: "Bananas", value: 55 },
-                { label: "Cherries", value: 13 },
-                { label: "Dates", value: 33 },
-              ]}
+              data={donutData(
+                dashboardData?.tickets?.ticketsByCategory?.labels ?? [],
+                dashboardData?.tickets?.ticketsByCategory?.series ?? []
+              )}
             />
           </div>
         </div>
