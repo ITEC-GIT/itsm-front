@@ -58,7 +58,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
   colors,
   title,
 }) => {
-  console.log("data ==>>", data);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -118,7 +117,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
       g.append("path")
         .attr("d", fallbackArc as any)
-        .attr("fill", "#e0e0e0"); 
+        .attr("fill", "#e0e0e0");
 
       svg
         .append("text")
