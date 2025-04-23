@@ -105,15 +105,31 @@ const DonutChart: React.FC<DonutChartProps> = ({
     svg.selectAll("*").remove();
 
     if (hasNoData) {
+      const g = svg
+        .append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`);
+
+      const fallbackArc = d3
+        .arc()
+        .innerRadius(dynamicInnerRadius)
+        .outerRadius(outerRadius)
+        .startAngle(0)
+        .endAngle(2 * Math.PI);
+
+      g.append("path")
+        .attr("d", fallbackArc as any)
+        .attr("fill", "#e0e0e0"); 
+
       svg
         .append("text")
-        .attr("x", dimensions.width / 2)
-        .attr("y", dimensions.height / 2)
+        .attr("x", width / 2)
+        .attr("y", height / 2)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
         .attr("font-size", "14px")
         .attr("fill", "#999")
         .text("No data available");
+
       return;
     }
 
