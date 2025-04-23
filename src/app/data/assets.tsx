@@ -21,7 +21,11 @@ import {
   FaPhone,
   FaSimCard,
   FaNetworkWired,
+  FaBatteryHalf,
+  FaMicrochip,
+  FaKeyboard,
 } from "react-icons/fa6";
+import { FaHdd, FaMemory, FaMicrochip as FaCpu, FaTools } from "react-icons/fa";
 import { LuPrinter, LuMonitor } from "react-icons/lu";
 import {
   MdDevices,
@@ -33,6 +37,7 @@ import {
 import { GrStorage } from "react-icons/gr";
 import { BsHddRack, BsModem } from "react-icons/bs";
 import { SiInkdrop } from "react-icons/si";
+import { RiCodeBoxFill } from "react-icons/ri";
 import { ActionModal } from "../components/modal/ActionModal";
 import { useAtom } from "jotai";
 import { staticDataAtom } from "../atoms/app-routes-global-atoms/approutesAtoms";
@@ -1064,6 +1069,24 @@ const assignIcon = (categoryName: string) => {
     return <GrStorage className="table-icon-color" />;
   if (categoryName.toLowerCase().includes("modem"))
     return <BsModem className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("battery"))
+    return <FaBatteryHalf className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("bios"))
+    return <FaMicrochip className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("controller"))
+    return <FaMicrochip className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("drive"))
+    return <FaHdd className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("input"))
+    return <FaKeyboard className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("cpu"))
+    return <FaCpu className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("memory"))
+    return <FaMemory className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("version"))
+    return <RiCodeBoxFill className="table-icon-color" />;
+  if (categoryName.toLowerCase().includes("hardware"))
+    return <FaTools className="table-icon-color" />;
   return <i className="fa-thin fa-question table-icon-color"></i>;
 };
 
@@ -1133,56 +1156,30 @@ export const Actions: Record<
     labels: [
       {
         name: "Add a document",
-        icon: "https://img.icons8.com/?size=50&id=CQRMBNqHIi78&format=png&color=000000",
+        icon: "https://img.icons8.com/?size=50&id=vDaHd0NhMQuc&format=png&color=000000",
         excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
       },
       {
         name: "Add note",
-        icon: "https://img.icons8.com/?size=50&id=vDaHd0NhMQuc&format=png&color=000000",
+        icon: "https://img.icons8.com/?size=50&id=CQRMBNqHIi78&format=png&color=000000",
         excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
       },
     ],
   },
 };
 
-export const AssetCategoryActions: Record<string, string[]> = {
-  computers: ["Anti-Theft Actions", "Co-Reach Actions", "More Actions"],
-  monitors: ["More Actions"],
-  software: ["More Actions"],
-  networkdevice: ["More Actions"],
-  devices: ["More Actions"],
-  printers: ["More Actions"],
-  cartridgemodels: ["More Actions"],
-  consumablemodels: ["More Actions"],
-  phone: ["More Actions"],
-  racks: ["More Actions"],
-  enclosures: ["More Actions"],
-  pdus: ["More Actions"],
-  passivedevices: ["More Actions"],
-  simcard: ["More Actions"],
-  modems: ["More Actions"],
-  storages: ["More Actions"],
-  usbdevices: ["More Actions"],
-};
-
 export const getAvailableActions = (category: string) => {
-  const actionCategories = AssetCategoryActions[category] || [];
-
-  const availableActions = actionCategories.reduce((acc, actionCategory) => {
-    if (Actions[actionCategory]) {
-      acc[actionCategory] = {
-        key: Actions[actionCategory].key,
-        labels: Actions[actionCategory].labels.filter(
-          (label) =>
-            !label.excludedCategories ||
-            !label.excludedCategories.includes(category)
-        ),
-      };
-    }
-    return acc;
-  }, {} as Record<string, { key: string; labels: { name: string; icon: string }[] }>);
-
-  return availableActions;
+  if (category === "computer") {
+    return {
+      "Anti-Theft Actions": Actions["Anti-Theft Actions"],
+      "Co-Reach Actions": Actions["Co-Reach Actions"],
+      "More Actions": Actions["More Actions"],
+    };
+  } else {
+    return {
+      "More Actions": Actions["More Actions"],
+    };
+  }
 };
 
 //asset details
