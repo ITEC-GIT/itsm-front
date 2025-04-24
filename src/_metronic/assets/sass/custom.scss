@@ -169,3 +169,19 @@
 .custom-input-height {
   height: 42px;
 }
+
+//datatable
+
+.rdt_TableBody .rdt_TableRow:hover .rdt_TableCell {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.05) !important;
+}
+
+.rdt_Table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.rdt_TableCell {
+  transition: background-color 0.2s ease !important;
+}
