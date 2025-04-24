@@ -1,22 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AssetHistoryComponent } from "./assetHistory";
 import TicketPageWrapper from "../../pages/tickets-pages/TicketPageWrapper";
-import { AssetAppsComponent } from "./assetApps";
+import { ComputerAppsComponent } from "./computerApps";
 import { AssetDetailsComponent } from "./assetDetails";
 import { AssetSummaryComponent } from "./assetSummary";
-import { AssetPoliciesComponent } from "./assetPolicies";
 import { AssetsTree } from "./assetDetailsTree";
 
-const asset = {
-  name: "Laptop",
-  description: "Dell XPS 13",
-  serialNumber: "ABC123XYZ",
-  model: "XPS 13",
-  location: "Office",
-  purchaseDate: "2023-10-26",
-  value: 1200,
-};
-const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
+const ComputerTabsComponent: React.FC<{ devHeight: number; compData: any }> = ({
+  devHeight,
+  compData,
+}) => {
   const [selectedTab, setSelectedTab] = useState("summary");
   const navRef = useRef<HTMLUListElement>(null);
   const [totalHeight, setTotalHeight] = useState<number>(0);
@@ -182,7 +175,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               id="apps"
               role="tabpanel"
             >
-              <AssetAppsComponent />
+              <ComputerAppsComponent computerId={compData.id} />
             </div>
             {/* <div
               className={`tab-pane fade ${
@@ -200,7 +193,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               id="tree"
               role="tabpanel"
             >
-              <AssetsTree />
+              <AssetsTree/>
             </div>
           </div>
         </div>
@@ -218,4 +211,4 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
   );
 };
 
-export { AssetTabsComponent };
+export { ComputerTabsComponent };

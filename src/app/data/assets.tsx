@@ -6,7 +6,7 @@ import {
 } from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
 import { Link } from "react-router-dom";
-import { getBackgroundColor } from "../../utils/custom";
+import { capitalize, getBackgroundColor } from "../../utils/custom";
 import {
   columnLargeWidth,
   columnXLargeWidth,
@@ -109,7 +109,7 @@ export const getColumns = (
             </div>
 
             <span
-              className="category-span "
+              className="category-span w-62px table-icon-color"
               style={{
                 backgroundColor: backgroundColor,
               }}
@@ -141,10 +141,17 @@ export const getColumns = (
       sortable: true,
       width: columnXXXLargeWidth,
       cell: (row: AssetsHistoryType) => {
+        const categoryName = row.category?.name?.toLowerCase() || "";
+        const isComputer = categoryName.includes("computer");
+
+        const linkTo = isComputer
+          ? `/assets/asset-details/computer/${row.id}`
+          : `/assets/asset-details/${row.id}/${row.hash}`;
+
         return (
           <div className="d-flex justify-content-between w-100">
             <Link
-              to={`/assets/${row.id}`}
+              to={linkTo}
               title={row.name}
               style={{ color: "blue", textDecoration: "none" }}
             >
@@ -1032,62 +1039,42 @@ export const Steps = [
   },
 ];
 
-const assignIcon = (categoryName: string) => {
-  if (categoryName.toLowerCase().includes("computer"))
-    return <FaComputer className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("printer"))
-    return <LuPrinter className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("monitor"))
-    return <LuMonitor className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("software"))
-    return <i className="fa-brands fa-uncharted table-icon-color"></i>;
-  if (categoryName.toLowerCase().includes("network"))
-    return <FaNetworkWired className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("devices"))
-    return <MdDevices className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("cartridge"))
-    return <SiInkdrop className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("consumable"))
-    return <MdLocalDrink className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("racks"))
-    return <BsHddRack className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("enclosures"))
-    return <MdOutlineRoomPreferences className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("pdus"))
-    return <FaPlug className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("passive"))
-    return <FaRegCircle className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("unmanaged"))
-    return <MdOutlineDeviceUnknown className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("cables"))
-    return <MdOutlineCable className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("phone"))
-    return <FaPhone className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("simcard"))
-    return <FaSimCard className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("storage"))
-    return <GrStorage className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("modem"))
-    return <BsModem className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("battery"))
-    return <FaBatteryHalf className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("bios"))
-    return <FaMicrochip className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("controller"))
-    return <FaMicrochip className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("drive"))
-    return <FaHdd className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("input"))
-    return <FaKeyboard className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("cpu"))
-    return <FaCpu className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("memory"))
-    return <FaMemory className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("version"))
-    return <RiCodeBoxFill className="table-icon-color" />;
-  if (categoryName.toLowerCase().includes("hardware"))
-    return <FaTools className="table-icon-color" />;
-  return <i className="fa-thin fa-question table-icon-color"></i>;
+const iconMap: Record<string, JSX.Element> = {
+  computer: <FaComputer />,
+  printer: <LuPrinter />,
+  monitor: <LuMonitor />,
+  software: <i className="fa-brands fa-uncharted "></i>,
+  network: <FaNetworkWired />,
+  devices: <MdDevices />,
+  cartridge: <i className="fa-solid fa-droplet "></i>,
+  consumable: <MdLocalDrink />,
+  racks: <BsHddRack />,
+  enclosures: <MdOutlineRoomPreferences />,
+  pdus: <FaPlug />,
+  passive: <FaRegCircle />,
+  unmanaged: <MdOutlineDeviceUnknown />,
+  cables: <MdOutlineCable />,
+  phone: <FaPhone />,
+  simcard: <FaSimCard />,
+  storage: <GrStorage />,
+  modem: <BsModem />,
+  battery: <FaBatteryHalf />,
+  bios: <FaMicrochip />,
+  controller: <FaMicrochip />,
+  drive: <FaHdd />,
+  input: <FaKeyboard />,
+  cpu: <FaCpu />,
+  memory: <FaMemory />,
+  version: <RiCodeBoxFill />,
+  hardware: <FaTools />,
+};
+
+export const assignIcon = (categoryName: string): JSX.Element => {
+  const name = categoryName.toLowerCase();
+  for (const keyword in iconMap) {
+    if (name.includes(keyword)) return iconMap[keyword];
+  }
+  return <i className="fa-thin fa-question "></i>;
 };
 
 export const Actions: Record<
@@ -1169,7 +1156,7 @@ export const Actions: Record<
 };
 
 export const getAvailableActions = (category: string) => {
-  if (category === "computer") {
+  if (category.includes("computer")) {
     return {
       "Anti-Theft Actions": Actions["Anti-Theft Actions"],
       "Co-Reach Actions": Actions["Co-Reach Actions"],
@@ -1208,9 +1195,30 @@ export const getAssetSoftwaresColumns = (
         </span>
       ),
       selector: (row: AssetSoftwaresType) => row.category,
+      cell: (row: AssetSoftwaresType) => (
+        <span
+          className="category-span w-140px me-5"
+          style={{
+            backgroundColor: "#d4e6a8",
+          }}
+        >
+          {row.category ? capitalize(row.category.replace(/_/g, " ")) : ""}
+        </span>
+      ),
       sortable: true,
-      width: columnXXLargeWidth,
+      width: columnXLargeWidth,
       id: "category",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Publisher
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.publisher,
+      sortable: true,
+      id: "publisher",
     },
     {
       name: (
@@ -1259,98 +1267,5 @@ export const getAssetSoftwaresColumns = (
         return <span>{formattedDate}</span>;
       },
       id: "install_date",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span>
-        </span>
-      ),
-      width: "70px",
-      cell: (row: AssetSoftwaresType) => {
-        const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-        const handleDeleteClick = () => {
-          setShowDeleteModal(true);
-        };
-
-        const confirmDelete = () => {
-          setShowDeleteModal(false);
-        };
-
-        const cancelDelete = () => {
-          setShowDeleteModal(false);
-        };
-
-        return (
-          <div
-            className={`d-flex align-items-start ${
-              hoveredHash === row.hash ? "show" : "hide"
-            }`}
-          >
-            {hoveredHash === row.hash && (
-              <>
-                <button className="table-btn-action" onClick={() => {}}>
-                  <i className="bi bi-pencil text-primary table-icon"></i>
-                </button>
-                <button
-                  className="table-btn-action"
-                  onClick={handleDeleteClick}
-                >
-                  <i className="bi bi-x-lg text-danger table-icon"></i>
-                </button>
-
-                {showDeleteModal && (
-                  <div
-                    className={`modal w-100 fade ${
-                      showDeleteModal ? "show d-block" : ""
-                    }`}
-                    role="dialog"
-                    aria-hidden={!showDeleteModal}
-                    style={{
-                      background: showDeleteModal
-                        ? "rgba(0,0,0,0.5)"
-                        : "transparent",
-                    }}
-                  >
-                    <div className="modal-dialog modal-dialog-centered">
-                      <div className="modal-content p-5">
-                        <div className="d-flex justify-content-start align-items-center mb-5">
-                          <div className="circle-div">
-                            <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
-                          </div>
-                          <div className="d-flex flex-column">
-                            <h3>Delete assets</h3>
-                            <p>
-                              Are you sure you want to delete the selected
-                              assets?
-                            </p>
-                          </div>
-                        </div>
-                        <div className="d-flex justify-content-end mt-5">
-                          <button
-                            onClick={cancelDelete}
-                            className="custom-modal-cancel-btn"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={confirmDelete}
-                            className="custom-modal-confirm-btn"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        );
-      },
-      sortable: false,
-      id: "action",
     },
   ].filter(Boolean) as TableColumn<AssetSoftwaresType>[];

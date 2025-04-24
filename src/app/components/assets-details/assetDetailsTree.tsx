@@ -7,101 +7,101 @@ const dynamicNodes = [
   {
     id: 1,
     type: "customNode",
-    data: { label: "PC", type: "PC" },
+    data: { label: "computer", type: "computer" },
     parent: null,
   },
   {
     id: 2,
     type: "customNode",
-    data: { label: "Monitor", type: "Monitor" },
+    data: { label: "monitor", type: "monitor" },
     parent: 1,
   },
   {
     id: 3,
     type: "customNode",
-    data: { label: "Keyboard", type: "Keyboard" },
+    data: { label: "keyboard", type: "keyboard" },
     parent: 1,
   },
   {
     id: 4,
     type: "customNode",
-    data: { label: "Mouse", type: "Mouse" },
+    data: { label: "mouse", type: "mouse" },
     parent: 1,
   },
   {
     id: 5,
     type: "customNode",
-    data: { label: "Keyboard", type: "Keyboard" },
+    data: { label: "keyboard", type: "keyboard" },
     parent: 1,
   },
   {
     id: 6,
     type: "customNode",
-    data: { label: "Mouse", type: "Mouse" },
+    data: { label: "mouse", type: "mouse" },
     parent: 1,
   },
   {
     id: 7,
     type: "customNode",
-    data: { label: "Keyboard", type: "Keyboard" },
+    data: { label: "keyboard", type: "keyboard" },
     parent: 1,
   },
   {
     id: 8,
     type: "customNode",
-    data: { label: "Monitor", type: "Monitor" },
+    data: { label: "monitor", type: "monitor" },
     parent: 1,
   },
   {
     id: 9,
     type: "customNode",
-    data: { label: "Keyboard", type: "Keyboard" },
+    data: { label: "keyboard", type: "keyboard" },
     parent: 1,
   },
   {
     id: 10,
     type: "customNode",
-    data: { label: "Keyboard", type: "Keyboard" },
+    data: { label: "keyboard", type: "keyboard" },
     parent: 1,
   },
   {
     id: 11,
     type: "customNode",
-    data: { label: "Mouse", type: "Mouse" },
+    data: { label: "mouse", type: "mouse" },
     parent: 1,
   },
-  { id: 12, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  { id: 12, type: "customNode", data: { label: "computer", type: "computer" }, parent: 1 },
   {
     id: 13,
     type: "customNode",
-    data: { label: "Mouse", type: "Mouse" },
+    data: { label: "mouse", type: "mouse" },
     parent: 1,
   },
-  { id: 14, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  { id: 14, type: "customNode", data: { label: "computer", type: "computer" }, parent: 1 },
   {
     id: 15,
     type: "customNode",
-    data: { label: "Monitor", type: "Monitor" },
+    data: { label: "monitor", type: "monitor" },
     parent: 1,
   },
-  { id: 16, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  { id: 16, type: "customNode", data: { label: "computer", type: "computer" }, parent: 1 },
   {
     id: 17,
     type: "customNode",
-    data: { label: "Mouse", type: "Mouse" },
+    data: { label: "mouse", type: "mouse" },
     parent: 1,
   },
   {
     id: 18,
     type: "customNode",
-    data: { label: "Monitor", type: "Monitor" },
+    data: { label: "monitor", type: "monitor" },
     parent: 1,
   },
-  { id: 19, type: "customNode", data: { label: "PC", type: "PC" }, parent: 1 },
+  { id: 19, type: "customNode", data: { label: "computer", type: "computer" }, parent: 1 },
   {
     id: 20,
     type: "customNode",
-    data: { label: "Mouse", type: "Mouse" },
+    data: { label: "mouse", type: "mouse" },
     parent: 1,
   },
 ];
@@ -111,13 +111,13 @@ const CustomNode = ({ data }: any) => {
 
   const getIcon = () => {
     switch (type) {
-      case "PC":
+      case "computer":
         return <MonitorCog size={30} color="#007bff" />;
-      case "Monitor":
+      case "monitor":
         return <Monitor size={30} color="#007bff" />;
-      case "Keyboard":
+      case "keyboard":
         return <Keyboard size={30} color="#007bff" />;
-      case "Mouse":
+      case "mouse":
         return <MousePointer size={30} color="#007bff" />;
       default:
         return null;

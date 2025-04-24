@@ -1,32 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SearchComponent } from "../../components/form/search";
+import { SearchComponent } from "../form/search.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles, sortIcon } from "../../data/dataTable";
+import { customStyles, sortIcon } from "../../data/dataTable.tsx";
 import { debounce } from "lodash";
-import { FilterSidebar } from "../../components/form/filters";
-import { ColumnVisibility } from "../../types/common";
+import { FilterSidebar } from "../form/filters.tsx";
+import { ColumnVisibility } from "../../types/common.ts";
 import clsx from "clsx";
-import { activeFilters, getAssetSoftwaresColumns } from "../../data/assets";
+import { activeFilters, getAssetSoftwaresColumns } from "../../data/assets.tsx";
 import {
   AssetSoftwaresType,
   GetAssetSoftwaresType,
 } from "../../types/assetsTypes.ts";
 import { GetAssetSoftwares } from "../../config/ApiCalls.ts";
 
-const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
+const ComputerSoftwaresComponent = ({ computerId }: { computerId: number }) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
   const [assetSoftwaresData, setAssetSoftwaresData] = useState<any[]>([]);
   const [assetSoftwaresDataPro, setAssetSoftwaresDataPro] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const softwaresPerPage = 15;
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
   useEffect(() => {
     const processedAssetsData = assetSoftwaresData.map((item) => ({
       ...item,
-      uniqueKey: item.hash ? `${item.hash}-${item.id}` : `id-${item.id}`,
+      uniqueKey: item.hash ? `${item.hash}-${item.id}` : `${item.id}`,
     }));
     setAssetSoftwaresDataPro(processedAssetsData);
   }, [assetSoftwaresData]);
@@ -38,6 +37,7 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
       return keywords.every(
         (keyword) =>
           entry.name?.toLowerCase().includes(keyword) ||
+          entry.publisher?.toLowerCase().includes(keyword) ||
           entry.version?.toLowerCase().includes(keyword) ||
           entry.architecture?.toLowerCase().includes(keyword) ||
           entry.category?.toLowerCase().includes(keyword)
@@ -45,11 +45,8 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
     });
   }, [assetSoftwaresDataPro, searchQuery]);
 
-  const minPagesToShow = 3;
-  const totalItems = filteredData.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const indexOfLastItem = currentPage * softwaresPerPage;
+  const indexOfFirstItem = indexOfLastItem - softwaresPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -59,6 +56,7 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
     category: true,
     version: true,
     arch: true,
+    publisher: true,
     install_date: true,
     action: true,
   });
@@ -71,66 +69,22 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
     TableColumn<AssetSoftwaresType>[]
   >([]);
 
-  const startPage =
-    Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
-  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
-
-  const handleFirstPage = () => {
-    setCurrentPage(1);
-  };
-
-  const handleLastPage = () => {
-    setCurrentPage(totalPages);
-  };
-
+  const totalPages = Math.ceil(filteredData.length / softwaresPerPage);
+  const handleFirstPage = () => setCurrentPage(1);
+  const handlePreviousPage = () =>
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
-  const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
+  const handleLastPage = () => setCurrentPage(totalPages);
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
-  const getVisiblePages = () => {
-    const visiblePages = [];
-    const maxVisiblePages = 5;
-
-    if (totalPages <= maxVisiblePages) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    let startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
-    let endPage = startPage + maxVisiblePages - 1;
-
-    if (endPage > totalPages) {
-      endPage = totalPages;
-      startPage = Math.max(endPage - maxVisiblePages + 1, 1);
-    }
-
-    if (startPage > 1) {
-      visiblePages.push(1);
-      if (startPage > 2) {
-        visiblePages.push("...");
-      }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      visiblePages.push(i);
-    }
-
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        visiblePages.push("...");
-      }
-      visiblePages.push(totalPages);
-    }
-
-    return visiblePages;
-  };
+  const minPagesToShow = 5;
+  const startPage =
+    Math.floor((currentPage - 1) / minPagesToShow) * minPagesToShow + 1;
+  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
@@ -146,12 +100,91 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
     return getAssetSoftwaresColumns(hoveredHash);
   }, [hoveredHash]);
 
+  const handleMouseEnter = (rowHash: string) => {
+    setHoveredHash(rowHash);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredHash(null);
+  };
+
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  const searchRef = useRef<HTMLDivElement>(null);
+  const [serachHeight, setSerachHeight] = useState(0);
+
   useEffect(() => {
-    const filteredColumns = memoizedColumns.filter(
-      (col) => columnVisibility[col.id as string]
-    );
-    setVisibleColumns(filteredColumns);
-  }, [columnVisibility, memoizedColumns]);
+    if (!parentRef.current || !searchRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        if (entry.target === parentRef.current) {
+          setHeight(Math.round(entry.contentRect.height));
+        }
+        if (entry.target === searchRef.current) {
+          setSerachHeight(Math.round(entry.contentRect.height));
+        }
+      }
+    });
+
+    observer.observe(parentRef.current);
+    observer.observe(searchRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   if (currentPage > totalPages) {
+  //     setCurrentPage(1);
+  //   }
+  // }, [totalPages]);
+
+  useEffect(() => {
+    const mapFilters = (currentFilters: any) => {
+      const mappedFilters: any = {};
+      Object.entries(currentFilters).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+
+        if (key === "category") {
+          mappedFilters["asset_type"] = Array.isArray(value)
+            ? value.map((item) => item)
+            : [value];
+        } else if (key === "computer") {
+          mappedFilters["computer_id"] = Array.isArray(value)
+            ? value.map((item) => item)
+            : [value];
+        } else {
+          mappedFilters[key] = value;
+        }
+      });
+
+      return mappedFilters;
+    };
+
+    const fetchAssets = async () => {
+      try {
+        setLoading(true);
+
+        const mappedFilters = mapFilters(filters);
+
+        const data = await GetAssetSoftwares(computerId);
+        if (data.status === 200) {
+          setAssetSoftwaresData(data.data.data);
+          setError(null);
+        }
+      } catch (err) {
+        setError("Failed to load assets data");
+        console.error("Error fetching assets:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssets();
+  }, [filters]);
 
   useEffect(() => {
     const filteredColumns = memoizedColumns.filter(
@@ -219,86 +252,9 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
     };
   }, [visibleColumns, tableContainerRef.current, isSidebarOpen]);
 
-  const handleMouseEnter = (rowHash: string) => {
-    setHoveredHash(rowHash);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredHash(null);
-  };
-
   useEffect(() => {
-    const mapFilters = (currentFilters: any) => {
-      const mappedFilters: any = {};
-      Object.entries(currentFilters).forEach(([key, value]) => {
-        if (value === undefined || value === null) return;
-
-        if (key === "category") {
-          mappedFilters["asset_type"] = Array.isArray(value)
-            ? value.map((item) => item)
-            : [value];
-        } else if (key === "computer") {
-          mappedFilters["computer_id"] = Array.isArray(value)
-            ? value.map((item) => item)
-            : [value];
-        } else {
-          mappedFilters[key] = value;
-        }
-      });
-
-      return mappedFilters;
-    };
-
-    const fetchAssets = async () => {
-      try {
-        setLoading(true);
-
-        const mappedFilters = mapFilters(filters);
-
-        const data = await GetAssetSoftwares(computerId);
-        if (data.status === 200) {
-          setAssetSoftwaresData(data.data.data);
-          setError(null);
-        }
-      } catch (err) {
-        setError("Failed to load assets data");
-        console.error("Error fetching assets:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAssets();
-  }, [filters]);
-
-  const parentRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
-
-  const searchRef = useRef<HTMLDivElement>(null);
-  const [serachHeight, setSerachHeight] = useState(0);
-
-  useEffect(() => {
-    if (!parentRef.current || !searchRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        if (entry.target === parentRef.current) {
-          setHeight(Math.round(entry.contentRect.height));
-        }
-        if (entry.target === searchRef.current) {
-          setSerachHeight(Math.round(entry.contentRect.height));
-        }
-      }
-    });
-
-    observer.observe(parentRef.current);
-    observer.observe(searchRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
+    console.log("this changed , currentPage: ", currentPage);
+  }, [currentPage]);
   return (
     <div
       ref={parentRef}
@@ -342,6 +298,7 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
             }))}
             data={currentItems}
             persistTableHead={true}
+            pagination={false}
             responsive
             keyField="uniqueKey"
             highlightOnHover
@@ -359,14 +316,14 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
         <button
           className="btn btn-sm btn-light me-2"
           onClick={handleFirstPage}
-          disabled={currentHistorysPage === 1}
+          disabled={currentPage === 1}
         >
           First
         </button>
         <button
           className="btn btn-sm btn-light me-2"
           onClick={handlePreviousPage}
-          disabled={currentHistorysPage === 1}
+          disabled={currentPage === 1}
         >
           Previous
         </button>
@@ -377,8 +334,8 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
           <button
             key={page}
             className={clsx("btn btn-sm me-2", {
-              "btn-primary": currentHistorysPage === page,
-              "btn-light": currentHistorysPage !== page,
+              "btn-primary": currentPage === page,
+              "btn-light": currentPage !== page,
             })}
             onClick={() => handlePageChange(page)}
           >
@@ -387,15 +344,17 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
         ))}
         <button
           className="btn btn-sm btn-light me-2"
-          onClick={handleNextPage}
-          disabled={currentHistorysPage === totalPages}
+          onClick={() => {
+            handleNextPage();
+          }}
+          disabled={currentPage === totalPages}
         >
           Next
         </button>
         <button
           className="btn btn-sm btn-light"
           onClick={handleLastPage}
-          disabled={currentHistorysPage === totalPages}
+          disabled={currentPage === totalPages}
         >
           Last
         </button>
@@ -424,4 +383,4 @@ const AssetSoftwaresComponent = ({ computerId }: { computerId: number }) => {
   );
 };
 
-export { AssetSoftwaresComponent };
+export { ComputerSoftwaresComponent };

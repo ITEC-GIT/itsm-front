@@ -77,5 +77,7 @@ export const getBackgroundColor = (
   return "#e8e9e9";
 };
 
-export const capitalize = (str: string) =>
-  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+export const capitalize = (str: string) => {
+  const lowerStr = str.toLowerCase();
+  return lowerStr.charAt(0).toUpperCase() + lowerStr.slice(1).toLowerCase();
+};

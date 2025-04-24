@@ -1,74 +1,32 @@
 import { useEffect, useRef, useState } from "react";
-import { SearchComponent } from "../../components/form/search";
+import { SearchComponent } from "../../components/form/search.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { debounce } from "lodash";
 import {
-  fieldRulesMockData,
-  FieldRulesColumnsTable,
+  RolesColumnsTable,
+  rolesMockData,
 } from "../../data/user-management.tsx";
 import { customStyles, sortIcon } from "../../data/dataTable.tsx";
-import { FieldRulesType } from "../../types/user-management.ts";
+import { RoleCreationModal } from "../../components/user-management/create-role-model.tsx";
+import { RolesType } from "../../types/user-management.ts";
 
-const FieldRulesPage = () => {
+const RolesPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-
+  const [editRoleData, setEditRoleData] = useState<RolesType | null>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<
-    TableColumn<FieldRulesType>[]
+    TableColumn<RolesType>[]
   >([]);
-  const [editingRowId, setEditingRowId] = useState<number | null>(null);
 
-  const [tableData, setTableData] = useState<FieldRulesType[]>([
-    {
-      id: -1,
-      name: "",
-      rule: "",
-      usedInTabs: [],
-      isInputRow: true,
-    },
-    ...fieldRulesMockData,
-  ]);
-
-  const [newRowInput, setNewRowInput] = useState<Partial<FieldRulesType>>({});
-  const [isHoveringInputRow, setIsHoveringInputRow] = useState(false);
-
-  const handleNewRowInputChange = (field: "name" | "rule", value: string) => {
-    setNewRowInput((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSaveNewRow = () => {
-    if (!newRowInput.name) return;
-
-    const newFieldRule: FieldRulesType = {
-      id: Date.now(),
-      name: newRowInput.name,
-      rule: newRowInput.rule || "",
-      usedInTabs: [],
-    };
-
-    const updatedData = [
-      {
-        id: -1,
-        name: "",
-        rule: "",
-        usedInTabs: [],
-        isInputRow: true,
-      },
-      ...tableData.filter((row) => !row.isInputRow),
-      newFieldRule,
-    ];
-
-    setTableData(updatedData);
-    setNewRowInput({});
-  };
-
-  const handleCancelAddRow = () => {
-    setNewRowInput({});
+  const handleEditClick = (role: RolesType) => {
+    setEditRoleData(role);
+    setIsModalOpen(true);
   };
 
   const handleSearchChange = debounce((query: string) => {
@@ -83,6 +41,11 @@ const FieldRulesPage = () => {
     setHoveredRowId(null);
   };
 
+  const toggleModelCreation = () => {
+    setEditRoleData(null);
+    setIsModalOpen((prevState) => !prevState);
+  };
+
   useEffect(() => {
     if (divRef.current) {
       const rect = divRef.current.getBoundingClientRect();
@@ -91,17 +54,7 @@ const FieldRulesPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    setVisibleColumns(
-      FieldRulesColumnsTable(
-        hoveredRowId,
-        newRowInput,
-        handleNewRowInputChange,
-        handleSaveNewRow,
-        handleCancelAddRow,
-        editingRowId !== null,
-        isHoveringInputRow
-      )
-    );
+    setVisibleColumns(RolesColumnsTable(hoveredRowId, handleEditClick));
   }, [hoveredRowId]);
 
   return (
@@ -113,12 +66,22 @@ const FieldRulesPage = () => {
               <div className="col-12 d-flex align-items-center justify-content-between mb-4 ms-2">
                 <div className="d-flex justify-content-between gap-3">
                   <div className="symbol symbol-50px ">
-                    <h2> 📑 Field Rules</h2>
+                    <h2>🗝️ Role Management</h2>
                     <span className="text-muted fs-6">
-                      Configure and manage field-level behavior across tabs
+                      Create and manage user roles and permissions
                     </span>
                   </div>
                 </div>
+              </div>
+              <div className="col-12 d-flex justify-content-end mb-3">
+                {/* <AddButton text="Add New Role" onClick={toggleModelCreation} /> */}
+                <button
+                  onClick={toggleModelCreation}
+                  className="btn btn-gradient-add d-flex align-items-center gap-2 px-4 py-2"
+                >
+                  <i className="bi bi-plus fs-1 text-white"></i>
+                  <span className="d-none d-sm-inline">Add New Role</span>
+                </button>
               </div>
 
               <div className="col-12 d-flex justify-content-end align-items-center gap-2">
@@ -142,41 +105,19 @@ const FieldRulesPage = () => {
                 ref={tableContainerRef}
                 style={{
                   flex: 1,
+                  // overflow: "auto",
                 }}
               >
                 <DataTable
-                  columns={FieldRulesColumnsTable(
-                    hoveredRowId,
-                    newRowInput,
-                    handleNewRowInputChange,
-                    handleSaveNewRow,
-                    handleCancelAddRow,
-                    editingRowId !== null,
-                    isHoveringInputRow
-                  )}
-                  data={tableData}
-                  persistTableHead
+                  columns={visibleColumns}
+                  data={rolesMockData}
+                  persistTableHead={true}
                   responsive
                   highlightOnHover
-                  conditionalRowStyles={[
-                    {
-                      when: (row: any) => row.isInputRow,
-                      style: {
-                        backgroundColor: "#eeeeee",
-                        border: "none !important",
-                      },
-                    },
-                  ]}
                   customStyles={customStyles}
                   sortIcon={sortIcon}
-                  onRowMouseEnter={(row) => {
-                    handleMouseEnter(row.id);
-                    if (row.id === -1) setIsHoveringInputRow(true);
-                  }}
-                  onRowMouseLeave={(row) => {
-                    handleMouseLeave();
-                    if (row.id === -1) setIsHoveringInputRow(false);
-                  }}
+                  onRowMouseEnter={(row) => handleMouseEnter(row.id)}
+                  onRowMouseLeave={handleMouseLeave}
                   fixedHeader
                   fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
                 />
@@ -231,12 +172,23 @@ const FieldRulesPage = () => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <RoleCreationModal
+          show={isModalOpen}
+          onClose={toggleModelCreation}
+          onSave={(data) => {
+            console.log("Created Role:", data);
+            toggleModelCreation();
+          }}
+          editRoleData={editRoleData}
+        />
+      )}
     </AnimatedRouteWrapper>
   );
 };
 
-const FieldRulesPageWrapper = () => {
-  return <FieldRulesPage />;
+const RolesPageWrapper = () => {
+  return <RolesPage />;
 };
 
-export { FieldRulesPageWrapper };
+export { RolesPageWrapper };

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { SearchComponent } from "../../components/form/search";
+import { SearchComponent } from "../../components/form/search.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { debounce } from "lodash";

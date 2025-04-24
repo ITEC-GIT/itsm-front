@@ -120,10 +120,6 @@
   font-weight: bold !important;
 }
 
-.vertical-scroll {
-  overflow-y: auto !important;
-}
-
 .net-traffic-element {
   display: flex !important;
   justify-content: center !important;
@@ -353,12 +349,12 @@
   display: none !important;
 }
 
-.category-span {
-  padding: 5px !important;
-  border-radius: 3px !important;
-  width: 62px !important;
-  text-align: center !important;
-}
+// .category-span {
+//   padding: 5px !important;
+//   border-radius: 3px !important;
+//   width: 62px !important;
+//   text-align: center !important;
+// }
 
 .table-icon-color {
   color: #414a4c !important;

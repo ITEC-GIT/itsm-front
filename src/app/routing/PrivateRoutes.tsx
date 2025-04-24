@@ -2,27 +2,28 @@ import { lazy, FC, Suspense } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { MasterLayout } from "../../_metronic/layout/MasterLayout";
 import TopBarProgress from "react-topbar-progress-indicator";
-import { DashboardWrapper } from "../pages/Dashboard-page/DashboardPage";
+import { DashboardWrapper } from "../pages/Dashboard-pages/DashboardPage";
 import { getCSSVariableValue } from "../../_metronic/assets/ts/_utils";
 import { WithChildren } from "../../_metronic/helpers";
 import TicketPageWrapper from "../pages/tickets-pages/TicketPageWrapper";
 import TicketsDetailPage from "../pages/tickets-pages/TicketsDetailPage";
-import { HyperCommandsWrapper } from "../pages/HyperCommands-Page/hyperCommandsPage";
-import { SoftwareInstallationPage } from "../pages/HyperCommands-Page/softwareInstallationPage";
-import { RemoteSSHPage } from "../pages/HyperCommands-Page/remoteSSHPage";
-import { RemoteConsolePage } from "../pages/HyperCommands-Page/remoteConsolePage";
-import { PerformanceMonitoringPage } from "../pages/HyperCommands-Page/performanceMonitoringPage";
-import { AssetsPageWrapper } from "../pages/Assets-page/assetsPage";
-import { AssetDetailsPage } from "../pages/Assets-page/assetDetailsPage";
-import { AssetCreationPage } from "../pages/Assets-page/AssetCreationPage";
-import { RolesPageWrapper } from "../pages/user-management/roles-page";
-import { GroupsPageWrapper } from "../pages/user-management/groups-page";
-import { DepartmentsPageWrapper } from "../pages/user-management/departments-page";
-import { LocationsPageWrapper } from "../pages/user-management/locations-page";
-import { ComputerAliasesPageWrapper } from "../pages/user-management/aliases-page";
-import { UsersPageWrapper } from "../pages/user-management/users-page";
-import { FieldRulesPageWrapper } from "../pages/user-management/field-rules";
-import { SettingsPageWrapper } from "../pages/user-management/settings-page";
+import { HyperCommandsWrapper } from "../pages/HyperCommands-pages/hyperCommandsPage";
+import { SoftwareInstallationPage } from "../pages/HyperCommands-pages/softwareInstallationPage";
+import { RemoteSSHPage } from "../pages/HyperCommands-pages/remoteSSHPage";
+import { RemoteConsolePage } from "../pages/HyperCommands-pages/remoteConsolePage";
+import { PerformanceMonitoringPage } from "../pages/HyperCommands-pages/performanceMonitoringPage";
+import { AssetsPageWrapper } from "../pages/Assets-pages/assetsPage";
+import { AssetDetailsPageWrapper } from "../pages/Assets-pages/assetDetailsPage";
+import { AssetCreationPage } from "../pages/Assets-pages/AssetCreationPage";
+import { RolesPageWrapper } from "../pages/user-management-pages/roles-page";
+import { GroupsPageWrapper } from "../pages/user-management-pages/groups-page";
+import { DepartmentsPageWrapper } from "../pages/user-management-pages/departments-page";
+import { LocationsPageWrapper } from "../pages/user-management-pages/locations-page";
+import { ComputerAliasesPageWrapper } from "../pages/user-management-pages/aliases-page";
+import { UsersPageWrapper } from "../pages/user-management-pages/users-page";
+import { FieldRulesPageWrapper } from "../pages/user-management-pages/field-rules";
+import { SettingsPageWrapper } from "../pages/user-management-pages/settings-page";
+import { ComputerDetailsPageWrapper } from "../pages/Assets-pages/computerDetailsPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -55,8 +56,15 @@ const PrivateRoutes = () => {
           path="hyper-commands/performance-monitoring"
           element={<PerformanceMonitoringPage />}
         />
-        <Route path="assets" element={<AssetsPageWrapper />} />
-        <Route path="assets/:id" element={<AssetDetailsPage />} />
+        <Route path="/assets" element={<AssetsPageWrapper />} />
+        <Route
+          path="/assets/asset-details/:id/:hash"
+          element={<AssetDetailsPageWrapper />}
+        />
+        <Route
+          path="assets/asset-details/computer/:id"
+          element={<ComputerDetailsPageWrapper />}
+        />
         <Route path="assets/new" element={<AssetCreationPage />} />
         <Route path="tickets" element={<TicketPageWrapper />} />
         <Route path="/ticket/:id" element={<TicketsDetailPage />} />

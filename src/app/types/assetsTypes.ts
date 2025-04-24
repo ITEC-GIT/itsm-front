@@ -25,6 +25,7 @@ export type AssetSoftwaresType = {
   architecture: string;
   category: string;
   install_date: string;
+  publisher: string;
 };
 
 export type GetAllAssetsRequestType = {
@@ -33,6 +34,21 @@ export type GetAllAssetsRequestType = {
 };
 
 export type AssetDetails = {
+  id: number;
+  category: {
+    id: number;
+    name: string;
+  };
+  specific_attributes: [];
+  computer: {
+    id: number;
+    name: string;
+  };
+  notes: {};
+  date_mode: string;
+};
+
+export type ComputerDetails = {
   id: string;
   name: string;
   entity: string;

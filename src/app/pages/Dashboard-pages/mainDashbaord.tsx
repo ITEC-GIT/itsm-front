@@ -6,7 +6,7 @@ import {
   selectedComputerDashboardAtom,
 } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { TicketsPage } from "../tickets-pages/TicketsPage";
-import { RemoteSSHPage } from "../HyperCommands-Page/remoteSSHPage";
+import { RemoteSSHPage } from "../HyperCommands-pages/remoteSSHPage";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import { SoftwareInstallationDashboard } from "./softwareInstallationDashboard";
 
@@ -83,7 +83,6 @@ const MainDashboard = () => {
         return <DashboardPlaceholder />;
     }
   };
-
 
   useEffect(() => {
     if (!toggleInstance || !toggleInstance.target) return;

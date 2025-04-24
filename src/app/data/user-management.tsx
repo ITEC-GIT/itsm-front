@@ -749,7 +749,7 @@ export const AliasesColumnsTable = (
         ) : (
           <>
             <span
-              className="category-span me-5"
+              className="category-span w-62px me-5"
               style={{
                 backgroundColor: "#e0e0e0", //"#d9d3cb", //
               }}

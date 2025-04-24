@@ -1,26 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SearchComponent } from "../../components/form/search";
+import { SearchComponent } from "../../components/form/search.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
 import {
   AssetsHistoryType,
   GetAllAssetsRequestType as FilterType,
-} from "../../types/assetsTypes";
-import { customStyles, sortIcon } from "../../data/dataTable";
+} from "../../types/assetsTypes.ts";
+import { customStyles, sortIcon } from "../../data/dataTable.tsx";
 import { debounce } from "lodash";
-import { ColumnVisibility } from "../../types/common";
-import ColumnsModal from "../../components/modal/columns";
-import { activeFilters, getColumns } from "../../data/assets";
+import { ColumnVisibility } from "../../types/common.ts";
+import ColumnsModal from "../../components/modal/columns.tsx";
+import { activeFilters, getColumns } from "../../data/assets.tsx";
 import { useNavigate } from "react-router-dom";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { GetAssets } from "../../config/ApiCalls.ts";
 import { CircularSpinner } from "../../components/spinners/circularSpinner.tsx";
 import { FilterSidebarMulti } from "../../components/form/filtersWithMulti.tsx";
 import { FilterButton } from "../../components/form/filterButton.tsx";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import { capitalize } from "../../../utils/custom.ts";
 import { exportToExcel } from "../../../utils/excel.ts";
-
 interface ExcelColumn {
   key: string;
   header: string;
@@ -55,6 +52,7 @@ const AssetsPage = () => {
     return assetsDataPro.filter((entry: AssetsHistoryType) => {
       return keywords.every(
         (keyword) =>
+          entry.computer?.name.toLowerCase().includes(keyword) ||
           entry.category?.name.toLowerCase().includes(keyword) ||
           entry.name?.toLowerCase().includes(keyword) ||
           entry.type?.toLowerCase().includes(keyword) ||
@@ -289,7 +287,6 @@ const AssetsPage = () => {
   useEffect(() => {
     const mapFilters = (currentFilters: any) => {
       const mappedFilters: any = {};
-      console.log("currentFilters ==>>", currentFilters);
       Object.entries(currentFilters).forEach(([key, value]) => {
         if (value === undefined || value === null) return;
 
@@ -332,176 +329,179 @@ const AssetsPage = () => {
   }, [filters]);
 
   return (
-    <AnimatedRouteWrapper>
-      <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
-        <div className="row d-flex flex-column custom-main-container custom-container-height">
-          <div
-            className={`cont-d-flex-column ${
-              isSidebarOpen ? "cont-custom-hide col-9" : "col-12"
-            }`}
-          >
-            <div ref={divRef}>
-              <div className="d-flex mb-3 ms-2">
-                <h2>🛠️ Assets</h2>
-              </div>
+    <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
+      <div className="row d-flex flex-column custom-main-container custom-container-height">
+        <div
+          className={`cont-d-flex-column ${
+            isSidebarOpen ? "cont-custom-hide col-9" : "col-12"
+          }`}
+        >
+          <div ref={divRef}>
+            <div className="d-flex mb-3 ms-2">
+              <h2>🛠️ Assets</h2>
+            </div>
 
-              <div className="row justify-content-between p-3">
-                <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
-                  <button className="btn custom-btn" onClick={handleDownload}>
-                    <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
-                    <span className="custom-btn-text">Download</span>
-                  </button>
-                  <button
-                    ref={btnRef}
-                    className="btn custom-btn"
-                    onClick={toggleColumnModal}
-                  >
-                    <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
-                    <span className="custom-btn-text">Columns</span>
-                  </button>
-                  <ColumnsModal
-                    isOpen={isColumnModalOpen}
-                    onClose={toggleColumnModal}
-                    columns={columnsForModal}
-                    initialVisibility={columnVisibility}
-                    onVisibilityChange={handleVisibilityChange}
-                    buttonRef={btnRef}
-                  />
-                  {/* <button
+            <div className="row justify-content-between p-3">
+              <div className="col-sm-12 col-md-6 d-flex align-items-center gap-2">
+                <button className="btn custom-btn" onClick={handleDownload}>
+                  <i className="bi bi-cloud-download text-dark custom-btn-icon"></i>
+                  <span className="custom-btn-text">Download</span>
+                </button>
+                <button
+                  ref={btnRef}
+                  className="btn custom-btn"
+                  onClick={toggleColumnModal}
+                >
+                  <i className="bi bi-layout-split text-dark custom-btn-icon"></i>
+                  <span className="custom-btn-text">Columns</span>
+                </button>
+                <ColumnsModal
+                  isOpen={isColumnModalOpen}
+                  onClose={toggleColumnModal}
+                  columns={columnsForModal}
+                  initialVisibility={columnVisibility}
+                  onVisibilityChange={handleVisibilityChange}
+                  buttonRef={btnRef}
+                />
+                {/* <button
                     className="btn custom-btn"
                     onClick={toggleAddAssetModal}
                   >
                     <i className="bi bi-plus-square text-dark custom-btn-icon"></i>
                     <span className="custom-btn-text">Asset</span>
                   </button> */}
-                </div>
-
-                <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
-                  <SearchComponent
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                  />
-
-                  <FilterButton toggleSidebar={toggleSidebar} />
-                </div>
               </div>
-            </div>
-            <div
-              style={{
-                height: `calc(100vh - var(--bs-app-header-height) - 31px - ${height}px - 40px)`,
-                overflow: "hidden",
-              }}
-            >
-              {loading ? (
-                <div className="h-100 d-flex align-items-center justify-content-center my-4">
-                  <CircularSpinner />
-                </div>
-              ) : (
-                <div
-                  className="p-3"
-                  ref={tableContainerRef}
-                  style={{
-                    flex: 1,
-                    // overflow: "auto",
-                  }}
-                >
-                  <DataTable
-                    columns={visibleColumns.map((col) => ({
-                      ...col,
-                      width: columnWidths[col.id as string],
-                    }))}
-                    data={currentItems}
-                    keyField="uniqueKey"
-                    persistTableHead
-                    responsive
-                    highlightOnHover
-                    customStyles={customStyles}
-                    sortIcon={sortIcon}
-                    fixedHeader
-                    fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
-                  />
-                </div>
-              )}
-            </div>
 
-            <div className="sticky-pagination d-flex justify-content-end align-items-center">
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleFirstPage}
-                disabled={currentPage === 1}
-              >
-                First
-              </button>
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
+              <div className="col-sm-12 col-md-6 d-flex justify-content-end align-items-center gap-2">
+                <SearchComponent
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                />
 
-              {getVisiblePages().map((page, index) =>
-                typeof page === "number" ? (
-                  <button
-                    key={page}
-                    className={`btn btn-sm me-2 ${
-                      currentPage === page ? "btn-primary" : "btn-light"
-                    }`}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                ) : (
-                  <span key={`ellipsis-${index}`} className="mx-1">
-                    ...
-                  </span>
-                )
-              )}
-
-              <button
-                className="btn btn-sm btn-light me-2"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                Next
-              </button>
-              <button
-                className="btn btn-sm btn-light"
-                onClick={handleLastPage}
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                Last
-              </button>
+                <FilterButton toggleSidebar={toggleSidebar} />
+              </div>
             </div>
           </div>
-
-          {isSidebarOpen && (
-            <div
-              className="col-3 custom-border overflow-auto filter-sidebar-small p-0"
-              style={{
-                height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
-              }}
-            >
-              <div>
-                <FilterSidebarMulti
-                  isOpen={isSidebarOpen}
-                  toggleSidebar={toggleSidebar}
-                  activeFilters={activeFilters}
-                  filters={filters}
-                  saveFilters={setFilters}
-                  filtersStoreName={"assetsFilters"}
+          <div
+            style={{
+              height: `calc(100vh - var(--bs-app-header-height) - 31px - ${height}px - 40px)`,
+              overflow: "hidden",
+            }}
+          >
+            {loading ? (
+              <div className="h-100 d-flex align-items-center justify-content-center my-4">
+                <CircularSpinner />
+              </div>
+            ) : (
+              <div
+                className="p-3 w-100 "
+                ref={tableContainerRef}
+                style={{
+                  flex: 1,
+                  overflowX: "auto",
+                  // overflow: "auto",
+                }}
+              >
+                <DataTable
+                  columns={visibleColumns.map((col) => ({
+                    ...col,
+                    width: columnWidths[col.id as string] || "150px",
+                  }))}
+                  data={currentItems}
+                  keyField="uniqueKey"
+                  persistTableHead
+                  responsive
+                  highlightOnHover
+                  customStyles={customStyles}
+                  sortIcon={sortIcon}
+                  fixedHeader
+                  fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
                 />
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          <div className="sticky-pagination d-flex justify-content-end align-items-center">
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handleFirstPage}
+              disabled={currentPage === 1}
+            >
+              First
+            </button>
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+
+            {getVisiblePages().map((page, index) =>
+              typeof page === "number" ? (
+                <button
+                  key={page}
+                  className={`btn btn-sm me-2 ${
+                    currentPage === page ? "btn-primary" : "btn-light"
+                  }`}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </button>
+              ) : (
+                <span key={`ellipsis-${index}`} className="mx-1">
+                  ...
+                </span>
+              )
+            )}
+
+            <button
+              className="btn btn-sm btn-light me-2"
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              Next
+            </button>
+            <button
+              className="btn btn-sm btn-light"
+              onClick={handleLastPage}
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              Last
+            </button>
+          </div>
         </div>
+
+        {isSidebarOpen && (
+          <div
+            className="col-3 custom-border overflow-auto filter-sidebar-small p-0"
+            style={{
+              height: `calc(100vh - var(--bs-app-header-height) - 40px)`,
+            }}
+          >
+            <div>
+              <FilterSidebarMulti
+                isOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+                activeFilters={activeFilters}
+                filters={filters}
+                saveFilters={setFilters}
+                filtersStoreName={"assetsFilters"}
+              />
+            </div>
+          </div>
+        )}
       </div>
-    </AnimatedRouteWrapper>
+    </div>
   );
 };
 
 const AssetsPageWrapper = () => {
-  return <AssetsPage />;
+  return (
+    <AnimatedRouteWrapper>
+      <AssetsPage />
+    </AnimatedRouteWrapper>
+  );
 };
 
 export { AssetsPageWrapper };
