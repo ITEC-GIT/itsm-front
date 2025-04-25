@@ -22,6 +22,24 @@ const SidebarMenuMain = () => {
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
+        to="/hyper-commands/software-installation"
+        icon="switch"
+        title={t.hyperCommands_software}
+        fontIcon="bi-layers"
+      />
+      <SidebarMenuItem
+        to="/hyper-commands/remote-ssh"
+        icon="switch"
+        title={t.hyperCommands_ssh}
+        fontIcon="bi-layers"
+      />
+      <SidebarMenuItem
+        to="/hyper-commands/remote-console"
+        icon="switch"
+        title={t.hyperCommands_vnc}
+        fontIcon="bi-layers"
+      />
+      <SidebarMenuItem
         to="/assets"
         icon="switch"
         title={t.assets}
