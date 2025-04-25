@@ -10,6 +10,7 @@ import {
   activeDashboardViewAtom,
   selectedComputerDashboardAtom,
 } from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
+import { CustomReactSelect } from "../../../../../app/components/form/custom-react-select";
 
 const ToolbarMainDashboard = () => {
   const { classes } = useLayout();
@@ -19,50 +20,56 @@ const ToolbarMainDashboard = () => {
   );
 
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
-  const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
-    null
-  );
+  // const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
+  //   null
+  // );
 
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
-  const locationOptions = useMemo(
-    () =>
-      (staticData.Locations || []).map((location: any) => ({
-        value: location.id ? Number(location.id) : 0,
-        label: location.name || "",
-      })),
-    [staticData]
-  );
 
-  const userOptions = useMemo(() => {
-    return (staticData.requesters || [])
-      .filter(
-        (device) => !selectedBranch || device.branch_id === selectedBranch.value
-      )
-      .map((device) => ({
-        value: device.id ? Number(device.id) : 0,
-        label: device.name || "",
-      }));
-  }, [staticData, selectedBranch]);
+  const compOptions = (staticData.computers || []).map((device) => ({
+    value: device.id ? Number(device.id) : 0,
+    label: device.name || "",
+  }));
 
-  const compOptions = useMemo(() => {
-    return (staticData.computers || [])
-      .filter(
-        (device) => !selectedBranch || device.branchid === selectedBranch.value
-        //&&
-        // device.requesterid === selectedUser?.value
-      )
-      .map((device) => ({
-        value: device.id ? Number(device.id) : 0,
-        label: device.name || "",
-      }));
-  }, [staticData, selectedBranch]);
+  // const locationOptions = useMemo(
+  //   () =>
+  //     (staticData.Locations || []).map((location: any) => ({
+  //       value: location.id ? Number(location.id) : 0,
+  //       label: location.name || "",
+  //     })),
+  //   [staticData]
+  // );
 
-  const handleBranchChange = (newValue: selectValueType | null) => {
-    setSelectedBranch(newValue);
-    setSelectedDevice(null);
-  };
+  // const userOptions = useMemo(() => {
+  //   return (staticData.requesters || [])
+  //     .filter(
+  //       (device) => !selectedBranch || device.branch_id === selectedBranch.value
+  //     )
+  //     .map((device) => ({
+  //       value: device.id ? Number(device.id) : 0,
+  //       label: device.name || "",
+  //     }));
+  // }, [staticData, selectedBranch]);
+
+  // const compOptions = useMemo(() => {
+  //   return (staticData.computers || [])
+  //     .filter(
+  //       (device) => !selectedBranch || device.branchid === selectedBranch.value
+  //       //&&
+  //       // device.requesterid === selectedUser?.value
+  //     )
+  //     .map((device) => ({
+  //       value: device.id ? Number(device.id) : 0,
+  //       label: device.name || "",
+  //     }));
+  // }, [staticData, selectedBranch]);
+
+  // const handleBranchChange = (newValue: selectValueType | null) => {
+  //   setSelectedBranch(newValue);
+  //   setSelectedDevice(null);
+  // };
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -78,7 +85,7 @@ const ToolbarMainDashboard = () => {
 
   return (
     <div className="row justify-content-end mt-2 ">
-      <div className="col-4 col-lg-3 col-xl-2">
+      {/* <div className="col-4 col-lg-3 col-xl-2">
         <Select
           options={locationOptions}
           value={selectedBranch}
@@ -92,21 +99,15 @@ const ToolbarMainDashboard = () => {
             }),
           }}
         />
-      </div>
+      </div> */}
 
       <div className="col-4 col-lg-3 col-xl-2">
-        <Select
+        <CustomReactSelect
           options={compOptions}
           value={selectedDevice}
           onChange={handleDeviceChange}
           placeholder="Select Device"
           isClearable
-          styles={{
-            menu: (base) => ({
-              ...base,
-              zIndex: 3000,
-            }),
-          }}
         />
       </div>
     </div>
