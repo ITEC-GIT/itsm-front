@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Select from "react-select";
 import { useAtom, useAtomValue } from "jotai";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useLayout } from "../../../core";
 import { staticDataAtom } from "../../../../../app/atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../../../../app/types/filtersAtomType";
@@ -22,9 +22,7 @@ const ToolbarMainDashboard = () => {
   const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
     null
   );
-  const [selectedUser, setSelectedUser] = useState<selectValueType | null>(
-    null
-  );
+
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
@@ -63,7 +61,6 @@ const ToolbarMainDashboard = () => {
 
   const handleBranchChange = (newValue: selectValueType | null) => {
     setSelectedBranch(newValue);
-    setSelectedUser(null);
     setSelectedDevice(null);
   };
 
@@ -86,23 +83,7 @@ const ToolbarMainDashboard = () => {
           options={locationOptions}
           value={selectedBranch}
           onChange={handleBranchChange}
-          placeholder="Select Branch"
-          isClearable
-          styles={{
-            menu: (base) => ({
-              ...base,
-              zIndex: 3000,
-            }),
-          }}
-        />
-      </div>
-
-      <div className="col-4 col-lg-3 col-xl-2">
-        <Select
-          options={userOptions}
-          value={selectedUser}
-          onChange={(newValue) => setSelectedUser(newValue)}
-          placeholder="Select User"
+          placeholder="Select Department"
           isClearable
           styles={{
             menu: (base) => ({
