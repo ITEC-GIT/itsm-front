@@ -18,7 +18,7 @@ export const getColumns = (
   handleCancelClick: (row: SoftwareHistoryType) => void
 ): TableColumn<SoftwareHistoryType>[] => [
   {
-    name: "#",
+    name: "",
     sortable: true,
     sortFunction: (a: SoftwareHistoryType, b: SoftwareHistoryType) =>
       a.id - b.id,
@@ -206,7 +206,7 @@ export const getColumns = (
       </span>
     ),
     id: "Date",
-    width: columnLargeWidth,
+    width: columnMediumWidth,
     selector: (row: SoftwareHistoryType) => {
       const date = new Date(row.created_at);
       const options: Intl.DateTimeFormatOptions = {

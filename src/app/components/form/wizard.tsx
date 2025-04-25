@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useMemo } from "react";
-import Select from "react-select";
 import {
   InitiateSoftwareInstallation,
   GetAllComputers,
-  GetAllLocations,
 } from "../../config/ApiCalls";
 import { useAtomValue } from "jotai";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
 import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
 import { SelectDeviceType } from "../../types/devicesTypes";
-import { SelectLocationType } from "../../types/locationsTypes";
 import { formatName } from "../../../utils/custom";
+import { SelectType } from "../../types/common";
+import { CustomReactSelect } from "./custom-react-select";
 
 export interface Step {
   id: number;
@@ -42,15 +41,13 @@ export const Wizard = ({
   const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [deviceOptions, setDeviceOptions] = useState<SelectDeviceType[]>([]);
-  const [locationOptions, setLocationOptions] = useState<SelectLocationType[]>(
-    []
-  );
+  const [departmentOptions, setDepartmentOptions] = useState<SelectType[]>([]);
 
   const [selectedDevices, setSelectedDevices] = useState<
     SelectDeviceType[] | []
   >([]);
-  const [selectedLocation, setSelectedLocation] =
-    useState<SelectLocationType | null>(null);
+  const [selectedDepartment, setSelectedDepartment] =
+    useState<SelectType | null>(null);
   const [softwareName, setSoftwareName] = useState<string>("");
   const [softwareUrl, setSoftwareUrl] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
@@ -272,15 +269,16 @@ export const Wizard = ({
     setProgress(0);
   };
 
-  const fetchLocations = async () => {
-    const response = await GetAllLocations();
-    const data = response.data.data;
-    const locationData = data.map((item: any) => ({
-      id: item.id,
-      name: formatName(item.name),
-    }));
-    setLocationOptions(locationData);
-  };
+  // const fetchDepartment = async () => {
+  //   //from indexedDb
+  //   const response = [{}];
+  //   const data = response;
+  //   const departmentData = data.map((item: any) => ({
+  //     id: item.id,
+  //     name: formatName(item.name),
+  //   }));
+  //   setDepartmentOptions(departmentData);
+  // };
 
   const fetchComputers = async () => {
     const response = await GetAllComputers();
@@ -289,7 +287,7 @@ export const Wizard = ({
       id: item.id,
       name: item.name,
       serial: item.serial,
-      locations_id: item.locations_id,
+      department_id: item.department_id,
     }));
     setDeviceOptions(computersData);
   };
@@ -301,96 +299,100 @@ export const Wizard = ({
   };
 
   const filteredDevices = useMemo(() => {
-    return selectedLocation
+    return selectedDepartment
       ? deviceOptions.filter(
-          (device) => device.locations_id === selectedLocation.id
+          (device) => device.department_id === selectedDepartment.id
         )
       : deviceOptions;
-  }, [selectedLocation, deviceOptions]);
+  }, [selectedDepartment, deviceOptions]);
 
   useEffect(() => {
     fetchUserData();
   }, [userData]);
 
   useEffect(() => {
-    fetchLocations();
-    fetchComputers();
+    // fetchDepartment();
+    // fetchComputers();
   }, []);
 
   return (
     <div className=" bg-white">
       <StepNavigation steps={steps} currentStep={currentStep} />
 
-      <div className="col-12 mt-4" style={{ height: "210px" }}>
+      <div className="col-12 mt-4" style={{ height: "90px" }}>
         {currentStep === 1 && (
           <div className="d-flex flex-column">
-            <div className="mb-4" style={{ height: "90px" }}>
-              <label htmlFor="locationSelect" className="form-label">
-                Select Location
+            {/* <div className="mb-4" style={{ height: "90px" }}>
+              <label htmlFor="departmentSelect" className="form-label">
+                Select Department
               </label>
               <Select
-                id="locationSelect"
+                id="departmentSelect"
                 classNamePrefix="react-select"
-                options={locationOptions.map((location) => ({
-                  value: location.id.toString(),
-                  label: location.name,
+                options={departmentOptions.map((department) => ({
+                  value: department.id.toString(),
+                  label: department.name,
                 }))}
                 value={
-                  selectedLocation
+                  selectedDepartment
                     ? {
-                        value: selectedLocation.id.toString(),
-                        label: selectedLocation.name,
+                        value: selectedDepartment.id.toString(),
+                        label: selectedDepartment.name,
                       }
                     : null
                 }
                 onChange={(selectedOption) => {
                   if (selectedOption) {
-                    const selectedLocationDetails = locationOptions.find(
-                      (location) =>
-                        location.id.toString() === selectedOption.value
+                    const selectedDepartmentDetails = departmentOptions.find(
+                      (department) =>
+                        department.id.toString() === selectedOption.value
                     );
-                    setSelectedLocation(selectedLocationDetails || null);
+                    setSelectedDepartment(selectedDepartmentDetails || null);
                     setSelectedDevices([]);
                   } else {
-                    setSelectedLocation(null);
+                    setSelectedDepartment(null);
                     setSelectedDevices([]);
                   }
                 }}
                 isClearable
               />
-            </div>
-            <div className="mb-4" style={{ height: "90px" }}>
+            </div> */}
+            <div
+              className="col-sm-6 col-md-4 col-lg-4 col-xl-3 mb-4 p-2"
+              style={{ height: "90px" }}
+            >
               <label htmlFor="deviceSelect" className="form-label required">
                 Select Devices
               </label>
-              <Select
-                id="deviceSelect"
-                classNamePrefix="react-select"
-                isMulti
+              <CustomReactSelect
+                isMulti={true}
                 options={filteredDevices.map((device) => ({
-                  value: device.id.toString(),
+                  value: device.id,
                   label: device.name,
                 }))}
                 value={selectedDevices.map((device) => ({
-                  value: device.id.toString(),
+                  value: device.id,
                   label: device.name,
                 }))}
                 onChange={(selectedOptions) => {
                   setDeviceError(false);
                   const selectedDevicesDetails = selectedOptions
-                    ? selectedOptions.map((option) =>
-                        deviceOptions.find(
-                          (device) => device.id.toString() === option.value
-                        )
+                    ? selectedOptions.map(
+                        (option: { value: number; label: string }) =>
+                          deviceOptions.find(
+                            (device) => device.id === option.value
+                          )
                       )
                     : [];
                   setSelectedDevices(
                     (selectedDevicesDetails || []).filter(
-                      (device): device is SelectDeviceType =>
-                        device !== undefined
+                      (
+                        device: SelectDeviceType | undefined
+                      ): device is SelectDeviceType => device !== undefined
                     )
                   );
                 }}
+                placeholder="Select Device"
               />
 
               {deviceError && (

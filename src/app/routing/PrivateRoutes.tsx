@@ -23,6 +23,7 @@ import { ComputerAliasesPageWrapper } from "../pages/user-management/aliases-pag
 import { UsersPageWrapper } from "../pages/user-management/users-page";
 import { FieldRulesPageWrapper } from "../pages/user-management/field-rules";
 import { SettingsPageWrapper } from "../pages/user-management/settings-page";
+import { SoftwareInstallationStaticPage } from "../pages/HyperCommands-Page/softwareInstallationStaticPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -44,7 +45,7 @@ const PrivateRoutes = () => {
         <Route path="hyper-commands" element={<HyperCommandsWrapper />} />
         <Route
           path="hyper-commands/software-installation/:userId?"
-          element={<SoftwareInstallationPage />}
+          element={<SoftwareInstallationStaticPage />}
         />
         <Route path="hyper-commands/remote-ssh" element={<RemoteSSHPage />} />
         <Route
