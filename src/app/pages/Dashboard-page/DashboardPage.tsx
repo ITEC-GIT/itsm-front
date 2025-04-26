@@ -23,20 +23,20 @@ const DashboardPage: FC = () => {
     selectedComputerDashboardAtom
   );
 
-  const fetchStatisticData = async () => {
-    const res = await GetDashboardAnalytics();
+  // const fetchStatisticData = async () => {
+  //   const res = await GetDashboardAnalytics();
 
-    if (res.status === 200) {
-      setData(res.data.Statistics);
-    } else {
-      //add loading
-      return;
-    }
-  };
+  //   if (res.status === 200) {
+  //     setData(res.data.Statistics);
+  //   } else {
+  //     //add loading
+  //     return;
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchStatisticData();
-  }, []);
+  // useEffect(() => {
+  //   fetchStatisticData();
+  // }, []);
 
   useEffect(() => {
     if (currentView === "main" && selectedDeviceAtom !== undefined) {
