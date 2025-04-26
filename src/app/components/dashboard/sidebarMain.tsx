@@ -5,16 +5,18 @@ import {
 } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { useEffect, useState } from "react";
 import { GetComputer } from "../../config/ApiCalls";
+import { GetComputerResponseType } from "../../types/dashboard";
 
 const SidebarMain = () => {
   const [selectedComputerAtom] = useAtom(selectedComputerDashboardAtom);
-  const [computer, setComputer] = useState<any>();
+  const [computer, setComputer] = useState<GetComputerResponseType>();
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
 
   const fetchComputer = async () => {
     if (selectedComputerAtom) {
       const computerInfo = await GetComputer(selectedComputerAtom);
-      setComputer(computerInfo.data.data);
+      console.log(computerInfo.data);
+      setComputer(computerInfo.data);
     }
   };
 
@@ -30,7 +32,7 @@ const SidebarMain = () => {
             <div className="computer-header">
               <h2 className="computer-name">{computer?.name}</h2>
               <span className="computer-type">
-                {computer?.computertypes_id} - {computer?.computermodels_id}
+                {computer?.type.name} - {computer?.model.name}
               </span>
             </div>
 

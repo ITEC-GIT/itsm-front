@@ -427,11 +427,7 @@ async function GetAllComputers() {
 }
 
 async function GetComputer(id: number) {
-  return await PrivateApiCall.get(`/Computer/${id}`, {
-    params: {
-      expand_dropdowns: 1,
-    },
-  })
+  return await PrivateApiCallFastApi.get(`/inventories/computers/${id}`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
