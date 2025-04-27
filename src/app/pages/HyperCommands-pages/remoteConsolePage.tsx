@@ -4,6 +4,7 @@ import { devicesVNC } from "../../data/hyperCommands";
 import { DeviceRemoteConsoleType } from "../../types/devicesTypes";
 import { ComputersListModal } from "../../components/modal/computersList";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
+import { RemoteConsoleModal } from "../../components/modal/VNCModal";
 
 type RemoteConsolePageProps = {
   computerIdProp?: number;
@@ -18,8 +19,6 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] =
     useState<DeviceRemoteConsoleType | null>(null);
-
-  const vncUrl = "https://cobalt.pulsar.ao/ajax/vnc.php";
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -103,7 +102,7 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
                     className={`card-header ${
                       device.isActive ? "bg-light" : "disconnect-bg border-0"
                     }`}
-                    style={{ height: "80px" }} // Fixed height for header
+                    style={{ height: "80px" }}
                   >
                     <div className="card-title mb-4 d-flex flex-column align-items-start w-100">
                       <h4 className="card-text w-100">{device.name}</h4>
@@ -127,13 +126,12 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
 
                   <div
                     className="card-body d-flex flex-column justify-content-center align-items-center"
-                    style={{ height: "100px" }} // Fixed height for body
+                    style={{ height: "100px" }}
                   >
                     <i className="bi bi-display text-black fs-1 mb-2"></i>
                     {renderDeviceButton(device)}
                   </div>
 
-                  {/* Always render this section but control visibility */}
                   <div
                     className="d-flex flex-column text-center"
                     style={{
@@ -152,10 +150,9 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
       </div>
 
       {isModalOpen && (
-        <ComputersListModal
-          isOpen={isModalOpen}
-          setSelectedDevice={setSelectedDevice}
-          closeModal={closeModal}
+        <RemoteConsoleModal
+          onClose={closeModal}
+          onConnect={handleLaunchConsole}
         />
       )}
     </div>
