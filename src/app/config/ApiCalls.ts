@@ -123,7 +123,7 @@ const SendRepliesAsync = async (ticketId: number, text: string): Promise<any> =>
     const payload = {
 
         itemtype: "Ticket",
-        items_id: ticketId,
+        ticket_id: ticketId,
         content: text,
 
     };

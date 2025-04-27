@@ -211,8 +211,8 @@ const TicketsDetailPage: React.FC = () => {
 
         });
         // Update the state with the modified editor content
-        setEditorModifiedContent(updatedEditorContent);
-        const response = await SendRepliesAsync(ticket.id, updatedEditorContent);
+        setEditorModifiedContent(editorContent);
+        const response = await SendRepliesAsync(ticket.id, editorContent);
         queryClient.invalidateQueries({queryKey: ["GetTicketWithReplies", ticket.id]}); // Refetch data
 
         setImageMapOnAccumulated([]);
@@ -309,7 +309,7 @@ const TicketsDetailPage: React.FC = () => {
                 <TicketCard
                     key={ticket.id}
                     id={ticket.id}
-                    status={ticket.status_label}
+                    status={ticket.status_obj.status_name}
                     date={ticket.date}
                     title={ticket.name}
                     description={
@@ -320,19 +320,19 @@ const TicketsDetailPage: React.FC = () => {
                         name: ticket.users_recipient,
                     }} // Placeholder avatar
                     raisedBy={{
-                        name: ticket.users_recipient,
-                        initials: ticket?.users_recipient?.charAt(0),
+                        name: ticket.issuer.user_name,
+                        initials: ticket?.issuer?.user_name?.charAt(0),
                     }}
-                    priority={ticket.priority_label}
-                    type={ticket.type_label}
-                    urgency={ticket.urgency_label}
+                    priority={ticket.priority_obj.priority_label}
+                    type={ticket.type_obj.type_label}
+                    urgency={ticket.urgency_obj.urgency_label}
                     lastUpdate={ticket.date_mod}
-                    isStarred={ticket.starred} // Pass the pinned status
+                    isStarred={ticket.is_starred} // Pass the pinned status
                     isCurrentUserMaster={isCurrentUserMaster}
                     assignees={assigneesFiltered}
                     isDetailsPage={true}
-                />
 
+                />
 
                 <div className="updates-container">
                     <h1 className="updates-title">Ticket View</h1>

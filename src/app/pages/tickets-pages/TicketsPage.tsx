@@ -1347,14 +1347,36 @@ const TicketsPage: React.FC = () => {
                                     //     (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
                                     // );
                                 }
-
+                                /*
+                                  {
+                                      "id": 5,
+                                      "name": "ticket title 1 ",
+                                      "date": "2025-04-27T12:37:16",
+                                      "closed_date": null,
+                                      "solved_date": null,
+                                      "assigned_date": null,
+                                      "urgency": 1,
+                                      "priority": 1,
+                                      "status": 1,
+                                      "type": 1,
+                                      "users_id_issuer": 1,
+                                      "users_id_recipient": 0,
+                                      "content": "ticket body 1 ",
+                                      "locations_id": 1,
+                                      "departments_id": 1,
+                                      "is_starred": 0,
+                                      "date_creation": "2025-04-27T12:37:16",
+                                      "last_assignee_reply_date": null,
+                                      "last_issuer_reply_date": null
+                                    }
+                                * */
                                 // If the array is empty or contains only null-valued objects, set it to an empty array
                                 const assignees: Assignee[] = isEmptyAssignees ? [] : parsedAssignees;
                                 return (
                                     <TicketCard
                                         key={ticket.id}
                                         id={ticket.id}
-                                        status={ticket.status_label}
+                                        status={ticket.status_obj.status_name}
                                         reply_unread={ticketIdsWithReplyUnread?.some(item => item.id === ticket.id && item.is_read === "unread") || false}
                                         date={ticket.date}
                                         title={ticket.name}
@@ -1366,17 +1388,17 @@ const TicketsPage: React.FC = () => {
                                             name: ticket.users_recipient,
                                         }} // Placeholder avatar
                                         raisedBy={{
-                                            name: ticket.users_recipient,
-                                            initials: ticket?.users_recipient?.charAt(0),
+                                            name: ticket.issuer.user_name,
+                                            initials: ticket?.issuer?.user_name?.charAt(0),
                                         }}
-                                        priority={ticket.priority_label}
-                                        type={ticket.type_label}
-                                        urgency={ticket.urgency_label}
+                                        priority={ticket.priority_obj.priority_label}
+                                        type={ticket.type_obj.type_label}
+                                        urgency={ticket.urgency_obj.urgency_label}
                                         lastUpdate={ticket.date_mod}
                                         onClick={() => handleTicketClick(ticket)} // Add onClick handler
                                         onPin={handlePinTicket} // Pass the handlePinTicket function
                                         isPinned={pinnedTicketIds.includes(ticket.id)} // Pass the pinned status
-                                        isStarred={ticket.starred} // Pass the pinned status
+                                        isStarred={ticket.is_starred} // Pass the pinned status
                                         onStarred={handleStarringTicket} // Pass the handlePinTicket function
                                         isCurrentUserMaster={isCurrentUserMaster}
                                         assignees={assignees}
