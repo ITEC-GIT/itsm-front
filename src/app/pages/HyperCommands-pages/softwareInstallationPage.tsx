@@ -14,7 +14,6 @@ import {
   GetAllSoftwareInstallationRequestType as filterType,
   SoftwareHistoryType,
 } from "../../types/softwareInstallationTypes.ts";
-import { CardsStat } from "../../components/softwareInstallation/cards-statistics.tsx";
 import {
   getCircleColor,
   getGreatestId,
@@ -67,10 +66,12 @@ const SoftwareInstallationPage = ({
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [filters, setFilters] = useState<filterType>({
+  const initialFilters = {
     range: "0-50",
     order: "desc",
-  });
+  };
+
+  const [filters, setFilters] = useState<filterType>(initialFilters);
 
   const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
   const [visibleColumns, setVisibleColumns] = useState<
@@ -467,9 +468,7 @@ const SoftwareInstallationPage = ({
                       <div className="d-flex align-items-center justify-content-end gap-2">
                         <SearchComponent
                           value={searchQuery}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleSearchChange(e.target.value)
-                          }
+                          onChange={handleSearchChange}
                         />
                         <FilterButton toggleSidebar={toggleSidebar} />
                       </div>
@@ -573,6 +572,7 @@ const SoftwareInstallationPage = ({
                   activeFilters={activeFilters}
                   saveFilters={setFilters}
                   filtersStoreName={"softwareFilters"}
+                  initialFilters={initialFilters}
                 />
               </div>
             </div>

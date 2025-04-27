@@ -6,7 +6,7 @@ export type SelectDeviceType = {
 };
 
 export type DeviceRemoteConsoleType = {
-  id: string;
+  id: number;
   name: string;
   hostname: string;
   isConnected: boolean;

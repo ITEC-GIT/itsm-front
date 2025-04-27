@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ActionIcons } from "../../components/hyper-commands/action-icons";
+import { ActionIcons } from "../../components/hyper-commands/action-icons.tsx";
 import { TerminalDisplay } from "../../components/Remote SSH/terminalDisplay.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 

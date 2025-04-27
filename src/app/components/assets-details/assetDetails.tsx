@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { Sidebar } from "./assetSidebar";
 import { DetailsButtons } from "../../data/assets";
 
-const WindowsServiceComponent = () => <div>Windows Service Content</div>;
-const AllProcessesComponent = () => <div>All Processes Content</div>;
-const SoftwareComponent = () => <div>Software Content</div>;
-const ManagedSoftwareComponent = () => <div>Managed Software Content</div>;
-const RegistryEditorComponent = () => <div>Registry Editor Content</div>;
-const FileExplorerComponent = () => <div>File Explorer Content</div>;
+const HardwareComponent = () => <div>Hardware & misc</div>;
+const NetworkPortsComponent = () => <div>Network ports</div>;
+const AntivirusComponent = () => <div>Antivirus</div>;
+const OperatingSystemComponent = () => <div>Operating system</div>;
+const VolumeComponent = () => <div>Disk volume</div>;
 
 const AssetDetailsComponent = () => {
   const [selectedButton, setSelectedButton] = useState<number>(1);
@@ -15,30 +14,30 @@ const AssetDetailsComponent = () => {
 
   switch (selectedButton) {
     case 1:
-      renderComponent = <WindowsServiceComponent />;
+      renderComponent = <HardwareComponent />;
       break;
     case 2:
-      renderComponent = <AllProcessesComponent />;
+      renderComponent = <NetworkPortsComponent />;
       break;
     case 3:
-      renderComponent = <SoftwareComponent />;
+      renderComponent = <AntivirusComponent />;
       break;
     case 4:
-      renderComponent = <ManagedSoftwareComponent />;
+      renderComponent = <OperatingSystemComponent />;
       break;
     case 5:
-      renderComponent = <RegistryEditorComponent />;
-      break;
-    case 6:
-      renderComponent = <FileExplorerComponent />;
+      renderComponent = <VolumeComponent />;
       break;
     default:
-      renderComponent = <WindowsServiceComponent />;
+      renderComponent = <HardwareComponent />;
   }
 
   return (
-    <div className="row app-row p-2">
-      <div className="col-2 bg-light border-end p-3">
+    <div
+      className="row none-scroll-width vertical-scroll h-100"
+      style={{ paddingTop: "5px" }}
+    >
+      <div className="col-2 bg-light border-end h-100">
         <Sidebar
           buttons={DetailsButtons}
           selectedId={selectedButton}
@@ -52,11 +51,8 @@ const AssetDetailsComponent = () => {
           className="mb-3"
         >
           {DetailsButtons.find((button) => button.id === selectedButton)
-            ?.text || "CPU"}
+            ?.text || ""}
         </span>
-        <div className="d-flex flex-column align-items-center justify-content-center h-75">
-          {renderComponent}
-        </div>
       </div>
     </div>
   );

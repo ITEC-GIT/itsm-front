@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { SearchComponent } from "../../components/form/search";
+import { SearchComponent } from "../../components/form/search.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { debounce } from "lodash";
-
-import { customStyles, sortIcon } from "../../data/dataTable.tsx";
-import { DepartmentsType } from "../../types/user-management.ts";
 import {
-  DepartmentsColumnsTable,
-  depsMockData,
+  fieldRulesMockData,
+  FieldRulesColumnsTable,
 } from "../../data/user-management.tsx";
+import { customStyles, sortIcon } from "../../data/dataTable.tsx";
+import { FieldRulesType } from "../../types/user-management.ts";
 
-const DepartmentsPage = () => {
+const FieldRulesPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const divRef = useRef<HTMLDivElement>(null);
@@ -20,51 +19,48 @@ const DepartmentsPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<
-    TableColumn<DepartmentsType>[]
+    TableColumn<FieldRulesType>[]
   >([]);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
 
-  const [tableData, setTableData] = useState<DepartmentsType[]>([
+  const [tableData, setTableData] = useState<FieldRulesType[]>([
     {
       id: -1,
       name: "",
-      location: "",
-      members: 0,
+      rule: "",
+      usedInTabs: [],
       isInputRow: true,
     },
-    ...depsMockData,
+    ...fieldRulesMockData,
   ]);
 
-  const [newRowInput, setNewRowInput] = useState<Partial<DepartmentsType>>({});
+  const [newRowInput, setNewRowInput] = useState<Partial<FieldRulesType>>({});
   const [isHoveringInputRow, setIsHoveringInputRow] = useState(false);
 
-  const handleNewRowInputChange = (
-    field: "name" | "location",
-    value: string
-  ) => {
+  const handleNewRowInputChange = (field: "name" | "rule", value: string) => {
     setNewRowInput((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSaveNewRow = () => {
     if (!newRowInput.name) return;
 
-    const newdep: DepartmentsType = {
+    const newFieldRule: FieldRulesType = {
       id: Date.now(),
       name: newRowInput.name,
-      location: newRowInput.location || "",
-      members: 0,
+      rule: newRowInput.rule || "",
+      usedInTabs: [],
     };
 
     const updatedData = [
       {
         id: -1,
         name: "",
-        location: "",
-        members: 0,
+        rule: "",
+        usedInTabs: [],
         isInputRow: true,
       },
       ...tableData.filter((row) => !row.isInputRow),
-      newdep,
+      newFieldRule,
     ];
 
     setTableData(updatedData);
@@ -96,7 +92,7 @@ const DepartmentsPage = () => {
 
   useEffect(() => {
     setVisibleColumns(
-      DepartmentsColumnsTable(
+      FieldRulesColumnsTable(
         hoveredRowId,
         newRowInput,
         handleNewRowInputChange,
@@ -117,9 +113,9 @@ const DepartmentsPage = () => {
               <div className="col-12 d-flex align-items-center justify-content-between mb-4 ms-2">
                 <div className="d-flex justify-content-between gap-3">
                   <div className="symbol symbol-50px ">
-                    <h2> 🏛️ Departments</h2>
+                    <h2> 📑 Field Rules</h2>
                     <span className="text-muted fs-6">
-                      Manage organizational departments
+                      Configure and manage field-level behavior across tabs
                     </span>
                   </div>
                 </div>
@@ -149,7 +145,7 @@ const DepartmentsPage = () => {
                 }}
               >
                 <DataTable
-                  columns={DepartmentsColumnsTable(
+                  columns={FieldRulesColumnsTable(
                     hoveredRowId,
                     newRowInput,
                     handleNewRowInputChange,
@@ -239,8 +235,8 @@ const DepartmentsPage = () => {
   );
 };
 
-const DepartmentsPageWrapper = () => {
-  return <DepartmentsPage />;
+const FieldRulesPageWrapper = () => {
+  return <FieldRulesPage />;
 };
 
-export { DepartmentsPageWrapper };
+export { FieldRulesPageWrapper };

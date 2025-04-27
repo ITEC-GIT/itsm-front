@@ -5,10 +5,12 @@ import {
   CategoryOption,
   FieldValues,
 } from "../../types/assetsTypes";
-import { AssetFields, categories, Steps } from "../../data/assets";
+import { AssetFields, Steps } from "../../data/assets";
 import { StepNavigation } from "../../components/form/wizard";
 import { ModalComponent } from "../../components/modal/ModalComponent";
 import { BackButton } from "../../components/form/backButton";
+import { useAtom } from "jotai";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 
 const AssetCreationPage = () => {
   const [selectedCategory, setSelectedCategory] =
@@ -41,6 +43,19 @@ const AssetCreationPage = () => {
   const [hasStartedFilling, setHasStartedFilling] = useState(false);
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  const [staticData] = useAtom(staticDataAtom);
+  const categories = staticData["assetCategories" as keyof typeof staticData];
+  const catOp = categories.map((item: any) => ({
+    value: ("id" in item ? item.id?.toString() : "") || "",
+    label:
+      "label" in item
+        ? item.label.toLowerCase()
+        : "status" in item
+        ? item.status.toLowerCase()
+        : "name" in item
+        ? item.name.toLowerCase()
+        : "Unnamed",
+  }));
 
   const handleChangeCategoryClick = () => {
     setShowModal(true);
@@ -178,7 +193,7 @@ const AssetCreationPage = () => {
                   Category
                 </label>
                 <Select
-                  options={categories}
+                  options={catOp}
                   value={selectedCategory}
                   onChange={handleCategoryChange}
                   isClearable

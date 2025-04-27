@@ -33,17 +33,25 @@ type Location = {
   value: string;
 };
 
+type Branch = {
+  id: number;
+  label: string;
+  value: string;
+};
+
+export type FilterValue = { value: string; label: string };
+
 export interface StaticDataType {
+  branches: Branch[];
   computers: Computer[];
-  Departments: [];
-  "Initialized softwares": number;
-  Locations: Location[];
-  "Received softwares": number;
-  SoftwareStatus: [];
+  locations: Location[];
+  installation_status: [];
   assignees: Assignee[];
-  priorityOptions: [];
+  priority: [];
   requesters: Requester[];
-  statusOptions: [];
-  typeOptions: [];
-  urgencyOptions: [];
+  status: [];
+  type: [];
+  urgency: [];
+  assetCategories: [];
+  software_counts: {};
 }

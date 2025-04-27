@@ -117,8 +117,8 @@ const UpdateTicket = async (body: UpdateTicketRequestBody): Promise<any> => {
     throw error; // Rethrow the error for additional handling if necessary
   }
 };
-/** ******************************************************************************************* */
 
+/** ******************************************************************************************* */
 /** ************************************** User *********************************************** */
 /** ******************************************************************************************* */
 async function GetTicketWithReplies(ticketId: number) {
@@ -391,7 +391,6 @@ async function RemoteSSHConnect(
 // }
 
 /** *********************************************************************************************/
-
 /** ************************************** Software Installation ********************************/
 /** *********************************************************************************************/
 async function FetchAllSoftwareInstallations(
@@ -439,7 +438,6 @@ async function GetAllSoftwareInstallations(
 }
 
 /** *********************************************************************************************/
-
 /** ************************************** Computers ********************************************/
 /** *********************************************************************************************/
 async function GetAllComputersAPI() {
@@ -656,6 +654,44 @@ async function CreateTitleAPI(title: string) {
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
+/** ************************************** Assets ******************************************/
+/** *********************************************************************************************/
+async function GetAssets(filters: any) {
+  return await PrivateApiCallFastApi.post(
+    `/inventories/assets/filter`,
+    filters,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  )
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetAssetCategories() {
+  return await PrivateApiCallFastApi.get(`/inventories/assets/categories`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetAssetActions(asset_type_id: number) {
+  return await PrivateApiCallFastApi.get(
+    `/inventories/assets/${asset_type_id}/actions/`
+  )
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function GetAssetSoftwares(computerId: number) {
+  return await PrivateApiCallFastApi.get(
+    `/inventories/assets/${computerId}/softwares`
+  )
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
 
 export {
   LoginApi,
@@ -688,6 +724,10 @@ export {
   GetTicketWithReplies,
   GetTicketAttachments,
   fetchAndOpenFile,
+  GetAssetCategories,
+  GetAssets,
+  GetAssetActions,
+  GetAssetSoftwares,
   GetDashboardLandingData,
   GetTicketCountsByStatusAndMonth,
   GetPrerequisitesAPI,

@@ -1,20 +1,19 @@
 import { useState } from "react";
-import { AssetsHistoryType, CategoryOption } from "../types/assetsTypes";
+import {
+  AssetsHistoryType,
+  AssetSoftwaresType,
+  GetAllAssetsRequestType as FilterType,
+} from "../types/assetsTypes";
 import { TableColumn } from "react-data-table-component";
 import { Link } from "react-router-dom";
-import { getBackgroundColor } from "../../utils/custom";
-import { useAtom } from "jotai";
-import { showActionColumnAtom } from "../atoms/table-atom/tableAtom";
-
+import { capitalize, getBackgroundColor } from "../../utils/custom";
 import {
   columnLargeWidth,
-  columnMediumWidth,
-  columnSmallWidth,
   columnXLargeWidth,
   columnXXLargeWidth,
   columnXXXLargeWidth,
 } from "./dataTable";
-import { CiSettings } from "react-icons/ci";
+import { VscTools } from "react-icons/vsc";
 import {
   FaComputer,
   FaPlug,
@@ -22,7 +21,11 @@ import {
   FaPhone,
   FaSimCard,
   FaNetworkWired,
+  FaBatteryHalf,
+  FaMicrochip,
+  FaKeyboard,
 } from "react-icons/fa6";
+import { FaHdd, FaMemory, FaMicrochip as FaCpu, FaTools } from "react-icons/fa";
 import { LuPrinter, LuMonitor } from "react-icons/lu";
 import {
   MdDevices,
@@ -31,106 +34,102 @@ import {
   MdOutlineDeviceUnknown,
   MdOutlineRoomPreferences,
 } from "react-icons/md";
-import { BsHddRack } from "react-icons/bs";
+import { GrStorage } from "react-icons/gr";
+import { BsHddRack, BsModem } from "react-icons/bs";
 import { SiInkdrop } from "react-icons/si";
+import { RiCodeBoxFill } from "react-icons/ri";
 import { ActionModal } from "../components/modal/ActionModal";
+import { useAtom } from "jotai";
+import { staticDataAtom } from "../atoms/app-routes-global-atoms/approutesAtoms";
 
-export const categories: CategoryOption[] = [
-  { value: "Computer", label: "Computer" },
-  { value: "Monitor", label: "Monitor" },
-  { value: "Network device", label: "Network device" },
-  { value: "Devices", label: "Devices" },
-  { value: "Printer", label: "Printer" },
-  { value: "Cartridge", label: " Cartridge" },
-  { value: "Consumable", label: " Consumable" },
-  { value: "Mouse", label: "Mouse" },
-  { value: "Phone", label: "Phone" },
-  { value: "Rack", label: "Rack" },
-  { value: "Enclosure", label: "Enclosure" },
-  { value: "Passive device", label: "Passive device" },
-  { value: "Simcard", label: "Simcard item" },
-];
-
-const assetCategories = [
-  "computer",
-  "monitor",
-  "software",
-  "networkdevice",
-  "printer",
-  "cartridgemodels",
-  "consumablemodels",
-  "phone",
-  "racks",
-  "devices",
-  "enclosures",
-  "passivedevices",
-  "simcard",
-  "unmanageddevices",
-  "pdus",
-  "cables",
-];
+export const activeFilters = ["computersFilter", "AssetCategoriesFilter"];
 
 const colors = [
   "#f7c1c1",
   "#d4e6a8",
-  "#f7c1c1",
-  "#fadcbf",
   "#fadcbf",
   "#fae4ae",
-  "#fae4ae",
-  "#e0e0e0",
-  "#f7e6c1",
-  "#e0e0e0",
-  "#fde9b3",
-  "#fde9b3",
-  "#d9d3cb",
-  "#d9d3cb",
-  "#f7c1c1",
   "#e6e6a8",
+  "#f7e6c1",
+  "#fde9b3",
+  "#d9d3cb",
+  "#f7c1c9",
+  "#d4e6a8",
+  "#fadcba",
+  "#fae4ad",
+  "#e0e0e9",
+  "#f7e6c8",
+  "#fde9b0",
+  "#d9d3cf",
+  "#e0e0e0",
 ];
 
 export const getColumns = (
-  hoveredRowId: number | null
+  triggerFilters: React.Dispatch<React.SetStateAction<FilterType>>
 ): TableColumn<AssetsHistoryType>[] =>
   [
     {
       name: "",
-      sortable: true,
-      width: columnSmallWidth,
+      width: columnXXLargeWidth,
       cell: (row: AssetsHistoryType) => {
+        const [showActionModal, setShowActionModal] = useState(false);
+        const [staticData] = useAtom(staticDataAtom);
+
+        const assetCategories =
+          staticData["assetCategories" as keyof typeof staticData] || [];
         const backgroundColor = getBackgroundColor(
-          row.category,
+          row.category.name,
           assetCategories,
           colors
         );
         return (
-          <span
-            style={{
-              backgroundColor: backgroundColor,
-              padding: "5px",
-              borderRadius: "3px",
-              width: "62px",
-              textAlign: "center",
-            }}
-          >
-            {Icons[row.category.toLowerCase()] || (
-              <i className="fa-thin fa-question"></i>
+          <div className="d-flex justify-content-between w-100">
+            <div>
+              <input
+                type="checkbox"
+                // checked={selectedRows.has(row.id)}
+                // onChange={() => toggleRowSelection(row.id)}
+              />
+
+              <button
+                type="button"
+                className={`btn btn-link p-0 ms-2`}
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Action"
+                onClick={() => setShowActionModal(!showActionModal)}
+              >
+                <VscTools
+                  style={{
+                    fontSize: "20px",
+                    color: "rgb(170 161 146)",
+                  }}
+                />
+              </button>
+            </div>
+
+            <span
+              className="category-span w-62px table-icon-color"
+              style={{
+                backgroundColor: backgroundColor,
+              }}
+            >
+              {assignIcon(row.category.name.toLowerCase()) || (
+                <i className="fa-thin fa-question"></i>
+              )}
+            </span>
+            {showActionModal && (
+              <ActionModal
+                isOpen={showActionModal}
+                onClose={() => setShowActionModal(false)}
+                category={row.category.name.toLowerCase()}
+                assetId={row.id}
+              />
             )}
-          </span>
+          </div>
         );
       },
-      id: "icon",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Type
-        </span>
-      ),
-      width: columnLargeWidth,
-      selector: (row: AssetsHistoryType) => row.category,
-      sortable: true,
-      id: "type",
+      id: "settings",
     },
     {
       name: (
@@ -140,39 +139,24 @@ export const getColumns = (
       ),
       selector: (row: AssetsHistoryType) => row.name,
       sortable: true,
-      width: columnXLargeWidth,
+      width: columnXXXLargeWidth,
       cell: (row: AssetsHistoryType) => {
-        const [showActionModal, setShowActionModal] = useState(false);
+        const categoryName = row.category?.name?.toLowerCase() || "";
+        const isComputer = categoryName.includes("computer");
+
+        const linkTo = isComputer
+          ? `/assets/asset-details/computer/${row.id}`
+          : `/assets/asset-details/${row.id}/${row.hash}`;
 
         return (
           <div className="d-flex justify-content-between w-100">
             <Link
-              to={`/assets/${row.id}`}
+              to={linkTo}
               title={row.name}
               style={{ color: "blue", textDecoration: "none" }}
             >
               {row.name}
             </Link>
-            <button
-              type="button"
-              className={`btn btn-link p-0 ${
-                hoveredRowId === row.id ? "d-block" : "d-none"
-              }`}
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Action"
-              onClick={() => setShowActionModal(!showActionModal)}
-            >
-              <CiSettings style={{ fontSize: "20px" }} />
-            </button>
-            {showActionModal && (
-              <ActionModal
-                isOpen={showActionModal}
-                onClose={() => setShowActionModal(false)}
-                category={row.category}
-                assetId={row.id}
-              />
-            )}
           </div>
         );
       },
@@ -181,59 +165,65 @@ export const getColumns = (
     {
       name: (
         <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Status
+          <span style={{ color: "#f0f0f0" }}>|</span> Category
         </span>
       ),
-      width: columnLargeWidth,
-      selector: (row: AssetsHistoryType) => row.status,
+      selector: (row: AssetsHistoryType) => row.category.name.toLowerCase(),
       sortable: true,
-      id: "status",
-      cell: (row: AssetsHistoryType) => {
-        return (
-          <span
-            style={{
-              backgroundColor: "#e3edff",
-              color: "#333",
-              fontWeight: "500",
-              padding: "5px",
-              borderRadius: "3px",
-            }}
-          >
-            {row.status}
-          </span>
-        );
-      },
+      width: columnXXLargeWidth,
+
+      id: "category",
     },
     {
       name: (
         <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Public IP
+          <span style={{ color: "#f0f0f0" }}>|</span> Type
         </span>
       ),
-      width: columnLargeWidth,
-      selector: (row: AssetsHistoryType) => row.public_ip,
+      width: columnXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.type,
       sortable: true,
-      id: "public_ip",
+      id: "type",
     },
     {
       name: (
         <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Entity
+          <span style={{ color: "#f0f0f0" }}>|</span> Model
         </span>
       ),
-      selector: (row: AssetsHistoryType) => row.entity,
       width: columnLargeWidth,
+      selector: (row: AssetsHistoryType) => row.model,
+      sortable: true,
       cell: (row: AssetsHistoryType) => (
         <span
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title={row.entity}
+          title={row.model}
         >
-          {row.entity}
+          {row.model}
         </span>
       ),
+      id: "model",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Manufacturer
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.model,
       sortable: true,
-      id: "entity",
+      cell: (row: AssetsHistoryType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.model}
+        >
+          {row.manufacturer}
+        </span>
+      ),
+      id: "manufacturer",
     },
     {
       name: (
@@ -259,902 +249,62 @@ export const getColumns = (
     {
       name: (
         <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Model
-        </span>
-      ),
-      width: columnLargeWidth,
-      selector: (row: AssetsHistoryType) => row.model,
-      sortable: true,
-      cell: (row: AssetsHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.model}
-        >
-          {row.model}
-        </span>
-      ),
-      id: "model",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Location
-        </span>
-      ),
-      width: columnLargeWidth,
-      selector: (row: AssetsHistoryType) => row.location,
-      sortable: true,
-      cell: (row: AssetsHistoryType) => (
-        <span
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={row.location}
-        >
-          {row.location}
-        </span>
-      ),
-      id: "location",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Component Processor
-        </span>
-      ),
-      width: columnXXXLargeWidth,
-      selector: (row: AssetsHistoryType) => row.component_processor,
-      sortable: true,
-      id: "component_processor",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Last Updated
-        </span>
-      ),
-      width: columnXLargeWidth,
-      selector: (row: AssetsHistoryType) => {
-        const date = new Date(row.last_update);
-        const options: Intl.DateTimeFormatOptions = {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        };
-        return date.toLocaleDateString("en-US", options);
-      },
-      sortable: true,
-      id: "last_update",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Project
-        </span>
-      ),
-      width: columnXLargeWidth,
-      selector: (row: AssetsHistoryType) => row.project,
-      sortable: true,
-      id: "project",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Address
-        </span>
-      ),
-      width: columnXLargeWidth,
-      selector: (row: AssetsHistoryType) => row.address,
-      sortable: true,
-      id: "address",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Inventory NB
-        </span>
-      ),
-      width: columnXLargeWidth,
-      selector: (row: AssetsHistoryType) => row.inventory_number,
-      sortable: true,
-      id: "inventory_number",
-    },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Username NB
+          <span style={{ color: "#f0f0f0" }}>|</span> Parent Asset
         </span>
       ),
       width: columnXXLargeWidth,
-      selector: (row: AssetsHistoryType) => row.alternate_username_number,
+      selector: (row: AssetsHistoryType) => {
+        row.computer?.name;
+      },
       sortable: true,
-      id: "alternate_username_number",
+      cell: (row: AssetsHistoryType) => (
+        <span
+          className="cursor-pointer"
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.computer?.name}
+          onClick={() => triggerFilters({ computer: row.computer.id })}
+        >
+          {row.computer?.name}
+        </span>
+      ),
+      id: "computer",
     },
     {
       name: (
         <span>
-          <span style={{ color: "#f0f0f0" }}>|</span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Modified date
         </span>
       ),
-      width: "70px",
+      width: columnXXLargeWidth,
+      selector: (row: AssetsHistoryType) => row.date_mode,
+      sortable: true,
       cell: (row: AssetsHistoryType) => {
-        const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-        const handleDeleteClick = () => {
-          setShowDeleteModal(true);
-        };
-
-        const confirmDelete = () => {
-          setShowDeleteModal(false);
-        };
-
-        const cancelDelete = () => {
-          setShowDeleteModal(false);
-        };
-
+        const formattedDate = new Date(row.date_mode).toLocaleDateString(
+          "en-GB"
+        );
         return (
-          <div
-            className={`d-flex align-items-start ${
-              hoveredRowId === row.id ? "show" : "hide"
-            }`}
+          <span
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title={row.date_mode}
           >
-            {hoveredRowId === row.id && (
-              <>
-                <button className="table-btn-action" onClick={() => {}}>
-                  <i className="bi bi-pencil text-primary table-icon"></i>
-                </button>
-                <button
-                  className="table-btn-action"
-                  onClick={handleDeleteClick}
-                >
-                  <i className="bi bi-x-lg text-danger table-icon"></i>
-                </button>
-
-                {showDeleteModal && (
-                  <div
-                    className={`modal w-100 fade ${
-                      showDeleteModal ? "show d-block" : ""
-                    }`}
-                    role="dialog"
-                    aria-hidden={!showDeleteModal}
-                    style={{
-                      background: showDeleteModal
-                        ? "rgba(0,0,0,0.5)"
-                        : "transparent",
-                    }}
-                  >
-                    <div className="modal-dialog modal-dialog-centered">
-                      <div className="modal-content p-5">
-                        <div className="d-flex justify-content-start align-items-center mb-5">
-                          <div className="circle-div">
-                            <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
-                          </div>
-                          <div className="d-flex flex-column">
-                            <h3>Delete assets</h3>
-                            <p>
-                              Are you sure you want to delete the selected
-                              assets?
-                            </p>
-                          </div>
-                        </div>
-                        <div className="d-flex justify-content-end mt-5">
-                          <button
-                            onClick={cancelDelete}
-                            className="custom-modal-cancel-btn"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={confirmDelete}
-                            className="custom-modal-confirm-btn"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+            {formattedDate}
+          </span>
         );
       },
-      sortable: false,
-      id: "action",
+      id: "date_mod",
     },
   ].filter(Boolean) as TableColumn<AssetsHistoryType>[];
 
-export const columns: TableColumn<AssetsHistoryType>[] = [
-  {
-    name: "",
-    sortable: true,
-    width: columnSmallWidth,
-    cell: (row: AssetsHistoryType) => {
-      const backgroundColor = getBackgroundColor(
-        row.category,
-        assetCategories,
-        colors
-      );
-      return (
-        <span
-          style={{
-            backgroundColor: backgroundColor,
-            padding: "5px",
-            borderRadius: "3px",
-            width: "62px",
-            textAlign: "center",
-          }}
-        >
-          {Icons[row.category.toLowerCase()] || (
-            <i className="fa-thin fa-question"></i>
-          )}
-        </span>
-      );
-    },
-    id: "icon",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Device
-      </span>
-    ),
-    selector: (row: AssetsHistoryType) => row.name,
-    sortable: true,
-    width: columnLargeWidth,
-    cell: (row: AssetsHistoryType) => (
-      <Link
-        to={`/assets/${row.id}`}
-        title={row.name}
-        style={{ color: "blue", textDecoration: "none" }}
-      >
-        {row.name}
-      </Link>
-    ),
-    id: "name",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Type
-      </span>
-    ),
-    width: columnLargeWidth,
-    selector: (row: AssetsHistoryType) => row.type,
-    sortable: true,
-    id: "type",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Status
-      </span>
-    ),
-    width: columnLargeWidth,
-    selector: (row: AssetsHistoryType) => row.status,
-    sortable: true,
-    id: "status",
-    cell: (row: AssetsHistoryType) => {
-      return (
-        <span
-          style={{
-            backgroundColor: "#e3edff",
-            color: "#333",
-            fontWeight: "500",
-            padding: "5px",
-            borderRadius: "3px",
-          }}
-        >
-          {row.status}
-        </span>
-      );
-    },
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Public IP
-      </span>
-    ),
-    width: columnLargeWidth,
-    selector: (row: AssetsHistoryType) => row.public_ip,
-    sortable: true,
-    id: "public_ip",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Entity
-      </span>
-    ),
-    selector: (row: AssetsHistoryType) => row.entity,
-    width: columnLargeWidth,
-    cell: (row: AssetsHistoryType) => (
-      <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.entity}>
-        {row.entity}
-      </span>
-    ),
-    sortable: true,
-    id: "entity",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Serial Number
-      </span>
-    ),
-    width: columnXXLargeWidth,
-    selector: (row: AssetsHistoryType) => row.serial_number,
-    sortable: true,
-    cell: (row: AssetsHistoryType) => (
-      <span
-        data-bs-toggle="tooltip"
-        data-bs-placement="top"
-        title={row.serial_number}
-        className="url-cell"
-      >
-        {row.serial_number}
-      </span>
-    ),
-    id: "serial_number",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Model
-      </span>
-    ),
-    width: columnLargeWidth,
-    selector: (row: AssetsHistoryType) => row.model,
-    sortable: true,
-    cell: (row: AssetsHistoryType) => (
-      <span data-bs-toggle="tooltip" data-bs-placement="top" title={row.model}>
-        {row.model}
-      </span>
-    ),
-    id: "model",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Location
-      </span>
-    ),
-    width: columnLargeWidth,
-    selector: (row: AssetsHistoryType) => row.location,
-    sortable: true,
-    cell: (row: AssetsHistoryType) => (
-      <span
-        data-bs-toggle="tooltip"
-        data-bs-placement="top"
-        title={row.location}
-      >
-        {row.location}
-      </span>
-    ),
-    id: "location",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Component Processor
-      </span>
-    ),
-    width: columnXXXLargeWidth,
-    selector: (row: AssetsHistoryType) => row.component_processor,
-    sortable: true,
-    id: "component_processor",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Last Updated
-      </span>
-    ),
-    width: columnXLargeWidth,
-    selector: (row: AssetsHistoryType) => {
-      const date = new Date(row.last_update);
-      const options: Intl.DateTimeFormatOptions = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      };
-      return date.toLocaleDateString("en-US", options);
-    },
-    sortable: true,
-    id: "last_update",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Project
-      </span>
-    ),
-    width: columnXLargeWidth,
-    selector: (row: AssetsHistoryType) => row.project,
-    sortable: true,
-    id: "project",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Address
-      </span>
-    ),
-    width: columnXLargeWidth,
-    selector: (row: AssetsHistoryType) => row.address,
-    sortable: true,
-    id: "address",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Inventory NB
-      </span>
-    ),
-    width: columnXLargeWidth,
-    selector: (row: AssetsHistoryType) => row.inventory_number,
-    sortable: true,
-    id: "inventory_number",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Username NB
-      </span>
-    ),
-    width: columnXXLargeWidth,
-    selector: (row: AssetsHistoryType) => row.alternate_username_number,
-    sortable: true,
-    id: "alternate_username_number",
-  },
-  {
-    name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Action
-      </span>
-    ),
-    width: columnMediumWidth,
-    cell: (row: AssetsHistoryType) => {
-      const [showDeleteModal, setShowDeleteModal] = useState(false);
-      const [showActionColumn] = useAtom(showActionColumnAtom);
-
-      const handleDeleteClick = () => {
-        setShowDeleteModal(true);
-      };
-
-      const confirmDelete = () => {
-        setShowDeleteModal(false);
-      };
-
-      const cancelDelete = () => {
-        setShowDeleteModal(false);
-      };
-
-      return (
-        <div
-          className={`d-flex align-items-start ${
-            showActionColumn ? "show" : "hide"
-          }`}
-        >
-          <button className="table-btn-action" onClick={() => {}}>
-            <i className="bi bi-pencil text-primary table-icon"></i>
-          </button>
-          <button className="table-btn-action" onClick={handleDeleteClick}>
-            <i className="bi bi-x-lg fs-2 text-danger table-icon"></i>
-          </button>
-
-          {showDeleteModal && (
-            <div
-              className={`modal w-100 fade ${
-                showDeleteModal ? "show d-block" : ""
-              }`}
-              role="dialog"
-              aria-hidden={!showDeleteModal}
-              style={{
-                background: showDeleteModal ? "rgba(0,0,0,0.5)" : "transparent",
-              }}
-            >
-              <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content p-5">
-                  <div className="d-flex justify-content-start align-items-center mb-5">
-                    <div className="circle-div">
-                      <i className="bi bi-exclamation text-white custom-modal-animated-icon"></i>
-                    </div>
-                    <div className="d-flex flex-column">
-                      <h3>Delete assets</h3>
-                      <p>
-                        Are you sure you want to delete the selected assets?
-                      </p>
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-end mt-5">
-                    <button
-                      onClick={cancelDelete}
-                      className="custom-modal-cancel-btn"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={confirmDelete}
-                      className="custom-modal-confirm-btn"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    },
-
-    sortable: false,
-    id: "action",
-  },
-];
-
-export const activeFilters = [
-  "softwareStatusFilter",
-  "userFilter",
-  "computersFilter",
-  "dateFilter",
-];
-
-export const mockData = [
-  {
-    id: 5297,
-    name: "Computer",
-    entity: "Entity J",
-    serial_number: "SN012345",
-    model: "Model G",
-    location: "Atlanta",
-    last_update: "2023-09-29",
-    component_processor: "AMD Ryzen 5",
-    type: "Workstation",
-    project: "Project Kappa",
-    address: "707 Fir St",
-    inventory_number: "INV010",
-    alternate_username_number: "AU010",
-    action: "Active",
-    status: "Offline",
-    public_ip: "192.168.1.10",
-    category: "computer",
-  },
-  {
-    id: 111,
-    name: "printer",
-    entity: "Entity J",
-    serial_number: "SN012345",
-    model: "Model G",
-    location: "Atlanta",
-    last_update: "2023-09-29",
-    component_processor: "AMD Ryzen 5",
-    type: "Workstation",
-    project: "Project Kappa",
-    address: "707 Fir St",
-    inventory_number: "INV010",
-    alternate_username_number: "AU010",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.10",
-    category: "printer",
-  },
-  {
-    id: 1111,
-    name: "phone",
-    entity: "Entity J",
-    serial_number: "SN012345",
-    model: "Model G",
-    location: "Atlanta",
-    last_update: "2023-09-29",
-    component_processor: "AMD Ryzen 5",
-    type: "Workstation",
-    project: "Project Kappa",
-    address: "707 Fir St",
-    inventory_number: "INV010",
-    alternate_username_number: "AU010",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.10",
-    category: "phone",
-  },
-  {
-    id: 22,
-    name: "racks",
-    entity: "Entity J",
-    serial_number: "SN012345",
-    model: "Model G",
-    location: "Atlanta",
-    last_update: "2023-09-29",
-    component_processor: "AMD Ryzen 5",
-    type: "Workstation",
-    project: "Project Kappa",
-    address: "707 Fir St",
-    inventory_number: "INV010",
-    alternate_username_number: "AU010",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.10",
-    category: "racks",
-  },
-  {
-    id: 222,
-    name: "enclosures",
-    entity: "Entity J",
-    serial_number: "SN012345",
-    model: "Model G",
-    location: "Atlanta",
-    last_update: "2023-09-29",
-    component_processor: "AMD Ryzen 5",
-    type: "Workstation",
-    project: "Project Kappa",
-    address: "707 Fir St",
-    inventory_number: "INV010",
-    alternate_username_number: "AU010",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.10",
-    category: "enclosures",
-  },
-  {
-    id: 2222,
-    name: "networkdevice",
-    entity: "Entity J",
-    serial_number: "SN012345",
-    model: "Model G",
-    location: "Atlanta",
-    last_update: "2023-09-29",
-    component_processor: "AMD Ryzen 5",
-    type: "Workstation",
-    project: "Project Kappa",
-    address: "707 Fir St",
-    inventory_number: "INV010",
-    alternate_username_number: "AU010",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.10",
-    category: "networkdevice",
-  },
-  {
-    id: 10,
-    name: "Device 10",
-    entity: "Entity J",
-    serial_number: "SN012345",
-    model: "Model G",
-    location: "Atlanta",
-    last_update: "2023-09-29",
-    component_processor: "AMD Ryzen 5",
-    type: "Workstation",
-    project: "Project Kappa",
-    address: "707 Fir St",
-    inventory_number: "INV010",
-    alternate_username_number: "AU010",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.10",
-    category: "networkdevice",
-  },
-  {
-    id: 22222,
-    name: "monitor",
-    entity: "Entity K",
-    serial_number: "SN678901",
-    model: "Model H",
-    location: "Denver",
-    last_update: "2023-10-06",
-    component_processor: "Intel i5",
-    type: "Laptop",
-    project: "Project Lambda",
-    address: "808 Pine St",
-    inventory_number: "INV011",
-    alternate_username_number: "AU011",
-    action: "Inactive",
-    status: "Offline",
-    public_ip: "192.168.1.11",
-    category: "monitor",
-  },
-  {
-    id: 333,
-    name: "pdus",
-    entity: "Entity L",
-    serial_number: "SN345678",
-    model: "Model I",
-    location: "Phoenix",
-    last_update: "2023-09-26",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.12",
-    category: "pdus",
-  },
-  {
-    id: 55555,
-    name: "Device 13",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.13",
-    category: "Enclouser",
-  },
-  {
-    id: 5555,
-    name: "Device 13",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.13",
-    category: "devices",
-  },
-  {
-    id: 555,
-    name: "software",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.13",
-    category: "software",
-  },
-  {
-    id: 55,
-    name: "cartridgemodels",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.13",
-    category: "cartridgemodels",
-  },
-  {
-    id: 4444,
-    name: "consumablemodels",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.13",
-    category: "consumablemodels",
-  },
-  {
-    id: 444,
-    name: "passivedevices",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.13",
-    category: "passivedevices",
-  },
-  {
-    id: 44,
-    name: "cables",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.13",
-    category: "cables",
-  },
-  {
-    id: 14,
-    name: "simcard",
-    entity: "Entity M",
-    serial_number: "SN901234",
-    model: "Model J",
-    location: "Philadelphia",
-    last_update: "2023-10-07",
-    component_processor: "AMD Ryzen 7",
-    type: "Desktop",
-    project: "Project Mu",
-    address: "909 Oak St",
-    inventory_number: "INV012",
-    alternate_username_number: "AU012",
-    action: "Active",
-    status: "Online",
-    public_ip: "192.168.1.14",
-    category: "simcard",
-  },
-];
-
-export const AppButtons = [
-  { id: 1, text: "Windows Service", icon: "bi-gear" },
-  { id: 2, text: "All Processes", icon: "bi-list" },
-  { id: 3, text: "Software", icon: "bi-window" },
-  { id: 4, text: "Managed Software", icon: "bi-code-slash" },
-  { id: 5, text: "Registry Editor", icon: "bi-box" },
-  { id: 6, text: "File Explorer", icon: "bi-folder" },
-];
-
-export const PoliciesButtons = [
-  { id: 1, text: "Antivirus", icon: "bi-shield-x" },
-  { id: 2, text: "Software Management", icon: "bi-folder" },
-  { id: 3, text: "Remote Desktop", icon: "bi-window" },
-];
+export const AppButtons = [{ id: 3, text: "Software", icon: "bi-window" }];
 
 export const DetailsButtons = [
-  { id: 1, text: "CPU", icon: "bi bi-cpu" },
-  { id: 2, text: "Memory", icon: "bi bi-memory" },
-  { id: 3, text: "Disk volume", icon: "bi bi-hdd-stack" },
-  { id: 4, text: "Open ports", icon: "bi bi-box-seam" },
-  { id: 5, text: "User log", icon: "bi bi-person-lines-fill" },
-  { id: 6, text: "Event log", icon: "bi bi-calendar-event" },
-  { id: 7, text: "Network adapters", icon: "bi bi-ethernet" },
-  { id: 8, text: "Hardware & misc", icon: "bi bi-gear" },
-  { id: 9, text: "Video card", icon: "bi bi-display" },
-  { id: 10, text: "Sound card", icon: "bi bi-speaker" },
+  { id: 1, text: "Hardware & misc", icon: "bi bi-gear" },
+  { id: 2, text: "Network ports", icon: "bi bi-ethernet" },
+  { id: 3, text: "Antivirus", icon: "bi-shield-x" },
+  { id: 4, text: "Operating System", icon: "bi-gear-wide-connected" },
+  { id: 5, text: "Disk volume", icon: "bi bi-hdd-stack" },
 ];
 
 export const AssetFields = [
@@ -1889,23 +1039,42 @@ export const Steps = [
   },
 ];
 
-const Icons: { [key: string]: JSX.Element } = {
+const iconMap: Record<string, JSX.Element> = {
   computer: <FaComputer />,
   printer: <LuPrinter />,
   monitor: <LuMonitor />,
-  software: <i className="fa-brands fa-uncharted"></i>,
-  networkdevice: <FaNetworkWired />,
+  software: <i className="fa-brands fa-uncharted "></i>,
+  network: <FaNetworkWired />,
   devices: <MdDevices />,
-  cartridgemodels: <SiInkdrop />,
-  consumablemodels: <MdLocalDrink />,
+  cartridge: <i className="fa-solid fa-droplet "></i>,
+  consumable: <MdLocalDrink />,
   racks: <BsHddRack />,
   enclosures: <MdOutlineRoomPreferences />,
   pdus: <FaPlug />,
-  passivedevices: <FaRegCircle />,
-  unmanageddevices: <MdOutlineDeviceUnknown />,
+  passive: <FaRegCircle />,
+  unmanaged: <MdOutlineDeviceUnknown />,
   cables: <MdOutlineCable />,
   phone: <FaPhone />,
   simcard: <FaSimCard />,
+  storage: <GrStorage />,
+  modem: <BsModem />,
+  battery: <FaBatteryHalf />,
+  bios: <FaMicrochip />,
+  controller: <FaMicrochip />,
+  drive: <FaHdd />,
+  input: <FaKeyboard />,
+  cpu: <FaCpu />,
+  memory: <FaMemory />,
+  version: <RiCodeBoxFill />,
+  hardware: <FaTools />,
+};
+
+export const assignIcon = (categoryName: string): JSX.Element => {
+  const name = categoryName.toLowerCase();
+  for (const keyword in iconMap) {
+    if (name.includes(keyword)) return iconMap[keyword];
+  }
+  return <i className="fa-thin fa-question "></i>;
 };
 
 export const Actions: Record<
@@ -1973,267 +1142,130 @@ export const Actions: Record<
     key: "More Actions",
     labels: [
       {
-        name: "Update",
-        icon: "https://img.icons8.com/?size=50&id=13937&format=png&color=000000",
-      },
-      {
-        name: "Clone",
-        icon: "https://img.icons8.com/?size=50&id=HsA4R7FslZm8&format=png&color=000000",
-        excludedCategories: ["cartridgemodels", "racks"],
-      },
-      {
-        name: "Add to trashbin",
-        icon: "https://img.icons8.com/?size=50&id=KD7CbP0QmK7R&format=png&color=000000",
-      },
-      {
-        name: "Activate Financial and Administrative Data",
-        icon: "https://img.icons8.com/?size=50&id=aTrrRPCUiwd6&format=png&color=000000",
-      },
-      {
-        name: "Unlock items",
-        icon: "https://img.icons8.com/?size=50&id=bmqc7DrIxfXZ&format=png&color=000000",
-        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
-      },
-      {
-        name: "Add to transfer list",
-        icon: "https://img.icons8.com/?size=50&id=107437&format=png&color=000000",
-      },
-      {
-        name: "Associate to an appliance",
-        icon: "https://img.icons8.com/?size=50&id=HYcGuVv64Nng&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "cartridgemodels",
-          "consumablemodels",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Recalculate the category",
-        icon: "https://img.icons8.com/?size=50&id=HYcGuVv64Nng&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "computer",
-          "monitor",
-          "networkdevice",
-          "devices",
-          "printer",
-          "cartridgemodels",
-          "consumablemodels",
-          "phone",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Remove from a rack",
-        icon: "https://img.icons8.com/?size=50&id=WWaHY6BpYxMJ&format=png&color=000000",
-        excludedCategories: [
-          "software",
-          "printer",
-          "cartridgemodels",
-          "consumablemodels",
-          "phone",
-          "racks",
-        ],
-      },
-      {
-        name: "Operating systems",
-        icon: "https://img.icons8.com/?size=50&id=QGeedI2KhNCQ&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "monitor",
-          "software",
-          "networkdevice",
-          "devices",
-          "printer",
-          "cartridgemodels",
-          "consumablemodels",
-          "phone",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Connect",
-        icon: "https://img.icons8.com/?size=50&id=aEjOpeGqcuAf&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "software",
-          "networkdevice",
-          "cartridgemodels",
-          "consumablemodels",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Disconnect",
-        icon: "https://img.icons8.com/?size=50&id=GCoO9q1mgOr9&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "computer",
-          "software",
-          "networkdevice",
-          "cartridgemodels",
-          "consumablemodels",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Install",
-        icon: "https://img.icons8.com/?size=50&id=IxuhLHjdG8Jf&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "monitor",
-          "software",
-          "networkdevice",
-          "devices",
-          "printer",
-          "cartridgemodels",
-          "consumablemodels",
-          "phone",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Add a license",
-        icon: "https://img.icons8.com/?size=50&id=6PEs2EypZuRA&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "software",
-          "cartridgemodels",
-          "consumablemodels",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Link knowledgebase article",
-        icon: "https://img.icons8.com/?size=50&id=31362&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "cartridgemodels",
-          "consumablemodels",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
         name: "Add a document",
-        icon: "https://img.icons8.com/?size=50&id=CQRMBNqHIi78&format=png&color=000000",
-        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
-      },
-      {
-        name: "Remove a document",
-        icon: "https://img.icons8.com/?size=50&id=Ne46CdR3BzHy&format=png&color=000000",
-        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
-      },
-      {
-        name: "Add a contract",
-        icon: "https://img.icons8.com/?size=50&id=w475EM7gCfQX&format=png&color=000000",
-        excludedCategories: [
-          "cartridgemodels",
-          "consumablemodels",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Remove a contract",
-        icon: "https://img.icons8.com/?size=50&id=OD8sZ5sM6qI7&format=png&color=000000",
-        excludedCategories: [
-          "cartridgemodels",
-          "consumablemodels",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Amend comment",
-        icon: "https://img.icons8.com/?size=50&id=fAQ7yQiPgqfh&format=png&color=000000",
-      },
-      {
-        name: "Add note",
         icon: "https://img.icons8.com/?size=50&id=vDaHd0NhMQuc&format=png&color=000000",
         excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
       },
       {
-        name: "Unlock components",
-        icon: "https://img.icons8.com/?size=50&id=fbv9wSpSd3DR&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "software",
-          "networkdevice",
-          "devices",
-          "cartridgemodels",
-          "consumablemodels",
-          "racks",
-          "passivedevices",
-        ],
-      },
-      {
-        name: "Unlock fields",
-        icon: "https://img.icons8.com/?size=50&id=GFOlcUcHVQJX&format=png&color=000000",
-        excludedCategories: [
-          "pdus",
-          "enclosures",
-          "software",
-          "networkdevice",
-          "devices",
-          "cartridgemodels",
-          "consumablemodels",
-          "racks",
-          "passivedevices",
-        ],
+        name: "Add note",
+        icon: "https://img.icons8.com/?size=50&id=CQRMBNqHIi78&format=png&color=000000",
+        excludedCategories: ["pdus", "enclosures", "racks", "passivedevices"],
       },
     ],
   },
 };
 
-export const AssetCategoryActions: Record<string, string[]> = {
-  computer: ["Anti-Theft Actions", "Co-Reach Actions", "More Actions"],
-  monitor: ["More Actions"],
-  software: ["More Actions"],
-  networkdevice: ["More Actions"],
-  devices: ["More Actions"],
-  printer: ["More Actions"],
-  cartridgemodels: ["More Actions"],
-  consumablemodels: ["More Actions"],
-  phone: ["More Actions"],
-  racks: ["More Actions"],
-  enclosures: ["More Actions"],
-  pdus: ["More Actions"],
-  passivedevices: ["More Actions"],
-  simcard: ["More Actions"],
-};
-
 export const getAvailableActions = (category: string) => {
-  const actionCategories = AssetCategoryActions[category] || [];
-
-  const availableActions = actionCategories.reduce((acc, actionCategory) => {
-    if (Actions[actionCategory]) {
-      acc[actionCategory] = {
-        key: Actions[actionCategory].key,
-        labels: Actions[actionCategory].labels.filter(
-          (label) =>
-            !label.excludedCategories ||
-            !label.excludedCategories.includes(category)
-        ),
-      };
-    }
-    return acc;
-  }, {} as Record<string, { key: string; labels: { name: string; icon: string }[] }>);
-
-  return availableActions;
+  if (category.includes("computer")) {
+    return {
+      "Anti-Theft Actions": Actions["Anti-Theft Actions"],
+      "Co-Reach Actions": Actions["Co-Reach Actions"],
+      "More Actions": Actions["More Actions"],
+    };
+  } else {
+    return {
+      "More Actions": Actions["More Actions"],
+    };
+  }
 };
+
+//asset details
+export const getAssetSoftwaresColumns = (
+  hoveredHash: string | null
+): TableColumn<AssetSoftwaresType>[] =>
+  [
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Name
+        </span>
+      ),
+      selector: (row: AssetSoftwaresType) => row.name,
+      sortable: true,
+      width: columnXXXLargeWidth,
+      cell: (row: AssetSoftwaresType) => {
+        return <span>{row.name}</span>;
+      },
+      id: "name",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Category
+        </span>
+      ),
+      selector: (row: AssetSoftwaresType) => row.category,
+      cell: (row: AssetSoftwaresType) => (
+        <span
+          className="category-span w-140px me-5"
+          style={{
+            backgroundColor: "#d4e6a8",
+          }}
+        >
+          {row.category ? capitalize(row.category.replace(/_/g, " ")) : ""}
+        </span>
+      ),
+      sortable: true,
+      width: columnXLargeWidth,
+      id: "category",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Publisher
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.publisher,
+      sortable: true,
+      id: "publisher",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Version
+        </span>
+      ),
+      width: columnXLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.version,
+      sortable: true,
+      id: "version",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Architecture
+        </span>
+      ),
+      width: columnLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.architecture,
+      sortable: true,
+      cell: (row: AssetSoftwaresType) => (
+        <span
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title={row.architecture}
+        >
+          {row.architecture}
+        </span>
+      ),
+      id: "arch",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Installed date
+        </span>
+      ),
+      width: columnXXLargeWidth,
+      selector: (row: AssetSoftwaresType) => row.install_date,
+      sortable: true,
+      cell: (row: AssetSoftwaresType) => {
+        const formattedDate = new Date(row.install_date).toLocaleDateString(
+          "en-GB"
+        );
+        return <span>{formattedDate}</span>;
+      },
+      id: "install_date",
+    },
+  ].filter(Boolean) as TableColumn<AssetSoftwaresType>[];

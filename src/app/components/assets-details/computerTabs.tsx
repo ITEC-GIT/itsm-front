@@ -1,21 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AssetHistoryComponent } from "./assetHistory";
 import TicketPageWrapper from "../../pages/tickets-pages/TicketPageWrapper";
-import { AssetAppsComponent } from "./assetApps";
+import { ComputerAppsComponent } from "./computerApps";
 import { AssetDetailsComponent } from "./assetDetails";
 import { AssetSummaryComponent } from "./assetSummary";
-import { AssetPoliciesComponent } from "./assetPolicies";
+import { AssetsTree } from "./assetDetailsTree";
 
-const asset = {
-  name: "Laptop",
-  description: "Dell XPS 13",
-  serialNumber: "ABC123XYZ",
-  model: "XPS 13",
-  location: "Office",
-  purchaseDate: "2023-10-26",
-  value: 1200,
-};
-const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
+const ComputerTabsComponent: React.FC<{ devHeight: number; compData: any }> = ({
+  devHeight,
+  compData,
+}) => {
   const [selectedTab, setSelectedTab] = useState("summary");
   const navRef = useRef<HTMLUListElement>(null);
   const [totalHeight, setTotalHeight] = useState<number>(0);
@@ -102,7 +96,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
             Apps
           </button>
         </li>
-        <li className="nav-item" role="presentation">
+        {/* <li className="nav-item" role="presentation">
           <button
             className={`nav-link text-gray tab-text ${
               selectedTab === "policies" ? "active text-active-bold" : ""
@@ -116,6 +110,22 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
           >
             <i className="bi bi-window-x me-2"></i>
             Policies
+          </button>
+        </li> */}
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link text-gray tab-text ml-2 ${
+              selectedTab === "tree" ? "active text-active-bold" : ""
+            } me-6`}
+            id="tab-tree"
+            data-bs-toggle="tab"
+            data-bs-target="#tree"
+            type="button"
+            role="tab"
+            onClick={() => handleTabClick("Tree")}
+          >
+            <i className="bi bi-diagram-2 me-2"></i>
+            Tree
           </button>
         </li>
       </ul>
@@ -139,7 +149,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               <AssetSummaryComponent />
             </div>
             <div
-              className={`tab-pane fade ${
+              className={`tab-pane fade  h-100 ${
                 selectedTab === "details" ? "show active" : ""
               }`}
               id="details"
@@ -148,7 +158,7 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               <AssetDetailsComponent />
             </div>
             <div
-              className={`tab-pane fade ${
+              className={`tab-pane fade  h-100 ${
                 selectedTab === "tickets" ? "show active" : ""
               }`}
               id="tickets"
@@ -159,15 +169,15 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               </div>
             </div>
             <div
-              className={`tab-pane fade ${
+              className={`tab-pane fade  h-100 ${
                 selectedTab === "apps" ? "show active" : ""
               }`}
               id="apps"
               role="tabpanel"
             >
-              <AssetAppsComponent />
+              <ComputerAppsComponent computerId={compData.id} />
             </div>
-            <div
+            {/* <div
               className={`tab-pane fade ${
                 selectedTab === "policies" ? "show active" : ""
               }`}
@@ -175,6 +185,15 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
               role="tabpanel"
             >
               <AssetPoliciesComponent />
+            </div> */}
+            <div
+              className={`tab-pane fade ${
+                selectedTab === "tree" ? "show active" : ""
+              }`}
+              id="tree"
+              role="tabpanel"
+            >
+              <AssetsTree/>
             </div>
           </div>
         </div>
@@ -192,4 +211,4 @@ const AssetTabsComponent: React.FC<{ devHeight: number }> = ({ devHeight }) => {
   );
 };
 
-export { AssetTabsComponent };
+export { ComputerTabsComponent };

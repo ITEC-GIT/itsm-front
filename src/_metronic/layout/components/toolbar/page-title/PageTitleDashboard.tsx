@@ -34,7 +34,7 @@ const PageTitleDashboard = () => {
     >
       <div
         className="d-flex align-items-center gap-2"
-        onClick={handleToggleView}
+        // onClick={handleToggleView}
         style={{ cursor: "pointer" }}
       >
         <i

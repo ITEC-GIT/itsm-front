@@ -1,10 +1,9 @@
-// idea to be discussed
-
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 import Cookies from "js-cookie";
-import { DatePicker } from "../form/datePicker";
-import { deepEqual, formatDate, getData } from "../../../utils/custom";
+import { DatePicker } from "./datePicker";
+import { deepEqual, formatDate } from "../../../utils/custom";
+import { GetAllSoftwareInstallationRequestType as filterType } from "../../types/softwareInstallationTypes";
 import {
   loadFromIndexedDB,
   removeFromIndexedDB,
@@ -12,14 +11,16 @@ import {
 } from "../../indexDB/Config";
 import { useAtom } from "jotai";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { FilterType } from "../../types/common";
+import { FilterValue } from "../../types/filtersAtomType";
+import { customStyles } from "../../data/multiSelect";
 
 interface FilterSidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
   activeFilters: string[];
   filtersStoreName: string;
-  saveFilters: React.Dispatch<React.SetStateAction<FilterType>>;
+  filters: filterType;
+  saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
   initialFilters?: any;
 }
 
@@ -37,18 +38,7 @@ const filtersOptions: FiltersTitleProps[] = [
     AtomKey: "assetCategories",
     data: [],
   },
-  {
-    id: "softwareStatusFilter",
-    name: "Status",
-    AtomKey: "installation_status",
-    data: [],
-  },
-  {
-    id: "userFilter",
-    name: "User",
-    AtomKey: "assignees",
-    data: [],
-  },
+
   {
     id: "computersFilter",
     name: "Computer",
@@ -63,8 +53,9 @@ const filtersOptions: FiltersTitleProps[] = [
   },
 ];
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({
+const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
   isOpen,
+  filters,
   toggleSidebar,
   activeFilters,
   filtersStoreName,
@@ -73,7 +64,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
   const [selectedFilters, setSelectedFilters] = useState<
-    Record<string, { value: string; label: string } | null>
+    Record<string, FilterValue[]>
   >({});
 
   const [startDate, setStartDate] = useState<string>("");
@@ -84,29 +75,32 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
   const userId = Number(Cookies.get("user"));
   const filtersDbName = "Filters";
+
   const handleApplyFilters = () => {
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
       return;
+
     const filtersSelection: Record<string, any> = {};
-    if (Object.keys(selectedFilters).length !== 0) {
-      Object.entries(selectedFilters).forEach(([key, value]) => {
-        const filterConfig = filtersOptions.find((option) => option.id === key);
-        if (value) {
-          if (key === "softwareStatusFilter") {
-            filtersSelection.status = value.label;
-          } else {
-            const selectedFilter = filterData[key]?.find(
+
+    Object.entries(selectedFilters).forEach(([key, values]) => {
+      const filterConfig = filtersOptions.find((option) => option.id === key);
+
+      if (values.length > 0 && filterConfig) {
+        const selectedValues = values
+          .map((value) => {
+            const item = filterData[key]?.find(
               (item: any) => item.label === value.label
             );
-            if (selectedFilter && filterConfig) {
-              filtersSelection[filterConfig.name.toLowerCase()] = Number(
-                selectedFilter.value
-              );
-            }
-          }
+            return item ? Number(item.value) : null;
+          })
+          .filter((v) => v !== null);
+
+        if (selectedValues.length > 0) {
+          filtersSelection[filterConfig.name.toLowerCase()] =
+            selectedValues.length === 1 ? selectedValues[0] : selectedValues;
         }
-      });
-    }
+      }
+    });
 
     const dateFrom = formatDate(startDate ? new Date(startDate) : null);
     const dateTo = formatDate(endDate ? new Date(endDate) : null);
@@ -114,35 +108,29 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     if (dateFrom) filtersSelection.date_from = dateFrom;
     if (dateTo) filtersSelection.date_to = dateTo;
 
-    const initialFilters = {
-      range: "0-50",
-      order: "desc",
-    };
-
     const wholeFilter = {
       ...initialFilters,
       ...filtersSelection,
     };
     saveFilters(wholeFilter);
-    // handleClearFilters();
-
     // toggleSidebar();
+    // handleClearFilters();
   };
 
   const handleClearFilters = () => {
     setSelectedFilters({});
     setStartDate("");
     setEndDate("");
-    saveFilters(initialFilters);
+    saveFilters(initialFilters ?? {});
   };
 
   const handleFilterChange = (
     filterId: string,
-    selectedOption: { value: string; label: string } | null
+    selectedOption: MultiValue<FilterValue> | null
   ) => {
     setSelectedFilters((prevState) => ({
       ...prevState,
-      [filterId]: selectedOption,
+      [filterId]: selectedOption ? [...selectedOption] : [],
     }));
   };
 
@@ -275,6 +263,41 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     loadSavedFilters();
   }, [staticData]);
 
+  useEffect(() => {
+    if (
+      isOpen &&
+      filters &&
+      Object.keys(filters).length > 0 &&
+      Object.keys(filterData).length > 0
+    ) {
+      const initializedFilters: Record<string, FilterValue[]> = {};
+
+      Object.entries(filters).forEach(([key, value]) => {
+        const filterOption = filtersOptions.find(
+          (opt) => opt.name.toLowerCase() === key.toLowerCase()
+        );
+
+        if (filterOption && filterData[filterOption.id]) {
+          const matchedItems = Array.isArray(value) ? value : [value];
+
+          const selected = matchedItems
+            .map((val) =>
+              filterData[filterOption.id].find(
+                (item: FilterValue) => Number(item.value) === Number(val)
+              )
+            )
+            .filter(Boolean);
+
+          if (selected.length > 0) {
+            initializedFilters[filterOption.id] = selected;
+          }
+        }
+      });
+
+      setSelectedFilters(initializedFilters);
+    }
+  }, [isOpen, filterData, filters]);
+
   return (
     <div>
       <div className="d-flex align-items-center gap-2 mb-4">
@@ -306,21 +329,17 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     </div>
                   </>
                 ) : filterData[filter.id] ? (
-                  <Select
+                  <Select<FilterValue, true>
                     options={filterData[filter.id]}
-                    placeholder={`Select ${filter.name}`}
-                    // className="form-select-solid"
-                    classNamePrefix="react-select"
-                    value={selectedFilters[filter.id] ?? null}
+                    value={selectedFilters[filter.id] || []}
                     onChange={(selectedOption) =>
-                      handleFilterChange(
-                        filter.id,
-                        selectedOption as {
-                          value: string;
-                          label: string;
-                        } | null
-                      )
+                      handleFilterChange(filter.id, selectedOption)
                     }
+                    isMulti={true}
+                    classNamePrefix="react-select"
+                    placeholder={`Select ${filter.name}`}
+                    closeMenuOnSelect={false}
+                    styles={customStyles}
                   />
                 ) : (
                   <p className="text-muted">Loading...</p>
@@ -433,4 +452,4 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   );
 };
 
-export { FilterSidebar };
+export { FilterSidebarMulti };

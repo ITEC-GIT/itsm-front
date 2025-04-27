@@ -15,6 +15,15 @@ export const customStyles = {
       fontSize: "14px",
       minHeight: "48px",
       borderBottom: "none !important",
+      position: "relative !important" as "relative",
+      "&:hover": {
+        backgroundColor: "transparent !important",
+        width: "100% !important",
+        "& td": {
+          backgroundColor: "transparent !important",
+          width: "100% !important",
+        },
+      },
     },
   },
   headCells: {
@@ -25,12 +34,12 @@ export const customStyles = {
       padding: "5px 5px",
       background: "white",
       border: "none",
-      paddingLeft: "24px",    
+      paddingLeft: "24px",
     },
   },
   table: {
     style: {
-      width: "100%",
+      width: "100% !important",
       // tableLayout: "fixed" as "fixed",
     },
   },

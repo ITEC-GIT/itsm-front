@@ -18,7 +18,6 @@ const ToolbarMainDashboard = () => {
   const [selectedDeviceAtom, setSelectedDeviceAtom] = useAtom(
     selectedComputerDashboardAtom
   );
-
   const [activeView, setActiveView] = useAtom(activeDashboardViewAtom);
   // const [selectedBranch, setSelectedBranch] = useState<selectValueType | null>(
   //   null

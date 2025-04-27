@@ -6,7 +6,7 @@ import {
   selectedComputerDashboardAtom,
 } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { TicketsPage } from "../tickets-pages/TicketsPage";
-import { RemoteSSHPage } from "../HyperCommands-Page/remoteSSHPage";
+import { RemoteSSHPage } from "../HyperCommands-pages/remoteSSHServicePage";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import { SoftwareInstallationDashboard } from "./softwareInstallationDashboard";
 
@@ -84,7 +84,6 @@ const MainDashboard = () => {
     }
   };
 
-
   useEffect(() => {
     if (!toggleInstance || !toggleInstance.target) return;
 
@@ -113,8 +112,8 @@ const MainDashboard = () => {
         <div
           className={`pe-0 transition-all height-100 ${
             isSidebarOpen
-              ? " col-md-4 col-lg-5 col-xl-2 "
-              : " col-md-3 col-lg-3 col-xl-2 "
+              ? " col-1 col-sm-1 col-md-4 col-lg-5 col-xl-2"
+              : " col-1 col-sm-1 col-md-3 col-lg-3 col-xl-2"
           }`}
         >
           <SidebarMain />
@@ -122,8 +121,8 @@ const MainDashboard = () => {
         <div
           className={`pt-3 pb-3 height-100 transition-all${
             isSidebarOpen
-              ? "col-md-8 col-lg-7 col-xl-10"
-              : "col-md-9 col-lg-9 col-xl-10"
+              ? " col-11 col-sm-11 col-md-8 col-lg-7 col-xl-10"
+              : " col-11 col-sm-11 col-md-9 col-lg-9 col-xl-10"
           }`}
         >
           <div className="dashboard-display-container p-3">
