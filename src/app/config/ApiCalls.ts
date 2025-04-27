@@ -38,7 +38,7 @@ const errorCatch = (error: ErrorResponse) => {
 async function LoginApi(login: string, password: string) {
     // const authHeader = `Basic ${btoa(`${login}:${password}`)}`;
 
-    return await axios.post(`http://127.0.0.1:8080/session/init_session`,
+    return await axios.post(`http://127.0.0.1:8000/session/init_session`,
         new URLSearchParams({
             username: login,
             password: password

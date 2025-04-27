@@ -8,7 +8,7 @@ const useWebSocket = (userId: number, token: string) => {
         if (!userId || !token) return;
 
         // Attach Bearer Token as a query parameter
-        const ws = new WebSocket(`ws://localhost:8080/tickets_unprotected/ws/${userId}?token=${token}`);
+        const ws = new WebSocket(`ws://localhost:8000/tickets_unprotected/ws/${userId}?token=${token}`);
 
         ws.onopen = () => console.log("✅ WebSocket Connected");
 

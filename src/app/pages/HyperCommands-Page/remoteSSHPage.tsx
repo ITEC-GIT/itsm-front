@@ -206,7 +206,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                       type="number"
                       className="form-control form-control-solid"
                       value={port}
-                      placeholder="Enter Port (e.g., 8080)"
+                      placeholder="Enter Port (e.g., 8000)"
                       onChange={(e) => setPort(Number(e.target.value))}
                     />
                   </div>
