@@ -23,14 +23,21 @@ const ToolbarMainDashboard = () => {
   //   null
   // );
 
-  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
-    null
-  );
-
   const compOptions = (staticData.computers || []).map((device) => ({
     value: device.id ? Number(device.id) : 0,
     label: device.name || "",
   }));
+
+  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
+    selectedDeviceAtom
+      ? {
+          value: selectedDeviceAtom,
+          label:
+            compOptions.find((option) => option.value === selectedDeviceAtom)
+              ?.label || "",
+        }
+      : null
+  );
 
   // const locationOptions = useMemo(
   //   () =>
@@ -106,7 +113,7 @@ const ToolbarMainDashboard = () => {
           value={selectedDevice}
           onChange={handleDeviceChange}
           placeholder="Select Device"
-          isClearable={true}
+          isClearable={false}
         />
       </div>
     </div>

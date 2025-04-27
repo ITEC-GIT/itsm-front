@@ -16,7 +16,7 @@ const PageTitleDashboard = () => {
 
   const handleToggleView = () => {
     const newView = currentView === "main" ? "analytics" : "main";
-    if (newView === "analytics") setSelectedDeviceAtom(undefined);
+    // if (newView === "analytics") setSelectedDeviceAtom(undefined);
     setCurrentView(newView);
   };
 
@@ -34,7 +34,7 @@ const PageTitleDashboard = () => {
     >
       <div
         className="d-flex align-items-center gap-2"
-        // onClick={handleToggleView}
+        onClick={handleToggleView}
         style={{ cursor: "pointer" }}
       >
         <i
