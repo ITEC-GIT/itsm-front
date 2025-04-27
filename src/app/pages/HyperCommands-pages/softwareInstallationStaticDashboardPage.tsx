@@ -317,7 +317,7 @@ const SoftwareInstallationStaticPage = ({
   const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedEntry, setSelectedEntry] = useState<SoftwareHistoryType>();
-  const SoftwarePerPage = 10;
+  const SoftwarePerPage = 8;
   const minPagesToShow = 3;
   const [maxTotalSoftwares, setMaxTotalSoftwares] = useState<number>(0);
 
@@ -341,6 +341,14 @@ const SoftwareInstallationStaticPage = ({
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<SoftwareHistoryType>[]
   >([]);
+
+  const [activeTab, setActiveTab] = useState("installation");
+  const divRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+  const pagRef = useRef<HTMLDivElement>(null);
+  const [pagHeight, setPagHeight] = useState(0);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const [filtersHeight, setFiltersHeight] = useState(0);
 
   const handleCancelClick = (entry: SoftwareHistoryType) => {
     setSelectedEntry(entry);
@@ -438,14 +446,6 @@ const SoftwareInstallationStaticPage = ({
   useEffect(() => {
     setVisibleColumns(memoizedColumns);
   }, [memoizedColumns]);
-
-  const [activeTab, setActiveTab] = useState("installation");
-  const divRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
-  const pagRef = useRef<HTMLDivElement>(null);
-  const [pagHeight, setPagHeight] = useState(0);
-  const filtersRef = useRef<HTMLDivElement>(null);
-  const [filtersHeight, setFiltersHeight] = useState(0);
 
   useEffect(() => {
     if (divRef.current) {
