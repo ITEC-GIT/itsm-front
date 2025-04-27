@@ -1,38 +1,67 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PhoneNumberInput } from "../form/phoneNb-input";
 import CreatableSelect from "react-select/creatable";
 import { CreatableSelectInput } from "../form/creatable-react-select";
 import { CustomSwitch } from "../form/custom-switch";
+import { User } from "../../modules/apps/user-management/users-list/core/_models";
+import { UserType } from "../../types/user-management";
+import { useAtom } from "jotai";
+import { usersPrerequisitesAtom } from "../../atoms/user-management-atoms/usersAtom";
+import { CreateTitleAPI } from "../../config/ApiCalls";
+import { BasicType } from "../../types/common";
 
 interface UserProfileFormProps {
-  formData: {
-    phoneNb: string | null;
-    phoneNb2: string | null;
-    mobile: string | null;
-    title: {
-      id: number;
-      title: string;
-    };
-    preferredName: string | null;
-    comment?: string | null;
-    email: string | null;
-  };
+  formData: UserType;
   onChange: (field: string, value: any) => void;
   onToggleStatus: (value: boolean) => void;
 }
-
-const titleOptions = [
-  { id: 1, title: "Mr." },
-  { id: 2, title: "Ms." },
-  { id: 3, title: "Eng." },
-  { id: 4, title: "Prof." },
-];
 
 const UserProfileForm = ({
   formData,
   onChange,
   onToggleStatus,
 }: UserProfileFormProps) => {
+  const [usersPrerequisites, setUsersPrerequisites] = useAtom(
+    usersPrerequisitesAtom
+  );
+  const [titleOptions, setTitleOptions] = useState<BasicType[]>(
+    usersPrerequisites?.titles
+      ? usersPrerequisites.titles.map((title) => ({
+          id: title.id,
+          name: title.title,
+        }))
+      : []
+  );
+
+  const handleCreateTitle = async (field: string, inputValue: string) => {
+    try {
+      const res = await CreateTitleAPI(inputValue);
+      if (res.status === 201) {
+        const newTitle = {
+          id: res.data.id,
+          name: res.data.title,
+        };
+        setTitleOptions((prev) => [...prev, newTitle]); // Important
+        onChange(field, newTitle);
+        return newTitle;
+      }
+    } catch (error) {
+      console.error("Error creating title:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (usersPrerequisites?.titles) {
+      console.log(usersPrerequisites.titles);
+      setTitleOptions(
+        usersPrerequisites.titles.map((title) => ({
+          id: title.id,
+          name: title.title,
+        }))
+      );
+    }
+  }, [usersPrerequisites?.titles]);
+
   return (
     <div className="container-fluid">
       <div className="row mt-5">
@@ -40,17 +69,17 @@ const UserProfileForm = ({
           <div className="mb-5">
             <label className="form-label fw-bold">Phone Number </label>
             <PhoneNumberInput
-              phoneNb={formData.phoneNb}
+              phoneNb={formData.phone}
               onChange={onChange}
-              field={"phoneNb"}
+              field={"phone"}
             />
           </div>
           <div className="mb-5">
             <label className="form-label fw-bold">Phone Number 2</label>
             <PhoneNumberInput
-              phoneNb={formData.phoneNb2}
+              phoneNb={formData.phone2}
               onChange={onChange}
-              field={"phoneNb2"}
+              field={"phone2"}
             />
           </div>
           <div className="mb-5">
@@ -77,12 +106,9 @@ const UserProfileForm = ({
               value={formData.title ? formData.title : null}
               onChange={onChange}
               options={titleOptions}
-              getOptionLabel={(opt) => opt.title}
-              getOptionValue={(opt) => opt.id}
-              onCreateOption={(field, inputValue) => ({
-                id: Date.now(),
-                title: inputValue,
-              })}
+              getOptionLabel={(opt) => opt.name}
+              getOptionValue={(opt) => String(opt.id)}
+              onCreateOption={handleCreateTitle}
             />
           </div>
           <div className="mb-5">
@@ -91,8 +117,8 @@ const UserProfileForm = ({
               type="text"
               className="form-control custom-placeholder custom-input-height"
               placeholder="Enter Preferred Name"
-              value={formData.preferredName ?? ""}
-              onChange={(e) => onChange("preferredName", e.target.value)}
+              value={formData.preferred_name ?? ""}
+              onChange={(e) => onChange("preferred_name", e.target.value)}
             />
           </div>
         </div>

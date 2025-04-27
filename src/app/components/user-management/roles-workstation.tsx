@@ -1,78 +1,92 @@
-import React, { useState } from "react";
-import { CustomSwitch } from "../form/custom-switch";
+import { useState } from "react";
+
 import { CustomReactSelect } from "../form/custom-react-select";
-import { UserFormData } from "./create-user-model";
+import { UserType } from "../../types/user-management";
+import { useAtom } from "jotai";
+import { usersPrerequisitesAtom } from "../../atoms/user-management-atoms/usersAtom";
 
 const RolesWorkstationStep = ({
   formData,
   onChange,
+  formErrors,
 }: {
-  formData: UserFormData;
+  formData: UserType;
   onChange: (field: string, value: any) => void;
+  formErrors?: { [key: string]: string };
 }) => {
-  const rolesOption = [
-    { id: 1, name: "Administrator" },
-    { id: 2, name: "HR Manager" },
-    { id: 3, name: "Team Lead" },
-    { id: 4, name: "Technician" },
-    { id: 5, name: "Viewer" },
-    { id: 6, name: "Finance Officer" },
-    { id: 7, name: "Support Agent" },
-    { id: 8, name: "IT Manager" },
-  ];
+  const [usersPrerequisites, setUsersPrerequisites] = useAtom(
+    usersPrerequisitesAtom
+  );
 
-  const supervisorUsers = [
-    { id: 1, name: "Alice Johnson" },
-    { id: 2, name: "Bob Smith" },
-    { id: 3, name: "Carla Haddad" },
-  ];
-
-  const groupsOption = [
-    { id: 1, name: "Administrators" },
-    { id: 2, name: "Managers" },
-    { id: 3, name: "Staff" },
-    { id: 4, name: "Contractors" },
-  ];
-
-  const departmentsOption = [
-    { id: 1, name: "IT" },
-    { id: 2, name: "HR" },
-    { id: 3, name: "Finance" },
-    { id: 4, name: "Logistics" },
-  ];
-
-  const locationOptions = [
-    { id: 1, name: "Beirut HQ" },
-    { id: 2, name: "Tripoli Office" },
-    { id: 3, name: "Jounieh Branch" },
-  ];
-
-  const mapOptions = (items: { id: number; name: string }[]) =>
-    items.map((item) => ({ value: item.id, label: item.name }));
+  const mapOptions = <T extends Record<string, any>>(
+    items: T[],
+    labelField: keyof T = "name"
+  ) =>
+    items.map((item) => ({
+      value: item.id,
+      label: String(item[labelField]),
+    }));
 
   return (
     <div className="container-fluid">
       <div className="row mt-5">
         <div className="col-md-6">
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
             <label className="form-label fw-bold required">Assign Roles</label>
             <CustomReactSelect
               isMulti={true}
-              options={mapOptions(rolesOption)}
-              value={mapOptions(rolesOption).filter((r) =>
-                formData.rolesId.includes(r.value)
+              options={mapOptions(usersPrerequisites?.roles || [])}
+              value={mapOptions(usersPrerequisites?.roles || []).filter((r) =>
+                formData.roles?.map((role) => role.id).includes(r.value)
               )}
               onChange={(selected) =>
                 onChange(
-                  "rolesId",
-                  selected.map((r: any) => r.value)
+                  "roles",
+                  Array.isArray(selected)
+                    ? selected.map((r: any) => ({ id: r.value, name: r.label }))
+                    : []
                 )
               }
               placeholder="Select one or more roles"
             />
+            {formErrors?.roles && (
+              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                {formErrors.roles}
+              </small>
+            )}
           </div>
 
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
+            <label className="form-label fw-bold required">
+              Select Department
+            </label>
+            <CustomReactSelect
+              options={mapOptions(usersPrerequisites?.departments || [])}
+              value={
+                formData.department
+                  ? {
+                      value: formData.department.id,
+                      label: formData.department.name,
+                    }
+                  : null
+              }
+              onChange={(selected) =>
+                onChange(
+                  "department",
+                  selected ? { id: selected.value, name: selected.label } : null
+                )
+              }
+              placeholder="Select one department"
+              isClearable={false}
+            />
+            {formErrors?.department && (
+              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                {formErrors.department}
+              </small>
+            )}
+          </div>
+
+          {/* <div className="mb-5">
             <label className="form-label fw-bold">Supervised by Roles</label>
             <CustomReactSelect
               options={mapOptions(rolesOption)}
@@ -88,9 +102,9 @@ const RolesWorkstationStep = ({
               isMulti={true}
               placeholder="Select supervising roles"
             />
-          </div>
+          </div> */}
 
-          <div className="mb-5">
+          {/* <div className="mb-5">
             <label className="form-label fw-bold">Supervisor</label>
             <CustomReactSelect
               options={mapOptions(supervisorUsers)}
@@ -104,20 +118,22 @@ const RolesWorkstationStep = ({
               }
               placeholder="Select a supervisor"
             />
-          </div>
+          </div> */}
         </div>
         <div className="col-md-6">
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
             <label className="form-label fw-bold">Select Groups</label>
             <CustomReactSelect
-              options={mapOptions(groupsOption)}
-              value={mapOptions(groupsOption).filter((r) =>
-                formData.groupIds.includes(r.value)
+              options={mapOptions(usersPrerequisites?.groups || [])}
+              value={mapOptions(usersPrerequisites?.groups || []).filter((r) =>
+                formData.groups?.map((group) => group.id).includes(r.value)
               )}
               onChange={(selected) =>
                 onChange(
-                  "groupIds",
-                  selected.map((r: any) => r.value)
+                  "groups",
+                  Array.isArray(selected)
+                    ? selected.map((r: any) => ({ id: r.value, name: r.label }))
+                    : []
                 )
               }
               isMulti
@@ -125,14 +141,14 @@ const RolesWorkstationStep = ({
             />
           </div>
 
-          <div className="mb-5">
+          {/* <div className="mb-5">
             <label className="form-label fw-bold required">
-              Select Departments
+              Select Department
             </label>
             <CustomReactSelect
               options={mapOptions(departmentsOption)}
               value={mapOptions(departmentsOption).filter((r) =>
-                formData.departmentIds.includes(r.value)
+                formData.departmentId === r.value
               )}
               onChange={(selected) =>
                 onChange(
@@ -140,22 +156,27 @@ const RolesWorkstationStep = ({
                   selected.map((r: any) => r.value)
                 )
               }
-              isMulti
               placeholder="Select one or more departments"
             />
-          </div>
+          </div> */}
 
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
             <label className="form-label fw-bold">Select Location</label>
             <CustomReactSelect
-              options={mapOptions(locationOptions)}
+              options={mapOptions(usersPrerequisites?.locations || [])}
               value={
-                mapOptions(locationOptions).find(
-                  (r) => formData.locationId === r.value
-                ) || null
+                formData.location
+                  ? {
+                      value: formData.location.id,
+                      label: formData.location.name,
+                    }
+                  : null
               }
               onChange={(selected) =>
-                onChange("locationId", selected ? selected.value : null)
+                onChange(
+                  "location",
+                  selected ? { id: selected.value, name: selected.label } : null
+                )
               }
               placeholder="Select a location..."
             />

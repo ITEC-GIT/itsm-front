@@ -1,22 +1,32 @@
 import React, { useState } from "react";
 import { CustomReactSelect } from "../form/custom-react-select";
-import { UserFormData } from "./create-user-model";
+import { UserFormType, UserType } from "../../types/user-management";
+import { usersPrerequisitesAtom } from "../../atoms/user-management-atoms/usersAtom";
+import { useAtom } from "jotai";
 
 interface BasicInformationFormProps {
-  formData: UserFormData;
+  formData: UserFormType;
   onChange: (field: string, value: string) => void;
+  formErrors?: { [key: string]: string };
 }
 
 const BasicInformationForm = ({
   formData,
   onChange,
+  formErrors,
 }: BasicInformationFormProps) => {
-  const catOption = ["issuer", "assignee", "admin"];
+  const [usersPrerequisites, setUsersPrerequisites] = useAtom(
+    usersPrerequisitesAtom
+  );
 
-  const categoryOptions = catOption.map((item, index) => ({
-    value: index + 1,
-    label: item,
-  }));
+  const categoryOptions = usersPrerequisites?.user_categories
+    ? Object.entries(usersPrerequisites.user_categories).map(
+        ([_, value], index) => ({
+          value: index + 1,
+          label: value,
+        })
+      )
+    : [];
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -33,7 +43,7 @@ const BasicInformationForm = ({
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      onChange("profileImage", event.target?.result as string);
+      onChange("profile_image", event.target?.result as string);
     };
     reader.readAsDataURL(file);
   };
@@ -53,7 +63,8 @@ const BasicInformationForm = ({
         >
           <img
             src={
-              formData.profileImage || "/media/misc/default-profile-picture.png"
+              formData.profile_image ||
+              "/media/misc/default-profile-picture.png"
             }
             alt="User Avatar"
             style={{
@@ -83,18 +94,25 @@ const BasicInformationForm = ({
 
       <div className="row g-3 ">
         <div className="col-md-6">
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
             <label className="form-label fw-bold required">Name</label>
             <input
               type="text"
               className="form-control custom-placeholder custom-input-height"
               placeholder="Enter Name"
               value={formData.name}
-              onChange={(e) => onChange("name", e.target.value)}
+              onChange={(e) => {
+                onChange("name", e.target.value);
+              }}
               required
             />
+            {formErrors?.name && (
+              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                {formErrors.name}
+              </small>
+            )}
           </div>
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
             <label className="form-label fw-bold required">Username</label>
             <input
               type="text"
@@ -102,21 +120,26 @@ const BasicInformationForm = ({
               placeholder="Choose a username"
               value={formData.username}
               onChange={(e) => onChange("username", e.target.value)}
-              autoComplete="username"
               required
+              autoComplete="new-username"
             />
+            {formErrors?.username && (
+              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                {formErrors.username}
+              </small>
+            )}
           </div>
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
             <label className="form-label fw-bold required">Password</label>
             <div className="input-group">
               <input
                 type={showPassword ? "text" : "password"}
                 className="form-control custom-placeholder"
                 placeholder="Enter a secure password"
-                value={formData.password}
-                onChange={(e) => onChange("password", e.target.value)}
-                autoComplete="new-password"
+                value={formData.user_password ?? ""}
+                onChange={(e) => onChange("user_password", e.target.value)}
                 required
+                autoComplete="new-password"
               />
               <span
                 className="input-group-text"
@@ -126,28 +149,38 @@ const BasicInformationForm = ({
                 <i className={`bi bi-eye${showPassword ? "-slash" : ""}`}></i>
               </span>
             </div>
+            {formErrors?.user_password && (
+              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                {formErrors.user_password}
+              </small>
+            )}
           </div>
         </div>
 
         <div className="col-md-6">
-          <div className="mb-5">
-            <label className="form-label fw-bold">User Category</label>
+          <div className="mb-5" style={{ height: "85px" }}>
+            <label className="form-label fw-bold required">User Category</label>
             <CustomReactSelect
               isMulti={false}
               options={categoryOptions}
               value={
                 categoryOptions.find(
-                  (opt) => opt.label === formData.userCategory
+                  (opt) => opt.label === formData.user_category
                 ) || null
               }
               onChange={(selectedOption) => {
-                onChange("userCategory", selectedOption?.label || "");
+                onChange("user_category", selectedOption?.label || "");
               }}
               placeholder="Select user category"
             />
+            {formErrors?.user_category && (
+              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
+                {formErrors.user_category}
+              </small>
+            )}
           </div>
 
-          <div className="mb-5">
+          <div className="mb-5" style={{ height: "85px" }}>
             <label className="form-label fw-bold">Email</label>
             <input
               type="email"

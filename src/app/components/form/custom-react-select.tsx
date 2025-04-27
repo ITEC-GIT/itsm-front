@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import { OptionsType } from "../../types/common";
 
 interface CustomReactSelectProps {
@@ -59,6 +59,13 @@ const customStyles = {
   }),
 };
 
+const CustomInput = (props: any) => (
+  <components.Input
+    {...props}
+    innerRef={props.innerRef}
+    // inputProps={{ autoComplete: "off" }}
+  />
+);
 const CustomReactSelect = ({
   options,
   value,
@@ -76,6 +83,7 @@ const CustomReactSelect = ({
       isMulti={isMulti}
       isClearable={isClearable}
       styles={customStyles}
+      components={{ Input: CustomInput }}
     />
   );
 };

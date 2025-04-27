@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
   InitiateSoftwareInstallation,
-  GetAllComputers,
+  GetAllComputersAPI,
 } from "../../config/ApiCalls";
 import { useAtomValue } from "jotai";
 import { userAtom } from "../../atoms/auth-atoms/authAtom";
 import { SoftwareHistoryType } from "../../types/softwareInstallationTypes";
 import { SelectDeviceType } from "../../types/devicesTypes";
 import { formatName } from "../../../utils/custom";
-import { SelectType } from "../../types/common";
+import { BasicType } from "../../types/common";
 import { CustomReactSelect } from "./custom-react-select";
 
 export interface Step {
@@ -41,13 +41,13 @@ export const Wizard = ({
   const [userName, setUserName] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [deviceOptions, setDeviceOptions] = useState<SelectDeviceType[]>([]);
-  const [departmentOptions, setDepartmentOptions] = useState<SelectType[]>([]);
+  const [departmentOptions, setDepartmentOptions] = useState<BasicType[]>([]);
 
   const [selectedDevices, setSelectedDevices] = useState<
     SelectDeviceType[] | []
   >([]);
   const [selectedDepartment, setSelectedDepartment] =
-    useState<SelectType | null>(null);
+    useState<BasicType | null>(null);
   const [softwareName, setSoftwareName] = useState<string>("");
   const [softwareUrl, setSoftwareUrl] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
@@ -281,7 +281,7 @@ export const Wizard = ({
   // };
 
   const fetchComputers = async () => {
-    const response = await GetAllComputers();
+    const response = await GetAllComputersAPI();
     const data = response.data.data;
     const computersData = data.map((item: any) => ({
       id: item.id,

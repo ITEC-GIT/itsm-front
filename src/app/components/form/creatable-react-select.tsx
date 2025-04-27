@@ -74,13 +74,12 @@ const CreatableSelectInput = <T extends GenericSelectOption>({
     value: getOptionValue(opt),
   }));
 
-  const currentValue =
-    value && getOptionLabel(value)?.trim() !== ""
-      ? {
-          label: getOptionLabel(value),
-          value: getOptionValue(value),
-        }
-      : null;
+  const currentValue = value
+    ? {
+        label: (value as any).name || getOptionLabel(value),
+        value: (value as any).id || getOptionValue(value),
+      }
+    : null;
 
   return (
     <div>
@@ -97,24 +96,24 @@ const CreatableSelectInput = <T extends GenericSelectOption>({
             onChange(field, null);
             return;
           }
-
-          let mappedValue = options.find(
-            (opt) =>
-              getOptionValue(opt).toString() === selected.value.toString()
-          );
-
-          if (!mappedValue && onCreateOption) {
-            const newOption = onCreateOption(field, selected.label);
-            onChange(field, newOption);
-            return;
-          }
-
-          onChange(field, mappedValue ?? null);
+          onChange(field, {
+            id: selected.value,
+            name: selected.label,
+          } as any);
         }}
-        onCreateOption={(inputValue) => {
+        onCreateOption={async (inputValue) => {
           if (onCreateOption) {
-            const newOption = onCreateOption(field, inputValue);
-            onChange(field, newOption);
+            const createdOption = await onCreateOption(field, inputValue);
+            if (createdOption) {
+              // 1. Update the real form value
+              onChange(field, createdOption);
+
+              // 2. Append manually to mappedOptions
+              mappedOptions.push({
+                label: createdOption.name,
+                value: createdOption.id,
+              });
+            }
           }
         }}
         styles={customStyles}

@@ -24,7 +24,7 @@ export type OptionsType = {
   label: string;
 };
 
-export type SelectType = {
+export type BasicType  = {
   id: number;
   name: string;
 };

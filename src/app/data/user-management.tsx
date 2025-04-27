@@ -7,16 +7,20 @@ import {
   GroupsType,
   LocationsType,
   RolesType,
-  UsersType,
+  UserType,
 } from "../types/user-management";
 import Select from "react-select";
 import {
   columnLargeWidth,
+  columnMediumWidth,
+  columnSmallWidth,
   columnXLargeWidth,
   columnXXLargeWidth,
+  columnXXXLargeWidth,
 } from "./dataTable";
 import { FaComputer } from "react-icons/fa6";
 import { LuMonitor } from "react-icons/lu";
+import { BasicType } from "../types/common";
 
 //roles
 export const RolesActiveFilters = [];
@@ -882,9 +886,29 @@ const generateGradient = (name: string) => {
   return `linear-gradient(135deg, ${color1}, ${color2})`;
 };
 
+export const initialUserData: UserType = {
+  id: 0,
+  name: "",
+  username: "",
+  email: "",
+  roles: [],
+  department: null,
+  groups: [],
+  isActive: true,
+  profile_image: "",
+  phone: null,
+  phone2: null,
+  mobile: null,
+  comment: null,
+  preferred_name: null,
+  title: null,
+};
+
 export const UsersColumnsTable = (
-  hoveredRowId: number | null
-): TableColumn<UsersType>[] =>
+  hoveredRowId: number | null,
+  handleEditUser: (user: UserType) => void,
+  handleDeleteUser: (userId: number) => void
+): TableColumn<UserType>[] =>
   [
     {
       name: (
@@ -892,11 +916,11 @@ export const UsersColumnsTable = (
           <span style={{ color: "#f0f0f0" }}>|</span> Name
         </span>
       ),
-      width: columnXXLargeWidth,
-      selector: (row: UsersType) => row.name,
+      width: columnXXXLargeWidth,
+      selector: (row: UserType) => row.name,
       sortable: true,
       id: "name",
-      cell: (row: UsersType) => (
+      cell: (row: UserType) => (
         <div className="d-flex align-items-center gap-2">
           <div
             className="rounded-circle d-flex justify-content-center align-items-center"
@@ -918,13 +942,82 @@ export const UsersColumnsTable = (
     {
       name: (
         <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Group
+          <span style={{ color: "#f0f0f0" }}>|</span> Username
         </span>
       ),
-      width: columnXXLargeWidth,
-      selector: (row: UsersType) => row.group,
+      width: columnXXXLargeWidth,
+      selector: (row: UserType) => row.username,
+      sortable: true,
+      id: "username",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Roles
+        </span>
+      ),
+      width: columnXXXLargeWidth,
+      selector: (row: UserType) =>
+        row.roles.map((role) => role.name).join(", "),
+      sortable: true,
+      id: "roles",
+      cell: (row: UserType) => (
+        <div className="d-flex flex-wrap gap-1">
+          {row.roles.map((role) => (
+            <span
+              key={role.id}
+              className="badge bg-primary text-white"
+              style={{
+                fontSize: "12px",
+                padding: "5px 10px",
+                borderRadius: "10px",
+              }}
+            >
+              {role.name}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Title
+        </span>
+      ),
+      width: columnXLargeWidth,
+      selector: (row: UserType) => row.title?.name || "",
+      sortable: true,
+      id: "title",
+    },
+    {
+      name: (
+        <span>
+          <span style={{ color: "#f0f0f0" }}>|</span> Groups
+        </span>
+      ),
+      width: columnXXXLargeWidth,
+      selector: (row: UserType) =>
+        (row.groups ?? []).map((g) => g.name).join(", "),
       sortable: true,
       id: "group",
+      cell: (row: UserType) => (
+        <div className="d-flex flex-wrap gap-1">
+          {row.groups?.map((grp: BasicType) => (
+            <span
+              key={grp.id}
+              className="badge bg-success text-white"
+              style={{
+                fontSize: "12px",
+                padding: "5px 10px",
+                borderRadius: "10px",
+              }}
+            >
+              {grp.name}
+            </span>
+          ))}
+        </div>
+      ),
     },
     {
       name: (
@@ -933,9 +1026,23 @@ export const UsersColumnsTable = (
         </span>
       ),
       width: columnXXLargeWidth,
-      selector: (row: UsersType) => row.department,
+      selector: (row: UserType) => row.department?.name,
       sortable: true,
       id: "department",
+      cell: (row: UserType) => (
+        <div className="d-flex flex-wrap gap-1">
+          <span
+            className="badge bg-warning text-dark"
+            style={{
+              fontSize: "12px",
+              padding: "5px 10px",
+              borderRadius: "10px",
+            }}
+          >
+            {row.department?.name}
+          </span>
+        </div>
+      ),
     },
     {
       name: (
@@ -944,32 +1051,32 @@ export const UsersColumnsTable = (
         </span>
       ),
       width: columnXXLargeWidth,
-      selector: (row: UsersType) => row.location,
+      selector: (row: UserType) => row.location?.name || "",
       sortable: true,
       id: "location",
     },
-    {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Supervised By
-        </span>
-      ),
-      width: columnXXLargeWidth,
-      selector: (row: UsersType) => row.supervisedBy,
-      sortable: true,
-      id: "supervisedBy",
-    },
+    // {
+    //   name: (
+    //     <span>
+    //       <span style={{ color: "#f0f0f0" }}>|</span> Supervised By
+    //     </span>
+    //   ),
+    //   width: columnXXLargeWidth,
+    //   selector: (row: UserType) => row.supervisedBy,
+    //   sortable: true,
+    //   id: "supervisedBy",
+    // },
     {
       name: (
         <span>
           <span style={{ color: "#f0f0f0" }}>|</span> Status
         </span>
       ),
-      width: columnLargeWidth,
-      selector: (row: UsersType) => (row.isActive ? "Active" : "Inactive"),
+      width: columnMediumWidth,
+      selector: (row: UserType) => (row.isActive ? "Active" : "Inactive"),
       sortable: false,
       id: "status",
-      cell: (row: UsersType) => {
+      cell: (row: UserType) => {
         return (
           <span
             style={{
@@ -994,11 +1101,11 @@ export const UsersColumnsTable = (
         </span>
       ),
       width: "100px",
-      cell: (row: UsersType) => {
+      cell: (row: UserType) => {
         const [showDeleteModal, setShowDeleteModal] = useState(false);
 
         const handleDeleteClick = () => setShowDeleteModal(true);
-        const confirmDelete = () => setShowDeleteModal(false);
+
         const cancelDelete = () => setShowDeleteModal(false);
 
         return (
@@ -1009,7 +1116,10 @@ export const UsersColumnsTable = (
           >
             {hoveredRowId === row.id && (
               <>
-                <button className="table-btn-action" onClick={() => {}}>
+                <button
+                  className="table-btn-action"
+                  onClick={() => handleEditUser(row)}
+                >
                   <i className="bi bi-pencil text-primary table-icon"></i>
                 </button>
                 <button
@@ -1053,7 +1163,10 @@ export const UsersColumnsTable = (
                             Cancel
                           </button>
                           <button
-                            onClick={confirmDelete}
+                            onClick={(row) => {
+                              handleDeleteUser(hoveredRowId);
+                              setShowDeleteModal(false);
+                            }}
                             className="custom-modal-confirm-btn"
                           >
                             Delete
@@ -1071,100 +1184,7 @@ export const UsersColumnsTable = (
       sortable: false,
       id: "action",
     },
-  ].filter(Boolean) as TableColumn<UsersType>[];
-
-export const usersMockData = [
-  {
-    id: 1,
-    name: "Karem Salah",
-    department: ["Sales", "Marketing"],
-    group: ["Managers", "Team Leads"],
-    location: ["North Region", "HQ"],
-    supervisedBy: "Aly Salemeh",
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Ibrahim Darwish",
-    department: ["HR"],
-    group: ["Employees"],
-    location: ["All"],
-    supervisedBy: "Aly Salemeh",
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "Abbass Zoughaib",
-    department: ["Operations"],
-    group: ["Contractors", "Vendors"],
-    location: ["West Region"],
-    supervisedBy: "Aly Salemeh",
-    isActive: false,
-  },
-  {
-    id: 4,
-    name: "Rida Wazneh",
-    department: ["Finance", "HR"],
-    group: ["Auditors"],
-    location: ["HQ", "East Region"],
-    supervisedBy: "Aly Salemeh",
-    isActive: true,
-  },
-  {
-    id: 5,
-    name: "Show Bonus Field",
-    department: ["Executive"],
-    group: ["C-Level"],
-    location: ["HQ"],
-    supervisedBy: "Aly Salemeh",
-    isActive: false,
-  },
-  {
-    id: 11,
-    name: "Karem Salah",
-    department: ["Sales", "Marketing"],
-    group: ["Managers", "Team Leads"],
-    location: ["North Region", "HQ"],
-    supervisedBy: "Aly Salemeh",
-    isActive: true,
-  },
-  {
-    id: 12,
-    name: "Ibrahim Darwish",
-    department: ["HR"],
-    group: ["Employees"],
-    location: ["All"],
-    supervisedBy: "Aly Salemeh",
-    isActive: true,
-  },
-  {
-    id: 13,
-    name: "Abbass Zoughaib",
-    department: ["Operations"],
-    group: ["Contractors", "Vendors"],
-    location: ["West Region"],
-    supervisedBy: "Aly Salemeh",
-    isActive: false,
-  },
-  {
-    id: 14,
-    name: "Rida Wazneh",
-    department: ["Finance", "HR"],
-    group: ["Auditors"],
-    location: ["HQ", "East Region"],
-    supervisedBy: "Aly Salemeh",
-    isActive: true,
-  },
-  {
-    id: 15,
-    name: "Show Bonus Field",
-    department: ["Executive"],
-    group: ["C-Level"],
-    location: ["HQ"],
-    supervisedBy: "Aly Salemeh",
-    isActive: false,
-  },
-];
+  ].filter(Boolean) as TableColumn<UserType>[];
 
 //field rules
 export const FieldRulesColumnsTable = (

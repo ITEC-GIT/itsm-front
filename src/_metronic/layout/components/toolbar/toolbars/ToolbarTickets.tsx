@@ -49,7 +49,10 @@ const ToolbarTickets = () => {
   const fetchedTotalTickets = useAtomValue(totalTicketsAccumultionAtom);
 
   const maxTotalTickets = useAtomValue(maxTotalAtom);
-  const displayFetchedTotalTickets = fetchedTotalTickets > maxTotalTickets ? maxTotalTickets : fetchedTotalTickets;// this is needed in case of user creation
+  const displayFetchedTotalTickets =
+    fetchedTotalTickets > maxTotalTickets
+      ? maxTotalTickets
+      : fetchedTotalTickets; // this is needed in case of user creation
 
   const totalPages = Math.ceil(fetchedTotalTickets / ticketsPerPage);
   const minPagesToShow = 2;
@@ -188,8 +191,10 @@ const ToolbarTickets = () => {
           <button
             className="btn btn-primary"
             onClick={handleFetchLessPages}
-            disabled={isTicketsFetched || fetchedTotalTickets <= numOfRecordsToFetch}
-            >
+            disabled={
+              isTicketsFetched || fetchedTotalTickets <= numOfRecordsToFetch
+            }
+          >
             <img
               src={leftArrow}
               alt="Fetch Less Pages"
@@ -200,8 +205,10 @@ const ToolbarTickets = () => {
           <button
             className="btn btn-primary"
             onClick={handleFetchMorePages}
-            disabled={isTicketsFetched || displayFetchedTotalTickets >= maxTotalTickets}
-            >
+            disabled={
+              isTicketsFetched || displayFetchedTotalTickets >= maxTotalTickets
+            }
+          >
             <img
               src={rightArrow}
               alt="Fetch More Pages"

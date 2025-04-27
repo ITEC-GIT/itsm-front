@@ -20,6 +20,7 @@ import {
 } from "./Config";
 import { ImageUploadData, ImageUploadResponse } from "../types/TicketTypes.ts";
 import axios from "axios";
+import { CreateUserType } from "../types/user-management.ts";
 
 const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
 
@@ -160,8 +161,29 @@ async function GetUserProfile() {
     .catch((error: any) => errorCatch(error));
 }
 
-async function GetUsers() {
-  return await PublicApiCall.get(`//`)
+async function GetAllUsersAPI() {
+  return await PrivateApiCallFastApi.get(`/users/get_users`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function CreateUserAPI(userData: CreateUserType) {
+  return await PrivateApiCallFastApi.post(`/users/create_user`, userData)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function UpdateUserAPI(userId: number, userData: CreateUserType) {
+  return await PrivateApiCallFastApi.put(
+    `/users/update_user/${userId}`,
+    userData
+  )
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function DeleteUserAPI(userId: number) {
+  return await PrivateApiCallFastApi.delete(`/users/delete_user/${userId}`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -420,7 +442,7 @@ async function GetAllSoftwareInstallations(
 
 /** ************************************** Computers ********************************************/
 /** *********************************************************************************************/
-async function GetAllComputers() {
+async function GetAllComputersAPI() {
   return await PrivateApiCall.get(`/Computer`)
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
@@ -446,7 +468,6 @@ async function GetPrivateIPAddress(id: number) {
 }
 
 /** *********************************************************************************************/
-
 /** ************************************** Locations ********************************************/
 /** *********************************************************************************************/
 async function GetAllLocations() {
@@ -456,9 +477,14 @@ async function GetAllLocations() {
 }
 
 /** *********************************************************************************************/
-
 /** ************************************** Static Data ******************************************/
 /** *********************************************************************************************/
+async function GetPrerequisitesAPI() {
+  return await PrivateApiCallFastApi.get(`/users/get_prerequisites`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 async function GetStaticData() {
   return await PrivateApiCallFastApi.get(`/static/static_data`)
     .then((response) => response)
@@ -613,18 +639,39 @@ const fetchAndOpenFile = async (url: string) => {
     console.error("Error fetching the file:", error);
   }
 };
+
+/** *********************************************************************************************/
+/** ************************************** Users Titles ******************************************/
+/** *********************************************************************************************/
+async function GetAllTitlesAPI() {
+  return await PrivateApiCallFastApi.get(`/titles/get_titles`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function CreateTitleAPI(title: string) {
+  return await PrivateApiCallFastApi.post(`/titles/create_title`, {
+    title: title,
+  })
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 export {
   LoginApi,
   GetUserProfile,
   GetTicketsViewById,
-  GetUsers,
+  GetAllUsersAPI,
+  CreateUserAPI,
+  UpdateUserAPI,
+  DeleteUserAPI,
   GetBranches,
   GetDashboardAnalytics,
   InitiateSoftwareInstallation,
   FetchAllSoftwareInstallations,
   CancelSoftwareInstallation,
   GetAllSoftwareInstallations,
-  GetAllComputers,
+  GetAllComputersAPI,
   GetAllLocations,
   GetStaticData,
   GetUsersAndAreas,
@@ -643,4 +690,7 @@ export {
   fetchAndOpenFile,
   GetDashboardLandingData,
   GetTicketCountsByStatusAndMonth,
+  GetPrerequisitesAPI,
+  GetAllTitlesAPI,
+  CreateTitleAPI,
 };

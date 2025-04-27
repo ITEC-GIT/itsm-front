@@ -1,29 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchComponent } from "../../components/form/search.tsx";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { debounce } from "lodash";
-import {
-  UsersColumnsTable,
-  usersMockData,
-} from "../../data/user-management.tsx";
+import { UsersColumnsTable } from "../../data/user-management.tsx";
 import { customStyles, sortIcon } from "../../data/dataTable.tsx";
-import { UsersType } from "../../types/user-management.ts";
+import { CreateUserType, UserType } from "../../types/user-management.ts";
 import { UserCreationModal } from "../../components/user-management/create-user-model.tsx";
+import { DeleteUserAPI, GetAllUsersAPI } from "../../config/ApiCalls.ts";
+import { CircularSpinner } from "../../components/spinners/circularSpinner.tsx";
 
 const UsersPage = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-
+  const [usersData, setUsersData] = useState<UserType[]>([]);
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
 
+  const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
-  const [visibleColumns, setVisibleColumns] = useState<
-    TableColumn<UsersType>[]
-  >([]);
+  const [visibleColumns, setVisibleColumns] = useState<TableColumn<UserType>[]>(
+    []
+  );
 
   const handleSearchChange = debounce((query: string) => {
     setSearchQuery(query);
@@ -38,8 +39,104 @@ const UsersPage = () => {
   };
 
   const toggleModelCreation = () => {
+    setSelectedUser(null);
     setIsModalOpen((prevState) => !prevState);
   };
+
+  const handleEditUser = (user: UserType) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    const deleteUser = await DeleteUserAPI(userId);
+    if (deleteUser.status === 200) {
+      setUsersData((prevUsers) =>
+        prevUsers.filter((user) => user.id !== userId)
+      );
+    }
+  };
+
+  const handleSaveUser = (newOrUpdatedUser: any) => {
+    const newUserData: UserType = {
+      id: newOrUpdatedUser.id,
+      name: newOrUpdatedUser.name,
+      username: newOrUpdatedUser.user_name,
+      user_category: newOrUpdatedUser.user_category,
+      email: newOrUpdatedUser.email,
+      profile_image: newOrUpdatedUser.profile_image,
+      phone: newOrUpdatedUser.phone,
+      phone2: newOrUpdatedUser.phone2,
+      mobile: newOrUpdatedUser.mobile,
+      comment: newOrUpdatedUser.comment,
+
+      preferred_name: newOrUpdatedUser.preferred_name,
+      roles: newOrUpdatedUser.roles,
+      groups: newOrUpdatedUser.groups,
+      department: newOrUpdatedUser.departments_id,
+      location: newOrUpdatedUser.locations_id,
+      title: newOrUpdatedUser.user_titles_id,
+      isActive: newOrUpdatedUser.is_active,
+    };
+
+    setUsersData((prevUsers) => {
+      const userIndex = prevUsers.findIndex(
+        (user) => user.id === newUserData.id
+      );
+
+      if (userIndex !== -1) {
+        const updatedUsers = [...prevUsers];
+        updatedUsers[userIndex] = newUserData;
+        return updatedUsers;
+      } else {
+        return [newUserData, ...prevUsers];
+      }
+    });
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const filteredUsersData = useMemo(() => {
+    return usersData.filter((user) => {
+      const query = searchQuery.trim().toLowerCase();
+      const roleNames =
+        user.roles?.map((role) => role.name.toLowerCase()).join(" ") || "";
+      const groupNames =
+        user.groups?.map((group) => group?.name.toLowerCase()).join(" ") || "";
+      const locationName = user.location?.name?.toLowerCase() || "";
+      const departmentName = user.department?.name?.toLowerCase() || "";
+      const titleName = user.title?.name?.toLowerCase() || "";
+
+      return (
+        user.name.toLowerCase().includes(query) ||
+        user.username.toLowerCase().includes(query) ||
+        roleNames.includes(query) ||
+        groupNames.includes(query) ||
+        locationName.includes(query) ||
+        departmentName.includes(query) ||
+        titleName.includes(query)
+      );
+    });
+  }, [usersData, searchQuery]);
+
+  useEffect(() => {
+    const fetchUsersData = async () => {
+      try {
+        setLoading(true);
+        const response = await GetAllUsersAPI();
+        if (response.status === 200) {
+          const data = response.data;
+          setUsersData(data);
+        }
+      } catch (err) {
+        console.error("Error fetching assets:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsersData();
+  }, []);
 
   useEffect(() => {
     if (divRef.current) {
@@ -49,19 +146,21 @@ const UsersPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    setVisibleColumns(UsersColumnsTable(hoveredRowId));
+    setVisibleColumns(
+      UsersColumnsTable(hoveredRowId, handleEditUser, handleDeleteUser)
+    );
   }, [hoveredRowId]);
 
   useEffect(() => {
     const calculateWidths = () => {
       const columnsWithoutAction = visibleColumns.filter(
-        (col) => col.id !== "action" && col.id !== "id"
+        (col) => col.id !== "action" && col.id !== "status"
       );
       const visibleCount = visibleColumns.length;
       const newWidths: Record<string, string> = {};
 
       if (visibleCount === 2) {
-        columnsWithoutAction.forEach((col: TableColumn<UsersType>) => {
+        columnsWithoutAction.forEach((col: TableColumn<UserType>) => {
           newWidths[col.id as string] = "50%";
         });
       } else if (visibleCount > 2) {
@@ -70,7 +169,7 @@ const UsersPage = () => {
         if (tableContainerRef.current) {
           const containerWidth = tableContainerRef.current.clientWidth;
 
-          columnsWithoutAction.forEach((col: TableColumn<UsersType>) => {
+          columnsWithoutAction.forEach((col: TableColumn<UserType>) => {
             if (col.width) {
               const pixelWidth = parseInt(col.width, 10);
 
@@ -137,9 +236,7 @@ const UsersPage = () => {
               <div className="col-12 d-flex justify-content-end align-items-center gap-2">
                 <SearchComponent
                   value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleSearchChange(e.target.value)
-                  }
+                  onChange={handleSearchChange}
                 />
               </div>
             </div>
@@ -150,31 +247,37 @@ const UsersPage = () => {
                 overflow: "hidden",
               }}
             >
-              <div
-                className="p-3"
-                ref={tableContainerRef}
-                style={{
-                  flex: 1,
-                  // overflow: "auto",
-                }}
-              >
-                <DataTable
-                  columns={visibleColumns.map((col) => ({
-                    ...col,
-                    width: columnWidths[col.id as string],
-                  }))}
-                  data={usersMockData}
-                  persistTableHead={true}
-                  responsive
-                  highlightOnHover
-                  customStyles={customStyles}
-                  sortIcon={sortIcon}
-                  onRowMouseEnter={(row) => handleMouseEnter(row.id)}
-                  onRowMouseLeave={handleMouseLeave}
-                  fixedHeader
-                  fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
-                />
-              </div>
+              {loading ? (
+                <div className="h-100 d-flex align-items-center justify-content-center my-4">
+                  <CircularSpinner />
+                </div>
+              ) : (
+                <div
+                  className="p-3"
+                  ref={tableContainerRef}
+                  style={{
+                    flex: 1,
+                    // overflow: "auto",
+                  }}
+                >
+                  <DataTable
+                    columns={visibleColumns.map((col) => ({
+                      ...col,
+                      width: columnWidths[col.id as string],
+                    }))}
+                    data={filteredUsersData}
+                    persistTableHead={true}
+                    responsive
+                    highlightOnHover
+                    customStyles={customStyles}
+                    sortIcon={sortIcon}
+                    onRowMouseEnter={(row) => handleMouseEnter(row.id)}
+                    onRowMouseLeave={handleMouseLeave}
+                    fixedHeader
+                    fixedHeaderScrollHeight={`calc(100vh - var(--bs-app-header-height) - ${height}px - 100px)`}
+                  />
+                </div>
+              )}
             </div>
 
             {/* <div className="sticky-pagination d-flex justify-content-end align-items-center">
@@ -229,7 +332,8 @@ const UsersPage = () => {
         <UserCreationModal
           show={isModalOpen}
           onClose={toggleModelCreation}
-          onSave={toggleModelCreation}
+          onSave={handleSaveUser}
+          selectedUser={selectedUser}
         />
       )}
     </AnimatedRouteWrapper>
