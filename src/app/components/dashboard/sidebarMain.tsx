@@ -126,11 +126,11 @@ const SidebarMain = () => {
                 },
                 { view: "remote-ssh", icon: "terminal", text: "Remote SSH" },
                 { view: "remote-console", icon: "tv", text: "Remote Console" },
-                {
-                  view: "performance",
-                  icon: "speedometer2",
-                  text: "Performance",
-                },
+                // {
+                //   view: "performance",
+                //   icon: "speedometer2",
+                //   text: "Performance",
+                // },
               ].map((item) => (
                 <button
                   key={item.view}
