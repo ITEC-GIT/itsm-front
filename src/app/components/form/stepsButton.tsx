@@ -119,6 +119,19 @@ const SaveButton = ({ onClick }: { onClick: any }) => {
   );
 };
 
+const ConnectButton = ({ onClick }: { onClick: any }) => {
+  return (
+    <SaveStyledWrapper>
+      <button
+        onClick={onClick}
+        className="bg-dark-blue-btn text-white bg-primary"
+      >
+        <span>Connect</span>
+      </button>
+    </SaveStyledWrapper>
+  );
+};
+
 const SaveStyledWrapper = styled.div`
   button {
     display: flex;
@@ -138,4 +151,4 @@ const SaveStyledWrapper = styled.div`
   }
 `;
 
-export { BackButton, NextButton, SaveButton };
+export { BackButton, NextButton, SaveButton, ConnectButton };
