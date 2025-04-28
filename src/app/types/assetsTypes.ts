@@ -1,35 +1,54 @@
 export type AssetsHistoryType = {
   id: number;
   name: string;
-  entity: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  hash: string;
+  manufacturer: string;
   serial_number: string;
   model: string;
-  location: string;
-  last_update: string;
-  component_processor: string;
   type: string;
-  project: string;
-  address: string;
-  inventory_number: string;
-  alternate_username_number: string;
-  action: string;
-  status: string;
-  public_ip: string;
+  computer: {
+    id: number;
+    name: string;
+  };
+  date_mode: string;
+};
+
+export type AssetSoftwaresType = {
+  id: number;
+  name: string;
+  hash: string;
+  version: string;
+  architecture: string;
   category: string;
+  install_date: string;
+  publisher: string;
 };
 
 export type GetAllAssetsRequestType = {
-  user?: number;
   computer?: number;
-  status?: string;
-  order?: string;
-  date_from?: string;
-  date_to?: string;
-  range?: string;
   idgt?: number;
 };
 
 export type AssetDetails = {
+  id: number;
+  category: {
+    id: number;
+    name: string;
+  };
+  specific_attributes: [];
+  computer: {
+    id: number;
+    name: string;
+  };
+  notes: {};
+  date_mode: string;
+};
+
+export type ComputerDetails = {
   id: string;
   name: string;
   entity: string;
@@ -67,3 +86,7 @@ export interface AssetsField {
 export interface FieldValues {
   [key: string]: boolean;
 }
+
+export type GetAssetSoftwaresType = {
+  computer?: number;
+};

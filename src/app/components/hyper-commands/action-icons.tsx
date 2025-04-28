@@ -58,24 +58,6 @@ const ActionIcons = () => {
           title="Remote Console"
         ></i>
       </div>
-      <div
-        className="p-3"
-        onClick={() => handleNavigation("performance-monitoring")}
-        style={{ cursor: "pointer" }}
-      >
-        <i
-          className={`bi bi-bar-chart-line fs-1 ${
-            window.location.pathname.includes(
-              "/hyper-commands/performance-monitoring"
-            )
-              ? "text-primary"
-              : ""
-          }`}
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title="Performance Monitoring"
-        ></i>
-      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Sidebar } from "./assetSidebar";
-import { PoliciesButtons } from "../../data/assets";
+// import { PoliciesButtons } from "../../data/assets";
 
 const WindowsServiceComponent = () => <div>Windows Service Content</div>;
 const AllProcessesComponent = () => <div>All Processes Content</div>;
@@ -39,11 +39,11 @@ const AssetPoliciesComponent = () => {
   return (
     <div className="row app-row p-2">
       <div className="col-2 bg-light border-end p-3">
-        <Sidebar
+        {/* <Sidebar
           buttons={PoliciesButtons}
           selectedId={selectedButton}
           onButtonClick={setSelectedButton}
-        />
+        /> */}
       </div>
 
       <div className="col-10 p-4">
@@ -51,8 +51,8 @@ const AssetPoliciesComponent = () => {
           style={{ fontSize: "1.5rem", fontWeight: "500" }}
           className="mb-3"
         >
-          {PoliciesButtons.find((button) => button.id === selectedButton)
-            ?.text || "Policies"}
+          {/* {PoliciesButtons.find((button) => button.id === selectedButton)
+            ?.text || "Policies"} */}
         </span>
         <div className="d-flex flex-column align-items-center justify-content-center h-75">
           {renderComponent}

@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from "react";
+import { FC, useEffect, useState } from "react";
 import {
     Routes,
     Route,
@@ -6,49 +6,49 @@ import {
     Navigate,
     useNavigate,
 } from "react-router-dom";
-import {PrivateRoutes} from "./PrivateRoutes";
-import {ErrorsPage} from "../modules/errors/ErrorsPage";
-import {AnimatePresence, motion} from 'framer-motion'
+import { PrivateRoutes } from "./PrivateRoutes";
+import { ErrorsPage } from "../modules/errors/ErrorsPage";
+import { AnimatePresence, motion } from "framer-motion";
 
-import {Logout, AuthPage, useAuth} from "../modules/auth";
-import {App} from "../App";
-import {useAtom, useAtomValue} from "jotai";
-import {isAuthenticatedAtom, userAtom} from "../atoms/auth-atoms/authAtom";
-import {authChannel} from "../pages/login-page/authChannel";
-import {getSessionTokenFromCookie} from "../config/Config";
-import {GetStaticData, GetUsersAndAreas} from "../config/ApiCalls";
-import {loadFromIndexedDB, saveToIndexedDB} from "../indexDB/IndexDBConfig";
+import { Logout, AuthPage, useAuth } from "../modules/auth";
+import { App } from "../App";
+import { useAtom, useAtomValue } from "jotai";
+import { isAuthenticatedAtom, userAtom } from "../atoms/auth-atoms/authAtom";
+import { authChannel } from "../pages/login-page/authChannel";
+import { getSessionTokenFromCookie } from "../config/Config";
+import {
+    GetAssetCategories,
+    GetStaticData,
+    GetUsersAndAreas,
+} from "../config/ApiCalls";
+import { loadFromIndexedDB, saveToIndexedDB } from "../indexDB/IndexDBConfig";
 import {
     isCurrentUserMasterAtom,
     staticDataAtom,
 } from "../atoms/app-routes-global-atoms/approutesAtoms";
-import {useQuery} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
     branchesAtom,
     mastersAtom,
     slavesAtom,
 } from "../atoms/app-routes-global-atoms/globalFetchedAtoms";
-import useWebSocket from "../sockets/useWebSocket.ts";
-
 
 /**
  * Base URL of the website.
  *
  * @see https://facebook.github.io/create-react-app/docs/using-the-public-folder
  */
-const {BASE_URL} = import.meta.env;
+const { BASE_URL } = import.meta.env;
 
 const RoutesContent: FC = () => {
     const [currentUser, setCurrentUser] = useState<any>(null);
     const isAuthAtom = useAtomValue(isAuthenticatedAtom);
     const [user, setUser] = useAtom(userAtom);
     useEffect(() => {
-        if (user && user.access_token != '') {
+        if (user && user.access_token != "") {
             const userName = user.user_name;
         }
     }, [user]);
-    // const { messages } = useWebSocket(Number(user?.user_id));
-    const { messages, socket } = useWebSocket(Number(user?.user_id), user?.access_token);
 
     const navigate = useNavigate();
     const [staticData, setStaticData] = useAtom(staticDataAtom);
@@ -60,24 +60,33 @@ const RoutesContent: FC = () => {
         } else {
             const fetchStaticDataWithAtom = async () => {
                 try {
-                    const [usersAndAreasResponse, staticDataResponse] = await Promise.all(
-                        [GetUsersAndAreas(), GetStaticData()]
-                    );
+                    const [
+                        usersAndAreasResponse,
+                        staticDataResponse,
+                        assetCategoriesResponse,
+                    ] = await Promise.all([
+                        GetUsersAndAreas(),
+                        GetStaticData(),
+                        GetAssetCategories(),
+                    ]);
 
                     if (
                         usersAndAreasResponse.status !== 200 ||
-                        staticDataResponse.status !== 200
+                        staticDataResponse.status !== 200 ||
+                        assetCategoriesResponse.status !== 200
                     ) {
                         throw new Error(
                             `Network response was not ok: 
             UsersAndAreas: ${usersAndAreasResponse.status} ${usersAndAreasResponse.statusText}, 
-            StaticData: ${staticDataResponse.status} ${staticDataResponse.statusText}`
+            StaticData: ${staticDataResponse.status} ${staticDataResponse.statusText},
+            AssetCategories: ${assetCategoriesResponse.status} ${assetCategoriesResponse.statusText}`
                         );
                     }
 
                     const data = {
                         ...staticDataResponse.data,
                         ...usersAndAreasResponse.data,
+                        ...assetCategoriesResponse.data,
                     };
 
                     if (typeof data === "object" && data !== null) {
@@ -111,7 +120,7 @@ const RoutesContent: FC = () => {
 
     const fetchStaticData = async (user: any) => {
         try {
-            const userId = user || 'assignee'; // Replace with actual user ID
+            const userId = user || "assignee"; // Replace with actual user ID
             const DB_NAME = "StaticDataDB";
             const STORE_NAME = "StaticData";
 
@@ -162,7 +171,7 @@ const RoutesContent: FC = () => {
         isCurrentUserMasterAtom
     );
     useEffect(() => {
-        const sessionCookie = getSessionTokenFromCookie()
+        const sessionCookie = getSessionTokenFromCookie();
         if (sessionCookie == null && !isAuthAtom) {
             setCurrentUser(null);
             navigate("/auth/login");
@@ -174,9 +183,7 @@ const RoutesContent: FC = () => {
     useEffect(() => {
         if (userBranches && userBranches.data) {
             setItsmBranches((prev) =>
-                prev !== userBranches.data.branches
-                    ? userBranches.data.branches
-                    : prev
+                prev !== userBranches.data.areas ? userBranches.data.areas : prev
             );
             setItsmSlaves((prev) =>
                 prev !== userBranches.data.requesters
@@ -191,7 +198,8 @@ const RoutesContent: FC = () => {
             const currentUser = user.user_name;
 
             const currentAssignee = userBranches.data.assignees.find(
-                (assignee: { name: string; is_admin: number }) => assignee.name === currentUser
+                (assignee: { name: string; is_admin: number }) =>
+                    assignee.name === currentUser
             );
             // fetchStaticData(currentUser);
 
@@ -202,34 +210,31 @@ const RoutesContent: FC = () => {
     }, [userBranches, setItsmBranches, setItsmSlaves]);
 
     return (
-    <AnimatePresence mode="wait" initial={false} >
-
+        <AnimatePresence mode="wait" initial={false}>
             <Routes>
-                <Route element={<App/>}>
-
-                    <Route path="error/*" element={<ErrorsPage/>}/>
-                    <Route path="logout" element={<Logout/>}/>
+                <Route element={<App />}>
+                    <Route path="error/*" element={<ErrorsPage />} />
+                    <Route path="logout" element={<Logout />} />
                     {currentUser !== null ? (
                         <>
-
                             <Route path="/*" element={<PrivateRoutes />} />
-                            <Route index element={<Navigate to="/dashboard"/>}/>
+                            <Route index element={<Navigate to="/dashboard" />} />
                         </>
                     ) : (
                         <>
-                            <Route path="auth/*" element={<AuthPage/>}/>
-                            <Route path="*" element={<Navigate to="/auth/login"/>}/>
+                            <Route path="auth/*" element={<AuthPage />} />
+                            <Route path="*" element={<Navigate to="/auth/login" />} />
                         </>
                     )}
                 </Route>
             </Routes>
-        </ AnimatePresence>
+        </AnimatePresence>
     );
 };
 
 const AppRoutes: FC = () => (
     <BrowserRouter basename={BASE_URL}>
-        <RoutesContent/>
+        <RoutesContent />
     </BrowserRouter>
 );
-export {AppRoutes};
+export { AppRoutes };

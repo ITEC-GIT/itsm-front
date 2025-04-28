@@ -4,24 +4,39 @@ export function openDB(
   STORE_NAMES: string | string[],
   DB_VERSION: number = 2
 ): Promise<IDBDatabase> {
-  const userSpecificDbName = `${DB_NAME}_${userId}`;
   return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open(userSpecificDbName, DB_VERSION);
+    const userSpecificDbName = `${DB_NAME}_${userId}`;
+    const request = indexedDB.open(userSpecificDbName);
 
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
+    request.onsuccess = async (event) => {
+      let db = (event.target as IDBOpenDBRequest).result;
       const stores = Array.isArray(STORE_NAMES) ? STORE_NAMES : [STORE_NAMES];
 
-      stores.forEach((store) => {
-        if (!db.objectStoreNames.contains(store)) {
-          db.createObjectStore(store, { keyPath: "id" });
-        }
-      });
-    };
+      // Detect if any stores are missing
+      const missingStores = stores.filter(
+        (store) => !db.objectStoreNames.contains(store)
+      );
 
-    request.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      resolve(db);
+      if (missingStores.length > 0) {
+        db.close(); // Close the current connection before upgrading
+        const newVersion = db.version + 1; // Increment the version
+
+        const upgradeRequest = indexedDB.open(userSpecificDbName, newVersion);
+        upgradeRequest.onupgradeneeded = (event) => {
+          db = (event.target as IDBOpenDBRequest).result;
+          missingStores.forEach((store) => {
+            if (!db.objectStoreNames.contains(store)) {
+              db.createObjectStore(store, { keyPath: "id" });
+              console.log(`Created new object store: ${store}`);
+            }
+          });
+        };
+        upgradeRequest.onsuccess = () => resolve(upgradeRequest.result);
+        upgradeRequest.onerror = () =>
+          reject(new Error("Error upgrading IndexedDB"));
+      } else {
+        resolve(db);
+      }
     };
 
     request.onerror = (event) => {
@@ -40,19 +55,13 @@ export async function saveToIndexedDB(
   STORE_NAME: string,
   data: any | any[]
 ): Promise<void> {
-  const db = await openDB(userId, DB_NAME, STORE_NAME);
+  const db = await openDB(userId, DB_NAME, STORE_NAME); // Ensure store exists
 
   return new Promise<void>((resolve, reject) => {
-    if (!db.objectStoreNames.contains(STORE_NAME)) {
-      reject(new Error(`Object store "${STORE_NAME}" does not exist.`));
-      return;
-    }
-
     const transaction = db.transaction(STORE_NAME, "readwrite");
     const store = transaction.objectStore(STORE_NAME);
 
     const getAllKeysRequest = store.getAllKeys();
-
     getAllKeysRequest.onsuccess = () => {
       const keys = getAllKeysRequest.result as number[];
       const highestId = keys.length > 0 ? Math.max(...keys) : 0;

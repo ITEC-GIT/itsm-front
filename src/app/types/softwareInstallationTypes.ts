@@ -13,7 +13,6 @@ export type SoftwareHistoryType = {
   id: number;
   software: string;
   computer_name: string;
-  // mid: string; //serial number
   url: string;
   destination: string;
   arguments: string;

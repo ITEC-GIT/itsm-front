@@ -21,6 +21,31 @@
   margin: 0;
 }
 
+.sidebar-main.collapsed {
+  width: 60px !important;
+}
+
+.sidebar-main .btn-command {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 10px !important;
+  width: 100% !important;
+}
+
+.sidebar-main.collapsed .btn-command {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.sidebar-main.collapsed .btn-command i {
+  font-size: 1.2rem !important;
+}
+
+.sidebar-main.collapsed .btn-command span {
+  display: none !important;
+}
+
 .computer-info {
   background: var(--card-bg);
   // padding: 1.5rem;
@@ -150,7 +175,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+
   justify-content: center;
   gap: 1rem;
   color: var(--text-secondary);
@@ -172,9 +197,6 @@
   gap: 12px;
 }
 
-.select-dashboard {
-  width: 200px !important;
-}
 
 .Select__control {
   border-radius: 6px;
@@ -358,4 +380,10 @@
 
 .height-100 {
   height: 100%;
+}
+//collapsed sidebar
+
+.btn-command.active-collapsed {
+  background: #e7ebfd !important;
+  border-left: 1px solid #1b84ff !important;
 }

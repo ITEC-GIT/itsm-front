@@ -14,7 +14,16 @@ export const customStyles = {
     style: {
       fontSize: "14px",
       minHeight: "48px",
-      borderBottom: "none",
+      borderBottom: "none !important",
+      position: "relative !important" as "relative",
+      "&:hover": {
+        backgroundColor: "transparent !important",
+        width: "100% !important",
+        "& td": {
+          backgroundColor: "transparent !important",
+          width: "100% !important",
+        },
+      },
     },
   },
   headCells: {
@@ -24,14 +33,13 @@ export const customStyles = {
       fontWeight: "500",
       padding: "5px 5px",
       background: "white",
-      borderBottom: "1px solid rgb(222, 222, 222)",
+      border: "none",
       paddingLeft: "24px",
-      borderTop: "1px solid rgb(222, 222, 222)",
     },
   },
   table: {
     style: {
-      width: "100%",
+      width: "100% !important",
       // tableLayout: "fixed" as "fixed",
     },
   },
@@ -39,7 +47,7 @@ export const customStyles = {
     style: {
       paddingLeft: "8px",
       paddingRight: "8px",
-      borderBottom: "1px solid transparent",
+      borderBottom: "none",
     },
   },
 };
