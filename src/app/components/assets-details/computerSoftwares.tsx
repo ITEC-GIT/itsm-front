@@ -267,14 +267,14 @@ const ComputerSoftwaresComponent = ({ computerId }: { computerId: number }) => {
       >
         <SearchComponent value={searchQuery} onChange={handleSearchChange} />
 
-        <button
+        {/* <button
           className="btn custom-btn"
           onClick={toggleSidebar}
           title="Filters"
         >
           <i className="bi bi-funnel custom-btn-icon"></i>
           Filters
-        </button>
+        </button> */}
       </div>
 
       <div
@@ -307,7 +307,7 @@ const ComputerSoftwaresComponent = ({ computerId }: { computerId: number }) => {
             onRowMouseEnter={(row) => handleMouseEnter(row.hash)}
             onRowMouseLeave={handleMouseLeave}
             fixedHeader
-            fixedHeaderScrollHeight={`calc(${height}px - ${serachHeight}px - 40px)`}
+            fixedHeaderScrollHeight={`calc(${height}px - ${serachHeight}px - 42px)`}
           />
         </div>
       </div>
