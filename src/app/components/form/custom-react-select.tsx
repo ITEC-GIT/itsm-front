@@ -10,7 +10,6 @@ interface CustomReactSelectProps {
   isMulti?: boolean;
   isClearable?: boolean;
 }
-
 const customStyles = {
   control: (provided: any) => ({
     ...provided,
@@ -27,11 +26,15 @@ const customStyles = {
     overflowY: "auto",
     padding: "2px 8px",
   }),
+  menu: (provided: any) => ({
+    ...provided,
+    zIndex: 99999, 
+    position: "absolute",
+  }),
   menuList: (provided: any) => ({
     ...provided,
     maxHeight: 150,
     overflowY: "auto",
-    zIndex: 100,
   }),
   placeholder: (provided: any) => ({
     ...provided,
