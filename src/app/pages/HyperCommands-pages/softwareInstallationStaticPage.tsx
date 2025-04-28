@@ -550,9 +550,7 @@ const SoftwareInstallationStaticPage = ({
                       <div className="d-flex align-items-center justify-content-end gap-2">
                         <SearchComponent
                           value={searchQuery}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleSearchChange(e.target.value)
-                          }
+                          onChange={handleSearchChange}
                         />
                         <FilterButton toggleSidebar={toggleSidebar} />
                       </div>

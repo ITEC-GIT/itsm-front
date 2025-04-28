@@ -24,7 +24,7 @@ import { UsersPageWrapper } from "../pages/user-management-pages/users-page";
 import { FieldRulesPageWrapper } from "../pages/user-management-pages/field-rules";
 import { SettingsPageWrapper } from "../pages/user-management-pages/settings-page";
 import { ComputerDetailsPageWrapper } from "../pages/Assets-pages/computerDetailsPage";
-import { SoftwareInstallationStaticPage } from "../pages/HyperCommands-pages/softwareInstallationStaticDashboardPage";
+import { SoftwareInstallationStaticPage } from "../pages/HyperCommands-pages/softwareInstallationStaticPage";
 import { RemoteConsoleDashboardComponent } from "../pages/Dashboard-pages/remoteConsoleDashboard";
 
 const PrivateRoutes = () => {

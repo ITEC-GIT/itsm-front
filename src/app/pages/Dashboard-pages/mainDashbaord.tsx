@@ -12,6 +12,7 @@ import { RemoteSSHDashboardComponent } from "./remoteSSHDashboard";
 import { GetPrivateIPAddressAPI } from "../../config/ApiCalls";
 import { useNavigate } from "react-router-dom";
 import { OkButton } from "../../components/form/stepsButton";
+import { SoftwareInstallationStaticPage } from "./softwareInstallationStaticDashboardPage";
 
 export interface PrivateIpSchema {
   id: number;
@@ -136,7 +137,7 @@ const MainDashboard = () => {
     switch (activeView) {
       case "software-installation":
         return (
-          <SoftwareInstallationDashboard computerIdProp={selctedDeviceAtom} />
+          <SoftwareInstallationStaticPage computerIdProp={selctedDeviceAtom} />
         );
       case "remote-ssh":
         return <RemoteSSHDashboardComponent />;
