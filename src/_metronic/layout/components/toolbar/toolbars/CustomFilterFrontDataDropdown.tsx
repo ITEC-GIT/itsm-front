@@ -110,7 +110,7 @@ const CustomFilterFrontDataDropdown: React.FC<
     () =>
       ItsmSlaves.map((item) => ({
         value: item.id,
-        label: item.name,
+        label: item.user_name,
       })),
     [ItsmSlaves]
   );
@@ -119,7 +119,7 @@ const CustomFilterFrontDataDropdown: React.FC<
     () =>
       ItsmBranches.map((item) => ({
         value: item.id,
-        label: item.value,
+        label: item.name,
       })),
     [ItsmBranches]
   );
@@ -128,7 +128,7 @@ const CustomFilterFrontDataDropdown: React.FC<
     () =>
       ItsmMasters.map((item) => ({
         value: item.id,
-        label: item.name,
+        label: item.user_name,
       })),
     [ItsmMasters]
   );
