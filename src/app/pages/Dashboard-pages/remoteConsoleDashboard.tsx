@@ -70,74 +70,85 @@ const RemoteConsoleDashboardComponent = ({
       >
         <div className="col-12">
           <div className="d-flex justify-content-between">
-            <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+            <h2 className="text-center mb-4">🖥️ Remote Console</h2>
           </div>
-        </div>
 
-        <div className="row mb-4 d-flex justify-content-center">
-          <div className="col-6" style={{ height: "85px" }}>
-            <label htmlFor="userId" className="custom-label required">
-              User ID
-            </label>
-            <input
-              type="text"
-              className="form-control custom-placeholder custom-input-height"
-              value={userId}
-              id="userId"
-              onChange={handleUserIdChange}
-              placeholder="Enter User ID"
-              required
-            />
-            {userIdError && (
-              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
-                User ID is required.
-              </small>
-            )}
+          <div className="d-flex justify-content-center">
+            <div className="row">
+              <div className="row mb-4">
+                <div className="col-md-6 mb-4" style={{ height: "85px" }}>
+                  <label htmlFor="userId" className="custom-label required">
+                    User ID
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control custom-placeholder custom-input-height"
+                    value={userId}
+                    id="userId"
+                    onChange={handleUserIdChange}
+                    placeholder="Enter User ID"
+                    required
+                  />
+                  {userIdError && (
+                    <small
+                      className="text-danger"
+                      style={{ fontSize: "0.875rem" }}
+                    >
+                      User ID is required.
+                    </small>
+                  )}
+                </div>
+
+                <div className="col-md-6 mb-4" style={{ height: "85px" }}>
+                  <label className="custom-label required"> VNC IP</label>
+                  <input
+                    type="text"
+                    className="form-control custom-placeholder custom-input-height"
+                    value={vncIp}
+                    id="vncIp"
+                    placeholder="Enter VNC IP"
+                    onChange={handleVncIpChange}
+                    required
+                  />
+                  {vncIpError && (
+                    <small
+                      className="text-danger"
+                      style={{ fontSize: "0.875rem" }}
+                    >
+                      VNC IP is required.
+                    </small>
+                  )}
+                </div>
+              </div>
+
+              <div className="row mb-4">
+                <div className="col-md-6" style={{ height: "85px" }}>
+                  <label className="custom-label required"> VNC URL</label>
+                  <input
+                    type="text"
+                    className="form-control custom-placeholder custom-input-height"
+                    value={vncIp}
+                    id="vncUrl"
+                    placeholder="Enter VNC URL"
+                    onChange={handleVncUrlChange}
+                    required
+                  />
+                  {vncUrlError && (
+                    <small
+                      className="text-danger"
+                      style={{ fontSize: "0.875rem" }}
+                    >
+                      VNC URL is required.
+                    </small>
+                  )}
+                </div>
+              </div>
+
+              <div className="d-flex justify-content-center mt-4">
+                <ConnectButton onClick={handleConnectClick} />
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div className="row mb-4 d-flex justify-content-center">
-          <div className="col-6" style={{ height: "85px" }}>
-            <label className="custom-label required"> VNC IP</label>
-            <input
-              type="text"
-              className="form-control custom-placeholder custom-input-height"
-              value={vncIp}
-              id="vncIp"
-              placeholder="Enter VNC IP"
-              onChange={handleVncIpChange}
-              required
-            />
-            {vncIpError && (
-              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
-                VNC IP is required.
-              </small>
-            )}
-          </div>
-        </div>
-
-        <div className="row mb-4 d-flex justify-content-center">
-          <div className="col-6" style={{ height: "85px" }}>
-            <label className="custom-label required"> VNC URL</label>
-            <input
-              type="text"
-              className="form-control custom-placeholder custom-input-height"
-              value={vncIp}
-              id="vncUrl"
-              placeholder="Enter VNC URL"
-              onChange={handleVncUrlChange}
-              required
-            />
-            {vncUrlError && (
-              <small className="text-danger" style={{ fontSize: "0.875rem" }}>
-                VNC URL is required.
-              </small>
-            )}
-          </div>
-        </div>
-
-        <div className="d-flex justify-content-center mt-4">
-          <ConnectButton onClick={handleConnectClick} />
         </div>
       </div>
     </AnimatedRouteWrapper>

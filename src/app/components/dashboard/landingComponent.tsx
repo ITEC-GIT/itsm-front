@@ -434,7 +434,7 @@ const LineChart = ({
     xaxis: {
       categories: safeLabels,
       title: {
-        text: xTitle,
+        text: undefined,
         style: {
           fontSize: "clamp(12px, 1.3vw, 14px)",
         },
