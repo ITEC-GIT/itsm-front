@@ -183,7 +183,7 @@ const RoutesContent: FC = () => {
     useEffect(() => {
         if (userBranches && userBranches.data) {
             setItsmBranches((prev) =>
-                prev !== userBranches.data.areas ? userBranches.data.areas : prev
+                prev !== userBranches.data.departments ? userBranches.data.departments : prev
             );
             setItsmSlaves((prev) =>
                 prev !== userBranches.data.requesters
@@ -203,9 +203,11 @@ const RoutesContent: FC = () => {
             );
             // fetchStaticData(currentUser);
 
-            const isAdmin = currentAssignee ? currentAssignee.is_admin === 1 : false;
+            // const isAdmin = currentAssignee ? currentAssignee.is_admin === 1 : false;
+            // setIsCurrentUserMaster(isAdmin);
+            const isAdmin=true;
             setIsCurrentUserMaster(isAdmin);
-            const x = 0;
+            // const x = 0;
         }
     }, [userBranches, setItsmBranches, setItsmSlaves]);
 
