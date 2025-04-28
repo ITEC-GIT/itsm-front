@@ -463,6 +463,66 @@ const SoftwareInstallationStaticPage = ({
     }
   }, [divRef.current, pagRef.current, filtersRef.current]);
 
+  useEffect(() => {
+    const calculateWidths = () => {
+      if (!tableContainerRef.current) return;
+
+      const containerWidth = tableContainerRef.current.clientWidth;
+      if (containerWidth === 0) return;
+
+      const columnsWithoutAction = visibleColumns.filter(
+        (col) => col.id !== "action" && col.id !== "id"
+      );
+
+      const visibleCount = visibleColumns.length;
+      const newWidths: Record<string, string> = {};
+
+      if (visibleCount === 2) {
+        columnsWithoutAction.forEach((col) => {
+          newWidths[col.id as string] = "50%";
+        });
+      } else if (visibleCount > 2) {
+        const baseWidthPercentage = Math.ceil(100 / visibleCount);
+
+        columnsWithoutAction.forEach((col) => {
+          let columnWidth = col.width;
+          if (columnWidth) {
+            let pixelWidth = parseFloat(columnWidth.replace("px", ""));
+            if (!isNaN(pixelWidth)) {
+              if (col.id === "settings") {
+                newWidths[col.id] = columnWidth || `${baseWidthPercentage}%`;
+              } else {
+                const columnPercentageWidth =
+                  (pixelWidth / containerWidth) * 100;
+                newWidths[col.id as string] =
+                  columnPercentageWidth < baseWidthPercentage
+                    ? `${baseWidthPercentage}%`
+                    : `${columnPercentageWidth}%`;
+              }
+            } else {
+              newWidths[col.id as string] = columnWidth;
+            }
+          } else {
+            newWidths[col.id as string] = `${baseWidthPercentage}%`;
+          }
+        });
+      }
+
+      setColumnWidths(newWidths);
+    };
+
+    const timeoutId = setTimeout(calculateWidths, 100);
+    const observer = new ResizeObserver(calculateWidths);
+    if (tableContainerRef.current) {
+      observer.observe(tableContainerRef.current);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+    };
+  }, [visibleColumns]);
+
   return (
     <AnimatedRouteWrapper>
       <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
