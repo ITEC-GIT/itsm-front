@@ -46,7 +46,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8003/auth/ssh", {
+      const response = await fetch("http://127.0.0.1:8002/auth/ssh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -117,7 +117,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                           setUsername(e.target.value);
                         }}
                         autoComplete="new-username"
-                        // required
+                        required
                       />
                       {userError && (
                         <small
@@ -141,7 +141,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                           setPass(e.target.value);
                         }}
                         autoComplete="new-password"
-                        // required
+                        required
                       />
                       {passError && (
                         <small
@@ -168,7 +168,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                           setHostError(false);
                           setIpAddress(e.target.value);
                         }}
-                        // required
+                        required
                       />
                       {hostError && (
                         <small

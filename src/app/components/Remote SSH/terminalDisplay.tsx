@@ -27,7 +27,7 @@ const TerminalDisplay: React.FC<TerminalDisplayProps> = ({ sessionId }) => {
     fitAddon.current.fit();
 
     const ws = new WebSocket(
-      `ws://127.0.0.1:8003/ws/ssh?session_id=${sessionId}`
+      `ws://127.0.0.1:8002/ws/ssh?session_id=${sessionId}`
     );
     wsRef.current = ws;
 
@@ -60,7 +60,7 @@ const TerminalDisplay: React.FC<TerminalDisplayProps> = ({ sessionId }) => {
     <div
       ref={terminalRef}
       style={{
-        height: "400px",
+        height: "450px",
         width: "100%",
         backgroundColor: "#1e1e1e",
         padding: "8px",

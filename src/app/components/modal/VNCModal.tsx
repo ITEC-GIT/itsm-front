@@ -3,19 +3,28 @@ import { ConnectButton } from "../form/stepsButton";
 
 interface RemoteConsoleModalProps {
   onClose: () => void;
-  //   onConnect: (userId: string, vncIp: string, vncUrl: string) => void;
   onConnect: () => void;
+  connectionInfo: {
+    userId: string;
+    vncIp: string;
+    vncUrl: string;
+  };
+  setConnectionInfo: React.Dispatch<
+    React.SetStateAction<{
+      userId: string;
+      vncIp: string;
+      vncUrl: string;
+    }>
+  >;
 }
 
 const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
   onClose,
   onConnect,
+  connectionInfo,
+  setConnectionInfo,
 }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
-
-  const [userId, setUserId] = useState("");
-  const [vncIp, setVncIp] = useState("");
-  const [vncUrl, setVncUrl] = useState("");
 
   const [userIdError, setUserIdError] = useState(false);
   const [vncIpError, setVncIpError] = useState(false);
@@ -24,21 +33,21 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
   const handleConnectClick = () => {
     let hasError = false;
 
-    if (!userId.trim()) {
+    if (!connectionInfo.userId.trim()) {
       setUserIdError(true);
       hasError = true;
     } else {
       setUserIdError(false);
     }
 
-    if (!vncIp.trim()) {
+    if (!connectionInfo.vncIp.trim()) {
       setVncIpError(true);
       hasError = true;
     } else {
       setVncIpError(false);
     }
 
-    if (!vncUrl.trim()) {
+    if (!connectionInfo.vncUrl.trim()) {
       setVncUrlError(true);
       hasError = true;
     } else {
@@ -47,22 +56,21 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
 
     if (!hasError) {
       onConnect();
-      //   onConnect(userId, vncIp, vncUrl);
     }
   };
 
   const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserId(e.target.value);
+    setConnectionInfo((prev) => ({ ...prev, userId: e.target.value }));
     if (userIdError) setUserIdError(false);
   };
 
   const handleVncIpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVncIp(e.target.value);
+    setConnectionInfo((prev) => ({ ...prev, vncIp: e.target.value }));
     if (vncIpError) setVncIpError(false);
   };
 
   const handleVncUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVncUrl(e.target.value);
+    setConnectionInfo((prev) => ({ ...prev, vncUrl: e.target.value }));
     if (vncUrlError) setVncUrlError(false);
   };
 
@@ -94,6 +102,7 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
                 type="text"
                 className="form-control"
                 id="userId"
+                value={connectionInfo.userId}
                 onChange={handleUserIdChange}
                 placeholder="Enter User ID"
                 required
@@ -112,6 +121,7 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
                 type="text"
                 className="form-control"
                 id="vncIp"
+                value={connectionInfo.vncIp}
                 placeholder="Enter VNC IP"
                 onChange={handleVncIpChange}
                 required
@@ -130,6 +140,7 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
                 type="text"
                 className="form-control"
                 id="vncUrl"
+                value={connectionInfo.vncUrl}
                 placeholder="Enter VNC URL"
                 onChange={handleVncUrlChange}
                 required

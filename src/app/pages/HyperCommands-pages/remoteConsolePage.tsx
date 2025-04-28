@@ -1,10 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, SetStateAction } from "react";
 import { devicesVNC } from "../../data/hyperCommands";
 
 import { DeviceRemoteConsoleType } from "../../types/devicesTypes";
 import { ComputersListModal } from "../../components/modal/computersList";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { RemoteConsoleModal } from "../../components/modal/VNCModal";
+// import VncScreen from "../../lib/VNC/VncScreen";
 
 type RemoteConsolePageProps = {
   computerIdProp?: number;
@@ -23,16 +24,32 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  // const vncScreenRef = useRef<React.ElementRef<typeof VncScreen>>(null);
+
+  const isValid = (vncUrl: string) => {
+    return vncUrl.startsWith("ws://") || vncUrl.startsWith("wss://");
+  };
+
+  const [connectionInfo, setConnectionInfo] = useState({
+    userId: "",
+    vncIp: "",
+    vncUrl: "",
+  });
+
   const handleLaunchConsole = () => {
-    setSessionActive(true);
+    if (
+      connectionInfo.userId.trim() &&
+      connectionInfo.vncIp.trim() &&
+      connectionInfo.vncUrl.trim()
+    ) {
+      setSessionActive(true);
+    } else {
+      console.error("Invalid connection info, cannot start session");
+    }
   };
 
   const handleEndSession = () => {
     setSessionActive(false);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
   };
 
   const toggleDeviceConnection = (deviceId: number) => {
@@ -64,6 +81,44 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
       </div>
     );
   };
+
+  const handleDisconnectNotify = async () => {
+    try {
+      await fetch("", {
+        //should be on port 8004
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: connectionInfo.userId,
+          vnc_ip: connectionInfo.vncIp,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to notify backend of disconnect", err);
+    }
+  };
+
+  // const handlOnClick = async () => {
+  //   const { connect, connected, disconnect } = vncScreenRef.current ?? {};
+  //   if (connected) {
+  //     disconnect?.();
+  //     await handleDisconnectNotify();
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await fetch(
+  //       `` //port 8004
+  //     );
+  //     const data = await res.json();
+  //     setConnectionInfo((prev) => ({
+  //       ...prev,
+  //       vncUrl: data.websocket_url,
+  //     }));
+  //   } catch (err) {
+  //     console.error("Failed to start VNC connection", err);
+  //   }
+  // };
 
   return (
     <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
@@ -153,6 +208,8 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
         <RemoteConsoleModal
           onClose={closeModal}
           onConnect={handleLaunchConsole}
+          connectionInfo={connectionInfo}
+          setConnectionInfo={setConnectionInfo}
         />
       )}
     </div>
@@ -160,3 +217,20 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
 };
 
 export { RemoteConsolePage };
+
+// {/* {isValid(connectionInfo.vncUrl) ? ( */}
+// <VncScreen
+//   url={connectionInfo.vncUrl}
+//   scaleViewport
+//   background="#000000"
+//   style={{ width: "75vw", height: "75vh" }}
+//   debug
+//   ref={vncScreenRef}
+//   onDisconnect={(e) => {
+//     console.error("VNC disconnected", e);
+//     alert("VNC disconnected. Check if server is online.");
+//   }}
+// />
+// ) : (
+//   // <div>VNC URL not provided.</div>
+// )}
