@@ -15,12 +15,12 @@ const SidebarMenuMain = () => {
         title={t.dashboard}
         fontIcon="bi-app-indicator"
       />
-      <SidebarMenuItem
+      {/* <SidebarMenuItem
         to="/hyper-commands"
         icon="switch"
         title={t.hyperCommands}
         fontIcon="bi-layers"
-      />
+      /> */}
       <SidebarMenuItem
         to="/hyper-commands/software-installation"
         icon="switch"
