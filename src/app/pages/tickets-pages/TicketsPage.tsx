@@ -452,40 +452,35 @@ const TicketsPage: React.FC = () => {
             );
 
             if (updatedTicket) {
-                const newTicket = {
-                    ...updatedTicket,
-                    urgency_obj: {
-                        ...updatedTicket.urgency_obj,
-                        id: ticketPerformingActionOn.urgency?.value || updatedTicket.urgency_obj.id,
-                        urgency_label: ticketPerformingActionOn.urgency?.label || updatedTicket.urgency_obj.urgency_label,
-                    },
-                    priority_obj: {
-                        ...updatedTicket.priority_obj,
-                        id: ticketPerformingActionOn.priority?.value || updatedTicket.priority_obj.id,
-                        priority_label: ticketPerformingActionOn.priority?.label || updatedTicket.priority_obj.priority_label,
-                    },
-                    status_obj: {
-                        ...updatedTicket.status_obj,
-                        id: ticketPerformingActionOn.status?.value || updatedTicket.status_obj.id,
-                        status_name: ticketPerformingActionOn.status?.label || updatedTicket.status_obj.status_name,
-                    },
-                    type_obj: {
-                        ...updatedTicket.type_obj,
-                        id: ticketPerformingActionOn.type?.value || updatedTicket.type_obj.id,
-                        type_label: ticketPerformingActionOn.type?.label || updatedTicket.type_obj.type_label,
-                    },
-                    // You can add more fields if needed
-                };
-
                 setTickets((prevTickets) =>
                     prevTickets.map((ticket) =>
-                        ticket.id === ticketPerformingActionOn.id
-                            ? { ...ticket, ...newTicket }
+                        ticket.id === updatedTicket.id
+                            ? {
+                                  ...ticket,
+                                  urgency: {
+                                      id: updatedTicket.urgency?.value,
+                                      label: updatedTicket.urgency?.label,
+                                  },
+                                  priority: {
+                                      id: updatedTicket.priority?.value,
+                                      label: updatedTicket.priority?.label,
+                                  },
+                                  status: {
+                                      id: updatedTicket.status?.value,
+                                      label: updatedTicket.status?.label,
+                                  },
+                                  type: {
+                                      id: updatedTicket.type?.value,
+                                      label: updatedTicket.type?.label,
+                                  },
+                                  // You can update date_mod if you want
+                                  date_mod: new Date().toISOString(),
+                              }
                             : ticket
                     )
                 );
 
-                console.log("Updated ticket:", newTicket);
+                // console.log("Updated ticket:", newTicket);
             }
         }
     }, [ticketPerformingActionOn]);
@@ -1286,21 +1281,19 @@ const TicketsPage: React.FC = () => {
                     status = statusOptions.find((option: {
                         label: string;
                         value: string;
-                    }) => option.label === "new") || {value: "", label: ""};
+                    }) => option.label === "New") || {value: "", label: ""};
                 } else {
 
                     status = statusOptions.find((option: {
                         label: string;
                         value: string;
-                    }) => option.label === "assigned") || {value: "", label: ""};
+                    }) => option.label === "Assigned") || {value: "", label: ""};
                 }
                 const new_assignees: Assignee[] = Array.isArray(ticketChangeAssigneenOn.assigneeNewData)
                     ? ticketChangeAssigneenOn.assigneeNewData.map((item2: Assignee) => ({
                         id: item2.id,
                         name: item2.name || "",
-                        assigner: {
-                            user_name: item2.name || "",
-                        },
+                    
                     }))
                     : [];
                 const newTicket = {
@@ -1388,7 +1381,7 @@ const TicketsPage: React.FC = () => {
                                         <TicketCard
                                             key={ticket.id}
                                             id={ticket.id}
-                                            status={ticket.status_obj.status_name}
+                                            status={ticket.status.label}
                                             reply_unread={ticketIdsWithReplyUnread?.some(item => item.id === ticket.id && item.is_read === "unread") || false}
                                             date={ticket.date}
                                             title={ticket.name}
@@ -1403,9 +1396,9 @@ const TicketsPage: React.FC = () => {
                                                 name: ticket.issuer.user_name,
                                                 initials: ticket?.issuer?.user_name?.charAt(0),
                                             }}
-                                            priority={ticket.priority_obj.priority_label}
-                                            type={ticket.type_obj.type_label}
-                                            urgency={ticket.urgency_obj.urgency_label}
+                                            priority={ticket.priority.label}
+                                            type={ticket.type.label}
+                                            urgency={ticket.urgency.label}
                                             lastUpdate={ticket.date_mod}
                                             onClick={() => handleTicketClick(ticket)} // Add onClick handler
                                             onPin={handlePinTicket} // Pass the handlePinTicket function

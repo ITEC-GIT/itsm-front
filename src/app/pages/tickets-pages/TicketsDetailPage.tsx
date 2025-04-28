@@ -311,7 +311,7 @@ const TicketsDetailPage: React.FC = () => {
                 <TicketCard
                     key={ticket.id}
                     id={ticket.id}
-                    status={ticket.status_obj.status_name}
+                    status={ticket.status.label}
                     date={ticket.date}
                     title={ticket.name}
                     description={
@@ -325,9 +325,9 @@ const TicketsDetailPage: React.FC = () => {
                         name: ticket.issuer.user_name,
                         initials: ticket?.issuer?.user_name?.charAt(0),
                     }}
-                    priority={ticket.priority_obj.priority_label}
-                    type={ticket.type_obj.type_label}
-                    urgency={ticket.urgency_obj.urgency_label}
+                    priority={ticket.priority.label}
+                    type={ticket.type.label}
+                    urgency={ticket.urgency.label}
                     lastUpdate={ticket.date_mod}
                     isStarred={ticket.is_starred} // Pass the pinned status
                     isCurrentUserMaster={isCurrentUserMaster}

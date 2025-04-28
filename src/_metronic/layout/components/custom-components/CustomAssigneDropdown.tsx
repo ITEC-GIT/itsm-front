@@ -127,7 +127,7 @@ const CustomAssigneeDropDown: React.FC<CustomAssigneeDropDownPropos> = ({
 
   useEffect(() => {
     const initialAssignees = assigneeOptions.filter((option) =>
-      assignees.some((assignee) => assignee.assigner?.user_name === option.label)
+      assignees.some((assignee) => assignee.name === option.label)
     );
     previousAssigneesRef.current = initialAssignees;
 

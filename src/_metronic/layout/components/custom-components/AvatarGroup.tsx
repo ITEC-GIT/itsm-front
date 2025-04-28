@@ -5,7 +5,6 @@ interface Assignee {
     id: number;
     name: string;
     avatar?: string;
-    assigner?: any;
 }
 
 interface AssigneeAvatarsProps {
@@ -65,14 +64,14 @@ const AssigneeAvatarsCard: React.FC<AssigneeAvatarsProps> = ({ assignees, maxCou
                             }}
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            title={assignee?.assigner?.user_name || assignee?.name}
+                            title={assignee?.name || assignee?.name}
                         >
-                            {getInitials(assignee?.assigner?.user_name || assignee?.name)}
+                            {getInitials(assignee?.name || assignee?.name)}
                         </div>
                     )}
 
                     {/* Initials next to Avatar */}
-                    <span style={{ fontSize: "14px", fontWeight: "bold" }}>{getInitials(assignee?.assigner?.user_name || assignee?.name)}</span>
+                    <span style={{ fontSize: "14px", fontWeight: "bold" }}>{getInitials(assignee?.name || assignee?.name)}</span>
                 </div>
             ))}
 

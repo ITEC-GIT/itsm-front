@@ -58,12 +58,12 @@ const AssigneeAvatars: React.FC<AssigneeAvatarsProps> = ({ assignees }) => {
                             data-bs-placement="top"
                             title={assignee.name}
                         >
-                            {getInitials(assignee?.assigner?.user_name || assignee?.name)}
+                            {getInitials(assignee?.name || assignee?.name)}
                         </div>
                     )}
 
                     {/* Initials next to Avatar */}
-                    <span style={{ fontSize: "14px", fontWeight: "bold" }}>{getInitials(assignee?.assigner?.user_name || assignee?.name)}</span>
+                    <span style={{ fontSize: "14px", fontWeight: "bold" }}>{getInitials(assignee?.name || assignee?.name)}</span>
                 </div>
             ))}
         </div>

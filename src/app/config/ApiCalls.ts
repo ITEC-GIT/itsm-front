@@ -75,6 +75,7 @@ const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
         if (body.idgt !== undefined) {
             params.idgt = body.idgt;
         }
+        console.log(body)
         const response = await PrivateApiCallFastApi.post(
             "/tickets/filter_tickets",
             body,
