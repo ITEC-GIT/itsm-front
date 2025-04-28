@@ -115,30 +115,30 @@ const ToolbarTickets = () => {
   return (
     <div className="d-flex align-items-center gap-2 gap-lg-3">
       <div className="d-flex position-relative my-1">
-        {mismatchCount > 0 && (
-          <motion.button
-            className="btn btn-warning d-flex align-items-center px-3 py-2 border-0"
-            style={{ minWidth: "180px", maxWidth: "250px", borderRadius: "0" }}
-            onClick={fetchNewTickets}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <span
-              className="d-flex align-items-center gap-2"
-              style={{ color: "#800000", fontWeight: "bold" }}
-            >
-              {mismatchCount.toString() + " "}
-              New Tickets
-              <UseAnimations
-                animation={alertTriangle}
-                fillColor="#800000"
-                strokeColor="#800000"
-                size={24}
-              />
-            </span>
-          </motion.button>
-        )}
+        {/*{mismatchCount > 0 && (*/}
+        {/*  <motion.button*/}
+        {/*    className="btn btn-warning d-flex align-items-center px-3 py-2 border-0"*/}
+        {/*    style={{ minWidth: "180px", maxWidth: "250px", borderRadius: "0" }}*/}
+        {/*    onClick={fetchNewTickets}*/}
+        {/*    initial={{ opacity: 0, y: -20 }}*/}
+        {/*    animate={{ opacity: 1, y: 0 }}*/}
+        {/*    transition={{ duration: 0.5 }}*/}
+        {/*  >*/}
+        {/*    <span*/}
+        {/*      className="d-flex align-items-center gap-2"*/}
+        {/*      style={{ color: "#800000", fontWeight: "bold" }}*/}
+        {/*    >*/}
+        {/*      {mismatchCount.toString() + " "}*/}
+        {/*      New Tickets*/}
+        {/*      <UseAnimations*/}
+        {/*        animation={alertTriangle}*/}
+        {/*        fillColor="#800000"*/}
+        {/*        strokeColor="#800000"*/}
+        {/*        size={24}*/}
+        {/*      />*/}
+        {/*    </span>*/}
+        {/*  </motion.button>*/}
+        {/*)}*/}
         <div className="d-flex position-relative my-1">
           <div className="position-relative w-100">
             <i

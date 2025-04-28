@@ -184,35 +184,37 @@ const TicketsDetailPage: React.FC = () => {
 
         let updatedEditorContent = editorContent;
 
-        const parseHtml = (html: string, imageMap: { base64: string; url: string }[]) => {
+
+        const parseHtml = (html: string, imageMap: { base64: string; url: string }[]): string => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
-            // Get all <img> tags
             const imgTags = doc.querySelectorAll('img');
 
             imgTags.forEach(img => {
                 const src = img.getAttribute('src');
+
                 if (src && src.startsWith('data:image')) {
-                    // const match = imageMap.find(item => src.startsWith(item.base64.substring(0, 30))); // Match using first 30 chars
-                    const match = imageMap.find(item => src.startsWith(item.base64.substring(0, 30)) && src === item.base64);
+                    // Try to find a match using the beginning of base64 string
+                    const match = imageMap.find(item => {
+                        const base64Start = item.base64.slice(0, 50); // Match with first 50 chars for better precision
+                        return src.startsWith(base64Start);
+                    });
 
                     if (match) {
-                        img.setAttribute('src', match.url); // Replace base64 with URL
+                        img.setAttribute('src', match.url);
                     }
                 }
             });
 
-            return doc.body.innerHTML; // Serialize modified HTML back to string
+            return doc.body.innerHTML;
         };
+        updatedEditorContent = parseHtml(editorContent, updatedImageMap);
 
-        updatedImageMap.forEach(item => {
-            updatedEditorContent = parseHtml(editorContent, updatedImageMap);
 
-        });
         // Update the state with the modified editor content
-        setEditorModifiedContent(editorContent);
-        const response = await SendRepliesAsync(ticket.id, editorContent);
+        setEditorModifiedContent(updatedEditorContent);
+        const response = await SendRepliesAsync(ticket.id, updatedEditorContent);
         queryClient.invalidateQueries({queryKey: ["GetTicketWithReplies", ticket.id]}); // Refetch data
 
         setImageMapOnAccumulated([]);
