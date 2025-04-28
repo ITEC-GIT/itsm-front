@@ -41,7 +41,7 @@ const CustomAssigneeDropDown: React.FC<CustomAssigneeDropDownPropos> = ({
     () =>
       ItsmMasters.map((item) => ({
         value: item.id.toString(),
-        label: item.name,
+        label: item.user_name,
       })),
     [ItsmMasters]
   );
@@ -90,7 +90,7 @@ const CustomAssigneeDropDown: React.FC<CustomAssigneeDropDownPropos> = ({
         assigneeIds.includes(item.id)
       ).map((item) => ({
         id: item.id,
-        name: item.name,
+        name: item.user_name,
         avatar: item.Avatar,
       }));
 
@@ -127,7 +127,7 @@ const CustomAssigneeDropDown: React.FC<CustomAssigneeDropDownPropos> = ({
 
   useEffect(() => {
     const initialAssignees = assigneeOptions.filter((option) =>
-      assignees.some((assignee) => assignee.name === option.label)
+      assignees.some((assignee) => assignee.assigner?.user_name === option.label)
     );
     previousAssigneesRef.current = initialAssignees;
 

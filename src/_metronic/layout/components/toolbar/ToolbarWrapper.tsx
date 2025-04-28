@@ -44,10 +44,10 @@ const ToolbarWrapper = ({ source }: { source?: string }) => {
             <Toolbar />
           </>
         ) : source === "dashboard" ? (
-          <>
+          <div className="d-flex flex-column w-100 ">
             <PageTitleWrapperDashboard />
             <ToolbarDashboard />
-          </>
+          </div>
         ) : (
           <>
             <PageTitleWrapper />

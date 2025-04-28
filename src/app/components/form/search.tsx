@@ -14,9 +14,9 @@ const SearchComponent = ({
         ></i>
         <input
           type="text"
-          className="form-control form-control-sm form-control-solid w-200px"
-          name="Search Tickets"
-          value={value}
+          className="form-control form-control-sm form-control-solid w-250px"
+          name="Search"
+          value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Search ..."
           style={{ paddingLeft: "35px" }}

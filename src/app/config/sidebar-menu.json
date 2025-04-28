@@ -1,0 +1,19 @@
+{
+  "dashboard": "Dashboard",
+  "hyperCommands": "Hyper Commands",
+  "hyperCommands_software": "Software Installation",
+  "hyperCommands_ssh": "Remote SSH",
+  "hyperCommands_vnc": "Remote Console",
+  "assets": "Assets",
+  "ticketsSection": "Tickets",
+  "allTickets": "All Tickets",
+  "userManagement": "User Management",
+  "users": "Users",
+  "roles": "Roles",
+  "groups": "Groups",
+  "departments": "Departments",
+  "locations": "Locations",
+  "aliases": "Alias",
+  "fieldRules": "Field Rules",
+  "settings": "Settings"
+}

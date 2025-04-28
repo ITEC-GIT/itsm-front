@@ -154,7 +154,7 @@ const TicketsPage: React.FC = () => {
     const [mismatchCount, setMismatchCount] = useAtom(newTicketsAvailableCount);
     const fetchUnreadReplies = async () => {
         const repliesIds = await getItems('DynamicTicketsUnread');
-       return repliesIds
+        return repliesIds
     };
 
 
@@ -356,9 +356,9 @@ const TicketsPage: React.FC = () => {
 
             }
 
-        setIsTicketsFetch(false);
-        setIsDataLoading(false);
-        console.log("response", response);
+            setIsTicketsFetch(false);
+            setIsDataLoading(false);
+            console.log("response", response);
 
 
         },
@@ -446,42 +446,46 @@ const TicketsPage: React.FC = () => {
     );    useEffect(() => {
         if (ticketPerformingActionOn) {
             console.log("Ticket performing action on:", ticketPerformingActionOn);
+
             const updatedTicket = tickets.find(
                 (ticket) => ticket.id === ticketPerformingActionOn.id
             );
+
             if (updatedTicket) {
                 const newTicket = {
                     ...updatedTicket,
-                    urgency:
-                        ticketPerformingActionOn.urgency?.value || updatedTicket.urgency,
-                    urgency_label:
-                        ticketPerformingActionOn.urgency?.label ||
-                        updatedTicket.urgency_label,
-                    priority:
-                        ticketPerformingActionOn.priority?.value || updatedTicket.priority,
-                    priority_label:
-                        ticketPerformingActionOn.priority?.label ||
-                        updatedTicket.priority_label,
-                    status:
-                        ticketPerformingActionOn.status?.value || updatedTicket.status,
-                    status_label:
-                        ticketPerformingActionOn.status?.label ||
-                        updatedTicket.status_label,
-                    type: ticketPerformingActionOn.type?.value || updatedTicket.type,
-                    type_label:
-                        ticketPerformingActionOn.type?.label || updatedTicket.type_label,
-                    // Add other fields that need to be updated similarly
+                    urgency_obj: {
+                        ...updatedTicket.urgency_obj,
+                        id: ticketPerformingActionOn.urgency?.value || updatedTicket.urgency_obj.id,
+                        urgency_label: ticketPerformingActionOn.urgency?.label || updatedTicket.urgency_obj.urgency_label,
+                    },
+                    priority_obj: {
+                        ...updatedTicket.priority_obj,
+                        id: ticketPerformingActionOn.priority?.value || updatedTicket.priority_obj.id,
+                        priority_label: ticketPerformingActionOn.priority?.label || updatedTicket.priority_obj.priority_label,
+                    },
+                    status_obj: {
+                        ...updatedTicket.status_obj,
+                        id: ticketPerformingActionOn.status?.value || updatedTicket.status_obj.id,
+                        status_name: ticketPerformingActionOn.status?.label || updatedTicket.status_obj.status_name,
+                    },
+                    type_obj: {
+                        ...updatedTicket.type_obj,
+                        id: ticketPerformingActionOn.type?.value || updatedTicket.type_obj.id,
+                        type_label: ticketPerformingActionOn.type?.label || updatedTicket.type_obj.type_label,
+                    },
+                    // You can add more fields if needed
                 };
 
                 setTickets((prevTickets) =>
                     prevTickets.map((ticket) =>
                         ticket.id === ticketPerformingActionOn.id
-                            ? {...ticket, ...newTicket}
+                            ? { ...ticket, ...newTicket }
                             : ticket
                     )
                 );
+
                 console.log("Updated ticket:", newTicket);
-                // You can now use newTicket as needed, e.g., update state or make an API call
             }
         }
     }, [ticketPerformingActionOn]);
@@ -973,79 +977,79 @@ const TicketsPage: React.FC = () => {
         }
     }, [toolbarSearch, tickets]);
     useEffect(() => {
-            const sortedTickets = [...tickets].sort((a, b) => {
-                if (pinnedTicketIds.includes(a.id) && !pinnedTicketIds.includes(b.id)) {
-                    return -1;
-                }
-                if (!pinnedTicketIds.includes(a.id) && pinnedTicketIds.includes(b.id)) {
-                    return 1;
-                }
-                return 0;
-            });
-
-            const filtered = sortedTickets.filter((ticket) => {
-                const assignees: Assignee[] = ticket?.assignees || [];
-                const matchesStatus =
-                    frontFilter.status.value === "" ||
-                    String(ticket.status) === frontFilter.status.value;
-                const matchesUrgency =
-                    frontFilter.urgency.value === "" ||
-                    String(ticket.urgency) === frontFilter.urgency.value;
-                const matchesPriority =
-                    frontFilter.priority.value === "" ||
-                    String(ticket.priority) === frontFilter.priority.value;
-                const matchesType =
-                    frontFilter.type.value === "" ||
-                    String(ticket.type) === frontFilter.type.value;
-                const matchesRequester =
-                    frontFilter.requester.value === "" ||
-                    String(ticket.requester) === frontFilter.requester.value;
-                const matchesBranch =
-                    frontFilter.branch.value === "" ||
-                    String(ticket.areas_id) === frontFilter.branch.value;
-                const matchesAssignee = frontFilter.assignee.value === "" || assignees.some(
-                    (assignee) =>
-                        String(assignee.id) === frontFilter.assignee.value
-                );
-
-
-                return (
-                    matchesStatus &&
-                    matchesUrgency &&
-                    matchesPriority &&
-                    matchesType &&
-                    matchesRequester &&
-                    matchesBranch &&
-                    matchesAssignee
-                );
-            });
-            // fix how many pages number is show in tool bar tickets
-            // make the pages number to be in footer maybe fixed at end of page
-            const paginatedTickets = filtered.slice(
-                (currentTicketsPage - 1) * ticketsPerPage,
-                currentTicketsPage * ticketsPerPage
-            );
-            const hasEmptyFilterValue = (
-                filterObj: Record<string, { value: string; label: string }>
-            ) => {
-                return Object.values(filterObj).some(
-                    (filter) => filter.label.trim() === ""
-                );
-            };
-            const startIdx = (currentTicketsPage - 1) * ticketsPerPage;
-            const endIdx = currentTicketsPage * ticketsPerPage;
-            if (toolbarSearch.trim()) {
-                setPaginatedTickets(ticketsSearchFiltered.slice(startIdx, endIdx)); // Paginate the filtered results
-            } else if (
-                frontFilter &&
-                !hasEmptyFilterValue(
-                    frontFilter as Record<string, { value: string; label: string }>
-                )
-            ) {
-                setPaginatedTickets(paginatedTickets); // Paginate the front-filtered results
-            } else {
-                setPaginatedTickets(paginatedTickets); // Paginate the full list of tickets
+        const sortedTickets = [...tickets].sort((a, b) => {
+            if (pinnedTicketIds.includes(a.id) && !pinnedTicketIds.includes(b.id)) {
+                return -1;
             }
+            if (!pinnedTicketIds.includes(a.id) && pinnedTicketIds.includes(b.id)) {
+                return 1;
+            }
+            return 0;
+        });
+
+        const filtered = sortedTickets.filter((ticket) => {
+            const assignees: Assignee[] = ticket?.assignees || [];
+            const matchesStatus =
+                frontFilter.status.value === "" ||
+                String(ticket.status) === frontFilter.status.value;
+            const matchesUrgency =
+                frontFilter.urgency.value === "" ||
+                String(ticket.urgency) === frontFilter.urgency.value;
+            const matchesPriority =
+                frontFilter.priority.value === "" ||
+                String(ticket.priority) === frontFilter.priority.value;
+            const matchesType =
+                frontFilter.type.value === "" ||
+                String(ticket.type) === frontFilter.type.value;
+            const matchesRequester =
+                frontFilter.requester.value === "" ||
+                String(ticket.requester) === frontFilter.requester.value;
+            const matchesBranch =
+                frontFilter.branch.value === "" ||
+                String(ticket.areas_id) === frontFilter.branch.value;
+            const matchesAssignee = frontFilter.assignee.value === "" || assignees.some(
+                (assignee) =>
+                    String(assignee.id) === frontFilter.assignee.value
+            );
+
+
+            return (
+                matchesStatus &&
+                matchesUrgency &&
+                matchesPriority &&
+                matchesType &&
+                matchesRequester &&
+                matchesBranch &&
+                matchesAssignee
+            );
+        });
+        // fix how many pages number is show in tool bar tickets
+        // make the pages number to be in footer maybe fixed at end of page
+        const paginatedTickets = filtered.slice(
+            (currentTicketsPage - 1) * ticketsPerPage,
+            currentTicketsPage * ticketsPerPage
+        );
+        const hasEmptyFilterValue = (
+            filterObj: Record<string, { value: string; label: string }>
+        ) => {
+            return Object.values(filterObj).some(
+                (filter) => filter.label.trim() === ""
+            );
+        };
+        const startIdx = (currentTicketsPage - 1) * ticketsPerPage;
+        const endIdx = currentTicketsPage * ticketsPerPage;
+        if (toolbarSearch.trim()) {
+            setPaginatedTickets(ticketsSearchFiltered.slice(startIdx, endIdx)); // Paginate the filtered results
+        } else if (
+            frontFilter &&
+            !hasEmptyFilterValue(
+                frontFilter as Record<string, { value: string; label: string }>
+            )
+        ) {
+            setPaginatedTickets(paginatedTickets); // Paginate the front-filtered results
+        } else {
+            setPaginatedTickets(paginatedTickets); // Paginate the full list of tickets
+        }
 
     }, [
         currentTicketsPage,
@@ -1290,10 +1294,18 @@ const TicketsPage: React.FC = () => {
                         value: string;
                     }) => option.label === "assigned") || {value: "", label: ""};
                 }
-
+                const new_assignees: Assignee[] = Array.isArray(ticketChangeAssigneenOn.assigneeNewData)
+                    ? ticketChangeAssigneenOn.assigneeNewData.map((item2: Assignee) => ({
+                        id: item2.id,
+                        name: item2.name || "",
+                        assigner: {
+                            user_name: item2.name || "",
+                        },
+                    }))
+                    : [];
                 const newTicket = {
                     ...updatedTicket,
-                    assignees: ticketChangeAssigneenOn.assigneeNewData,
+                    assignees:new_assignees,
                     status: status.value,
                     status_label: status.label
                 };
@@ -1317,145 +1329,145 @@ const TicketsPage: React.FC = () => {
             <ToolbarWrapper source={"tickets"}/>
             <AnimatedRouteWrapper>
 
-            <Content>
-                <div className="tickets-component-container align-self-stretch">
-                    <div className="d-flex flex-column justify-content-between">
-                        {isDataLoading ? (
-                            <div className="spinner-wrapper">
-                                <div
-                                    className="spinner-border spinner-loading-data"
-                                    role="status"
-                                >
-                                    <span className="visually-hidden">Loading...</span>
+                <Content>
+                    <div className="tickets-component-container align-self-stretch">
+                        <div className="d-flex flex-column justify-content-between">
+                            {isDataLoading ? (
+                                <div className="spinner-wrapper">
+                                    <div
+                                        className="spinner-border spinner-loading-data"
+                                        role="status"
+                                    >
+                                        <span className="visually-hidden">Loading...</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            paginatedTickets.map((ticket) => {
-                                const parsedAssignees: Assignee[] = ticket?.assignees || [];
-                                let isEmptyAssignees=false;
-                                if (parsedAssignees.length>0){
-                                    try {
-                                        // Check if the array contains only null-valued objects
-                                        isEmptyAssignees = parsedAssignees.every(
-                                            (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
-                                        );
-                                    } catch (e) {
-                                        // Handle the error
-                                        const asd=0;
-                                    }
-                                    //  isEmptyAssignees = parsedAssignees.every(
-                                    //     (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
-                                    // );
-                                }
-                                /*
-                                  {
-                                      "id": 5,
-                                      "name": "ticket title 1 ",
-                                      "date": "2025-04-27T12:37:16",
-                                      "closed_date": null,
-                                      "solved_date": null,
-                                      "assigned_date": null,
-                                      "urgency": 1,
-                                      "priority": 1,
-                                      "status": 1,
-                                      "type": 1,
-                                      "users_id_issuer": 1,
-                                      "users_id_recipient": 0,
-                                      "content": "ticket body 1 ",
-                                      "locations_id": 1,
-                                      "departments_id": 1,
-                                      "is_starred": 0,
-                                      "date_creation": "2025-04-27T12:37:16",
-                                      "last_assignee_reply_date": null,
-                                      "last_issuer_reply_date": null
-                                    }
-                                * */
-                                // If the array is empty or contains only null-valued objects, set it to an empty array
-                                const assignees: Assignee[] = isEmptyAssignees ? [] : parsedAssignees;
-                                return (
-                                    <TicketCard
-                                        key={ticket.id}
-                                        id={ticket.id}
-                                        status={ticket.status_obj.status_name}
-                                        reply_unread={ticketIdsWithReplyUnread?.some(item => item.id === ticket.id && item.is_read === "unread") || false}
-                                        date={ticket.date}
-                                        title={ticket.name}
-                                        description={
-                                            getMaxWords(ticket.content) ||
-                                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+                            ) : (
+                                paginatedTickets.map((ticket) => {
+                                    const parsedAssignees: Assignee[] = ticket?.assignees || [];
+                                    let isEmptyAssignees=false;
+                                    if (parsedAssignees.length>0){
+                                        try {
+                                            // Check if the array contains only null-valued objects
+                                            isEmptyAssignees = parsedAssignees.every(
+                                                (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
+                                            );
+                                        } catch (e) {
+                                            // Handle the error
+                                            const asd=0;
                                         }
-                                        assignedTo={{
-                                            name: ticket.users_recipient,
-                                        }} // Placeholder avatar
-                                        raisedBy={{
-                                            name: ticket.issuer.user_name,
-                                            initials: ticket?.issuer?.user_name?.charAt(0),
-                                        }}
-                                        priority={ticket.priority_obj.priority_label}
-                                        type={ticket.type_obj.type_label}
-                                        urgency={ticket.urgency_obj.urgency_label}
-                                        lastUpdate={ticket.date_mod}
-                                        onClick={() => handleTicketClick(ticket)} // Add onClick handler
-                                        onPin={handlePinTicket} // Pass the handlePinTicket function
-                                        isPinned={pinnedTicketIds.includes(ticket.id)} // Pass the pinned status
-                                        isStarred={ticket.is_starred} // Pass the pinned status
-                                        onStarred={handleStarringTicket} // Pass the handlePinTicket function
-                                        isCurrentUserMaster={isCurrentUserMaster}
-                                        assignees={assignees}
-                                        onMouseDown={(event) => handleMouseDown(event, ticket)}
+                                        //  isEmptyAssignees = parsedAssignees.every(
+                                        //     (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
+                                        // );
+                                    }
+                                    /*
+                                      {
+                                          "id": 5,
+                                          "name": "ticket title 1 ",
+                                          "date": "2025-04-27T12:37:16",
+                                          "closed_date": null,
+                                          "solved_date": null,
+                                          "assigned_date": null,
+                                          "urgency": 1,
+                                          "priority": 1,
+                                          "status": 1,
+                                          "type": 1,
+                                          "users_id_issuer": 1,
+                                          "users_id_recipient": 0,
+                                          "content": "ticket body 1 ",
+                                          "locations_id": 1,
+                                          "departments_id": 1,
+                                          "is_starred": 0,
+                                          "date_creation": "2025-04-27T12:37:16",
+                                          "last_assignee_reply_date": null,
+                                          "last_issuer_reply_date": null
+                                        }
+                                    * */
+                                    // If the array is empty or contains only null-valued objects, set it to an empty array
+                                    const assignees: Assignee[] = isEmptyAssignees ? [] : parsedAssignees;
+                                    return (
+                                        <TicketCard
+                                            key={ticket.id}
+                                            id={ticket.id}
+                                            status={ticket.status_obj.status_name}
+                                            reply_unread={ticketIdsWithReplyUnread?.some(item => item.id === ticket.id && item.is_read === "unread") || false}
+                                            date={ticket.date}
+                                            title={ticket.name}
+                                            description={
+                                                getMaxWords(ticket.content) ||
+                                                "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+                                            }
+                                            assignedTo={{
+                                                name: ticket.users_recipient,
+                                            }} // Placeholder avatar
+                                            raisedBy={{
+                                                name: ticket.issuer.user_name,
+                                                initials: ticket?.issuer?.user_name?.charAt(0),
+                                            }}
+                                            priority={ticket.priority_obj.priority_label}
+                                            type={ticket.type_obj.type_label}
+                                            urgency={ticket.urgency_obj.urgency_label}
+                                            lastUpdate={ticket.date_mod}
+                                            onClick={() => handleTicketClick(ticket)} // Add onClick handler
+                                            onPin={handlePinTicket} // Pass the handlePinTicket function
+                                            isPinned={pinnedTicketIds.includes(ticket.id)} // Pass the pinned status
+                                            isStarred={ticket.is_starred} // Pass the pinned status
+                                            onStarred={handleStarringTicket} // Pass the handlePinTicket function
+                                            isCurrentUserMaster={isCurrentUserMaster}
+                                            assignees={assignees}
+                                            onMouseDown={(event) => handleMouseDown(event, ticket)}
 
-                                    />
-                                );
-                            })
-                        )}
+                                        />
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
-                </div>
-            </Content>
-            <div className=" tickets-pagination-controls">
-                <button
-                    className="btn btn-sm btn-light me-2"
-                    onClick={handleFirstPage}
-                    disabled={currentTicketsPage === 1}
-                >
-                    First
-                </button>
-                <button
-                    className="btn btn-sm btn-light me-2"
-                    onClick={handlePreviousPage}
-                    disabled={currentTicketsPage === 1}
-                >
-                    Previous
-                </button>
-                {Array.from(
-                    {length: endPage - startPage + 1},
-                    (_, index) => startPage + index
-                ).map((page) => (
+                </Content>
+                <div className=" tickets-pagination-controls">
                     <button
-                        key={page}
-                        className={clsx("btn btn-sm me-2", {
-                            "btn-primary": currentTicketsPage === page,
-                            "btn-light": currentTicketsPage !== page,
-                        })}
-                        onClick={() => handlePageChange(page)}
+                        className="btn btn-sm btn-light me-2"
+                        onClick={handleFirstPage}
+                        disabled={currentTicketsPage === 1}
                     >
-                        {page}
+                        First
                     </button>
-                ))}
-                <button
-                    className="btn btn-sm btn-light me-2"
-                    onClick={handleNextPage}
-                    disabled={currentTicketsPage === totalPages}
-                >
-                    Next
-                </button>
-                <button
-                    className="btn btn-sm btn-light"
-                    onClick={handleLastPage}
-                    disabled={currentTicketsPage === totalPages}
-                >
-                    Last
-                </button>
-            </div>
+                    <button
+                        className="btn btn-sm btn-light me-2"
+                        onClick={handlePreviousPage}
+                        disabled={currentTicketsPage === 1}
+                    >
+                        Previous
+                    </button>
+                    {Array.from(
+                        {length: endPage - startPage + 1},
+                        (_, index) => startPage + index
+                    ).map((page) => (
+                        <button
+                            key={page}
+                            className={clsx("btn btn-sm me-2", {
+                                "btn-primary": currentTicketsPage === page,
+                                "btn-light": currentTicketsPage !== page,
+                            })}
+                            onClick={() => handlePageChange(page)}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                    <button
+                        className="btn btn-sm btn-light me-2"
+                        onClick={handleNextPage}
+                        disabled={currentTicketsPage === totalPages}
+                    >
+                        Next
+                    </button>
+                    <button
+                        className="btn btn-sm btn-light"
+                        onClick={handleLastPage}
+                        disabled={currentTicketsPage === totalPages}
+                    >
+                        Last
+                    </button>
+                </div>
             </AnimatedRouteWrapper>
             {/* <TicketCard
           id="#HFCS00117299"

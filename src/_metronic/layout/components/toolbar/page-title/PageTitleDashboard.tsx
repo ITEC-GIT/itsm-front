@@ -1,15 +1,22 @@
 import clsx from "clsx";
 import { useLayout } from "../../../core";
 import { useAtom } from "jotai";
-import { dashboardViewAtom } from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
+import {
+  dashboardViewAtom,
+  selectedComputerDashboardAtom,
+} from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
 
 const PageTitleDashboard = () => {
   const { config, classes } = useLayout();
   const appPageTitleDirection = config.app?.pageTitle?.direction;
   const [currentView, setCurrentView] = useAtom(dashboardViewAtom);
+  const [selectedDeviceAtom, setSelectedDeviceAtom] = useAtom(
+    selectedComputerDashboardAtom
+  );
 
   const handleToggleView = () => {
     const newView = currentView === "main" ? "analytics" : "main";
+    // if (newView === "analytics") setSelectedDeviceAtom(undefined);
     setCurrentView(newView);
   };
 

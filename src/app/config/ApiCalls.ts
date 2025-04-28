@@ -1,20 +1,26 @@
-import {ErrorResponse} from "../types/AuthTypes";
+import { ErrorResponse } from "../types/AuthTypes";
 import {
     CreateSoftInstRequestType,
     GetAllSoftwareInstallationRequestType,
 } from "../types/softwareInstallationTypes";
 import Cookies from "js-cookie";
 
-import {ApiRequestBody, UpdateTicketRequestBody, UpdateTicketReplyRequestBody} from "./ApiTypes";
+import {
+    ApiRequestBody,
+    UpdateTicketRequestBody,
+    UpdateTicketReplyRequestBody,
+} from "./ApiTypes";
 import {
     PrivateApiCall,
     PublicApiCall,
     getSessionTokenFromCookie,
     ImageUploadApiCall,
-    PrivateApiCallFastApi, PublicApiCallFastApi
+    PrivateApiCallFastApi,
+    PublicApiCallFastApi,
 } from "./Config";
-import {ImageUploadData, ImageUploadResponse} from "../types/TicketTypes.ts";
+import { ImageUploadData, ImageUploadResponse } from "../types/TicketTypes.ts";
 import axios from "axios";
+import { CreateUserType } from "../types/user-management.ts";
 
 const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
 
@@ -38,15 +44,19 @@ const errorCatch = (error: ErrorResponse) => {
 async function LoginApi(login: string, password: string) {
     // const authHeader = `Basic ${btoa(`${login}:${password}`)}`;
 
-    return await axios.post(`http://127.0.0.1:8000/session/init_session`,
-        new URLSearchParams({
-            username: login,
-            password: password
-        }), {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
-    })
+    return await axios
+        .post(
+            `http://127.0.0.1:8000/session/init_session`,
+            new URLSearchParams({
+                username: login,
+                password: password,
+            }),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            }
+        )
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
@@ -60,18 +70,22 @@ const FetchFilteredTickets = async (body: ApiRequestBody): Promise<any> => {
             order: body.order,
         };
         if (body.starred === 1) {
-            const asd = 0
+            const asd = 0;
         }
         if (body.idgt !== undefined) {
             params.idgt = body.idgt;
         }
-        const response = await PrivateApiCallFastApi.post("/tickets/filter_tickets", body, {
-            headers: {
-                "App-Token": appToken,
-                "Session-Token": sessionToken,
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await PrivateApiCallFastApi.post(
+            "/tickets/filter_tickets",
+            body,
+            {
+                headers: {
+                    "App-Token": appToken,
+                    "Session-Token": sessionToken,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
         return response.data; // Return only the data
     } catch (error: any) {
@@ -95,8 +109,8 @@ const UpdateTicket = async (body: UpdateTicketRequestBody): Promise<any> => {
         throw error; // Rethrow the error for additional handling if necessary
     }
 };
-/** ******************************************************************************************* */
 
+/** ******************************************************************************************* */
 /** ************************************** User *********************************************** */
 /** ******************************************************************************************* */
 async function GetTicketWithReplies(ticketId: number) {
@@ -110,6 +124,7 @@ async function GetTicketAttachments(ticketId: number) {
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
+
 
 const SendRepliesAsync = async (ticketId: number, text: string): Promise<any> => {
 
@@ -136,15 +151,35 @@ const SendRepliesAsync = async (ticketId: number, text: string): Promise<any> =>
 
 };
 
-
 async function GetUserProfile() {
     return await PrivateApiCall.get(`/getActiveProfile/`)
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
 
-async function GetUsers() {
-    return await PublicApiCall.get(`//`)
+async function GetAllUsersAPI() {
+    return await PrivateApiCallFastApi.get(`/users/get_users`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function CreateUserAPI(userData: CreateUserType) {
+    return await PrivateApiCallFastApi.post(`/users/create_user`, userData)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function UpdateUserAPI(userId: number, userData: CreateUserType) {
+    return await PrivateApiCallFastApi.put(
+        `/users/update_user/${userId}`,
+        userData
+    )
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function DeleteUserAPI(userId: number) {
+    return await PrivateApiCallFastApi.delete(`/users/delete_user/${userId}`)
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
@@ -153,7 +188,6 @@ async function GetUsers() {
 
 /** ************************************** Tickets **********************************************/
 /** *********************************************************************************************/
-
 
 // http://192.168.151.22/apirest.php/TicketsView?idgt=1&range=0-3&order=asc , starting from max id 1 , we get 4 items
 async function GetTicketsViewById(range: string, order: string, idgt?: number) {
@@ -185,7 +219,29 @@ async function GetTicketsViewById(range: string, order: string, idgt?: number) {
 /** ********************************************************************************************/
 
 async function GetDashboardAnalytics() {
-    return await PrivateApiCall.get(`/AnalyticsDashboard/`)
+    return await PrivateApiCall.get(`/AnalyticsDashboard`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function GetDashboardLandingData() {
+    return await PrivateApiCallFastApi.get(`/dashboard/metrics`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function GetTicketCountsByStatusAndMonth(
+    status: string,
+    from_date?: Date,
+    to_date?: Date
+) {
+    return await PrivateApiCallFastApi.get(`/dashboard/status-counts`, {
+        params: {
+            status: status,
+            from_date: from_date,
+            to_date: to_date,
+        },
+    })
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
@@ -331,7 +387,6 @@ async function RemoteSSHConnect(
 // }
 
 /** *********************************************************************************************/
-
 /** ************************************** Software Installation ********************************/
 /** *********************************************************************************************/
 async function FetchAllSoftwareInstallations(
@@ -358,7 +413,6 @@ async function InitiateSoftwareInstallation(data: FormData) {
         .catch((error: any) => errorCatch(error));
 }
 
-
 async function CancelSoftwareInstallation(id: number) {
     const body = {
         input: {
@@ -380,21 +434,16 @@ async function GetAllSoftwareInstallations(
 }
 
 /** *********************************************************************************************/
-
 /** ************************************** Computers ********************************************/
 /** *********************************************************************************************/
-async function GetAllComputers() {
+async function GetAllComputersAPI() {
     return await PrivateApiCall.get(`/Computer`)
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
 
 async function GetComputer(id: number) {
-    return await PrivateApiCall.get(`/Computer/${id}`, {
-        params: {
-            expand_dropdowns: 1,
-        },
-    })
+    return await PrivateApiCallFastApi.get(`/inventories/computers/${id}`)
         .then((response) => response)
         .catch((error: any) => errorCatch(error));
 }
@@ -412,9 +461,7 @@ async function GetPrivateIPAddress(id: number) {
         .catch((error: any) => errorCatch(error));
 }
 
-
 /** *********************************************************************************************/
-
 /** ************************************** Locations ********************************************/
 /** *********************************************************************************************/
 async function GetAllLocations() {
@@ -424,9 +471,14 @@ async function GetAllLocations() {
 }
 
 /** *********************************************************************************************/
-
 /** ************************************** Static Data ******************************************/
 /** *********************************************************************************************/
+async function GetPrerequisitesAPI() {
+    return await PrivateApiCallFastApi.get(`/users/get_prerequisites`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
 async function GetStaticData() {
     return await PrivateApiCallFastApi.get(`/static/static_data`)
         .then((response) => response)
@@ -487,11 +539,13 @@ async function GetUsersAndAreas() {
         .catch((error: any) => errorCatch(error));
 }
 
-async function PostReplyImages(formData: any) {
+async function PostReplyImages(formData: any, filetype: string) {
     try {
-
         const nginxServer = import.meta.env.VITE_APP_ITSM_NGINX_IMAGES_URL;
-        const response = await fetch(`${nginxServer}/upload-image`, {
+        const url = new URL(`${nginxServer}/upload-image`);
+        url.searchParams.append('filetype', filetype);
+
+        const response = await fetch(url.toString(), {
             method: "POST",
             body: formData,
         });
@@ -504,7 +558,7 @@ async function PostReplyImages(formData: any) {
         return data;
     } catch (error) {
         console.error("Error uploading image:", error);
-        return {success: false, message: "Failed to upload image."};
+        return { success: false, message: "Failed to upload image." };
     }
 }
 
@@ -513,12 +567,12 @@ async function bulkDeleteImages(urlsToDelete: any) {
         const nginxServer = import.meta.env.VITE_APP_ITSM_NGINX_IMAGES_URL;
 
         // Send the list of URLs in the DELETE request
-        const response = await fetch(`${nginxServer}/delete_reply_images`, {
+        const response = await fetch(`${nginxServer}/delete-images`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({urls: urlsToDelete}), // Send the URLs as JSON
+            body: JSON.stringify({ urls: urlsToDelete }), // Send the URLs as JSON
         });
 
         if (!response.ok) {
@@ -530,7 +584,7 @@ async function bulkDeleteImages(urlsToDelete: any) {
         return data; // Assuming the response is a JSON object with the status
     } catch (error) {
         console.error("Error deleting images in bulk:", error);
-        return {success: false, message: "Failed to delete images."};
+        return { success: false, message: "Failed to delete images." };
     }
 }
 
@@ -547,14 +601,15 @@ const fetchAndOpenFile = async (url: string) => {
         // });
         const appToken = import.meta.env.VITE_APP_ITSM_GLPI_APP_TOKEN;
         const sessionToken = getSessionTokenFromCookie();
-        const attachmentFiles = import.meta.env.VITE_APP_ITSM_GLPI_API_BASE_ATTACHMENT_FILES;
+        const attachmentFiles = import.meta.env
+            .VITE_APP_ITSM_GLPI_API_BASE_ATTACHMENT_FILES;
 
-        const attachmentSent = `${attachmentFiles}/${url}`
+        const attachmentSent = `${attachmentFiles}/${url}`;
         const response = await fetch(attachmentSent, {
             method: "GET",
             headers: {
                 "App-Token": appToken,
-                "Session-Token": sessionToken || '',
+                "Session-Token": sessionToken || "",
                 "Content-Type": "application/json",
             },
         });
@@ -571,27 +626,100 @@ const fetchAndOpenFile = async (url: string) => {
         console.error("Error fetching the file:", error);
     }
 };
+
+/** *********************************************************************************************/
+/** ************************************** Users Titles ******************************************/
+/** *********************************************************************************************/
+async function GetAllTitlesAPI() {
+    return await PrivateApiCallFastApi.get(`/titles/get_titles`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function CreateTitleAPI(title: string) {
+    return await PrivateApiCallFastApi.post(`/titles/create_title`, {
+        title: title,
+    })
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+/** ************************************** Assets ******************************************/
+/** *********************************************************************************************/
+async function GetAssets(filters: any) {
+    return await PrivateApiCallFastApi.post(
+        `/inventories/assets/filter`,
+        filters,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        }
+    )
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function GetAssetCategories() {
+    return await PrivateApiCallFastApi.get(`/inventories/assets/categories`)
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function GetAssetActions(asset_type_id: number) {
+    return await PrivateApiCallFastApi.get(
+        `/inventories/assets/${asset_type_id}/actions/`
+    )
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
+async function GetAssetSoftwares(computerId: number) {
+    return await PrivateApiCallFastApi.get(
+        `/inventories/assets/${computerId}/softwares`
+    )
+        .then((response) => response)
+        .catch((error: any) => errorCatch(error));
+}
+
 export {
     LoginApi,
     GetUserProfile,
     GetTicketsViewById,
-    GetUsers,
+    GetAllUsersAPI,
+    CreateUserAPI,
+    UpdateUserAPI,
+    DeleteUserAPI,
     GetBranches,
     GetDashboardAnalytics,
     InitiateSoftwareInstallation,
     FetchAllSoftwareInstallations,
     CancelSoftwareInstallation,
     GetAllSoftwareInstallations,
-    GetAllComputers,
+    GetAllComputersAPI,
     GetAllLocations,
     GetStaticData,
     GetUsersAndAreas,
     FetchFilteredTickets,
     UpdateStarred,
     UpdateTicket,
-    fetchXSRFToken, GetPrivateIPAddress,
+    fetchXSRFToken,
+    GetPrivateIPAddress,
     PostReplyImages,
     bulkDeleteImages,
-    GetComputer, RemoteSSHConnect,
-    SendRepliesAsync, GetTicketWithReplies, GetTicketAttachments, fetchAndOpenFile
+    GetComputer,
+    RemoteSSHConnect,
+    SendRepliesAsync,
+    GetTicketWithReplies,
+    GetTicketAttachments,
+    fetchAndOpenFile,
+    GetAssetCategories,
+    GetAssets,
+    GetAssetActions,
+    GetAssetSoftwares,
+    GetDashboardLandingData,
+    GetTicketCountsByStatusAndMonth,
+    GetPrerequisitesAPI,
+    GetAllTitlesAPI,
+    CreateTitleAPI,
 };

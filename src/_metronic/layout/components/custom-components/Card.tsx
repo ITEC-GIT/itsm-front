@@ -417,16 +417,16 @@ const TicketCard: React.FC<CardProps> = ({
                         </div>
                     </div>
                 </div>
-                {reply_unread ? (
-                    <motion.span
-                        className="badge-reply-custom"
-                        initial={{opacity: 0, y: -10, scale: 0.8}}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
-                    >
-                        <img src={replybadge} alt="Reply Badge" />
-                    </motion.span>
-                ) : null}
+                {/*{reply_unread ? (*/}
+                {/*    <motion.span*/}
+                {/*        className="badge-reply-custom"*/}
+                {/*        initial={{opacity: 0, y: -10, scale: 0.8}}*/}
+                {/*        animate={{ opacity: 1, y: 0, scale: 1 }}*/}
+                {/*        transition={{ duration: 0.4, ease: "easeOut" }}*/}
+                {/*    >*/}
+                {/*        <img src={replybadge} alt="Reply Badge" />*/}
+                {/*    </motion.span>*/}
+                {/*) : null}*/}
 
 
             </div>

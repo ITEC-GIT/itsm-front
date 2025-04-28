@@ -5,7 +5,6 @@ import Select from "react-select";
 import Cookies from "js-cookie";
 import { DatePicker } from "../form/datePicker";
 import { deepEqual, formatDate, getData } from "../../../utils/custom";
-import { GetAllSoftwareInstallationRequestType as filterType } from "../../types/softwareInstallationTypes";
 import {
   loadFromIndexedDB,
   removeFromIndexedDB,
@@ -13,13 +12,15 @@ import {
 } from "../../indexDB/Config";
 import { useAtom } from "jotai";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
+import { FilterType } from "../../types/common";
 
 interface FilterSidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
   activeFilters: string[];
   filtersStoreName: string;
-  saveFilters: React.Dispatch<React.SetStateAction<filterType>>;
+  saveFilters: React.Dispatch<React.SetStateAction<FilterType>>;
+  initialFilters?: any;
 }
 
 interface FiltersTitleProps {
@@ -31,9 +32,15 @@ interface FiltersTitleProps {
 
 const filtersOptions: FiltersTitleProps[] = [
   {
+    id: "AssetCategoriesFilter",
+    name: "Category",
+    AtomKey: "assetCategories",
+    data: [],
+  },
+  {
     id: "softwareStatusFilter",
     name: "Status",
-    AtomKey: "SoftwareStatus",
+    AtomKey: "installation_status",
     data: [],
   },
   {
@@ -45,7 +52,7 @@ const filtersOptions: FiltersTitleProps[] = [
   {
     id: "computersFilter",
     name: "Computer",
-    AtomKey: "Computers",
+    AtomKey: "computers",
     data: [],
   },
   {
@@ -62,6 +69,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   activeFilters,
   filtersStoreName,
   saveFilters,
+  initialFilters,
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
   const [selectedFilters, setSelectedFilters] = useState<
@@ -75,7 +83,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const [editFilterName, setEditFilterName] = useState<string>("");
 
   const userId = Number(Cookies.get("user"));
-  const filtersDbName = "savedFiltersDB";
+  const filtersDbName = "Filters";
   const handleApplyFilters = () => {
     if (Object.keys(selectedFilters).length === 0 && !startDate && !endDate)
       return;
@@ -125,11 +133,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     setSelectedFilters({});
     setStartDate("");
     setEndDate("");
-    //ask about this
-    const initialFilters = {
-      range: "0-50",
-      order: "desc",
-    };
     saveFilters(initialFilters);
   };
 
@@ -252,11 +255,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   value: ("id" in item ? item.id?.toString() : "") || "",
                   label:
                     "label" in item
-                      ? item.label
+                      ? item.label.toLowerCase()
                       : "status" in item
-                      ? item.status
+                      ? item.status.toLowerCase()
                       : "name" in item
-                      ? item.name
+                      ? item.name.toLowerCase()
                       : "Unnamed",
                 }))
               : [];

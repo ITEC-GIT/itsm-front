@@ -10,7 +10,11 @@ import {
 } from "./dataTable";
 import { getBackgroundColor, getCircleColor } from "../../utils/custom";
 
-const categories = ["received", "cancelled", "initialized"];
+const categories = [
+  { name: "received" },
+  { name: "cancelled" },
+  { name: "initialized" },
+];
 
 const colors = ["#f7c1c1", "#e0e0e0", "#fae4ae"];
 
@@ -18,7 +22,7 @@ export const getColumns = (
   handleCancelClick: (row: SoftwareHistoryType) => void
 ): TableColumn<SoftwareHistoryType>[] => [
   {
-    name: "#",
+    name: "",
     sortable: true,
     sortFunction: (a: SoftwareHistoryType, b: SoftwareHistoryType) =>
       a.id - b.id,
@@ -156,7 +160,7 @@ export const getColumns = (
     selector: (row: SoftwareHistoryType) => row.status,
     sortable: true,
     width: columnLargeWidth,
-    id: "Status",
+    id: "status",
     cell: (row: SoftwareHistoryType) => {
       const backgroundColor = getBackgroundColor(
         row.status,
@@ -206,7 +210,7 @@ export const getColumns = (
       </span>
     ),
     id: "Date",
-    width: columnLargeWidth,
+    width: columnMediumWidth,
     selector: (row: SoftwareHistoryType) => {
       const date = new Date(row.created_at);
       const options: Intl.DateTimeFormatOptions = {

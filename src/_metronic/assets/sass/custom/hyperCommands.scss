@@ -102,11 +102,15 @@
 }
 
 .hyper-console-disabled-card {
-  background-color: $content-background-color !important;
+  // background-color: #bdbdbd !important;
   color: #6c757d;
   pointer-events: none;
-  opacity: 0.6;
+  // opacity: 0.6;
   cursor: not-allowed;
+}
+
+.disconnect-bg {
+  background-color: #f0efee !important; //#f7f7f7
 }
 
 .hyper-console-disabled-card > .hyper-last-date {
@@ -291,7 +295,7 @@
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  z-index: 1000 !important;
+  z-index: 99990 !important;
 }
 
 .alert-box {

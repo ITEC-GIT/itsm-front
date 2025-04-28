@@ -26,3 +26,21 @@ export type selectValueType = {
   value: number;
   label: string;
 };
+
+export type GetComputerResponseType = {
+  id: number;
+  name: string;
+  type: {
+    id: number;
+    name: string;
+  };
+  model: {
+    id: number;
+    name: string;
+  };
+  user: string;
+  location: {
+    id: number;
+    name: string;
+  };
+};
