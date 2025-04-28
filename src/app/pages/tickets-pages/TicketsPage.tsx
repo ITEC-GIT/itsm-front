@@ -446,42 +446,46 @@ const TicketsPage: React.FC = () => {
     );    useEffect(() => {
         if (ticketPerformingActionOn) {
             console.log("Ticket performing action on:", ticketPerformingActionOn);
+
             const updatedTicket = tickets.find(
                 (ticket) => ticket.id === ticketPerformingActionOn.id
             );
+
             if (updatedTicket) {
                 const newTicket = {
                     ...updatedTicket,
-                    urgency:
-                        ticketPerformingActionOn.urgency?.value || updatedTicket.urgency,
-                    urgency_label:
-                        ticketPerformingActionOn.urgency?.label ||
-                        updatedTicket.urgency_label,
-                    priority:
-                        ticketPerformingActionOn.priority?.value || updatedTicket.priority,
-                    priority_label:
-                        ticketPerformingActionOn.priority?.label ||
-                        updatedTicket.priority_label,
-                    status:
-                        ticketPerformingActionOn.status?.value || updatedTicket.status,
-                    status_label:
-                        ticketPerformingActionOn.status?.label ||
-                        updatedTicket.status_label,
-                    type: ticketPerformingActionOn.type?.value || updatedTicket.type,
-                    type_label:
-                        ticketPerformingActionOn.type?.label || updatedTicket.type_label,
-                    // Add other fields that need to be updated similarly
+                    urgency_obj: {
+                        ...updatedTicket.urgency_obj,
+                        id: ticketPerformingActionOn.urgency?.value || updatedTicket.urgency_obj.id,
+                        urgency_label: ticketPerformingActionOn.urgency?.label || updatedTicket.urgency_obj.urgency_label,
+                    },
+                    priority_obj: {
+                        ...updatedTicket.priority_obj,
+                        id: ticketPerformingActionOn.priority?.value || updatedTicket.priority_obj.id,
+                        priority_label: ticketPerformingActionOn.priority?.label || updatedTicket.priority_obj.priority_label,
+                    },
+                    status_obj: {
+                        ...updatedTicket.status_obj,
+                        id: ticketPerformingActionOn.status?.value || updatedTicket.status_obj.id,
+                        status_name: ticketPerformingActionOn.status?.label || updatedTicket.status_obj.status_name,
+                    },
+                    type_obj: {
+                        ...updatedTicket.type_obj,
+                        id: ticketPerformingActionOn.type?.value || updatedTicket.type_obj.id,
+                        type_label: ticketPerformingActionOn.type?.label || updatedTicket.type_obj.type_label,
+                    },
+                    // You can add more fields if needed
                 };
 
                 setTickets((prevTickets) =>
                     prevTickets.map((ticket) =>
                         ticket.id === ticketPerformingActionOn.id
-                            ? {...ticket, ...newTicket}
+                            ? { ...ticket, ...newTicket }
                             : ticket
                     )
                 );
+
                 console.log("Updated ticket:", newTicket);
-                // You can now use newTicket as needed, e.g., update state or make an API call
             }
         }
     }, [ticketPerformingActionOn]);
