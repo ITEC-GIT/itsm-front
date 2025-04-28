@@ -4,6 +4,7 @@ import { devicesVNC } from "../../data/hyperCommands";
 import { ActionIcons } from "../../components/hyper-commands/action-icons";
 import { RemoteConsoleModal } from "../../components/modal/VNCModal";
 import VncScreen from "../../lib/VNC/VncScreen";
+import { DisconnectButton } from "../../components/form/stepsButton";
 
 type RemoteConsolePageProps = {
   computerIdProp?: number;
@@ -103,19 +104,36 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
   return (
     <>
       {websocketUrl ? (
-        <VncScreen
-          url={websocketUrl}
-          scaleViewport
-          background="#000000"
-          style={{ width: "75vw", height: "75vh" }}
-          debug
-          ref={vncScreenRef}
-          onDisconnect={(event: CustomEvent<{ clean: boolean }>) => {
-            console.error("VNC disconnected", event.detail);
-            alert("VNC disconnected. Server might be offline.");
-            handleEndSession();
-          }}
-        />
+        <div className="d-flex flex-column h-100">
+          <div className="d-flex justify-content-end p-2">
+            <DisconnectButton
+              onClick={() => {
+                if (vncScreenRef.current) {
+                  vncScreenRef.current.disconnect();
+                }
+                handleEndSession();
+                setWebSocketUrl(null);
+              }}
+            />
+          </div>
+
+          <div className="flex-grow-1 p-2 d-flex">
+            <div className="w-100 h-100">
+              <VncScreen
+                url={websocketUrl}
+                scaleViewport
+                background="#000000"
+                style={{ width: "100%", height: "100%" }}
+                debug
+                ref={vncScreenRef}
+                onDisconnect={(event: CustomEvent<{ clean: boolean }>) => {
+                  handleEndSession();
+                  setWebSocketUrl(null);
+                }}
+              />
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
           <div

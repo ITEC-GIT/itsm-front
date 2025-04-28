@@ -1,153 +1,76 @@
-import { useEffect, useMemo, useState } from "react";
-import { ActionIcons } from "../../components/hyper-commands/action-icons.tsx";
-import { TerminalDisplay } from "../../components/Remote SSH/terminalDisplay.tsx";
+import { useEffect, useRef, useState } from "react";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
-import { ConnectButton } from "../../components/form/stepsButton.tsx";
+import { DisconnectButton } from "../../components/form/stepsButton.tsx";
+import VncScreen from "../../lib/VNC/VncScreen.tsx";
+import { useNavigate, useParams } from "react-router-dom";
+import { activeDashboardViewAtom } from "../../atoms/dashboard-atoms/dashboardAtom.ts";
+import { useSetAtom } from "jotai";
 
-const RemoteConsoleDashboardComponent = ({
-  computerIdProp,
-}: {
-  computerIdProp?: number;
-}) => {
-  const [userId, setUserId] = useState("");
-  const [vncIp, setVncIp] = useState("");
-  const [vncUrl, setVncUrl] = useState("");
+const RemoteConsoleDashboardComponent = () => {
+  const { computerId, computerIp } = useParams<{
+    computerId: string;
+    computerIp: string;
+  }>();
 
-  const [userIdError, setUserIdError] = useState(false);
-  const [vncIpError, setVncIpError] = useState(false);
-  const [vncUrlError, setVncUrlError] = useState(false);
+  const navigate = useNavigate();
+  const vncScreenRef = useRef<React.ElementRef<typeof VncScreen>>(null);
+  const [websocketUrl, setWebSocketUrl] = useState<string>("");
+  const setActiveView = useSetAtom(activeDashboardViewAtom);
+  const handleEndSession = async () => {
+    if (!computerId || !computerIp) return;
 
-  const handleConnectClick = () => {
-    let hasError = false;
-
-    if (!userId.trim()) {
-      setUserIdError(true);
-      hasError = true;
-    } else {
-      setUserIdError(false);
-    }
-
-    if (!vncIp.trim()) {
-      setVncIpError(true);
-      hasError = true;
-    } else {
-      setVncIpError(false);
-    }
-
-    if (!vncUrl.trim()) {
-      setVncUrlError(true);
-      hasError = true;
-    } else {
-      setVncUrlError(false);
-    }
-
-    if (!hasError) {
-      //   onConnect();
-      //   onConnect(userId, vncIp, vncUrl);
+    try {
+      await fetch(`http://localhost:8004/vnc/disconnect`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: computerId,
+          vnc_ip: computerIp,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to notify backend of disconnect", error);
     }
   };
 
-  const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserId(e.target.value);
-    if (userIdError) setUserIdError(false);
+  const handleDisconnect = () => {
+    if (vncScreenRef.current) {
+      vncScreenRef.current.disconnect();
+    }
+    handleEndSession();
+    setWebSocketUrl("");
+    setActiveView("");
+    navigate("/dashboard");
   };
 
-  const handleVncIpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVncIp(e.target.value);
-    if (vncIpError) setVncIpError(false);
-  };
-
-  const handleVncUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVncUrl(e.target.value);
-    if (vncUrlError) setVncUrlError(false);
-  };
+  useEffect(() => {
+    if (!computerId || !computerIp) {
+      navigate("/dashboard");
+    }
+  }, [computerId, computerIp, navigate]);
 
   return (
     <AnimatedRouteWrapper>
-      <div
-        className="row d-flex custom-main-container custom-container-height"
-        style={{ overflowY: "auto" }}
-      >
-        <div className="col-12">
-          <div className="d-flex justify-content-between">
-            <h2 className="text-center mb-4">🖥️ Remote Console</h2>
-          </div>
+      <div className="d-flex flex-column h-100">
+        <div className="d-flex justify-content-end p-2">
+          <DisconnectButton onClick={handleDisconnect} />
+        </div>
 
-          <div className="d-flex justify-content-center">
-            <div className="row">
-              <div className="row mb-4">
-                <div className="col-md-6 mb-4" style={{ height: "85px" }}>
-                  <label htmlFor="userId" className="custom-label required">
-                    User ID
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control custom-placeholder custom-input-height"
-                    value={userId}
-                    id="userId"
-                    onChange={handleUserIdChange}
-                    placeholder="Enter User ID"
-                    required
-                  />
-                  {userIdError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      User ID is required.
-                    </small>
-                  )}
-                </div>
-
-                <div className="col-md-6 mb-4" style={{ height: "85px" }}>
-                  <label className="custom-label required"> VNC IP</label>
-                  <input
-                    type="text"
-                    className="form-control custom-placeholder custom-input-height"
-                    value={vncIp}
-                    id="vncIp"
-                    placeholder="Enter VNC IP"
-                    onChange={handleVncIpChange}
-                    required
-                  />
-                  {vncIpError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      VNC IP is required.
-                    </small>
-                  )}
-                </div>
-              </div>
-
-              <div className="row mb-4">
-                <div className="col-md-6" style={{ height: "85px" }}>
-                  <label className="custom-label required"> VNC URL</label>
-                  <input
-                    type="text"
-                    className="form-control custom-placeholder custom-input-height"
-                    value={vncIp}
-                    id="vncUrl"
-                    placeholder="Enter VNC URL"
-                    onChange={handleVncUrlChange}
-                    required
-                  />
-                  {vncUrlError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      VNC URL is required.
-                    </small>
-                  )}
-                </div>
-              </div>
-
-              <div className="d-flex justify-content-center mt-4">
-                <ConnectButton onClick={handleConnectClick} />
-              </div>
-            </div>
+        {/* VNC Screen */}
+        <div className="flex-grow-1 p-2 d-flex">
+          <div className="w-100 h-100">
+            <VncScreen
+              url={websocketUrl}
+              scaleViewport
+              background="#000000"
+              style={{ width: "100%", height: "100%" }}
+              debug
+              ref={vncScreenRef}
+              onDisconnect={(event: CustomEvent<{ clean: boolean }>) => {
+                handleEndSession();
+                setWebSocketUrl("");
+              }}
+            />
           </div>
         </div>
       </div>

@@ -132,6 +132,32 @@ const ConnectButton = ({ onClick }: { onClick: any }) => {
   );
 };
 
+const DisconnectButton = ({ onClick }: { onClick: any }) => {
+  return (
+    <SaveStyledWrapper>
+      <button
+        onClick={onClick}
+        className="bg-dark-blue-btn text-white bg-danger"
+      >
+        <span>Disconenct</span>
+      </button>
+    </SaveStyledWrapper>
+  );
+};
+
+const OkButton = ({ onClick }: { onClick: any }) => {
+  return (
+    <SaveStyledWrapper>
+      <button
+        onClick={onClick}
+        className="bg-dark-blue-btn text-white bg-primary"
+      >
+        <span>Ok</span>
+      </button>
+    </SaveStyledWrapper>
+  );
+};
+
 const SaveStyledWrapper = styled.div`
   button {
     display: flex;
@@ -151,4 +177,11 @@ const SaveStyledWrapper = styled.div`
   }
 `;
 
-export { BackButton, NextButton, SaveButton, ConnectButton };
+export {
+  BackButton,
+  OkButton,
+  NextButton,
+  SaveButton,
+  ConnectButton,
+  DisconnectButton,
+};

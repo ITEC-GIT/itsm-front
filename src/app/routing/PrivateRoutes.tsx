@@ -25,6 +25,7 @@ import { FieldRulesPageWrapper } from "../pages/user-management-pages/field-rule
 import { SettingsPageWrapper } from "../pages/user-management-pages/settings-page";
 import { ComputerDetailsPageWrapper } from "../pages/Assets-pages/computerDetailsPage";
 import { SoftwareInstallationStaticPage } from "../pages/HyperCommands-pages/softwareInstallationStaticDashboardPage";
+import { RemoteConsoleDashboardComponent } from "../pages/Dashboard-pages/remoteConsoleDashboard";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -43,6 +44,12 @@ const PrivateRoutes = () => {
         <Route path="auth/*" element={<Navigate to="/dashboard" />} />
         {/* Pages */}
         <Route path="dashboard" element={<DashboardWrapper />} />
+
+        <Route
+          path="/dashboard/vnc/computer/:computerId/:computerIp"
+          element={<RemoteConsoleDashboardComponent />}
+        />
+
         <Route path="hyper-commands" element={<HyperCommandsWrapper />} />
         <Route
           path="hyper-commands/software-installation/:userId?"

@@ -1,29 +1,100 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SidebarMain } from "../../components/dashboard/sidebarMain";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
   activeDashboardViewAtom,
   selectedComputerDashboardAtom,
 } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { TicketsPage } from "../tickets-pages/TicketsPage";
-import { RemoteSSHPage } from "../HyperCommands-pages/remoteSSHServicePage";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import { SoftwareInstallationDashboard } from "./softwareInstallationDashboard";
 import { RemoteSSHDashboardComponent } from "./remoteSSHDashboard";
-import { RemoteConsoleDashboardComponent } from "./remoteConsoleDashboard";
+import { GetPrivateIPAddressAPI } from "../../config/ApiCalls";
+import { useNavigate } from "react-router-dom";
+import { OkButton } from "../../components/form/stepsButton";
 
-const RemoteConsoleiew = () => (
-  <div className="remote-ssh-view">
-    <h2>Remote Console</h2>
-    {/* Add SSH UI here */}
-  </div>
-);
+export interface PrivateIpSchema {
+  id: number;
+  private_ip_address: string;
+  mid: number;
+}
 
-const PerformanceView = () => (
-  <div className="remote-ssh-view">
-    <h2>Performance</h2>
-  </div>
-);
+const RemoteConsoleView = () => {
+  const [privateIps, setPrivateIps] = useState<PrivateIpSchema[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const selectedComputerId = useAtomValue(selectedComputerDashboardAtom);
+
+  useEffect(() => {
+    const fetchPrivateIps = async () => {
+      try {
+        const response = await GetPrivateIPAddressAPI();
+        setPrivateIps(response.data);
+      } catch (error) {
+        console.error("Failed to fetch private IP addresses:", error);
+      }
+    };
+
+    fetchPrivateIps();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedComputerId || privateIps.length === 0) return;
+
+    const matchingIp = privateIps.find((ip) => ip.mid === selectedComputerId);
+
+    if (!matchingIp) {
+      setShowModal(true);
+    } else {
+      navigate(
+        `/dashboard/vnc/computer/${selectedComputerId}/${matchingIp.private_ip_address}`
+      );
+    }
+  }, [privateIps, selectedComputerId, navigate]);
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    navigate("/dashboard");
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+      setShowModal(false);
+    }
+  };
+
+  return (
+    <>
+      {showModal && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          onClick={handleBackdropClick}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered" ref={dialogRef}>
+            <div className="modal-content">
+              <div className="modal-header border-0">
+                <h5 className="modal-title">Remote Console Error</h5>
+              </div>
+              <div className="modal-body">
+                <p>
+                  You cannot connect to the remote console on this computer
+                  because no private IP address is available.
+                </p>
+              </div>
+              <div className="modal-footer border-0">
+                <OkButton onClick={handleModalClose} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
 const ScreenshotsView = () => (
   <div className="remote-ssh-view">
@@ -70,9 +141,7 @@ const MainDashboard = () => {
       case "remote-ssh":
         return <RemoteSSHDashboardComponent />;
       case "remote-console":
-        return <RemoteConsoleDashboardComponent />;
-      case "performance":
-        return <PerformanceView />;
+        return <RemoteConsoleView />;
       case "screenshots":
         return <ScreenshotsView />;
       case "camera-picture":
