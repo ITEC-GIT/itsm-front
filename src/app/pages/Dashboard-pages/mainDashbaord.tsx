@@ -9,6 +9,8 @@ import { TicketsPage } from "../tickets-pages/TicketsPage";
 import { RemoteSSHPage } from "../HyperCommands-pages/remoteSSHServicePage";
 import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import { SoftwareInstallationDashboard } from "./softwareInstallationDashboard";
+import { RemoteSSHDashboardComponent } from "./remoteSSHDashboard";
+import { RemoteConsoleDashboardComponent } from "./remoteConsoleDashboard";
 
 const RemoteConsoleiew = () => (
   <div className="remote-ssh-view">
@@ -66,9 +68,9 @@ const MainDashboard = () => {
           <SoftwareInstallationDashboard computerIdProp={selctedDeviceAtom} />
         );
       case "remote-ssh":
-        return <RemoteSSHPage computerIdProp={selctedDeviceAtom} />;
+        return <RemoteSSHDashboardComponent />;
       case "remote-console":
-        return <RemoteConsoleiew />;
+        return <RemoteConsoleDashboardComponent />;
       case "performance":
         return <PerformanceView />;
       case "screenshots":

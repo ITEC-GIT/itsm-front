@@ -6,7 +6,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { GetComputer } from "../../config/ApiCalls";
 import { GetComputerResponseType } from "../../types/dashboard";
-import { Tooltip } from "bootstrap";
+// import { Tooltip } from "bootstrap";
 
 const debounce = (func: Function, wait: number) => {
   let timeout: NodeJS.Timeout;
@@ -63,12 +63,12 @@ const SidebarMain = () => {
     }
   };
 
-  useEffect(() => {
-    const tooltipTriggerList = document.querySelectorAll(
-      '[data-bs-toggle="tooltip"]'
-    );
-    tooltipTriggerList.forEach((tooltipEl) => new Tooltip(tooltipEl));
-  }, []);
+  // useEffect(() => {
+  //   const tooltipTriggerList = document.querySelectorAll(
+  //     '[data-bs-toggle="tooltip"]'
+  //   );
+  //   tooltipTriggerList.forEach((tooltipEl) => new Tooltip(tooltipEl));
+  // }, []);
 
   useEffect(() => {
     fetchComputer();
