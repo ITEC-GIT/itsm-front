@@ -13,6 +13,7 @@ import { useAtom } from "jotai";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { FilterValue } from "../../types/filtersAtomType";
 import { customStyles } from "../../data/multiSelect";
+import { CustomReactSelect } from "./custom-react-select";
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -28,7 +29,7 @@ interface FiltersTitleProps {
   id: string;
   name: string;
   AtomKey: string;
-  data: { value: string; label: string }[];
+  data: { value: number; label: string }[];
 }
 
 const filtersOptions: FiltersTitleProps[] = [
@@ -64,7 +65,7 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
   const [selectedFilters, setSelectedFilters] = useState<
-    Record<string, FilterValue[]>
+    Record<string, { value: number; label: string }[]>
   >({});
 
   const [startDate, setStartDate] = useState<string>("");
@@ -130,7 +131,12 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
   ) => {
     setSelectedFilters((prevState) => ({
       ...prevState,
-      [filterId]: selectedOption ? [...selectedOption] : [],
+      [filterId]: selectedOption
+        ? selectedOption.map((option) => ({
+            value: Number(option.value), // Force number type
+            label: option.label,
+          }))
+        : [],
     }));
   };
 
@@ -240,7 +246,7 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
 
             newFilterData[filter.id] = Array.isArray(sourceData)
               ? sourceData.map((item) => ({
-                  value: ("id" in item ? item.id?.toString() : "") || "",
+                  value: ("id" in item ? Number(item.id) : 0) || 0,
                   label:
                     "label" in item
                       ? item.label.toLowerCase()
@@ -286,7 +292,7 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
                 (item: FilterValue) => Number(item.value) === Number(val)
               )
             )
-            .filter(Boolean);
+            .filter(Boolean) as FilterValue[];
 
           if (selected.length > 0) {
             initializedFilters[filterOption.id] = selected;
@@ -294,7 +300,20 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
         }
       });
 
-      setSelectedFilters(initializedFilters);
+      // Proper mapping here
+      const mappedInitializedFilters: Record<
+        string,
+        { value: number; label: string }[]
+      > = {};
+
+      Object.entries(initializedFilters).forEach(([key, values]) => {
+        mappedInitializedFilters[key] = values.map((item) => ({
+          value: Number(item.value),
+          label: item.label,
+        }));
+      });
+
+      setSelectedFilters(mappedInitializedFilters);
     }
   }, [isOpen, filterData, filters]);
 
@@ -329,17 +348,14 @@ const FilterSidebarMulti: React.FC<FilterSidebarProps> = ({
                     </div>
                   </>
                 ) : filterData[filter.id] ? (
-                  <Select<FilterValue, true>
+                  <CustomReactSelect
                     options={filterData[filter.id]}
                     value={selectedFilters[filter.id] || []}
                     onChange={(selectedOption) =>
                       handleFilterChange(filter.id, selectedOption)
                     }
                     isMulti={true}
-                    classNamePrefix="react-select"
                     placeholder={`Select ${filter.name}`}
-                    closeMenuOnSelect={false}
-                    styles={customStyles}
                   />
                 ) : (
                   <p className="text-muted">Loading...</p>

@@ -13,6 +13,7 @@ import {
 import { useAtom } from "jotai";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { FilterType } from "../../types/common";
+import { CustomReactSelect } from "./custom-react-select";
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -73,7 +74,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
   const [filterData, setFilterData] = useState<Record<string, any>>({});
   const [selectedFilters, setSelectedFilters] = useState<
-    Record<string, { value: string; label: string } | null>
+    Record<string, { value: number; label: string } | null>
   >({});
 
   const [startDate, setStartDate] = useState<string>("");
@@ -138,7 +139,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
   const handleFilterChange = (
     filterId: string,
-    selectedOption: { value: string; label: string } | null
+    selectedOption: { value: number; label: string } | null
   ) => {
     setSelectedFilters((prevState) => ({
       ...prevState,
@@ -252,7 +253,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
             newFilterData[filter.id] = Array.isArray(sourceData)
               ? sourceData.map((item) => ({
-                  value: ("id" in item ? item.id?.toString() : "") || "",
+                  value: ("id" in item ? Number(item.id) : 0) || 0,
                   label:
                     "label" in item
                       ? item.label.toLowerCase()
@@ -306,17 +307,15 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     </div>
                   </>
                 ) : filterData[filter.id] ? (
-                  <Select
+                  <CustomReactSelect
                     options={filterData[filter.id]}
                     placeholder={`Select ${filter.name}`}
-                    // className="form-select-solid"
-                    classNamePrefix="react-select"
                     value={selectedFilters[filter.id] ?? null}
                     onChange={(selectedOption) =>
                       handleFilterChange(
                         filter.id,
                         selectedOption as {
-                          value: string;
+                          value: number;
                           label: string;
                         } | null
                       )
