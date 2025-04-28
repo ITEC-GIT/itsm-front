@@ -60,7 +60,7 @@ const TerminalDisplay: React.FC<TerminalDisplayProps> = ({ sessionId }) => {
     <div
       ref={terminalRef}
       style={{
-        height: "450px",
+        height: "100%",
         width: "100%",
         backgroundColor: "#1e1e1e",
         padding: "8px",

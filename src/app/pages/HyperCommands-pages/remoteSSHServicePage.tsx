@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons.tsx";
 import { TerminalDisplay } from "../../components/Remote SSH/terminalDisplay.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
@@ -14,6 +14,16 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [userError, setUserError] = useState(false);
   const [passError, setPassError] = useState(false);
   const [hostError, setHostError] = useState(false);
+
+  const divRef = useRef<HTMLDivElement>(null);
+  const [divHeight, setDivHeight] = useState<number>(800);
+
+  useEffect(() => {
+    if (divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
+      setDivHeight(Math.round(rect.height));
+    }
+  }, [divRef.current]);
 
   const handleReset = () => {
     setPort(22);
@@ -79,7 +89,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
         >
           <div className="col-12">
             {!computerIdProp && (
-              <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-between" ref={divRef}>
                 <h2 className="text-center mb-4">🔐 Remote SSH</h2>
                 <ActionIcons />
               </div>
@@ -199,7 +209,13 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                 </div>
               </div>
             ) : (
-              <TerminalDisplay sessionId={sessionId} />
+              <div
+                style={{
+                  height: `calc(100vh - var(--bs-app-header-height) - 20px - 20px - ${divHeight}px)`,
+                }}
+              >
+                <TerminalDisplay sessionId={sessionId} />
+              </div>
             )}
           </div>
         </div>
