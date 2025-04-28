@@ -36,7 +36,7 @@ const AssetsPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(15);
 
   useEffect(() => {
     const processedAssetsData = assetsData.map((item) => ({
