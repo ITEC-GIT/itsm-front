@@ -7,6 +7,7 @@ interface Assignee {
     id: number;
     name: string;
     avatar?: string;
+    assigner?: any;
   }
 interface ImageUploadData {
     base64: string;

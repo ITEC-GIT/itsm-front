@@ -65,7 +65,7 @@ const AssigneeAvatarsCard: React.FC<AssigneeAvatarsProps> = ({ assignees, maxCou
                             }}
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            title={assignee.name}
+                            title={assignee?.assigner?.user_name || assignee?.name}
                         >
                             {getInitials(assignee?.assigner?.user_name || assignee?.name)}
                         </div>

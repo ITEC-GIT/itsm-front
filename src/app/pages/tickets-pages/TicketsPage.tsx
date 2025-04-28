@@ -1294,10 +1294,18 @@ const TicketsPage: React.FC = () => {
                         value: string;
                     }) => option.label === "assigned") || {value: "", label: ""};
                 }
-
+                const new_assignees: Assignee[] = Array.isArray(ticketChangeAssigneenOn.assigneeNewData)
+                    ? ticketChangeAssigneenOn.assigneeNewData.map((item2: Assignee) => ({
+                        id: item2.id,
+                        name: item2.name || "",
+                        assigner: {
+                            user_name: item2.name || "",
+                        },
+                    }))
+                    : [];
                 const newTicket = {
                     ...updatedTicket,
-                    assignees: ticketChangeAssigneenOn.assigneeNewData,
+                    assignees:new_assignees,
                     status: status.value,
                     status_label: status.label
                 };
