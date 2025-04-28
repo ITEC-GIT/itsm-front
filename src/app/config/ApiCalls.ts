@@ -539,10 +539,13 @@ async function GetUsersAndAreas() {
         .catch((error: any) => errorCatch(error));
 }
 
-async function PostReplyImages(formData: any) {
+async function PostReplyImages(formData: any, filetype: string) {
     try {
         const nginxServer = import.meta.env.VITE_APP_ITSM_NGINX_IMAGES_URL;
-        const response = await fetch(`${nginxServer}/upload-image`, {
+        const url = new URL(`${nginxServer}/upload-image`);
+        url.searchParams.append('filetype', filetype);
+
+        const response = await fetch(url.toString(), {
             method: "POST",
             body: formData,
         });
