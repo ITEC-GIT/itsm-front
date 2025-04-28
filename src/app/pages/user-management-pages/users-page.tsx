@@ -58,7 +58,7 @@ const UsersPage = () => {
   };
 
   const handleSaveUser = (newOrUpdatedUser: any) => {
-    console.log("newOrUpdatedUser", newOrUpdatedUser);
+   
     const newUserData: UserType = {
       id: newOrUpdatedUser.id,
       name: newOrUpdatedUser.name,

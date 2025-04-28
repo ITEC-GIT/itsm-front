@@ -24,6 +24,7 @@ import {
 } from "../../data/softwareInstallation.tsx";
 import { customStyles, sortIcon } from "../../data/dataTable.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+import { WizardStatic } from "../../components/form/wizardStatic.tsx";
 
 const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
@@ -521,7 +522,7 @@ const SoftwareInstallationStaticPage = ({
                       maxHeight: "100%",
                     }}
                   >
-                    <Wizard
+                    <WizardStatic
                       steps={steps}
                       add={setPaginatedHistory}
                       idgt={getGreatestId(paginatedHistory) ?? 0}
