@@ -103,7 +103,7 @@ export type UserPrerequisitesType = {
   }[];
   roles: {
     id: number;
-    role_name: string;
+    name: string;
   }[];
   groups: {
     id: number;

@@ -452,15 +452,10 @@ async function GetComputer(id: number) {
     .catch((error: any) => errorCatch(error));
 }
 
-async function GetPrivateIPAddress(id: number) {
-  return await PrivateApiCall.get(`/AntComputerIP/`, {
-    params: {
-      get_hateoas: false,
-      order: "DESC",
-      "searchText[computers_id]": id,
-      range: "0-0",
-    },
-  })
+async function GetPrivateIPAddressAPI() {
+  return await PrivateApiCallFastApi.get(
+    `/inventories/computer/get_private_ip_latest`
+  )
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -715,7 +710,7 @@ export {
   UpdateStarred,
   UpdateTicket,
   fetchXSRFToken,
-  GetPrivateIPAddress,
+  GetPrivateIPAddressAPI,
   PostReplyImages,
   bulkDeleteImages,
   GetComputer,

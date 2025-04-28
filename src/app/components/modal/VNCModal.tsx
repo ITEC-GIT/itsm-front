@@ -1,21 +1,32 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ConnectButton } from "../form/stepsButton";
+import { useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
+import { CustomReactSelect } from "../form/custom-react-select";
+import { SelectDeviceType } from "../../types/devicesTypes";
+import { BasicType } from "../../types/common";
+import { StaticDataType } from "../../types/filtersAtomType";
+import { GetPrivateIPAddressAPI } from "../../config/ApiCalls";
 
 interface RemoteConsoleModalProps {
   onClose: () => void;
   onConnect: () => void;
   connectionInfo: {
-    userId: string;
-    vncIp: string;
-    vncUrl: string;
+    computerId: number;
+    computerIp: string;
   };
   setConnectionInfo: React.Dispatch<
     React.SetStateAction<{
-      userId: string;
-      vncIp: string;
-      vncUrl: string;
+      computerId: number;
+      computerIp: string;
     }>
   >;
+}
+
+export interface PrivateIpSchema {
+  id: number;
+  private_ip_address: string;
+  mid: number;
 }
 
 const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
@@ -25,53 +36,27 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
   setConnectionInfo,
 }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
 
-  const [userIdError, setUserIdError] = useState(false);
-  const [vncIpError, setVncIpError] = useState(false);
-  const [vncUrlError, setVncUrlError] = useState(false);
+  const [privateIps, setPrivateIps] = useState<PrivateIpSchema[]>([]);
+  const [selectedDevice, setSelectedDevice] = useState<BasicType | null>(null);
+
+  const [deviceError, setDeviceError] = useState(false);
+
+  const compOptions = (staticData.computers || [])
+    .filter((device) => privateIps.some((ip) => ip.mid === device.id))
+    .map((device) => ({
+      value: device.id ? Number(device.id) : 0,
+      label: device.name || "",
+    }));
 
   const handleConnectClick = () => {
-    let hasError = false;
-
-    if (!connectionInfo.userId.trim()) {
-      setUserIdError(true);
-      hasError = true;
+    if (!connectionInfo.computerId) {
+      setDeviceError(true);
     } else {
-      setUserIdError(false);
-    }
-
-    if (!connectionInfo.vncIp.trim()) {
-      setVncIpError(true);
-      hasError = true;
-    } else {
-      setVncIpError(false);
-    }
-
-    if (!connectionInfo.vncUrl.trim()) {
-      setVncUrlError(true);
-      hasError = true;
-    } else {
-      setVncUrlError(false);
-    }
-
-    if (!hasError) {
+      setDeviceError(false);
       onConnect();
     }
-  };
-
-  const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConnectionInfo((prev) => ({ ...prev, userId: e.target.value }));
-    if (userIdError) setUserIdError(false);
-  };
-
-  const handleVncIpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConnectionInfo((prev) => ({ ...prev, vncIp: e.target.value }));
-    if (vncIpError) setVncIpError(false);
-  };
-
-  const handleVncUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConnectionInfo((prev) => ({ ...prev, vncUrl: e.target.value }));
-    if (vncUrlError) setVncUrlError(false);
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -79,6 +64,46 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
       onClose();
     }
   };
+
+  const handleDeviceChange = (selectedOption: any) => {
+    setDeviceError(false);
+
+    if (selectedOption) {
+      const selectedComputerId = Number(selectedOption.value);
+      const selectedIp = privateIps.find((ip) => ip.mid === selectedComputerId);
+
+      setSelectedDevice({
+        id: selectedComputerId,
+        name: selectedOption.label,
+      });
+
+      setConnectionInfo((prev: any) => ({
+        ...prev,
+        computerId: selectedComputerId,
+        computerIp: selectedIp?.private_ip_address || "",
+      }));
+    } else {
+      setSelectedDevice(null);
+      setConnectionInfo((prev: any) => ({
+        ...prev,
+        computerId: null,
+        computerIp: "",
+      }));
+    }
+  };
+
+  useEffect(() => {
+    const fetchPrivateIps = async () => {
+      try {
+        const response = await GetPrivateIPAddressAPI();
+        setPrivateIps(response.data); // assuming response.data is PrivateIpSchema[]
+      } catch (error) {
+        console.error("Failed to fetch private IP addresses:", error);
+      }
+    };
+
+    fetchPrivateIps();
+  }, []);
 
   return (
     <div
@@ -96,18 +121,25 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
           <div className="modal-body">
             <div className="mb-3" style={{ height: "85px" }}>
               <label htmlFor="userId" className="form-label required">
-                User ID
+                Computer
               </label>
-              <input
-                type="text"
-                className="form-control"
-                id="userId"
-                value={connectionInfo.userId}
-                onChange={handleUserIdChange}
-                placeholder="Enter User ID"
-                required
+              <CustomReactSelect
+                options={compOptions}
+                value={
+                  selectedDevice
+                    ? {
+                        value: selectedDevice.id
+                          ? Number(selectedDevice.id)
+                          : 0,
+                        label: selectedDevice.name || "",
+                      }
+                    : null
+                }
+                onChange={handleDeviceChange}
+                placeholder="Select Device"
+                isClearable={false}
               />
-              {userIdError && (
+              {deviceError && (
                 <small className="text-danger" style={{ fontSize: "0.875rem" }}>
                   User ID is required.
                 </small>
@@ -121,35 +153,10 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
                 type="text"
                 className="form-control"
                 id="vncIp"
-                value={connectionInfo.vncIp}
-                placeholder="Enter VNC IP"
-                onChange={handleVncIpChange}
-                required
+                value={connectionInfo.computerIp}
+                placeholder="VNC IP"
+                readOnly
               />
-              {vncIpError && (
-                <small className="text-danger" style={{ fontSize: "0.875rem" }}>
-                  VNC IP is required.
-                </small>
-              )}
-            </div>
-            <div className="mb-3" style={{ height: "85px" }}>
-              <label htmlFor="vncUrl" className="form-label required">
-                VNC URL
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="vncUrl"
-                value={connectionInfo.vncUrl}
-                placeholder="Enter VNC URL"
-                onChange={handleVncUrlChange}
-                required
-              />
-              {vncUrlError && (
-                <small className="text-danger" style={{ fontSize: "0.875rem" }}>
-                  VNC URL is required.
-                </small>
-              )}
             </div>
           </div>
           <div className="modal-footer border-0">

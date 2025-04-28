@@ -15,6 +15,7 @@ export default defineConfig({
   base: process.env.VITE_BASE_URL || "/",
   build: {
     chunkSizeWarningLimit: 3000,
+    target: "es2022",
   },
   optimizeDeps: {
     include: ["xlsx", "file-saver"],

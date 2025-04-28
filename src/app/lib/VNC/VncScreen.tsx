@@ -5,7 +5,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import RFB, { NoVncEventType, NoVncEvents, NoVncOptions } from "@novnc/novnc";
+import RFB, {
+  NoVncEventType,
+  NoVncEvents,
+  NoVncOptions,
+} from "@novnc/novnc/lib/rfb";
 
 type EventListeners = {
   [T in NoVncEventType]?: (event: NoVncEvents[T]) => void;
