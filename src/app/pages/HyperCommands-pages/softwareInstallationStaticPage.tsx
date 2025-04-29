@@ -30,7 +30,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 1,
     software: "Visual Studio Code",
-    computer_name: "DEV-PC-001",
+    computer_name: "salameh-pc",
     url: "https://code.visualstudio.com/",
     destination: "C:\\Programs",
     arguments: "",
@@ -41,7 +41,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 2,
     software: "Node.js",
-    computer_name: "DEV-PC-002",
+    computer_name: "salameh-pc",
     url: "https://nodejs.org/",
     destination: "C:\\Programs",
     arguments: "/S",
@@ -52,7 +52,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 3,
     software: "Google Chrome",
-    computer_name: "DEV-PC-003",
+    computer_name: "salameh-pc",
     url: "https://www.google.com/chrome/",
     destination: "C:\\Apps",
     arguments: "--silent",
@@ -63,7 +63,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 4,
     software: "Slack",
-    computer_name: "DEV-PC-004",
+    computer_name: "salameh-pc",
     url: "https://slack.com/",
     destination: "C:\\Apps",
     arguments: "",
@@ -74,7 +74,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 5,
     software: "Zoom",
-    computer_name: "DEV-PC-005",
+    computer_name: "salameh-pc",
     url: "https://zoom.us/",
     destination: "C:\\Conference",
     arguments: "",
@@ -96,7 +96,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 7,
     software: "Docker",
-    computer_name: "DEV-PC-006",
+    computer_name: "salameh-pc",
     url: "https://www.docker.com/",
     destination: "C:\\DevTools",
     arguments: "/S",
@@ -107,7 +107,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 8,
     software: "Figma",
-    computer_name: "DESIGN-PC-001",
+    computer_name: "salameh-pc",
     url: "https://www.figma.com/",
     destination: "C:\\Design",
     arguments: "",
@@ -118,7 +118,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 9,
     software: "Firefox",
-    computer_name: "DEV-PC-007",
+    computer_name: "salameh-pc",
     url: "https://www.mozilla.org/firefox/",
     destination: "C:\\Programs",
     arguments: "",
@@ -129,7 +129,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 10,
     software: "Notepad++",
-    computer_name: "DEV-PC-008",
+    computer_name: "DESKTOP-GM7E7MK",
     url: "https://notepad-plus-plus.org/",
     destination: "C:\\Tools",
     arguments: "",
@@ -140,7 +140,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 11,
     software: "MySQL Workbench",
-    computer_name: "DB-PC-001",
+    computer_name: "srv-39.bishop.biz",
     url: "https://www.mysql.com/products/workbench/",
     destination: "C:\\DBTools",
     arguments: "",
@@ -151,7 +151,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 12,
     software: "Tableau",
-    computer_name: "BI-PC-001",
+    computer_name: "srv-39.bishop.biz",
     url: "https://www.tableau.com/",
     destination: "C:\\BI",
     arguments: "",
@@ -162,7 +162,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 13,
     software: "Git",
-    computer_name: "DEV-PC-009",
+    computer_name: "DESKTOP-GM7E7MK",
     url: "https://git-scm.com/",
     destination: "C:\\DevTools",
     arguments: "/S",
@@ -173,7 +173,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 14,
     software: "PyCharm",
-    computer_name: "DEV-PC-010",
+    computer_name: "DESKTOP-GM7E7MK",
     url: "https://www.jetbrains.com/pycharm/",
     destination: "C:\\IDE",
     arguments: "",
@@ -184,7 +184,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 15,
     software: "Android Studio",
-    computer_name: "MOBILE-PC-001",
+    computer_name: "srv-39.bishop.biz",
     url: "https://developer.android.com/studio",
     destination: "C:\\MobileDev",
     arguments: "/S",
@@ -195,7 +195,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 16,
     software: "Jira",
-    computer_name: "MGMT-PC-001",
+    computer_name: "DESKTOP-M3P39LF",
     url: "https://www.atlassian.com/software/jira",
     destination: "C:\\Management",
     arguments: "",
@@ -206,7 +206,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 17,
     software: "Confluence",
-    computer_name: "MGMT-PC-002",
+    computer_name: "DESKTOP-M3P39LF",
     url: "https://www.atlassian.com/software/confluence",
     destination: "C:\\Docs",
     arguments: "",
@@ -217,7 +217,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 18,
     software: "XAMPP",
-    computer_name: "DEV-PC-011",
+    computer_name: "DESKTOP-GM7E7MK",
     url: "https://www.apachefriends.org/index.html",
     destination: "C:\\DevTools",
     arguments: "/quiet",
@@ -228,7 +228,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 19,
     software: "VS 2019",
-    computer_name: "DEV-PC-012",
+    computer_name: "DESKTOP-GM7E7MK",
     url: "https://visualstudio.microsoft.com/",
     destination: "C:\\IDE",
     arguments: "/quiet",
@@ -239,7 +239,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 20,
     software: "OBS Studio",
-    computer_name: "MEDIA-PC-001",
+    computer_name: "DESKTOP-M3P39LF",
     url: "https://obsproject.com/",
     destination: "C:\\Media",
     arguments: "",
@@ -250,7 +250,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 21,
     software: "Discord",
-    computer_name: "SOCIAL-PC-001",
+    computer_name: "DESKTOP-M3P39LF",
     url: "https://discord.com/",
     destination: "C:\\Social",
     arguments: "",
@@ -261,7 +261,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 22,
     software: "Skype",
-    computer_name: "COMM-PC-001",
+    computer_name: "DESKTOP-M3P39LF",
     url: "https://www.skype.com/",
     destination: "C:\\Comm",
     arguments: "",
@@ -272,7 +272,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 23,
     software: "VS Code Insiders",
-    computer_name: "DEV-PC-013",
+    computer_name: "lt-23.short-barry.com",
     url: "https://code.visualstudio.com/insiders/",
     destination: "C:\\Programs",
     arguments: "--install",
@@ -283,7 +283,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 24,
     software: "WebStorm",
-    computer_name: "JS-PC-001",
+    computer_name: "lt-23.short-barry.com",
     url: "https://www.jetbrains.com/webstorm/",
     destination: "C:\\IDE",
     arguments: "",
@@ -294,7 +294,7 @@ const staticSoftwareHistoryData: SoftwareHistoryType[] = [
   {
     id: 25,
     software: "Bitbucket",
-    computer_name: "MGMT-PC-003",
+    computer_name: "lt-23.short-barry.com",
     url: "https://bitbucket.org/",
     destination: "C:\\Repos",
     arguments: "",
@@ -385,20 +385,51 @@ const SoftwareInstallationStaticPage = ({
   }, 100);
 
   const filteredHistory = useMemo(() => {
-    if (!searchQuery.trim()) return paginatedHistory;
-    const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
-    return paginatedHistory.filter((entry: SoftwareHistoryType) =>
-      keywords.every(
-        (keyword) =>
-          entry.software.toLowerCase().includes(keyword) ||
-          entry.computer_name?.toLowerCase().includes(keyword) ||
-          entry.url.toLowerCase().includes(keyword) ||
-          entry.status.toLowerCase().includes(keyword) ||
-          entry.destination.toLowerCase().includes(keyword) ||
-          entry.user_name.toString().toLowerCase().includes(keyword)
-      )
-    );
-  }, [searchQuery, paginatedHistory]);
+    console.log(filters);
+    let history = paginatedHistory;
+
+    if (filters?.status) {
+      history = history.filter(
+        (entry) => entry.status.toLowerCase() === filters.status!.toLowerCase()
+      );
+    }
+
+    if (filters?.computer_name) {
+      history = history.filter(
+        (entry) =>
+          entry.computer_name.toLowerCase() ===
+          filters.computer_name?.toLowerCase()
+      );
+    }
+
+    if (filters?.date_from !== undefined) {
+      history = history.filter(
+        (entry) => new Date(entry.created_at) >= new Date(filters.date_from!)
+      );
+    }
+    if (filters?.date_to !== undefined) {
+      history = history.filter(
+        (entry) => new Date(entry.created_at) <= new Date(filters.date_to!)
+      );
+    }
+
+    if (searchQuery.trim()) {
+      const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
+      history = history.filter((entry: SoftwareHistoryType) =>
+        keywords.every(
+          (keyword) =>
+            entry.software.toLowerCase().includes(keyword) ||
+            entry.computer_name?.toLowerCase().includes(keyword) ||
+            entry.url.toLowerCase().includes(keyword) ||
+            entry.status.toLowerCase().includes(keyword) ||
+            entry.destination.toLowerCase().includes(keyword) ||
+            entry.user_name.toString().toLowerCase().includes(keyword)
+        )
+      );
+    }
+
+    return history;
+  }, [searchQuery, paginatedHistory, filters]);
 
   const totalPages = Math.ceil(filteredHistory.length / SoftwarePerPage);
   const totalPagess2 = Math.ceil(maxTotalSoftwares / SoftwarePerPage);

@@ -45,13 +45,25 @@ const filtersOptions: FiltersTitleProps[] = [
     data: [],
   },
   {
-    id: "userFilter",
+    id: "requestersFilter",
+    name: "User",
+    AtomKey: "requesters",
+    data: [],
+  },
+  {
+    id: "assigneesFilter",
     name: "User",
     AtomKey: "assignees",
     data: [],
   },
   {
     id: "computersFilter",
+    name: "Computer",
+    AtomKey: "computers",
+    data: [],
+  },
+  {
+    id: "computersNameFilter",
     name: "Computer",
     AtomKey: "computers",
     data: [],
@@ -95,6 +107,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         if (value) {
           if (key === "softwareStatusFilter") {
             filtersSelection.status = value.label;
+          } else if (key === "computersNameFilter") {
+            filtersSelection.computer_name = value.label;
           } else {
             const selectedFilter = filterData[key]?.find(
               (item: any) => item.label === value.label

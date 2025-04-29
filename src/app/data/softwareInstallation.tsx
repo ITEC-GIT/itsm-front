@@ -256,7 +256,7 @@ export const steps = [
 
 export const activeFilters = [
   "softwareStatusFilter",
-  "userFilter",
-  "computersFilter",
+  // "requestersFilter",
+  "computersNameFilter",
   "dateFilter",
 ];

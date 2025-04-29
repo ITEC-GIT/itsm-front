@@ -33,4 +33,7 @@ export type GetAllSoftwareInstallationRequestType = {
   date_to?: string;
   range?: string;
   idgt?: number;
+  assignee?: number;
+  requester?: number;
+  computer_name?: string;
 };
