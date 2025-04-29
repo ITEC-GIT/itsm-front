@@ -16,7 +16,7 @@ import AssigneeAvatarsCard from "./AvatarGroup.tsx";
 
 interface CardProps {
     id: string;
-    status: "solved" | "closed" | "pending" | "assigned" | "new" | "plan";
+    status: "Solved" | "Closed" | "Pending" | "Assigned" | "New" | "Planned";
     reply_unread?: boolean;
     title: string;
     description: string;
@@ -207,19 +207,20 @@ const TicketCard: React.FC<CardProps> = ({
                                 <span className="text-muted id-text">{id}</span>
                             </div>
                             <div className=" d-flex id-badge align-self-start align-content-center">
+
                 <span
                     className={`badgee text-uppercase text-white ${
-                        status === "solved"
+                        status === "Solved"
                             ? "badge-bg-solved"
-                            : status === "closed"
+                            : status === "Closed"
                                 ? "badge-bg-closed"
-                                : status === "pending"
+                                : status === "Pending"
                                     ? "bg-warning"
-                                    : status === "assigned"
+                                    : status === "Assigned"
                                         ? "badge-bg-assigned"
-                                        : status === "new"
+                                        : status === "New"
                                             ? "badge-bg-new"
-                                            : status === "plan"
+                                            : status === "Planned"
                                                 ? "bg-info"
                                                 : ""
                     }`}
@@ -416,16 +417,16 @@ const TicketCard: React.FC<CardProps> = ({
                         </div>
                     </div>
                 </div>
-                {reply_unread ? (
-                    <motion.span
-                        className="badge-reply-custom"
-                        initial={{opacity: 0, y: -10, scale: 0.8}}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
-                    >
-                        <img src={replybadge} alt="Reply Badge" />
-                    </motion.span>
-                ) : null}
+                {/*{reply_unread ? (*/}
+                {/*    <motion.span*/}
+                {/*        className="badge-reply-custom"*/}
+                {/*        initial={{opacity: 0, y: -10, scale: 0.8}}*/}
+                {/*        animate={{ opacity: 1, y: 0, scale: 1 }}*/}
+                {/*        transition={{ duration: 0.4, ease: "easeOut" }}*/}
+                {/*    >*/}
+                {/*        <img src={replybadge} alt="Reply Badge" />*/}
+                {/*    </motion.span>*/}
+                {/*) : null}*/}
 
 
             </div>

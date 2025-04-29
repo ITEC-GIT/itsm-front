@@ -76,7 +76,7 @@ const CustomFilterBackendDataDropdown: React.FC<
     () =>
       ItsmSlaves.map((item) => ({
         value: item.id,
-        label: item.name,
+        label: item.user_name,
       })),
     [ItsmSlaves]
   );
@@ -93,7 +93,7 @@ const CustomFilterBackendDataDropdown: React.FC<
     () =>
       ItsmMasters.map((item) => ({
         value: item.id,
-        label: item.name,
+        label: item.user_name,
       })),
     [ItsmMasters]
   );

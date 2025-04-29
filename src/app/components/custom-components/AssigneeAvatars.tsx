@@ -5,6 +5,7 @@ interface Assignee {
     id: number;
     name: string;
     avatar?: string;
+    assigner?:any
 }
 
 interface AssigneeAvatarsProps {
@@ -18,6 +19,9 @@ const AssigneeAvatars: React.FC<AssigneeAvatarsProps> = ({ assignees }) => {
     }, []);
 
     const getInitials = (name: string): string => {
+        if(name==null){
+            return 'u'
+        }
         const words = name.split(/[\s.]+/).filter(Boolean);
         return words.length > 1 ? words[0][0].toUpperCase() +""+ words[1][0].toUpperCase() : words[0][0].toUpperCase();
     };
@@ -54,12 +58,12 @@ const AssigneeAvatars: React.FC<AssigneeAvatarsProps> = ({ assignees }) => {
                             data-bs-placement="top"
                             title={assignee.name}
                         >
-                            {getInitials(assignee.name)}
+                            {getInitials(assignee?.name || assignee?.name)}
                         </div>
                     )}
 
                     {/* Initials next to Avatar */}
-                    <span style={{ fontSize: "14px", fontWeight: "bold" }}>{getInitials(assignee.name)}</span>
+                    <span style={{ fontSize: "14px", fontWeight: "bold" }}>{getInitials(assignee?.name || assignee?.name)}</span>
                 </div>
             ))}
         </div>

@@ -184,32 +184,34 @@ const TicketsDetailPage: React.FC = () => {
 
         let updatedEditorContent = editorContent;
 
-        const parseHtml = (html: string, imageMap: { base64: string; url: string }[]) => {
+
+        const parseHtml = (html: string, imageMap: { base64: string; url: string }[]): string => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
-            // Get all <img> tags
             const imgTags = doc.querySelectorAll('img');
 
             imgTags.forEach(img => {
                 const src = img.getAttribute('src');
+
                 if (src && src.startsWith('data:image')) {
-                    // const match = imageMap.find(item => src.startsWith(item.base64.substring(0, 30))); // Match using first 30 chars
-                    const match = imageMap.find(item => src.startsWith(item.base64.substring(0, 30)) && src === item.base64);
+                    // Try to find a match using the beginning of base64 string
+                    const match = imageMap.find(item => {
+                        const base64Start = item.base64.slice(0, 50); // Match with first 50 chars for better precision
+                        return src.startsWith(base64Start);
+                    });
 
                     if (match) {
-                        img.setAttribute('src', match.url); // Replace base64 with URL
+                        img.setAttribute('src', match.url);
                     }
                 }
             });
 
-            return doc.body.innerHTML; // Serialize modified HTML back to string
+            return doc.body.innerHTML;
         };
+        updatedEditorContent = parseHtml(editorContent, updatedImageMap);
 
-        updatedImageMap.forEach(item => {
-            updatedEditorContent = parseHtml(editorContent, updatedImageMap);
 
-        });
         // Update the state with the modified editor content
         setEditorModifiedContent(updatedEditorContent);
         const response = await SendRepliesAsync(ticket.id, updatedEditorContent);
@@ -309,7 +311,7 @@ const TicketsDetailPage: React.FC = () => {
                 <TicketCard
                     key={ticket.id}
                     id={ticket.id}
-                    status={ticket.status_label}
+                    status={ticket.status.label}
                     date={ticket.date}
                     title={ticket.name}
                     description={
@@ -320,19 +322,19 @@ const TicketsDetailPage: React.FC = () => {
                         name: ticket.users_recipient,
                     }} // Placeholder avatar
                     raisedBy={{
-                        name: ticket.users_recipient,
-                        initials: ticket?.users_recipient?.charAt(0),
+                        name: ticket.issuer.user_name,
+                        initials: ticket?.issuer?.user_name?.charAt(0),
                     }}
-                    priority={ticket.priority_label}
-                    type={ticket.type_label}
-                    urgency={ticket.urgency_label}
+                    priority={ticket.priority.label}
+                    type={ticket.type.label}
+                    urgency={ticket.urgency.label}
                     lastUpdate={ticket.date_mod}
-                    isStarred={ticket.starred} // Pass the pinned status
+                    isStarred={ticket.is_starred} // Pass the pinned status
                     isCurrentUserMaster={isCurrentUserMaster}
                     assignees={assigneesFiltered}
                     isDetailsPage={true}
-                />
 
+                />
 
                 <div className="updates-container">
                     <h1 className="updates-title">Ticket View</h1>
