@@ -16,11 +16,12 @@ const RemoteConsoleDashboardComponent = () => {
   const vncScreenRef = useRef<React.ElementRef<typeof VncScreen>>(null);
   const [websocketUrl, setWebSocketUrl] = useState<string>("");
   const setActiveView = useSetAtom(activeDashboardViewAtom);
+
   const handleEndSession = async () => {
     if (!computerId || !computerIp) return;
 
     try {
-      await fetch(`http://localhost:8004/vnc/disconnect`, {
+      await fetch(`http://127.0.0.1:8004/vnc/disconnect`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -49,6 +50,27 @@ const RemoteConsoleDashboardComponent = () => {
     }
   }, [computerId, computerIp, navigate]);
 
+  useEffect(() => {
+    const handleLaunchConsole = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8004/vnc/connect?user_id=${computerId}&vnc_ip=${computerIp}`
+        );
+        const data = await res.json();
+
+        if (data.websocket_url) {
+          setWebSocketUrl(data.websocket_url); // That's enough!
+        } else {
+          console.error("Failed to get WebSocket URL from backend");
+        }
+      } catch (error) {
+        console.error("Failed to launch console:", error);
+      }
+    };
+
+    handleLaunchConsole();
+  }, []);
+
   return (
     <AnimatedRouteWrapper>
       <div className="d-flex flex-column h-100">
@@ -58,18 +80,20 @@ const RemoteConsoleDashboardComponent = () => {
 
         <div className="flex-grow-1 p-2 d-flex">
           <div className="w-100 h-100">
-            <VncScreen
-              url={websocketUrl}
-              scaleViewport
-              background="#000000"
-              style={{ width: "100%", height: "100%" }}
-              debug
-              ref={vncScreenRef}
-              onDisconnect={(event: CustomEvent<{ clean: boolean }>) => {
-                handleEndSession();
-                setWebSocketUrl("");
-              }}
-            />
+            {websocketUrl && (
+              <VncScreen
+                url={websocketUrl}
+                scaleViewport
+                background="#000000"
+                style={{ width: "100%", height: "100%" }}
+                debug
+                ref={vncScreenRef}
+                onDisconnect={(event: CustomEvent<{ clean: boolean }>) => {
+                  handleEndSession();
+                  setWebSocketUrl("");
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
