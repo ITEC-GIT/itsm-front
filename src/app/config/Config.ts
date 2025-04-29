@@ -10,16 +10,16 @@ export const PrivateApiCall = axios.create({
   withCredentials: true,
 });
 export const PublicApiCallFastApi = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+    baseURL: import.meta.env.VITE_APP_ITSM_BACKEND_SERVICE,
 });
 
 export const PrivateApiCallFastApi = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
-export const ImageUploadApiCall = axios.create({
-  baseURL: "http://localhost:3007",
+    baseURL: import.meta.env.VITE_APP_ITSM_BACKEND_SERVICE,
 });
 
+export const ImageUploadApiCall = axios.create({
+    baseURL: import.meta.env.VITE_APP_ITSM_NGINX_IMAGES_URL,
+});
 export function getSessionTokenFromCookie() {
   const match = document.cookie.match(/access_token=([^;]+)/);
   return match ? match[1] : null;

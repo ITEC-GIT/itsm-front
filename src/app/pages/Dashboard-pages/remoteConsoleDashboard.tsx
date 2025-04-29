@@ -16,12 +16,13 @@ const RemoteConsoleDashboardComponent = () => {
   const vncScreenRef = useRef<React.ElementRef<typeof VncScreen>>(null);
   const [websocketUrl, setWebSocketUrl] = useState<string>("");
   const setActiveView = useSetAtom(activeDashboardViewAtom);
+  const base_vnc_url = import.meta.env.VITE_APP_ITSM_VNC;
 
   const handleEndSession = async () => {
     if (!computerId || !computerIp) return;
 
     try {
-      await fetch(`http://127.0.0.1:8004/vnc/disconnect`, {
+      await fetch(`${base_vnc_url}/vnc/disconnect`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -53,8 +54,10 @@ const RemoteConsoleDashboardComponent = () => {
   useEffect(() => {
     const handleLaunchConsole = async () => {
       try {
+        const vncServiceBaseUrl = import.meta.env.VITE_APP_ITSM_VNC;
+
         const res = await fetch(
-          `http://localhost:8004/vnc/connect?user_id=${computerId}&vnc_ip=${computerIp}`
+            `${vncServiceBaseUrl}/vnc/connect?user_id=${computerId}&vnc_ip=${computerIp}`
         );
         const data = await res.json();
 

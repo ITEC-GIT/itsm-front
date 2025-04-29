@@ -27,8 +27,10 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
 
   const handleLaunchConsole = async () => {
     try {
+      const vncServiceBaseUrl = import.meta.env.VITE_APP_ITSM_VNC;
+
       const res = await fetch(
-        `http://localhost:8004/vnc/connect?user_id=${connectionInfo.computerId}&vnc_ip=${connectionInfo.computerIp}`
+          `${vncServiceBaseUrl}/vnc/connect?user_id=${connectionInfo.computerId}&vnc_ip=${connectionInfo.computerIp}`
       );
       const data = await res.json();
 
@@ -54,7 +56,9 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
     if (!connectionInfo.computerId || !connectionInfo.computerIp) return;
 
     try {
-      await fetch(`http://localhost:8004/vnc/disconnect`, {
+      const vncServiceBaseUrl = import.meta.env.VITE_APP_ITSM_VNC;
+
+      await fetch(`${vncServiceBaseUrl}/vnc/disconnect`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

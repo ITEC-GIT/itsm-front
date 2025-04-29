@@ -8,7 +8,12 @@ const useWebSocket = (userId: number, token: string) => {
         if (!userId || !token) return;
 
         // Attach Bearer Token as a query parameter
-        const ws = new WebSocket(`ws://localhost:8000/tickets_unprotected/ws/${userId}?token=${token}`);
+        const backendBaseUrl = import.meta.env.VITE_APP_ITSM_BACKEND_SERVICE;
+
+// Remove http:// or https:// if it exists (because WebSocket needs just host:port)
+        const backendHost = backendBaseUrl.replace(/^https?:\/\//, '');
+
+        const ws = new WebSocket(`ws://${backendHost}/tickets_unprotected/ws/${userId}?token=${token}`);
 
         ws.onopen = () => console.log("✅ WebSocket Connected");
 

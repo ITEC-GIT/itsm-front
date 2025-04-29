@@ -25,9 +25,11 @@ const TerminalDisplay: React.FC<TerminalDisplayProps> = ({ sessionId }) => {
     term.current.loadAddon(fitAddon.current);
     term.current.open(terminalRef.current);
     fitAddon.current.fit();
+    const base_ssh_url=import.meta.env.VITE_APP_ITSM_SSH;
+    const base_ssh_url_webscoket = base_ssh_url.replace(/^https?:\/\//, '');
 
     const ws = new WebSocket(
-      `ws://127.0.0.1:8002/ws/ssh?session_id=${sessionId}`
+        `ws://${base_ssh_url_webscoket}/ws/ssh?session_id=${sessionId}`
     );
     wsRef.current = ws;
 
