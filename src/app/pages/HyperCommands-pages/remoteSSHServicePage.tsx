@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons.tsx";
 import { TerminalDisplay } from "../../components/Remote SSH/terminalDisplay.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+import { DisconnectButton } from "../../components/form/stepsButton.tsx";
 
 const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -16,7 +17,17 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [hostError, setHostError] = useState(false);
 
   const divRef = useRef<HTMLDivElement>(null);
-  const [divHeight, setDivHeight] = useState<number>(800);
+  const [divHeight, setDivHeight] = useState<number>(0);
+
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+      setErrorModalOpen(false);
+    }
+  };
 
   useEffect(() => {
     if (divRef.current) {
@@ -70,13 +81,40 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       const result = await response.json();
 
       if (!response.ok) {
-        console.error("Authentication failed:", result.detail);
+        setErrorMessage(result.detail || "Authentication failed.");
+        setErrorModalOpen(true);
         return;
       }
 
       setSessionId(result.session_id);
     } catch (error) {
-      console.error("Connection error:", error);
+      setErrorMessage("Connection error. Please try again.");
+      setErrorModalOpen(true);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    if (!sessionId) return;
+
+    try {
+      const response = await fetch("http://127.0.0.1:8002/kill/ssh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+
+      if (!response.ok) {
+        const result = await response.json();
+        setErrorMessage(result.detail || "Failed to disconnect.");
+        setErrorModalOpen(true);
+        return;
+      }
+
+      console.log("Session disconnected successfully.");
+      setSessionId(null);
+    } catch (error) {
+      setErrorMessage("Disconnect error. Please try again.");
+      setErrorModalOpen(true);
     }
   };
 
@@ -211,14 +249,55 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
             ) : (
               <div
                 style={{
-                  height: `calc(100vh - var(--bs-app-header-height) - 20px - 20px - ${divHeight}px)`,
+                  height: `calc(100vh - var(--bs-app-header-height) - 20px - 20px  - ${divHeight}px)`,
                 }}
               >
-                <TerminalDisplay sessionId={sessionId} />
+                <div className="d-flex flex-column gap-2 h-100">
+                  <div className="d-flex justify-content-end">
+                    <DisconnectButton onClick={handleDisconnect} />
+                  </div>
+                  <TerminalDisplay sessionId={sessionId} />
+                </div>
               </div>
             )}
           </div>
         </div>
+        {errorModalOpen && (
+          <div
+            className="modal fade show d-block"
+            tabIndex={-1}
+            role="dialog"
+            onClick={handleBackdropClick}
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
+            <div className="modal-dialog modal-dialog-centered" ref={dialogRef}>
+              <div className="modal-content">
+                <div className="modal-header border-0">
+                  <div className="d-flex gap-2 align-items-start">
+                    <i className="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+                    <h5
+                      className="modal-title text-danger mb-1"
+                      id="errorModalTitle"
+                    >
+                      Oops, something went wrong
+                    </h5>
+                  </div>
+                </div>
+                <div className="modal-body">
+                  <p>{errorMessage}</p>
+                </div>
+                <div className="modal-footer border-0">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => setErrorModalOpen(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AnimatedRouteWrapper>
   );

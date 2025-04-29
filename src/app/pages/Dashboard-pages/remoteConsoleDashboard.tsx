@@ -56,7 +56,6 @@ const RemoteConsoleDashboardComponent = () => {
           <DisconnectButton onClick={handleDisconnect} />
         </div>
 
-        {/* VNC Screen */}
         <div className="flex-grow-1 p-2 d-flex">
           <div className="w-100 h-100">
             <VncScreen
