@@ -11,7 +11,7 @@ const ComputerInfoComponent = ({ compData }: { compData: any }) => {
         <i className="bi bi-hdd me-2 type-icon"></i>
         <div className="d-flex flex-column w-100">
           <div className="d-flex  align-items-center gap-2">
-            <h3 className="mb-0">DESKTOP-1FEPMGR</h3>
+            <h3 className="mb-0">{compData.name}</h3>
             <span className="badge bg-success status-badge">ONLINE</span>
           </div>
 
@@ -30,11 +30,11 @@ const ComputerInfoComponent = ({ compData }: { compData: any }) => {
           <div className="d-flex  align-items-center gap-2 mt-2">
             <div>
               <i className="bi bi-geo-alt-fill location-icon"></i>
-              <span className="location-text">Lebanon - Beirut</span>
+              <span className="location-text">Angola - Luanda</span>
             </div>
             <div>
               <i className="bi bi-buildings location-icon"></i>
-              <span className="location-text">Hara</span>
+              <span className="location-text">Luanda</span>
             </div>
           </div>
         </div>

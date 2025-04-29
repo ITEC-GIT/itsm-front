@@ -113,7 +113,7 @@ const ToolbarMainDashboard = () => {
           value={selectedDevice}
           onChange={handleDeviceChange}
           placeholder="Select Device"
-          isClearable={false}
+          isClearable={true}
         />
       </div>
     </div>
