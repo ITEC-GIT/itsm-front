@@ -40,6 +40,18 @@ const SidebarMenuMain = () => {
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
+        to="/screenshots"
+        icon="switch"
+        title={t.screenshots}
+        fontIcon="bi-layers"
+      />
+      <SidebarMenuItem
+        to="/voicerecorder"
+        icon="switch"
+        title={t.voiceRecorder}
+        fontIcon="bi-layers"
+      />
+      <SidebarMenuItem
         to="/assets"
         icon="switch"
         title={t.assets}

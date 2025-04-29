@@ -13,7 +13,7 @@ const DatePicker = ({
     <div className="mb-3">
       <input
         type="date"
-        className="form-control"
+        className="form-control custom-date-input"
         id="date"
         value={date}
         onChange={handleDateChange}

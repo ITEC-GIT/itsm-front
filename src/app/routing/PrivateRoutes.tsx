@@ -26,6 +26,8 @@ import { SettingsPageWrapper } from "../pages/user-management-pages/settings-pag
 import { ComputerDetailsPageWrapper } from "../pages/Assets-pages/computerDetailsPage";
 import { SoftwareInstallationStaticPage } from "../pages/HyperCommands-pages/softwareInstallationStaticPage";
 import { RemoteConsoleDashboardComponent } from "../pages/Dashboard-pages/remoteConsoleDashboard";
+import { ScreenshotGallery } from "../pages/screenshots-page/screenshotsPage";
+import { VoiceRecordingsPage } from "../pages/voiceReorder-page/voiceRecorder";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -64,6 +66,8 @@ const PrivateRoutes = () => {
           path="hyper-commands/performance-monitoring"
           element={<PerformanceMonitoringPage />}
         />
+        <Route path="screenshots" element={<ScreenshotGallery />} />
+        <Route path="voicerecorder" element={<VoiceRecordingsPage />} />
         <Route path="/assets" element={<AssetsPageWrapper />} />
         <Route
           path="/assets/asset-details/:id/:hash"

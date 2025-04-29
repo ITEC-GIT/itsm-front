@@ -5,6 +5,8 @@
   "hyperCommands_ssh": "Remote SSH",
   "hyperCommands_vnc": "Remote Console",
   "assets": "Assets",
+  "screenshots": "Screenshots",
+  "voiceRecorder": "Voice Recorder",
   "ticketsSection": "Tickets",
   "allTickets": "All Tickets",
   "userManagement": "User Management",

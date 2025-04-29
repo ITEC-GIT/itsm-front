@@ -207,3 +207,12 @@
 .xterm {
   height: 100% !important;
 }
+
+//date picker
+.custom-date-input::placeholder {
+  color: red !important; //#4b5675;
+  font-size: 1rem !important;
+  opacity: 0.5 !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+}
