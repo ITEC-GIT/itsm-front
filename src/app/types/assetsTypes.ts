@@ -90,3 +90,34 @@ export interface FieldValues {
 export type GetAssetSoftwaresType = {
   computer?: number;
 };
+
+export interface PCDetailsType {
+  hardware: {
+    battery?: any[];
+    bios?: any[];
+    controller?: any[];
+    cpus?: any[];
+    drive?: any[];
+    hardware?: any[];
+    input?: any[];
+    memory?: any[];
+    modems?: any[];
+    monitor?: any[];
+    printer?: any[];
+    storage?: any[];
+    usbdevices?: any[];
+    version?: any[];
+  };
+  antivirus: {
+    antivirus?: any[];
+  };
+  network: {
+    network?: any[];
+  };
+  os: {
+    operatingsystem?: any[];
+  };
+  drive: {
+    drive?: any[];
+  };
+}

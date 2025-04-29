@@ -12,7 +12,7 @@ import ColumnsModal from "../../components/modal/columns.tsx";
 import { activeFilters, getColumns } from "../../data/assets.tsx";
 import { useNavigate } from "react-router-dom";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
-import { GetAssets } from "../../config/ApiCalls.ts";
+import { GetAssetsAPI } from "../../config/ApiCalls.ts";
 import { CircularSpinner } from "../../components/spinners/circularSpinner.tsx";
 import { FilterSidebarMulti } from "../../components/form/filtersWithMulti.tsx";
 import { FilterButton } from "../../components/form/filterButton.tsx";
@@ -312,7 +312,7 @@ const AssetsPage = () => {
 
         const mappedFilters = mapFilters(filters);
 
-        const data = await GetAssets(mappedFilters);
+        const data = await GetAssetsAPI(mappedFilters);
         if (data.status === 200) {
           setAssetsData(data.data.data);
           setError(null);

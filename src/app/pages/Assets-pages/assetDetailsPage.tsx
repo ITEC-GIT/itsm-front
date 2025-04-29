@@ -2,7 +2,7 @@ import { AssetDetails } from "../../types/assetsTypes";
 import { AssetInfoComponent } from "../../components/assets-details/assetInfo";
 import { BackButton } from "../../components/form/backButton";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
-import { GetAssets } from "../../config/ApiCalls";
+import { GetAssetsAPI } from "../../config/ApiCalls";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { capitalize } from "../../../utils/custom";
@@ -76,7 +76,7 @@ const AssetDetailsPage: React.FC = () => {
           asset_hash: hash ? [hash] : undefined,
         };
 
-        const response = await GetAssets(filters);
+        const response = await GetAssetsAPI(filters);
 
         if (response.status === 200 && response.data.data?.[0]) {
           setAsset(response.data.data[0]);

@@ -193,7 +193,7 @@ const ComputerTabsComponent: React.FC<{ devHeight: number; compData: any }> = ({
               id="tree"
               role="tabpanel"
             >
-              <AssetsTree/>
+              <AssetsTree />
             </div>
           </div>
         </div>

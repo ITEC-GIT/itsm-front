@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ComputerDetails } from "../../types/assetsTypes";
-
 import { BackButton } from "../../components/form/backButton";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { ComputerInfoComponent } from "../../components/assets-details/computerInfo";
 import { ComputerTabsComponent } from "../../components/assets-details/computerTabs";
-import { GetAssets } from "../../config/ApiCalls";
+import { GetAssetsAPI } from "../../config/ApiCalls";
 import { useAtom } from "jotai";
 import { selectedComputerInfoAtom } from "../../atoms/assets-atoms/assetAtoms";
+import { CircularSpinner } from "../../components/spinners/circularSpinner";
 
 const ComputerDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,10 +37,10 @@ const ComputerDetailsPage: React.FC = () => {
           computer_id: id ? [Number(id)] : undefined,
         };
 
-        const response = await GetAssets(filters);
+        const response = await GetAssetsAPI(filters);
         if (response.status === 200 && response.data.data?.[0]) {
           setComp(response.data.data[0]);
-          setSelectedComputerInfo(response.data.data);
+          setSelectedComputerInfo(response.data.data[0]);
         } else {
           navigate("/assets");
         }
@@ -63,10 +63,8 @@ const ComputerDetailsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="mt-5 d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+      <div className="mt-5 d-flex justify-content-center h-100 align-items-center">
+        <CircularSpinner />
       </div>
     );
   }
