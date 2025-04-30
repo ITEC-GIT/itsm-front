@@ -63,6 +63,7 @@ import {transformStaticData} from "../../../utils/dataTransformUtils.ts";
 import {string} from "yup";
 import {getMaxWords} from "./TicketUtils.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+import {CircularSpinner} from "../../components/spinners/circularSpinner.tsx";
 
 const TicketsPage: React.FC = () => {
     // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -458,20 +459,20 @@ const TicketsPage: React.FC = () => {
                             ? {
                                   ...ticket,
                                   urgency: {
-                                      id: updatedTicket.urgency?.value,
-                                      label: updatedTicket.urgency?.label,
+                                      id: ticketPerformingActionOn.urgency?.value,
+                                      label: ticketPerformingActionOn.urgency?.label,
                                   },
                                   priority: {
-                                      id: updatedTicket.priority?.value,
-                                      label: updatedTicket.priority?.label,
+                                      id: ticketPerformingActionOn.priority?.value,
+                                      label: ticketPerformingActionOn.priority?.label,
                                   },
                                   status: {
-                                      id: updatedTicket.status?.value,
-                                      label: updatedTicket.status?.label,
+                                      id: ticketPerformingActionOn.status?.value,
+                                      label: ticketPerformingActionOn.status?.label,
                                   },
                                   type: {
-                                      id: updatedTicket.type?.value,
-                                      label: updatedTicket.type?.label,
+                                      id: ticketPerformingActionOn.type?.value,
+                                      label: ticketPerformingActionOn.type?.label,
                                   },
                                   // You can update date_mod if you want
                                   date_mod: new Date().toISOString(),
@@ -1289,6 +1290,7 @@ const TicketsPage: React.FC = () => {
                         value: string;
                     }) => option.label === "Assigned") || {value: "", label: ""};
                 }
+                const statusNew={'value': status.value, 'label': status.label}
                 const new_assignees: Assignee[] = Array.isArray(ticketChangeAssigneenOn.assigneeNewData)
                     ? ticketChangeAssigneenOn.assigneeNewData.map((item2: Assignee) => ({
                         id: item2.id,
@@ -1299,8 +1301,7 @@ const TicketsPage: React.FC = () => {
                 const newTicket = {
                     ...updatedTicket,
                     assignees:new_assignees,
-                    status: status.value,
-                    status_label: status.label
+                    status: statusNew,
                 };
 
                 setTickets((prevTickets) =>
@@ -1327,12 +1328,8 @@ const TicketsPage: React.FC = () => {
                         <div className="d-flex flex-column justify-content-between">
                             {isDataLoading ? (
                                 <div className="spinner-wrapper">
-                                    <div
-                                        className="spinner-border spinner-loading-data"
-                                        role="status"
-                                    >
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
+                                    <CircularSpinner />
+
                                 </div>
                             ) : (
                                 paginatedTickets.map((ticket) => {

@@ -61,8 +61,8 @@ ENV VITE_APP_ITSM_BACKEND_SERVICE=http://cobalt.pulsar.ao:3008
 ENV VITE_APP_ITSM_NGINX_IMAGES_URL=http://cobalt.pulsar.ao:3007
 ENV VITE_APP_ITSM_GLPI_SSH_URL=https://wssh.pulsar.ao
 ENV VITE_APP_ITSM_GLPI_SSH_WEB_SOCKET=wss://wssh.pulsar.ao
-ENV VITE_APP_ITSM_SSH=http://cobalt.pulsar.ao:8000
-ENV VITE_APP_ITSM_VNC=http://cobalt.pulsar.ao:8880
+ENV VITE_APP_ITSM_SSH=http://cobalt.pulsar.ao:3020
+ENV VITE_APP_ITSM_VNC=http://cobalt.pulsar.ao:3021
 # Build the Vite app
 RUN npm run build
 
