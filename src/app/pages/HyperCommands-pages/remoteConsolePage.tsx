@@ -62,7 +62,7 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: connectionInfo.computerId,
+          user_id: connectionInfo.computerId.toString(),
           vnc_ip: connectionInfo.computerIp,
         }),
       });
