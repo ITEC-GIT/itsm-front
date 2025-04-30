@@ -385,7 +385,6 @@ const SoftwareInstallationStaticPage = ({
   }, 100);
 
   const filteredHistory = useMemo(() => {
-    console.log(filters);
     let history = paginatedHistory;
 
     if (filters?.status) {

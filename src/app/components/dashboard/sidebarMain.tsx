@@ -58,7 +58,6 @@ const SidebarMain = () => {
   const fetchComputer = async () => {
     if (selectedComputerAtom) {
       const computerInfo = await GetComputer(selectedComputerAtom);
-      console.log(computerInfo.data);
       setComputer(computerInfo.data);
     }
   };
@@ -85,7 +84,7 @@ const SidebarMain = () => {
               <div className="computer-header">
                 <h2 className="computer-name">{computer?.name}</h2>
                 <span className="computer-type">
-                 {computer?.type.name} - {computer?.model.name}
+                  {computer?.type.name} - {computer?.model.name}
                 </span>
               </div>
             ) : (
