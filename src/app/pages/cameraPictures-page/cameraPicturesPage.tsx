@@ -2,24 +2,21 @@ import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { motion } from "framer-motion";
-import { FiCamera } from "react-icons/fi";
-import { useAtom, useAtomValue } from "jotai";
-
 import "swiper/css";
+import "swiper/css/pagination";
 import "swiper/css/navigation";
-
-import { ZoomableImage } from "../../components/screenshots/zoomableimage";
-import { DatePicker } from "../../components/form/datePicker";
-import { CustomReactSelect } from "../../components/form/custom-react-select";
-import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
-import { DefaultImage } from "../../components/screenshots/defaultImage";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
+import { DatePicker } from "../../components/form/datePicker";
 import { selectValueType } from "../../types/dashboard";
+import { useAtom, useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../types/filtersAtomType";
+import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
+import { CustomReactSelect } from "../../components/form/custom-react-select";
+import { DefaultImage } from "../../components/screenshots/defaultImage";
+import { ZoomableImage } from "../../components/screenshots/zoomableimage";
+import { FiCamera } from "react-icons/fi";
 import { DatetimePicker } from "../../components/form/datetimePicker";
-import { ConnectButton } from "../../components/form/stepsButton";
-import { FilterButton } from "../../components/form/filterButton";
 
 export const dummyData = [
   {

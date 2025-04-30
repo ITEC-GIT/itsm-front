@@ -21,6 +21,10 @@ import {
 import { ImageUploadData, ImageUploadResponse } from "../types/TicketTypes.ts";
 import axios from "axios";
 import { CreateUserType } from "../types/user-management.ts";
+import {
+  ExecuteAntitheftType,
+  GetAntitheftType,
+} from "../types/antitheftTypes.ts";
 
 const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
 
@@ -654,6 +658,8 @@ async function CreateTitleAPI(title: string) {
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
+
+/** *********************************************************************************************/
 /** ************************************** Assets ******************************************/
 /** *********************************************************************************************/
 async function GetAssetsAPI(filters: any) {
@@ -689,6 +695,23 @@ async function GetAssetSoftwares(computerId: number) {
   return await PrivateApiCallFastApi.get(
     `/inventories/assets/${computerId}/softwares`
   )
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+/** *********************************************************************************************/
+/** ************************************** Actions **********************************************/
+/** *********************************************************************************************/
+async function GetAntitheftActionAPI(data: GetAntitheftType) {
+  return await PrivateApiCallFastApi.get(`/anti-theft/commands/results/`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
+async function ExecuteAntitheftActionAPI(data: ExecuteAntitheftType) {
+  return await PrivateApiCallFastApi.post(`/anti-theft/commands/actions/`, {
+    data,
+  })
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
@@ -734,4 +757,6 @@ export {
   GetPrerequisitesAPI,
   GetAllTitlesAPI,
   CreateTitleAPI,
+  GetAntitheftActionAPI,
+  ExecuteAntitheftActionAPI,
 };

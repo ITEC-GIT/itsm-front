@@ -209,8 +209,8 @@
 }
 
 //date picker
-.custom-date-input::placeholder {
-  color: red !important; //#4b5675;
+.form-control.custom-date-input {
+  color: #4b5675 !important;
   font-size: 1rem !important;
   opacity: 0.5 !important;
   font-weight: 500 !important;
