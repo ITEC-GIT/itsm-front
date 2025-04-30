@@ -521,13 +521,13 @@ const TicketsPage: React.FC = () => {
         const ticket = tickets.find((ticket) => ticket.id === id);
 
         if (ticket) {
-            const newStarredStatus = ticket.starred === 1 ? 0 : 1;
+            const newStarredStatus = ticket.is_starred === 1 ? 0 : 1;
             const response = await UpdateStarred(parseInt(id), newStarredStatus);
 
             if (response !== undefined) {
                 setTickets(prevTickets =>
                     prevTickets.map(t =>
-                        t.id === id ? {...t, starred: newStarredStatus} : t
+                        t.id === id ? {...t, is_starred: newStarredStatus} : t
                     )
                 );
             }
@@ -680,9 +680,9 @@ const TicketsPage: React.FC = () => {
                 return lastPart !== undefined && !isNaN(Number(lastPart));
             };
             const toDetailsRoute = isTicketFormat(window.location.pathname);
-            if (!toDetailsRoute) {
-                setTickets([]);
-            }
+            // if (!toDetailsRoute) {
+            //     setTickets([]);
+            // }
         };
     }, [
         location.state,
@@ -1295,13 +1295,14 @@ const TicketsPage: React.FC = () => {
                     ? ticketChangeAssigneenOn.assigneeNewData.map((item2: Assignee) => ({
                         id: item2.id,
                         name: item2.name || "",
-                    
+
                     }))
                     : [];
+
                 const newTicket = {
                     ...updatedTicket,
-                    assignees:new_assignees,
-                    status: statusNew,
+                    assignees: new_assignees,
+                    status: (updatedTicket.status === 'New') ? statusNew : updatedTicket.status,
                 };
 
                 setTickets((prevTickets) =>
