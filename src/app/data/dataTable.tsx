@@ -14,7 +14,7 @@ export const customStyles = {
     style: {
       fontSize: "14px",
       minHeight: "48px",
-      borderBottom: "none !important",
+      // borderBottom: "none !important",
       position: "relative !important" as "relative",
       "&:hover": {
         backgroundColor: "transparent !important",
@@ -33,7 +33,7 @@ export const customStyles = {
       fontWeight: "500",
       padding: "5px 5px",
       background: "white",
-      border: "none",
+      // border: "none",
       paddingLeft: "24px",
     },
   },
