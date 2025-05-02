@@ -22,7 +22,7 @@ import { ImageUploadData, ImageUploadResponse } from "../types/TicketTypes.ts";
 import axios from "axios";
 import { CreateUserType } from "../types/user-management.ts";
 import {
-  ExecuteAntitheftType,
+  ExecuteAntitheftActionType,
   GetAntitheftType,
 } from "../types/antitheftTypes.ts";
 
@@ -700,15 +700,22 @@ async function GetAssetSoftwares(computerId: number) {
 }
 
 /** *********************************************************************************************/
-/** ************************************** Actions **********************************************/
+/** **************************************Antitheft Actions **********************************************/
 /** *********************************************************************************************/
 async function GetAntitheftActionAPI(data: GetAntitheftType) {
-  return await PrivateApiCallFastApi.get(`/anti-theft/commands/results/`)
+  return await PrivateApiCallFastApi.get(`/anti-theft/commands/results/`, {
+    params: {
+      computer_id: data.computers_id,
+      action_type: data.action_type,
+      start_date: data.start_date,
+      end_date: data.end_date,
+    },
+  })
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
 
-async function ExecuteAntitheftActionAPI(data: ExecuteAntitheftType) {
+async function ExecuteAntitheftActionAPI(data: ExecuteAntitheftActionType) {
   return await PrivateApiCallFastApi.post(`/anti-theft/commands/actions/`, {
     data,
   })

@@ -1,13 +1,14 @@
-export type ExecuteAntitheftType = {
+export type ExecuteAntitheftActionType = {
   mid: number;
-  action_type: string;
-  params: string;
-  status: string;
+  action_type: number;
+  params?: string;
+  status?: string;
   users_id: number;
 };
 
 export type GetAntitheftType = {
   computers_id: number;
-  start_date: Date;
-  end_date: Date;
+  action_type: number;
+  start_date?: Date;
+  end_date?: Date;
 };
