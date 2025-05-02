@@ -137,22 +137,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
               <div className="d-flex justify-content-center">
                 <div>
                   <div className="row mb-4">
-                    <div className="row mb-4 d-flex justify-content-end align-items-end">
-                      <div className="col-md-2 border rounded p-3">
-                        <label className="form-label text-start">
-                          <i className="bi bi-usb-symbol text-primary"></i>
-                          <span className="text-primary"> Port</span>
-                        </label>
-                        <input
-                          type="number"
-                          className="form-control form-control-solid"
-                          value={port}
-                          placeholder="Enter Port (e.g., 22)"
-                          onChange={(e) => setPort(Number(e.target.value))}
-                        />
-                      </div>
-                    </div>
-
                     <div className="col-md-6 mb-4" style={{ height: "85px" }}>
                       <label className="custom-label required">SSH User</label>
                       <input
@@ -226,6 +210,22 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                           Please enter the SSH Host/IP.
                         </small>
                       )}
+                    </div>
+
+                    <div className="col-md-6 d-flex flex-column align-items-end">
+                      <div className="d-flex flex-column align-items-end border rounded p-3 w-50">
+                        <label className="form-label text-start">
+                          <i className="bi bi-usb-symbol text-primary"></i>
+                          <span className="text-primary"> Port</span>
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control form-control-solid "
+                          value={port}
+                          placeholder="Enter Port (e.g., 22)"
+                          onChange={(e) => setPort(Number(e.target.value))}
+                        />
+                      </div>
                     </div>
                   </div>
 
