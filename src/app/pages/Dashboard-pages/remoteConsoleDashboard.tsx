@@ -19,9 +19,10 @@ const RemoteConsoleDashboardComponent = () => {
 
   const handleEndSession = async () => {
     if (!computerId || !computerIp) return;
+    const vncServiceBaseUrl = import.meta.env.VITE_APP_ITSM_VNC;
 
     try {
-      await fetch(`http://127.0.0.1:8004/vnc/disconnect`, {
+      await fetch(`${vncServiceBaseUrl}/vnc/disconnect`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

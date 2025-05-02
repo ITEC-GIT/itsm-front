@@ -47,10 +47,11 @@ const errorCatch = (error: ErrorResponse) => {
 
 async function LoginApi(login: string, password: string) {
   // const authHeader = `Basic ${btoa(`${login}:${password}`)}`;
+  const baseURL = import.meta.env.VITE_APP_ITSM_BACKEND_SERVICE;
 
   return await axios
     .post(
-      `http://127.0.0.1:8000/session/init_session`,
+        `${baseURL}/session/init_session`,
       new URLSearchParams({
         username: login,
         password: password,

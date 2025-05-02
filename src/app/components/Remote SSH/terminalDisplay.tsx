@@ -12,7 +12,8 @@ const TerminalDisplay: React.FC<TerminalDisplayProps> = ({ sessionId }) => {
   const term = useRef<Terminal | null>(null);
   const fitAddon = useRef(new FitAddon());
   const wsRef = useRef<WebSocket | null>(null);
-
+  const base_ssh_url=import.meta.env.VITE_APP_ITSM_SSH;
+  const base_ssh_url_webscoket = base_ssh_url.replace(/^https?:\/\//, '');
   useEffect(() => {
     if (!terminalRef.current) return;
 
@@ -27,7 +28,7 @@ const TerminalDisplay: React.FC<TerminalDisplayProps> = ({ sessionId }) => {
     fitAddon.current.fit();
 
     const ws = new WebSocket(
-      `ws://127.0.0.1:8002/ws/ssh?session_id=${sessionId}`
+        `ws://${base_ssh_url_webscoket}/ws/ssh?session_id=${sessionId}`
     );
     wsRef.current = ws;
 
