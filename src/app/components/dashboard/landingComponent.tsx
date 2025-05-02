@@ -538,39 +538,46 @@ const StatBox = ({
     <div
       className="p-3 d-flex justify-content-between align-items-start hyper-card"
       style={{
-        backgroundColor: bg,
-        minHeight: "100px",
+        // backgroundColor: bg,
+        minHeight: "60px",
         height: "100%",
         borderRadius: "5px",
       }}
     >
       <div className="d-flex flex-column justify-content-center">
         <p
-          className="fw-bold m-0"
+          className="m-0 mt-1 text-dark"
           style={{
-            color,
-            fontSize: "clamp(1.2rem, 2vw, 1.4rem)",
-            lineHeight: "1.2",
-          }}
-        >
-          {number.toLocaleString()}
-        </p>
-        <p
-          className="m-0 mt-1"
-          style={{
-            color,
             fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
             maxWidth: "100px",
           }}
         >
           {title}
         </p>
+        <p
+          className="fw-bold m-0"
+          style={{
+            color,
+            fontSize: "clamp(1.4rem, 2vw, 1.6rem)",
+            lineHeight: "1.2",
+          }}
+        >
+          {number.toLocaleString()}
+        </p>
       </div>
-      <div className="d-flex align-items-center">
+      <div
+        className="d-flex align-items-center justify-content-center"
+        style={{
+          background: bg,
+          width: "clamp(20px, 4vw, 40px)",
+          height: "clamp(20px, 4vw, 40px)",
+          borderRadius: "50%",
+        }}
+      >
         <i
           className={`fas ${icon}`}
           style={{
-            fontSize: "clamp(1.4rem, 2.5vw, 1.8rem)",
+            fontSize: "clamp(1rem, 2vw, 1.2rem)",
             color,
             opacity: 0.8,
           }}
@@ -666,15 +673,15 @@ const DashboardLanding = () => {
 
   const stats = [
     {
-      bg: "var(--color-dark-gray)",
-      color: "var(--color-light-gray)",
+      bg: "var(--color-light-blue)",
+      color: "var(--color-dark-blue)",
       icon: "fa-ticket",
       number: dashboardData.tickets.todaysTickets ?? 0,
       title: "Today's Tickets",
     },
     {
-      bg: "var(--color-dark-red)",
-      color: "var(--color-light-red)",
+      bg: "var(--color-light-mint)",
+      color: "var(--color-dark-mint)",
       icon: "fa-cubes",
       number: dashboardData.management.totalSoftwares ?? 0,
       title: "Software",
@@ -701,8 +708,8 @@ const DashboardLanding = () => {
       title: "Domains",
     },
     {
-      bg: "var(--color-dark-blue)",
-      color: "var(--color-light-blue)",
+      bg: "var(--color-light-red)",
+      color: "var(--color-dark-red)",
       icon: "fa-file-alt",
       number: dashboardData?.management?.totalDocuments ?? 0,
       title: "Documents",
