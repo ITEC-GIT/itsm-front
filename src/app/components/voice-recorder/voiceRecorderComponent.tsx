@@ -1,20 +1,23 @@
 import React from "react";
 import styled from "styled-components";
 
-const VoiceCard = () => {
+type VoiceCardProps = {
+  audioUrl: string;
+};
+
+const VoiceCardComponent = ({ audioUrl }: VoiceCardProps) => {
   return (
     <StyledWrapper>
       <div className="voice-chat-card">
-        <div className="voice-chat-card-header">
+        {/* <div className="voice-chat-card-header">
           <img className="avatar" />
           <div className="username">User name</div>
           <div className="status" />
-        </div>
+        </div> */}
         <div className="voice-chat-card-body">
           <div className="audio-container">
             <audio controls>
-              <source type="audio/mp3" src="path/to/audio.mp3" />
-              Your browser does not support the audio element.
+              <source type="audio/mp3" src={audioUrl} />
             </audio>
           </div>
         </div>
@@ -25,7 +28,8 @@ const VoiceCard = () => {
 
 const StyledWrapper = styled.div`
   .voice-chat-card {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
     margin: 20px auto;
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -82,4 +86,4 @@ const StyledWrapper = styled.div`
   }
 `;
 
-export { VoiceCard };
+export { VoiceCardComponent };

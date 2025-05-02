@@ -27,7 +27,7 @@ import { ComputerDetailsPageWrapper } from "../pages/Assets-pages/computerDetail
 import { SoftwareInstallationStaticPage } from "../pages/HyperCommands-pages/softwareInstallationStaticPage";
 import { RemoteConsoleDashboardComponent } from "../pages/Dashboard-pages/remoteConsoleDashboard";
 import { ScreenshotGallery } from "../pages/screenshots-page/screenshotsPage";
-import { VoiceRecordingsPage } from "../pages/voiceReorder-page/voiceRecorder";
+import { VoiceRecordingsPage } from "../pages/voiceReorder-page/voiceRecorderPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));

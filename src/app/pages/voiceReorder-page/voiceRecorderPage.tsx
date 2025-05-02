@@ -1,55 +1,39 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import { motion } from "framer-motion";
-import { FiCamera } from "react-icons/fi";
-import { useAtom, useAtomValue } from "jotai";
-import "swiper/css";
-import "swiper/css/navigation";
-
-import { ZoomableImage } from "../../components/screenshots/zoomableimage";
-import { CustomReactSelect } from "../../components/form/custom-react-select";
-import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
-import { DefaultImage } from "../../components/screenshots/defaultImage";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
+import { DatePicker } from "../../components/form/datePicker";
 import { selectValueType } from "../../types/dashboard";
+import { useAtom, useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../types/filtersAtomType";
+import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
+import { CustomReactSelect } from "../../components/form/custom-react-select";
+import { VoiceCardComponent } from "../../components/voice-recorder/voiceRecorderComponent";
 import { DatetimePicker } from "../../components/form/datetimePicker";
+import { FiCamera } from "react-icons/fi";
+import { DeafultVoiceCardComponent } from "../../components/voice-recorder/defaultComponent";
+import { MdOutlineKeyboardVoice } from "react-icons/md";
 
-export const dummyData = [
+const dummyData = [
   {
     computerName: "Salameh-PC",
-    screenshots: [
-      {
-        url: "media/svg/Screenshot (1439).png",
-        w: 1024,
-        h: 768,
-      },
-      {
-        url: "media/svg/Screenshot (1439).png",
-        w: 800,
-        h: 600,
-      },
+    recordings: [
+      { audio: "/media/audio/audio1.mp3" },
+      { audio: "/media/audio/audio2.mp3" },
+      { audio: "/media/audio/audio1.mp3" },
+      { audio: "/media/audio/audio2.mp3" },
     ],
   },
   {
-    computerName: "Computer B",
-    screenshots: [
-      {
-        url: "media/svg/Screenshot (1439).png",
-        w: 1280,
-        h: 720,
-      },
-    ],
+    computerName: "PC-202",
+    recordings: Array(8).fill({ audio: "/media/audio/audio1.mp3" }),
   },
   {
-    computerName: "Computer C",
-    screenshots: [],
+    computerName: "PC-303",
+    recordings: Array(3).fill({ audio: "/media/audio/audio1.mp3" }),
   },
 ];
 
-const ScreenshotGallery = () => {
+const VoiceRecordingsPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
@@ -81,8 +65,18 @@ const ScreenshotGallery = () => {
     setSelectedDeviceAtom(newValue ? Number(newValue.value) : undefined);
   };
 
-  const selectedComputerScreenshots = dummyData.find(
-    (item) => item.computerName === selectedDevice?.label
+  const getPlaceholderText = () => {
+    if (!selectedDevice) {
+      return "Select a computer to display its recordings";
+    }
+    // if (recordings.length === 0) {
+    //   return `No audio recordings found for ${selectedDevice.name}.`;
+    // }
+    return "";
+  };
+
+  const selectedComputerData = dummyData.find(
+    (comp) => comp.computerName === selectedDevice?.label
   );
 
   useEffect(() => {
@@ -112,9 +106,9 @@ const ScreenshotGallery = () => {
         <div className="p-5" ref={divRef}>
           <div className="col-12 mb-4">
             <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
-              <h2 className="mb-0">📸 Screenshots</h2>
+              <h2 className="mb-0">🎙️ Voice Recordings</h2>
               <button className="btn custom-btn p-5">
-                <FiCamera className="fs-2" />
+                <MdOutlineKeyboardVoice className="fs-2" />
               </button>
             </div>
           </div>
@@ -154,79 +148,47 @@ const ScreenshotGallery = () => {
             </div>
           </div>
 
-          {selectedDevice ? (
-            selectedComputerScreenshots &&
-            selectedComputerScreenshots.screenshots.length > 0 ? (
-              <div className="d-flex gap-2 align-items-center mt-3">
-                <h4 className="mb-0">
-                  {selectedComputerScreenshots.computerName}
-                </h4>
-                <span className="badge text-white bg-primary">
-                  {selectedComputerScreenshots.screenshots.length} Screenshot
-                  {selectedComputerScreenshots.screenshots.length !== 1 && "s"}
-                </span>
-              </div>
-            ) : (
-              <></>
-            )
-          ) : null}
+          {selectedComputerData && (
+            <div className="d-flex gap-2 align-items-center mb-3">
+              <h4 className="mb-0">{selectedComputerData.computerName}</h4>
+              <span className="badge bg-primary text-white">
+                {selectedComputerData.recordings.length} Voice Recorder
+                {selectedComputerData.recordings.length !== 1 && "s"}
+              </span>
+            </div>
+          )}
         </div>
 
         <div
-          className="row p-5"
+          className="row vertical-scroll none-scroll-width p-5"
           style={{
             height: `calc(100vh - var(--bs-app-header-height) - 30px - ${height}px)`,
+            overflowY: "auto",
           }}
         >
-          {selectedDevice ? (
-            selectedComputerScreenshots &&
-            selectedComputerScreenshots.screenshots.length > 0 ? (
-              <div className="col-12 mb-5 h-100">
-                <Swiper
-                  spaceBetween={20}
-                  slidesPerView={1}
-                  navigation
-                  modules={[Navigation]}
-                  breakpoints={{
-                    640: { slidesPerView: 1 },
-                    768: { slidesPerView: 1 },
-                    1024: { slidesPerView: 1 },
-                  }}
-                  style={{ paddingBottom: "2rem", height: "100%" }}
-                >
-                  {selectedComputerScreenshots.screenshots.map((img, i) => (
-                    <SwiperSlide key={i}>
-                      <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        style={{
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <ZoomableImage src={img.url} index={i} />
-                      </motion.div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+          {selectedComputerData ? (
+            <div className="col-12 h-100">
+              <div className="row">
+                {selectedComputerData.recordings.map((recording, i) => (
+                  <div
+                    key={i}
+                    className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                  >
+                    <VoiceCardComponent audioUrl={recording.audio} />
+                  </div>
+                ))}
               </div>
-            ) : (
-              <div className="d-flex justify-content-center align-items-center h-100">
-                <DefaultImage />
-              </div>
-            )
+            </div>
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DefaultImage />
+              <DeafultVoiceCardComponent text={getPlaceholderText()} />
             </div>
           )}
         </div>
       </div>
     </div>
-    // {/* </AnimatedRouteWrapper> */}
+    // </AnimatedRouteWrapper>
   );
 };
 
-export { ScreenshotGallery };
+export { VoiceRecordingsPage };
