@@ -35,8 +35,8 @@ const StyledWrapper = styled.div`
   background: #fff;
 
   .default-image-loader {
-    width: 64px;
-    height: 64px;
+    width: 120px;
+    height: 100px;
     position: relative;
     background: #f4f4f4;
     border-radius: 4px;
