@@ -1,41 +1,76 @@
+import { useAtom } from "jotai";
+import { selectedComputerInfoAtom } from "../../atoms/assets-atoms/assetAtoms";
 import { ProgressBar } from "../form/progressBar";
 import { StatCard } from "./assetCard";
+import { useEffect, useState } from "react";
+import { GetComputerMetricsAPI } from "../../config/ApiCalls";
+import { CircularSpinner } from "../spinners/circularSpinner";
+import { mapMetricsToObject } from "../../../utils/metricsMapping";
 
 const AssetSummaryComponent = () => {
+  const [selectedComputerInfo] = useAtom(selectedComputerInfoAtom);
+  const [metrics, setMetrics] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!selectedComputerInfo?.id) return;
+
+    setIsLoading(true);
+    GetComputerMetricsAPI(selectedComputerInfo.id)
+      .then((data) => {
+        setMetrics(mapMetricsToObject(data.data));
+      })
+      .finally(() => setIsLoading(false));
+  }, [selectedComputerInfo?.id]);
+
   return (
     <div
       className="row none-scroll-width vertical-scroll"
       style={{ padding: "5px" }}
     >
-      <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi-cpu text-muted'>&nbsp;CPU</i> <span class='text-dark fw-bold'> 2.2 GHz </span>`}
-          center={80}
-          strokeColor={{ start: "#800020", end: "#ff69b4" }}
-        />
-      </div>
-      <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi-sd-card-fill text-muted'>&nbsp;Memory</i> <span class='text-dark fw-bold'> 2.2 GB </span>`}
-          center={23}
-          rightBottom={`<div > <i class='text-muted'>Available </i> <span class='text-dark fw-bold'> 18.4 GB </span></div>`}
-          strokeColor={{ start: "#2596be", end: "#00ff00" }}
-        />
-      </div>
-      <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi-link-45deg text-muted'>&nbsp;Patch Status</i>`}
-          center={`<div class="icon-element">
-                      <i class="bi bi-check-circle-fill patch-status-icon-green"></i>
-                    </div>
-                  `}
-          rightBottom={`<span class='text-dark fw-bold'>Fully Patched </span>`}
-        />
-      </div>
-      <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Antivirus</i>`}
-          center={` <div class='d-flex flex-column align-items-center'>
+      {isLoading ? (
+        <div className="d-flex justify-content-center align-items-center h-100">
+          <CircularSpinner />
+        </div>
+      ) : (
+        <>
+          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-cpu text-muted'>&nbsp;CPU</i> <span class='text-dark fw-bold'> ${
+                (Number(metrics["clock-speed-mhz"]) / 1000).toFixed(2) || "-"
+              } GHz </span>`}
+              center={Number(metrics["processor-utility"] || 0)}
+              strokeColor={{ start: "#800020", end: "#ff69b4" }}
+            />
+          </div>
+          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-cpu text-muted'>&nbsp;CPU Model</i>`}
+              center={`<div class="text-center fw-bold bg-orange p-2 rounded-lg">${
+                metrics["cpu-model"]
+                  ? metrics["cpu-model"].split("@")[0].trim()
+                  : "N/A"
+              }</div>`}
+            />
+          </div>
+          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-sd-card-fill text-muted'>&nbsp;Memory</i> <span class='text-dark fw-bold'>${Number(
+                metrics["memory_usage"] || 0
+              ).toFixed(2)}% </span>`}
+              center={Number(metrics["memory_usage"] || 0)}
+              rightBottom={`<div><i class='text-muted'>Total </i> <span class='text-dark fw-bold'>~${(
+                (Number(metrics["memory_usage"]) / 100) *
+                32
+              ).toFixed(2)} GB</span></div>`}
+              strokeColor={{ start: "#2596be", end: "#00ff00" }}
+            />
+          </div>
+
+          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Antivirus</i>`}
+              center={` <div class='d-flex flex-column align-items-center'>
                         <div class='icon-element'>
                           <i class='bi bi-shield-shaded icon-green'></i>
                         </div>
@@ -43,17 +78,21 @@ const AssetSummaryComponent = () => {
                         <span class='icon-status'>Active - UP TO DATE</span>
                       </div>
                    `}
-        />
-      </div>
-      <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Antivirus</i>`}
-          center={` <div class="d-flex align-items-center mb-3">
+            />
+          </div>
+          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Antivirus</i>`}
+              center={` <div class="d-flex align-items-center mb-3">
                 <div class="net-traffic-element rounded-circle download" >
                     <i class="bi bi-arrow-down text-white "></i>
                 </div>
                 <div>
-                    <strong class="fs-5">236.024 Kbps</strong>
+                    <strong class="fs-6">${parseFloat(
+                      metrics[
+                        "int#=1-name=realtek-gaming-gbe-family-controllerbytes-received/sec-kb/sec"
+                      ] || "0"
+                    ).toFixed(2)} KBps</strong>
                     <small class="text-muted d-block">DOWNLOAD</small>
                 </div>
             </div>
@@ -62,44 +101,138 @@ const AssetSummaryComponent = () => {
                     <i class="bi bi-arrow-up text-white"></i>
                 </div>
                 <div>
-                    <strong class="fs-5">1.092 Mbps</strong>
+                     <strong class="fs-6">${parseFloat(
+                       metrics[
+                         "int#=1-name=realtek-gaming-gbe-family-controllerbytes-sent/sec-kb/sec"
+                       ] || "0"
+                     ).toFixed(2)} KBps</strong>
                     <small class="text-muted d-block">UPLOAD</small>
                 </div>
             </div>`}
-        />
+            />
+          </div>
+          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+            <StatCard
+              center={` <div class="d-flex align-items-center mb-3">
+                <div class="net-traffic-element rounded-circle download" >
+                    <i class="bi bi-cpu-fill text-white "></i>
+                </div>
+                <div>
+                    <strong class="fs-5">${
+                      metrics["logical-processors"] || "N/A"
+                    }</strong>
+                    <small class="text-muted d-block">Logical Processors</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="net-traffic-element rounded-circle upload">
+                    <i class="bi bi-collection-fill text-white"></i>
+                </div>
+                <div>
+                    <strong class="fs-5">${
+                      metrics["physical-cores"] || "N/A"
+                    }</strong>
+                    <small class="text-muted d-block">Physical Cores</small>
+                </div>
+            </div>`}
+            />
+          </div>
+          <div className="col-12 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-layers text-muted'>&nbsp;System Summary</i>`}
+              center={`<div class="d-flex align-items-center flex-wrap justify-content-between gap-5 px-2 w-100">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-element  text-white mx-auto mb-1 bg-green">
+          <i class="bi bi-cpu fs-5 text-white"></i>
+        </div>
+        <div>
+          <div class="fw-bold">${metrics["total-processes"] || "0"}</div>
+          <small class="text-muted">Processes</small>
+        </div>
+        
       </div>
-      <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi-database-fill-check text-muted'>&nbsp;Backup Status</i>`}
-          center={`<div class='icon-element'>
-                        <i class='bi bi-boxes text-muted muted-icon-size'></i>
-                      </div>`}
-          rightBottom={`<span class='text-dark fw-bold'>Not Installed</span>`}
-        />
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-element  text-white mx-auto mb-1 bg-blue">
+          <i class="bi bi-threads fs-5 text-white"></i>
+        </div>
+        <div>
+          <div class="fw-bold">${metrics["total-threads"] || "0"}</div>
+          <small class="text-muted">Threads</small>
+        </div>
       </div>
-      <div className="col-12 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi-fire text-muted'>&nbsp;Firewall Status</i>`}
-          center={`<div class="icon-element">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-element text-white mx-auto mb-1 bg-orange">
+          <i class="bi bi-diagram-3-fill fs-5 text-white"></i>
+        </div>
+        <div>
+          <div class="fw-bold">${metrics["total-handles"] || "0"}</div>
+          <small class="text-muted">Handles</small>
+        </div>
+      </div>
+    </div>`}
+              rightBottom={`<div class='text-center text-muted mt-2'>
+      <i class="bi bi-clock-history me-1 text-white"></i>
+      <span class='fw-bold'>Uptime:</span> ${
+        metrics["uptime"] || ""
+      }
+    </div>`}
+            />
+          </div>
+
+          <div className="col-12 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-fire text-muted'>&nbsp;Firewall Status</i>`}
+              center={`<div class="icon-element">
                       <i class="bi bi-check-circle-fill patch-status-icon-green"></i>
                     </div>
                   `}
-          rightBottom={`<span class='text-dark fw-bold'>Not Installed</span>`}
-        />
-      </div>
-      <div className="col-12 mb-3">
-        <StatCard
-          leftTop={`<i class='bi bi bi-nvme text-muted'>&nbsp; Disk</i>
-            <span>758.87 GB</span> <i class='text-muted'>Of &nbsp;</i><span>864.96 GB</span><i class='text-muted'> &nbsp;Available</i>`}
-          center={
-            <ProgressBar
-              used={758.87}
-              total={864.96}
-              gradientColor="linear-gradient(to right, #ff7e5f, #feb47b)"
+              rightBottom={`<span class='text-dark fw-bold'>Not Installed</span>`}
             />
-          }
-        />
-      </div>
+          </div>
+          <div className="col-12 mb-3">
+            <StatCard
+              leftTop={`<i class='bi bi-nvme text-muted'>&nbsp; Disk</i>
+    <span>${(+metrics["disk_free_c"] / 1024 ** 3).toFixed(2)} GB</span> 
+    <i class='text-muted'> Of </i>
+    <span>${(+metrics["disk_total_c"] / 1024 ** 3).toFixed(2)} GB</span>
+    <i class='text-muted'> Available</i>`}
+              center={
+                <ProgressBar
+                  used={
+                    (+metrics["disk_total_c"] - +metrics["disk_free_c"]) /
+                    1024 ** 3
+                  }
+                  total={+metrics["disk_total_c"] / 1024 ** 3}
+                  gradientColor="linear-gradient(to right, #ff7e5f, #feb47b)"
+                  name="C"
+                />
+              }
+            />
+          </div>
+          {metrics["disk_total_d"] && (
+            <div className="col-12 mb-3">
+              <StatCard
+                leftTop={`<i class='bi bi-nvme text-muted'>&nbsp; Disk </i>
+    <span>${(+metrics["disk_free_d"] / 1024 ** 3).toFixed(2)} GB</span> 
+    <i class='text-muted'> Of </i>
+    <span>${(+metrics["disk_total_d"] / 1024 ** 3).toFixed(2)} GB</span>
+    <i class='text-muted'> Available</i>`}
+                center={
+                  <ProgressBar
+                    used={
+                      (+metrics["disk_total_d"] - +metrics["disk_free_d"]) /
+                      1024 ** 3
+                    }
+                    total={+metrics["disk_total_d"] / 1024 ** 3}
+                    gradientColor="linear-gradient(to right,rgb(13, 241, 181),rgb(24, 209, 206))"
+                    name="D"
+                  />
+                }
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

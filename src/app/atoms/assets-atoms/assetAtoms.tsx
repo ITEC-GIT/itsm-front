@@ -6,3 +6,6 @@ currentAssetsPageAtom.debugLabel = "currentAssetsPageAtom";
 
 export const selectedComputerInfoAtom = atom<any>();
 selectedComputerInfoAtom.debugLabel = "selectedComputerInfoAtom";
+
+export const computerMetricsAtom = atom<any>();
+computerMetricsAtom.debugLabel = "computerMetricsAtom";

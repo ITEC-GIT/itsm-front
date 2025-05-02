@@ -80,7 +80,7 @@ const StatCard: React.FC<StatCardProps> = ({
             fontSize: "1.3rem",
           }}
         >
-          {center}%
+          {center.toFixed ? `${center.toFixed(2)}%` : center}
         </div>
       </div>
     );

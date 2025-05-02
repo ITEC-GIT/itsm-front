@@ -206,7 +206,7 @@ const VolumeComponent = ({ driveData }: { driveData: any }) => (
 const AssetDetailsComponent = () => {
   const [selectedButton, setSelectedButton] = useState<number>(1);
   const [pcDetails, setPCDetails] = useState<PCDetailsType>();
-  const [isLoading, setIsLoading] = useState<boolean>(true); // <-- loading state
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [selectedComputerInfo, setSelectedComputerInfo] = useAtom(
     selectedComputerInfoAtom
@@ -284,7 +284,6 @@ const AssetDetailsComponent = () => {
             <CircularSpinner />
           </div>
         ) : (
-          //display part
           <span
             style={{ fontSize: "1.5rem", fontWeight: "500" }}
             className="mb-3"

@@ -699,6 +699,12 @@ async function GetAssetSoftwares(computerId: number) {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetComputerMetricsAPI(computerId: number) {
+  return await PrivateApiCallFastApi.get(`/inventories/Metrics/${computerId}`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 /** *********************************************************************************************/
 /** **************************************Antitheft Actions **********************************************/
 /** *********************************************************************************************/
@@ -766,4 +772,5 @@ export {
   CreateTitleAPI,
   GetAntitheftActionAPI,
   ExecuteAntitheftActionAPI,
+  GetComputerMetricsAPI,
 };
