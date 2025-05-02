@@ -63,6 +63,7 @@ import {transformStaticData} from "../../../utils/dataTransformUtils.ts";
 import {string} from "yup";
 import {getMaxWords} from "./TicketUtils.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+import {CircularSpinner} from "../../components/spinners/circularSpinner.tsx";
 
 const TicketsPage: React.FC = () => {
     // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -363,7 +364,7 @@ const TicketsPage: React.FC = () => {
 
         },
         onError: (error) => {
-            console.log("There was an error in searching for tickets: " + error.message);
+            alert("There was an error in searching for tickets: " + error.message);
         },
         onSettled: () => {
             queryClient.invalidateQueries({queryKey: ["create"]}); // Updated invalidateQueries syntax
@@ -456,26 +457,26 @@ const TicketsPage: React.FC = () => {
                     prevTickets.map((ticket) =>
                         ticket.id === updatedTicket.id
                             ? {
-                                  ...ticket,
-                                  urgency: {
-                                      id: updatedTicket.urgency?.value,
-                                      label: updatedTicket.urgency?.label,
-                                  },
-                                  priority: {
-                                      id: updatedTicket.priority?.value,
-                                      label: updatedTicket.priority?.label,
-                                  },
-                                  status: {
-                                      id: updatedTicket.status?.value,
-                                      label: updatedTicket.status?.label,
-                                  },
-                                  type: {
-                                      id: updatedTicket.type?.value,
-                                      label: updatedTicket.type?.label,
-                                  },
-                                  // You can update date_mod if you want
-                                  date_mod: new Date().toISOString(),
-                              }
+                                ...ticket,
+                                urgency: {
+                                    id: ticketPerformingActionOn.urgency?.value,
+                                    label: ticketPerformingActionOn.urgency?.label,
+                                },
+                                priority: {
+                                    id: ticketPerformingActionOn.priority?.value,
+                                    label: ticketPerformingActionOn.priority?.label,
+                                },
+                                status: {
+                                    id: ticketPerformingActionOn.status?.value,
+                                    label: ticketPerformingActionOn.status?.label,
+                                },
+                                type: {
+                                    id: ticketPerformingActionOn.type?.value,
+                                    label: ticketPerformingActionOn.type?.label,
+                                },
+                                // You can update date_mod if you want
+                                date_mod: new Date().toISOString(),
+                            }
                             : ticket
                     )
                 );
@@ -520,13 +521,13 @@ const TicketsPage: React.FC = () => {
         const ticket = tickets.find((ticket) => ticket.id === id);
 
         if (ticket) {
-            const newStarredStatus = ticket.starred === 1 ? 0 : 1;
+            const newStarredStatus = ticket.is_starred === 1 ? 0 : 1;
             const response = await UpdateStarred(parseInt(id), newStarredStatus);
 
             if (response !== undefined) {
                 setTickets(prevTickets =>
                     prevTickets.map(t =>
-                        t.id === id ? {...t, starred: newStarredStatus} : t
+                        t.id === id ? {...t, is_starred: newStarredStatus} : t
                     )
                 );
             }
@@ -679,9 +680,9 @@ const TicketsPage: React.FC = () => {
                 return lastPart !== undefined && !isNaN(Number(lastPart));
             };
             const toDetailsRoute = isTicketFormat(window.location.pathname);
-            if (!toDetailsRoute) {
-                setTickets([]);
-            }
+            // if (!toDetailsRoute) {
+            //     setTickets([]);
+            // }
         };
     }, [
         location.state,
@@ -986,22 +987,22 @@ const TicketsPage: React.FC = () => {
             const assignees: Assignee[] = ticket?.assignees || [];
             const matchesStatus =
                 frontFilter.status.value === "" ||
-                String(ticket.status) === frontFilter.status.value;
+                String(ticket.status.id.toString()) === frontFilter.status.value;
             const matchesUrgency =
                 frontFilter.urgency.value === "" ||
-                String(ticket.urgency) === frontFilter.urgency.value;
+                String(ticket.urgency.id.toString()) === frontFilter.urgency.value;
             const matchesPriority =
                 frontFilter.priority.value === "" ||
-                String(ticket.priority) === frontFilter.priority.value;
+                String(ticket.priority.id.toString()) === frontFilter.priority.value;
             const matchesType =
                 frontFilter.type.value === "" ||
-                String(ticket.type) === frontFilter.type.value;
+                String(ticket.type.id.toString()) === frontFilter.type.value;
             const matchesRequester =
                 frontFilter.requester.value === "" ||
-                String(ticket.requester) === frontFilter.requester.value;
+                String(ticket.issuer.id.toString()) === frontFilter.requester.value;
             const matchesBranch =
                 frontFilter.branch.value === "" ||
-                String(ticket.areas_id) === frontFilter.branch.value;
+                String(ticket.department.id.toString()) === frontFilter.branch.value;
             const matchesAssignee = frontFilter.assignee.value === "" || assignees.some(
                 (assignee) =>
                     String(assignee.id) === frontFilter.assignee.value
@@ -1289,18 +1290,19 @@ const TicketsPage: React.FC = () => {
                         value: string;
                     }) => option.label === "Assigned") || {value: "", label: ""};
                 }
+                const statusNew={'value': status.value, 'label': status.label}
                 const new_assignees: Assignee[] = Array.isArray(ticketChangeAssigneenOn.assigneeNewData)
                     ? ticketChangeAssigneenOn.assigneeNewData.map((item2: Assignee) => ({
                         id: item2.id,
                         name: item2.name || "",
-                    
+
                     }))
                     : [];
+
                 const newTicket = {
                     ...updatedTicket,
-                    assignees:new_assignees,
-                    status: status.value,
-                    status_label: status.label
+                    assignees: new_assignees,
+                    status: (updatedTicket.status === 'New') ? statusNew : updatedTicket.status,
                 };
 
                 setTickets((prevTickets) =>
@@ -1327,12 +1329,8 @@ const TicketsPage: React.FC = () => {
                         <div className="d-flex flex-column justify-content-between">
                             {isDataLoading ? (
                                 <div className="spinner-wrapper">
-                                    <div
-                                        className="spinner-border spinner-loading-data"
-                                        role="status"
-                                    >
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
+                                    <CircularSpinner />
+
                                 </div>
                             ) : (
                                 paginatedTickets.map((ticket) => {

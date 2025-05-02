@@ -146,109 +146,109 @@ export const CustomQuillImageClipboard = forwardRef<ReactQuill, CustomQuillProps
     ({ value, onChange, setImageMapOnAccumulated, setImageClipboardMap,setCountOfPasted,countOfPasted,setEditorContent,editorContent, ...props }, ref) => {
         const quillRef = useRef<ReactQuill | null>(null);
 
-    // Expose the Quill instance via ref
-    useImperativeHandle(ref, () => quillRef.current as ReactQuill);
-    // const [imageMap, setImageMap] = useState<Record<string, string>>({}); // Store { base64: url } mappings
-    // const [imageMapOnAccumulated, setimageMapOnAccumulated] = useState<{ base64: string; url: string }[]>([]); // Store [{ base64, url }] mappings
-    // const [imageClipboardMap, setImageClipboardMap] = useState<{ base64: string; url: string }[]>([]); // Store [{ base64, url }] mappings
-``
-    // useEffect(() => {
-    //     if(imageMapOnAccumulated!=undefined && imageMapOnAccumulated.length>0){
-    //         const x=0;
-    //         const xtr=imageClipboardMap;
-    //         const z=0;
-    //
-    //     }
-    // }, [imageMapOnAccumulated,imageClipboardMap]);
-    const handleContentChange = (value: string, delta: any, source: string) => {
-        setEditorContent(value);
+        // Expose the Quill instance via ref
+        useImperativeHandle(ref, () => quillRef.current as ReactQuill);
+        // const [imageMap, setImageMap] = useState<Record<string, string>>({}); // Store { base64: url } mappings
+        // const [imageMapOnAccumulated, setimageMapOnAccumulated] = useState<{ base64: string; url: string }[]>([]); // Store [{ base64, url }] mappings
+        // const [imageClipboardMap, setImageClipboardMap] = useState<{ base64: string; url: string }[]>([]); // Store [{ base64, url }] mappings
+        ``
+        // useEffect(() => {
+        //     if(imageMapOnAccumulated!=undefined && imageMapOnAccumulated.length>0){
+        //         const x=0;
+        //         const xtr=imageClipboardMap;
+        //         const z=0;
+        //
+        //     }
+        // }, [imageMapOnAccumulated,imageClipboardMap]);
+        const handleContentChange = (value: string, delta: any, source: string) => {
+            setEditorContent(value);
 
-        // Get all image elements in the editor
-        const images = Array.from(quillRef.current?.getEditor().root.querySelectorAll("img") || []);
-
-
-        const updatedImageMap = images.map((img: any, index: number) => ({
-            base64: img.src,
-            url: "", // Assuming you want the URL to be empty initially
-            counter: index + 1, // Counter starts from 1 (index + 1)
-            hash:generateMD5Hash(img.src)
-        }));
-
-        // Set the image map with the new array
-        setImageMapOnAccumulated(updatedImageMap);
-    };
-
-    useEffect(() => {
-        if (!quillRef.current) return;
-        const quill = quillRef.current.getEditor();
+            // Get all image elements in the editor
+            const images = Array.from(quillRef.current?.getEditor().root.querySelectorAll("img") || []);
 
 
+            const updatedImageMap = images.map((img: any, index: number) => ({
+                base64: img.src,
+                url: "", // Assuming you want the URL to be empty initially
+                counter: index + 1, // Counter starts from 1 (index + 1)
+                hash:generateMD5Hash(img.src)
+            }));
+
+            // Set the image map with the new array
+            setImageMapOnAccumulated(updatedImageMap);
+        };
+
+        useEffect(() => {
+            if (!quillRef.current) return;
+            const quill = quillRef.current.getEditor();
 
 
-        // Add keydown event listener
 
-        // Handle image pasting from clipboard
-        const handlePaste = async (event: ClipboardEvent) => {
-            if (!event.clipboardData) return;
 
-            // Extract pasted images from clipboard
-            const items = event.clipboardData.items;
-            for (const item of items) {
-                if (item.type.startsWith("image")) {
-                    event.preventDefault(); // Prevent Quill's default paste behavior
+            // Add keydown event listener
 
-                    const file = item.getAsFile();
-                    if (file) {
-                        // Convert file to base64 temporarily for immediate rendering
-                        const reader = new FileReader();
-                        reader.onload = async (e) => {
-                            const base64 = e.target?.result as string;
+            // Handle image pasting from clipboard
+            const handlePaste = async (event: ClipboardEvent) => {
+                if (!event.clipboardData) return;
 
-                            // Insert base64 image so it appears immediately
-                            const range = quill.getSelection();
-                            if (range) {
-                                quill.insertEmbed(range.index, "image", base64);
-                            }
+                // Extract pasted images from clipboard
+                const items = event.clipboardData.items;
+                for (const item of items) {
+                    if (item.type.startsWith("image")) {
+                        event.preventDefault(); // Prevent Quill's default paste behavior
 
-                            // Upload the image to the server
-                            const formData = new FormData();
-                            formData.append("file", file);
-                            console.log(formData)
-                            const data: ImageUploadResponse = await PostReplyImages(formData, "reply") as ImageUploadResponse;
-                            const imageUrl = data.url; // URL of the uploaded image
-                            // setCountOfPasted((prev) => prev + 1);                             // Add the base64 and URL to the imageMap
-                            // setImageClipboardMap((prev) => [...prev, { base64, url: imageUrl,counter:countOfPasted+1 }]);
-                            const base64_md5_hash=generateMD5Hash(base64);
-                            setCountOfPasted((prev) => {
-                                const newCount = prev + 1;
+                        const file = item.getAsFile();
+                        if (file) {
+                            // Convert file to base64 temporarily for immediate rendering
+                            const reader = new FileReader();
+                            reader.onload = async (e) => {
+                                const base64 = e.target?.result as string;
 
-                                setImageClipboardMap((prevMap) => [
-                                    ...prevMap,
-                                    { base64, url: imageUrl, counter: newCount,hash:base64_md5_hash }
-                                ]);
+                                // Insert base64 image so it appears immediately
+                                const range = quill.getSelection();
+                                if (range) {
+                                    quill.insertEmbed(range.index, "image", base64);
+                                }
 
-                                return newCount;
-                            });
-                        };
+                                // Upload the image to the server
+                                const formData = new FormData();
+                                formData.append("file", file);
+                                console.log(formData)
+                                const data: ImageUploadResponse = await PostReplyImages(formData, "reply") as ImageUploadResponse;
+                                const imageUrl = data.url; // URL of the uploaded image
+                                // setCountOfPasted((prev) => prev + 1);                             // Add the base64 and URL to the imageMap
+                                // setImageClipboardMap((prev) => [...prev, { base64, url: imageUrl,counter:countOfPasted+1 }]);
+                                const base64_md5_hash=generateMD5Hash(base64);
+                                setCountOfPasted((prev) => {
+                                    const newCount = prev + 1;
 
-                        reader.readAsDataURL(file); // Read the file as base64
+                                    setImageClipboardMap((prevMap) => [
+                                        ...prevMap,
+                                        { base64, url: imageUrl, counter: newCount,hash:base64_md5_hash }
+                                    ]);
+
+                                    return newCount;
+                                });
+                            };
+
+                            reader.readAsDataURL(file); // Read the file as base64
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        // Listen for the paste event
-        quill.root.addEventListener("paste", handlePaste);
+            // Listen for the paste event
+            quill.root.addEventListener("paste", handlePaste);
 
-        // Cleanup event listeners
-        return () => {
-            quill.root.removeEventListener("paste", handlePaste);
-        };
-    }, []);
+            // Cleanup event listeners
+            return () => {
+                quill.root.removeEventListener("paste", handlePaste);
+            };
+        }, []);
 
-    return <ReactQuill ref={quillRef} {...props}          value={editorContent}
-                       onChange={handleContentChange}/>;
-});
+        return <ReactQuill ref={quillRef} {...props}          value={editorContent}
+                           onChange={handleContentChange}/>;
+    });
 export const CustomQuill = forwardRef<ReactQuill, any>((props, ref) => {
     const quillRef = useRef<ReactQuill | null>(null);
 

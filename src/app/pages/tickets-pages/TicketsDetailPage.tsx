@@ -303,225 +303,225 @@ const TicketsDetailPage: React.FC = () => {
         <>
             <AnimatedRouteWrapper>
 
-            <Content>
-                <button className="btn btn-sm btn-light"
-                        onClick={() => navigate('/tickets', {state: {from: 'details'}})}>
-                    <i className="fa fa-arrow-left me-2"></i> Back
-                </button>
-                <TicketCard
-                    key={ticket.id}
-                    id={ticket.id}
-                    status={ticket.status.label}
-                    date={ticket.date}
-                    title={ticket.name}
-                    description={
-                        getMaxWords(ticket.content) ||
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-                    }
-                    assignedTo={{
-                        name: ticket.users_recipient,
-                    }} // Placeholder avatar
-                    raisedBy={{
-                        name: ticket.issuer.user_name,
-                        initials: ticket?.issuer?.user_name?.charAt(0),
-                    }}
-                    priority={ticket.priority.label}
-                    type={ticket.type.label}
-                    urgency={ticket.urgency.label}
-                    lastUpdate={ticket.date_mod}
-                    isStarred={ticket.is_starred} // Pass the pinned status
-                    isCurrentUserMaster={isCurrentUserMaster}
-                    assignees={assigneesFiltered}
-                    isDetailsPage={true}
+                <Content>
+                    <button className="btn btn-sm btn-light"
+                            onClick={() => navigate('/tickets', {state: {from: 'details'}})}>
+                        <i className="fa fa-arrow-left me-2"></i> Back
+                    </button>
+                    <TicketCard
+                        key={ticket.id}
+                        id={ticket.id}
+                        status={ticket.status.label}
+                        date={ticket.date}
+                        title={ticket.name}
+                        description={
+                            getMaxWords(ticket.content) ||
+                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+                        }
+                        assignedTo={{
+                            name: ticket.users_recipient,
+                        }} // Placeholder avatar
+                        raisedBy={{
+                            name: ticket.issuer.user_name,
+                            initials: ticket?.issuer?.user_name?.charAt(0),
+                        }}
+                        priority={ticket.priority.label}
+                        type={ticket.type.label}
+                        urgency={ticket.urgency.label}
+                        lastUpdate={ticket.date_mod}
+                        isStarred={ticket.is_starred} // Pass the pinned status
+                        isCurrentUserMaster={isCurrentUserMaster}
+                        assignees={assigneesFiltered}
+                        isDetailsPage={true}
 
-                />
+                    />
 
-                <div className="updates-container">
-                    <h1 className="updates-title">Ticket View</h1>
-                    <div className="tabs">
-                        <button
-                            className={`tab-item ${activeTab === "ticket-body" ? "active" : ""}`}
-                            onClick={() => setActiveTab("ticket-body")}
-                        >
-                            Ticket Body
-                        </button>
-                        <button
-                            className={`tab-item ${activeTab === "messages" ? "active" : ""}`}
-                            onClick={() => setActiveTab("messages")}
-                        >
-                            Messages ({replyCount})
-                        </button>
-                        <button
-                            className={`tab-item ${activeTab === "attachments" ? "active" : ""}`}
-                            onClick={() => setActiveTab("attachments")}
-                        >
-                            Attachments ({ticketAttachmentsData.length})
-                        </button>
-                    </div>
-                    <div className="tab-content">
-                        {activeTab === "ticket-body" && (
-                            <div>
-                                <HtmlContentViewer htmlContent={decodeHtml(ticket.content)} truncate={false}/>
-
-
-                            </div>
-                        )}
-
-                        {activeTab === "messages" && (
-                            <div className='d-flex flex-column gap-3'>
-                                {/* Iterate over the array of tickets */}
-                                {repliesLoading ? (
-                                    <div className="spinner-wrapper">
-                                        <div
-                                            className="spinner-border spinner-loading-data"
-                                            role="status"
-                                        >
-                                            <span className="visually-hidden">Loading...</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                ticketReplies?.map((reply: any, index: number) => {
-                                    const isExpanded = expandedReplies[reply.id] || index === 0; // First reply is always expanded
-
-                                    return (
-
-                                        <div key={reply.id}
-                                             className={`reply-card message-card ${reply.users_id === 2 ? "it-reply" : "user-ticket"}`}
-                                             onClick={() => expandReply(reply.id)}>
-                                            <div className="card-body">
-                                                <div className="header d-flex align-items-center">
-                                                    {/* Avatar Circle */}
-                                                    <div className="avatar-circle me-2">
-                                                        {reply.user_name?.charAt(0).toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        {/* User Name */}
-                                                        <h6 className="name mb-0">{reply.user_name}</h6>
-                                                        {/* Time Ago */}
-                                                        <p className="time text-muted small">{calculateTimeAgo(reply.date)}</p>
-                                                    </div>
-                                                </div>
-                                                {/* Message Content */}
-
-                                                <div className="message-content mt-3 d-flex"
-                                                     style={{position: 'relative'}}>
-                                                    <HtmlReplyViewer id={reply.id}
-                                                                     htmlContent={decodeHtml(reply.content)}
-                                                                     truncate={!expandedReplies[reply.id] && index !== 0}
-                                                                     onOverflowDetected={handleOverflowDetected} // Pass the callback
-
-                                                    />
-
-                                                </div>
-                                                {/* Footer */}
-                                                <div
-                                                    className="footer mt-3  border-top d-flex justify-content-between">
-                                                    <div className="d-flex gap-2 align-content-center">
-
-                                                        <AssigneeAvatars assignees={otherAssignees}/>
-                                                    </div>
-                                                    {/* Show More Button */}
-                                                    {isExpanded && (
-                                                        <button
-                                                            className="btn btn-link p-0 mt-2"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation(); // Prevent expanding when clicking "Show less"
-                                                                collapseReply(reply.id);
-                                                            }}
-                                                        >
-                                                            Show less
-                                                        </button>
-                                                    )}
-                                                    {!isExpanded && overflowStates[reply.id] ? (<button
-                                                        className="btn btn-link p-0 mt-2"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation(); // Prevent expanding when clicking "Show less"
-                                                            expandReply(reply.id);
-                                                        }}
-                                                    >
-                                                        Show more
-                                                    </button>) : ""}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                }))}
-                            </div>
-                        )}
-                        {activeTab === "attachments" && (
-                            <div>
-
-                                <Attachments attachments={ticketAttachmentsData}/>
-
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </Content>
-
-
-            <div className="relative-container">
-                {!showReply && (
-                    <div className="offcanvas custom-offcanvas show d-flex">
-                        <div className="offcanvas-header" style={{paddingBottom: "5px"}}> {/* Reduce padding */}
-                            <h5 className="offcanvas-title">Write a Reply</h5>
+                    <div className="updates-container">
+                        <h1 className="updates-title">Ticket View</h1>
+                        <div className="tabs">
                             <button
-                                type="button"
-                                className="btn-close"
-                                onClick={() => setShowReply(false)}
-                            ></button>
-                        </div>
-                        <div className="offcanvas-body" style={{paddingTop: "5px"}}> {/* Reduce padding */}
-                            {/* Quill Editor */}
-                            <CustomQuillImageClipboard value={reply} onChange={setReply} ref={quillRef}
-
-                                                       setImageMapOnAccumulated={setImageMapOnAccumulated}
-                                                       setImageClipboardMap={setImageClipboardMap}
-                                                       setCountOfPasted={setCountOfPasted}
-                                                       countOfPasted={countOfPasted}
-                                                       setEditorContent={setEditorContent}
-                                                       editorContent={editorContent}
-                                                       modules={{
-                                                           toolbar: [
-                                                               [{header: [1, 2, 3, false]}], // Headings
-                                                               ["bold", "italic", "underline", "strike"], // Text Formatting
-                                                               [{list: "ordered"}, {list: "bullet"}], // Lists
-                                                               ["blockquote", "code-block"], // Blockquote & Code
-                                                               ["link", "image"], // Links & Images
-                                                               [{align: []}], // Text Alignment
-                                                               ["clean"], // Clear Formatting
-                                                           ]
-                                                       }}/>
-
-                        </div>
-                        <div className="  d-flex gap-3">
-                            <div className="cancel-send d-flex align-items-between">
-                                <button className="btn btn-sm btn-primary mt-2"
-                                        onClick={() => setShowReply(true)}>Cancel
-                                </button>
-                                <button className="btn btn-sm btn-primary mt-2"
-                                        onClick={handleSendClick}>Send
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {showReply && (
-                    <div className="reply-footer-controls-content align-self-end d-flex">
-
-                        <div className="d-flex">
-                            <button
-                                className="btn btn-sm btn-primary btn-reply"
-                                onClick={() => setShowReply(!showReply)}
+                                className={`tab-item ${activeTab === "ticket-body" ? "active" : ""}`}
+                                onClick={() => setActiveTab("ticket-body")}
                             >
-                                Reply
+                                Ticket Body
+                            </button>
+                            <button
+                                className={`tab-item ${activeTab === "messages" ? "active" : ""}`}
+                                onClick={() => setActiveTab("messages")}
+                            >
+                                Messages ({replyCount})
+                            </button>
+                            <button
+                                className={`tab-item ${activeTab === "attachments" ? "active" : ""}`}
+                                onClick={() => setActiveTab("attachments")}
+                            >
+                                Attachments ({ticketAttachmentsData.length})
                             </button>
                         </div>
+                        <div className="tab-content">
+                            {activeTab === "ticket-body" && (
+                                <div>
+                                    <HtmlContentViewer htmlContent={decodeHtml(ticket.content)} truncate={false}/>
 
 
-                    </div>)}
-            </div>
-                </AnimatedRouteWrapper>
+                                </div>
+                            )}
+
+                            {activeTab === "messages" && (
+                                <div className='d-flex flex-column gap-3'>
+                                    {/* Iterate over the array of tickets */}
+                                    {repliesLoading ? (
+                                        <div className="spinner-wrapper">
+                                            <div
+                                                className="spinner-border spinner-loading-data"
+                                                role="status"
+                                            >
+                                                <span className="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        ticketReplies?.map((reply: any, index: number) => {
+                                            const isExpanded = expandedReplies[reply.id] || index === 0; // First reply is always expanded
+
+                                            return (
+
+                                                <div key={reply.id}
+                                                     className={`reply-card message-card ${reply.users_id === 2 ? "it-reply" : "user-ticket"}`}
+                                                     onClick={() => expandReply(reply.id)}>
+                                                    <div className="card-body">
+                                                        <div className="header d-flex align-items-center">
+                                                            {/* Avatar Circle */}
+                                                            <div className="avatar-circle me-2">
+                                                                {reply.user_name?.charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <div>
+                                                                {/* User Name */}
+                                                                <h6 className="name mb-0">{reply.user_name}</h6>
+                                                                {/* Time Ago */}
+                                                                <p className="time text-muted small">{calculateTimeAgo(reply.date)}</p>
+                                                            </div>
+                                                        </div>
+                                                        {/* Message Content */}
+
+                                                        <div className="message-content mt-3 d-flex"
+                                                             style={{position: 'relative'}}>
+                                                            <HtmlReplyViewer id={reply.id}
+                                                                             htmlContent={decodeHtml(reply.content)}
+                                                                             truncate={!expandedReplies[reply.id] && index !== 0}
+                                                                             onOverflowDetected={handleOverflowDetected} // Pass the callback
+
+                                                            />
+
+                                                        </div>
+                                                        {/* Footer */}
+                                                        <div
+                                                            className="footer mt-3  border-top d-flex justify-content-between">
+                                                            <div className="d-flex gap-2 align-content-center">
+
+                                                                <AssigneeAvatars assignees={otherAssignees}/>
+                                                            </div>
+                                                            {/* Show More Button */}
+                                                            {isExpanded && (
+                                                                <button
+                                                                    className="btn btn-link p-0 mt-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // Prevent expanding when clicking "Show less"
+                                                                        collapseReply(reply.id);
+                                                                    }}
+                                                                >
+                                                                    Show less
+                                                                </button>
+                                                            )}
+                                                            {!isExpanded && overflowStates[reply.id] ? (<button
+                                                                className="btn btn-link p-0 mt-2"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // Prevent expanding when clicking "Show less"
+                                                                    expandReply(reply.id);
+                                                                }}
+                                                            >
+                                                                Show more
+                                                            </button>) : ""}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }))}
+                                </div>
+                            )}
+                            {activeTab === "attachments" && (
+                                <div>
+
+                                    <Attachments attachments={ticketAttachmentsData}/>
+
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </Content>
+
+
+                <div className="relative-container">
+                    {!showReply && (
+                        <div className="offcanvas custom-offcanvas show d-flex">
+                            <div className="offcanvas-header" style={{paddingBottom: "5px"}}> {/* Reduce padding */}
+                                <h5 className="offcanvas-title">Write a Reply</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => setShowReply(false)}
+                                ></button>
+                            </div>
+                            <div className="offcanvas-body" style={{paddingTop: "5px"}}> {/* Reduce padding */}
+                                {/* Quill Editor */}
+                                <CustomQuillImageClipboard value={reply} onChange={setReply} ref={quillRef}
+
+                                                           setImageMapOnAccumulated={setImageMapOnAccumulated}
+                                                           setImageClipboardMap={setImageClipboardMap}
+                                                           setCountOfPasted={setCountOfPasted}
+                                                           countOfPasted={countOfPasted}
+                                                           setEditorContent={setEditorContent}
+                                                           editorContent={editorContent}
+                                                           modules={{
+                                                               toolbar: [
+                                                                   [{header: [1, 2, 3, false]}], // Headings
+                                                                   ["bold", "italic", "underline", "strike"], // Text Formatting
+                                                                   [{list: "ordered"}, {list: "bullet"}], // Lists
+                                                                   ["blockquote", "code-block"], // Blockquote & Code
+                                                                   ["link", "image"], // Links & Images
+                                                                   [{align: []}], // Text Alignment
+                                                                   ["clean"], // Clear Formatting
+                                                               ]
+                                                           }}/>
+
+                            </div>
+                            <div className="  d-flex gap-3">
+                                <div className="cancel-send d-flex align-items-between">
+                                    <button className="btn btn-sm btn-primary mt-2"
+                                            onClick={() => setShowReply(true)}>Cancel
+                                    </button>
+                                    <button className="btn btn-sm btn-primary mt-2"
+                                            onClick={handleSendClick}>Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showReply && (
+                        <div className="reply-footer-controls-content align-self-end d-flex">
+
+                            <div className="d-flex">
+                                <button
+                                    className="btn btn-sm btn-primary btn-reply"
+                                    onClick={() => setShowReply(!showReply)}
+                                >
+                                    Reply
+                                </button>
+                            </div>
+
+
+                        </div>)}
+                </div>
+            </AnimatedRouteWrapper>
 
 
 
