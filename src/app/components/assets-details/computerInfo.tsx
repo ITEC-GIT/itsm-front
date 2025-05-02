@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { AvatarComponent } from "../form/avatar";
+import { useNavigate } from "react-router-dom";
+import { ActionModal } from "../modal/ActionModal";
 
 const ComputerInfoComponent = ({ compData }: { compData: any }) => {
   if (!compData) return;
   const [showActionModal, setShowActionModal] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="row d-flex flex-column flex-md-row justify-content-between mb-4 ps-5 pe-2">
@@ -41,19 +44,36 @@ const ComputerInfoComponent = ({ compData }: { compData: any }) => {
       </div>
 
       <div className="col-12 col-md-6 d-flex flex-wrap justify-content-md-end mt-3 mt-md-0 p-0">
-        <button className="btn custom-btn me-2 mb-2">
+        <button
+          className="btn custom-btn me-2 mb-2"
+          onClick={() => navigate("/hyper-commands/remote-ssh")}
+        >
           <i className="bi bi-terminal"></i> Terminal
         </button>
         {/* <button className="btn custom-btn me-2 mb-2">
           <i className="bi bi-play-circle"></i> Run Script
         </button> */}
-        <button className="btn custom-btn me-2 mb-2">
+        <button
+          className="btn custom-btn me-2 mb-2"
+          onClick={() => navigate("/hyper-commands/remote-console")}
+        >
           <i className="bi bi-tv"></i> Remote
         </button>
-        <button className="btn custom-btn me-2 mb-2">
+        <button
+          className="btn custom-btn me-2 mb-2"
+          onClick={() => setShowActionModal(true)}
+        >
           <i className="bi bi-gear"></i> Actions
         </button>
       </div>
+      {showActionModal && (
+        <ActionModal
+          isOpen={showActionModal}
+          onClose={() => setShowActionModal(false)}
+          category={compData.category.name.toLowerCase()}
+          assetId={compData.id}
+        />
+      )}
     </div>
   );
 };
