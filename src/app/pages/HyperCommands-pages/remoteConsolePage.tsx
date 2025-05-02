@@ -178,7 +178,7 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
                         <div className="card-title mb-4 d-flex flex-column align-items-start w-100">
                           <h4 className="card-text w-100">{device.name}</h4>
                           <div className="w-100">
-                            <span className="badge text-white rounded-pill fs-6 fw-medium bg-primary">
+                            <span className=" text-black  fs-6 fw-medium ">
                               {device.hostname}
                             </span>
                           </div>
