@@ -541,7 +541,7 @@ const StatBox = ({
         backgroundColor: bg,
         minHeight: "100px",
         height: "100%",
-        borderRadius: "10px",
+        borderRadius: "5px",
       }}
     >
       <div className="d-flex flex-column justify-content-center">
