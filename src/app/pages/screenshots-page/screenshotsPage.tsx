@@ -49,7 +49,7 @@ export const dummyData = [
   },
 ];
 
-const ScreenshotGallery = () => {
+const ScreenshotGalleryPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
@@ -229,4 +229,4 @@ const ScreenshotGallery = () => {
   );
 };
 
-export { ScreenshotGallery };
+export { ScreenshotGalleryPage };

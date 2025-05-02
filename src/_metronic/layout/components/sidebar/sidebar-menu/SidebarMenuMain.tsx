@@ -46,6 +46,12 @@ const SidebarMenuMain = () => {
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
+        to="/camerapicture"
+        icon="switch"
+        title={t.cameraPicture}
+        fontIcon="bi-layers"
+      />
+      <SidebarMenuItem
         to="/voicerecorder"
         icon="switch"
         title={t.voiceRecorder}
