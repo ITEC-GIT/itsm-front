@@ -952,16 +952,16 @@ const TicketsPage: React.FC = () => {
                         item.name,
                         item.date,
                         item.date_mod,
-                        item.users_lastupdater,
-                        item.status_label,
-                        item.users_recipient,
+                        item.urgency.label,
+                        item.status.label,
+                        item.issuer.name,
                         item.content,
-                        item.urgency_label,
-                        item.impact_label,
-                        item.priority_label,
-                        item.type_label,
-                        item.date_creation,
-                        item.assignees
+                        item.issuer.name,
+                        item.department.name,
+                        item.location.name,
+                        item.priority.label,
+                        item.type.label,
+                        item.date_creation
                     ];
 
                     const itemValuesString = fieldsToFilter.join(" ").toLowerCase();
@@ -1003,9 +1003,9 @@ const TicketsPage: React.FC = () => {
             const matchesBranch =
                 frontFilter.branch.value === "" ||
                 String(ticket.department.id.toString()) === frontFilter.branch.value;
-            const matchesAssignee = frontFilter.assignee.value === "" || assignees.some(
-                (assignee) =>
-                    String(assignee.id) === frontFilter.assignee.value
+            const matchesAssignee = frontFilter.assignee.value === "" || ticket.assignees.some(
+                (assignee:any) =>
+                    String(assignee.assigned_to_id) === frontFilter.assignee.value
             );
 
 
@@ -1060,25 +1060,27 @@ const TicketsPage: React.FC = () => {
             return tickets.filter((ticket) => {
                 const matchesStatus =
                     frontFilter.status.value === "" ||
-                    String(ticket.status) === frontFilter.status.value;
+                    String(ticket.status.id) === frontFilter.status.value;
                 const matchesUrgency =
                     frontFilter.urgency.value === "" ||
-                    String(ticket.urgency) === frontFilter.urgency.value;
+                    String(ticket.urgency.id) === frontFilter.urgency.value;
                 const matchesPriority =
                     frontFilter.priority.value === "" ||
-                    String(ticket.priority) === frontFilter.priority.value;
+                    String(ticket.priority.id) === frontFilter.priority.value;
                 const matchesType =
                     frontFilter.type.value === "" ||
-                    String(ticket.type) === frontFilter.type.value;
+                    String(ticket.type.id) === frontFilter.type.value;
                 const matchesRequester =
                     frontFilter.requester.value === "" ||
-                    String(ticket.requester) === frontFilter.requester.value;
+                    String(ticket.issuer.id) === frontFilter.requester.value;
                 const matchesBranch =
                     frontFilter.branch.value === "" ||
-                    String(ticket.areas_id) === frontFilter.branch.value;
+                    String(ticket.department.id) === frontFilter.branch.value;
                 const matchesAssignee =
                     frontFilter.assignee.value === "" ||
-                    String(ticket.users_id_recipient) === frontFilter.assignee.value;
+                    ticket.assignees.some(
+                        (assignee: { assigned_to_id: any; }) => String(assignee.assigned_to_id) === frontFilter.assignee.value
+                    );
                 return (
                     matchesStatus &&
                     matchesUrgency &&

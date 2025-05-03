@@ -25,21 +25,15 @@ export const getMaxWords = (encodedHtml: string, maxWords: number = 40): string 
     const tempElement = document.createElement("div");
     tempElement.innerHTML = decodedHtml;
 
-    // Step 3: Extract text from headings and paragraphs
-    const headingsParagraphs = Array.from(tempElement.querySelectorAll("h1, h2, h3, h4, h5, h6, p"))
-        .map(el => el.textContent?.trim() || "")
-        .join(", ");
+    // Step 3: Normalize line breaks (<br>) into actual spaces
+    const brs = tempElement.querySelectorAll("br");
+    brs.forEach(br => br.replaceWith(" "));  // Replace <br> with a space
 
-    // Step 4: Extract words from headings and paragraphs
-    let words = headingsParagraphs.match(/\b\w+\b/g) || [];
+    // Step 4: Extract all visible text
+    const fullText = tempElement.textContent?.trim() || "";
 
-    // Step 5: If no words found, extract from lists
-    if (words.length === 0) {
-        const lists = Array.from(tempElement.querySelectorAll("ul, ol, li"))
-            .map(el => el.textContent?.trim() || "")
-            .join(", ");
-        words = lists.match(/\b\w+\b/g) || [];
-    }
+    // Step 5: Extract words using regex
+    const words = fullText.match(/\b\w+\b/g) || [];
 
     // Step 6: Return up to maxWords
     return words.slice(0, maxWords).join(" ");

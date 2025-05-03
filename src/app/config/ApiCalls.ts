@@ -28,16 +28,24 @@ import {
 
 const BASE_URL = import.meta.env.VITE_APP_ITSM_GLPI_SSH_URL;
 
-const errorCatch = (error: ErrorResponse) => {
-  console.log("ERROR API CALL", error, error?.response);
-  if (error.response) {
-    if (error.response?.data) {
-      return error.response?.data;
-    }
-    return error.response;
-  } else {
-    return error;
+const errorCatch = (error: unknown) => {
+  if (error instanceof Error) {
+    console.error("ERROR API CALL:", error.message);
+    console.error("STACK TRACE:", error.stack);
   }
+
+  // Axios-specific structure
+  if (axios.isAxiosError(error)) {
+    if (error.response?.data) {
+      console.error("AXIOS RESPONSE DATA:", error.response.data);
+      return error.response.data;
+    }
+    return error.response || error.message;
+  }
+
+  // Fallback
+  console.error("UNKNOWN ERROR:", error);
+  return error;
 };
 
 /** ******************************************************************************************* */
@@ -127,13 +135,24 @@ async function GetTicketWithReplies(ticketId: number) {
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
-
-async function GetTicketAttachments(ticketId: number) {
-  return await PrivateApiCall.get(`/Ticket/${ticketId}/Document/`)
-    .then((response) => response)
-    .catch((error: any) => errorCatch(error));
+export interface DocumentAttachment {
+  id: number;
+  name: string;
+  mime: string;
+  hash: string;
+  url: string;
+  created_at: string; // or Date if you parse it
 }
 
+async function GetTicketAttachments(ticketId: number): Promise<DocumentAttachment[] | null> {
+  try {
+    const response = await PrivateApiCallFastApi.get<DocumentAttachment[]>(`/tickets/get_documents/${ticketId}`);
+    return response.data;
+  } catch (error: any) {
+    errorCatch(error);
+    return null;
+  }
+}
 const SendRepliesAsync = async (
   ticketId: number,
   text: string

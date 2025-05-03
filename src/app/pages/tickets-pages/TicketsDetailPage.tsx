@@ -27,6 +27,7 @@ import 'react-quill/dist/quill.snow.css';
 import Attachments from "./Attachments.tsx";
 import AssigneeAvatars from "../../components/custom-components/AssigneeAvatars.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+import {CircularSpinner} from "../../components/spinners/circularSpinner.tsx";
 
 
 const TicketsDetailPage: React.FC = () => {
@@ -77,10 +78,10 @@ const TicketsDetailPage: React.FC = () => {
     const [ticketAttachmentsData, setTicketAttachmentsData] = useState<any>([]);
     useEffect(() => {
         const x = 0;
-        if (ticketAttachments == undefined || ticketAttachments.data == undefined) {
+        if (ticketAttachments == undefined || ticketAttachments == undefined) {
             return;
         }
-        setTicketAttachmentsData(ticketAttachments.data.data)
+        setTicketAttachmentsData(ticketAttachments)
         console.log(ticketAttachments)
     }, [ticketAttachments]);
     useEffect(() => {
@@ -372,12 +373,8 @@ const TicketsDetailPage: React.FC = () => {
                                     {/* Iterate over the array of tickets */}
                                     {repliesLoading ? (
                                         <div className="spinner-wrapper">
-                                            <div
-                                                className="spinner-border spinner-loading-data"
-                                                role="status"
-                                            >
-                                                <span className="visually-hidden">Loading...</span>
-                                            </div>
+                                            <CircularSpinner />
+
                                         </div>
                                     ) : (
                                         ticketReplies?.map((reply: any, index: number) => {
