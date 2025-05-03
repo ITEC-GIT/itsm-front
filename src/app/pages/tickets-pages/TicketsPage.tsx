@@ -364,7 +364,7 @@ const TicketsPage: React.FC = () => {
 
         },
         onError: (error) => {
-            alert("There was an error in searching for tickets: " + error.message);
+            console.log("There was an error in searching for tickets: " + error.message);
         },
         onSettled: () => {
             queryClient.invalidateQueries({queryKey: ["create"]}); // Updated invalidateQueries syntax
