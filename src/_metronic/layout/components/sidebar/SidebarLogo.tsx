@@ -93,22 +93,30 @@ const SidebarLogo = (props: PropsType) => {
     <div className="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
       <Link to="/dashboard">
         {config.layoutType === "dark-sidebar" ? (
-          <img
-            alt="Logo"
-            src={toAbsoluteUrl("media/svg/GRANDNET ICON - STAR.svg")}
-            className="h-25px app-sidebar-logo-default"
-          />
+            <div>
+              <img
+                  alt="Logo"
+                  src={toAbsoluteUrl("media/svg/GRANDNET ICON - STAR.svg")}
+                  className="h-30px app-sidebar-logo-default"
+              />
+              <img
+                  alt="Logo"
+                  src={toAbsoluteUrl("media/svg/GRANDNET_LOGO_RGB.svg")}
+                  className="h-30px app-sidebar-logo-default"
+              />
+            </div>
+
         ) : (
-          <>
-            <img
-              alt="Logo"
-              src={toAbsoluteUrl("media/svg/GRANDNET ICON - STAR.svg")}
-              className="h-25px app-sidebar-logo-default theme-light-show"
+            <>
+              <img
+                  alt="Logo"
+                  src={toAbsoluteUrl("media/svg/GRANDNET ICON - STAR.svg")}
+                  className="h-30px app-sidebar-logo-default theme-light-show"
             />
             <img
               alt="Logo"
               src={toAbsoluteUrl("media/svg/GRANDNET ICON - STAR.svg")}
-              className="h-25px app-sidebar-logo-default theme-dark-show"
+              className="h-30px app-sidebar-logo-default theme-dark-show"
             />
           </>
         )}
