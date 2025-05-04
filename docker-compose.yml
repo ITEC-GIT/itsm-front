@@ -5,25 +5,11 @@ services:
     build:
       context: .
       args:
-        IMAGE_TAG: ${TAG} # Dynamically passed from GitHub Actions
-    image: react-itsm-image:${TAG} # Set the dynamic tag for the image
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "3001:3000"
+        IMAGE_TAG: ${TAG}
+    image: react-itsm-image:${TAG}
+    network_mode: host
     restart: unless-stopped
     env_file:
-      - /home/glpi/main/.env # Include the .env file
-
-# version: '3'
-# services:
-#   react-ui:
-#     container_name: react-itsm-ui
-#     build:
-#       context: .
-#       args:
-#         IMAGE_TAG: ${TAG} # Dynamically passed from GitHub Actions
-#     image: react-itsm-image:${TAG} # Set the dynamic tag for the image
-#     ports:
-#       - "3000:3000"
-#     restart: unless-stopped
+      - /home/glpi/main/.env
+    environment:
+      - PORT=3033
