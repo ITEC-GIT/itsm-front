@@ -42,5 +42,5 @@ ENV VITE_APP_ITSM_VNC=http://cobalt.pulsar.ao:3021
 RUN npm run build
 
 # Serve with Vite preview server on port 3001
-EXPOSE 3033
-CMD ["npm", "run", "preview", "--", "--port", "3033", "--host"]
+EXPOSE 3014
+CMD ["npm", "run", "preview", "--", "--port", "3014", "--host"]
