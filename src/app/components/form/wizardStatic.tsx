@@ -223,8 +223,8 @@ export const WizardStatic = ({
         {currentStep === 1 && (
           <div className="d-flex flex-column">
             <div
-              className="col-sm-6 col-md-4 col-lg-4 col-xl-3 mb-4 p-2"
-              style={{ height: "90px" }}
+              className="col-sm-6 col-md-4 col-lg-4 col-xl-3 mb-4"
+              style={{ height: "90px", paddingLeft: "0.5px" }}
             >
               <label htmlFor="deviceSelect" className="form-label required">
                 Select Devices

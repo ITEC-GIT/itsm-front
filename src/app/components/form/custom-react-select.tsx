@@ -11,7 +11,7 @@ interface CustomReactSelectProps {
   isClearable?: boolean;
 }
 const customStyles = {
-  control: (provided: any) => ({
+  control: (provided: any, state: any) => ({
     ...provided,
     minHeight: 42,
     overflowY: "auto",
@@ -19,6 +19,11 @@ const customStyles = {
     border: "1px solid var(--bs-gray-300)",
     borderRadius: "0.375rem",
     color: "var(--bs-gray-700)",
+    boxShadow: "none",
+    outline: "none", 
+    "&:hover": {
+      borderColor: "var(--bs-gray-300)",
+    },
   }),
   valueContainer: (provided: any) => ({
     ...provided,
@@ -28,7 +33,7 @@ const customStyles = {
   }),
   menu: (provided: any) => ({
     ...provided,
-    zIndex: 99999, 
+    zIndex: 99999,
     position: "absolute",
   }),
   menuList: (provided: any) => ({
