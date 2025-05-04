@@ -219,7 +219,14 @@ export const WizardStatic = ({
     <div className=" bg-white">
       <StepNavigation steps={steps} currentStep={currentStep} />
 
-      <div className="col-12 mt-4" style={{ height: "140px" }}>
+      <div
+        className="col-12 mt-4 p-5"
+        style={{
+          height: "140px",
+          borderTop: "1px solid rgba(0, 0, 0, .12)",
+          borderBottom: "1px solid rgba(0, 0, 0, .12)",
+        }}
+      >
         {currentStep === 1 && (
           <div className="d-flex flex-column">
             <div
