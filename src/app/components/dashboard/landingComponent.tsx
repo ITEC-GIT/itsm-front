@@ -21,10 +21,15 @@ interface GradientPieChartProps {
 const PieChart = ({
   gradientColor,
   title,
-  series,
-  labels,
+  series = [],
+  labels = [],
 }: GradientPieChartProps) => {
-  const colorsArray = Array.isArray(gradientColor)
+  const isEmpty = !series.some((val) => val > 0);
+  const displaySeries = isEmpty ? [1] : series;
+  const displayLabels = isEmpty ? ["No data"] : labels;
+  const colorsArray = isEmpty
+    ? ["#d3d3d3"]
+    : Array.isArray(gradientColor)
     ? gradientColor
     : [gradientColor];
 
@@ -38,13 +43,42 @@ const PieChart = ({
     fill: {
       type: "fill",
     },
+    tooltip: {
+      enabled: !isEmpty,
+    },
+    states: {
+      active: {
+        filter: {
+          type: isEmpty ? "none" : "lighten",
+        },
+      },
+      hover: {
+        filter: {
+          type: isEmpty ? "none" : "lighten",
+        },
+      },
+    },
     plotOptions: {
       pie: {
         expandOnClick: false,
         donut: {
           size: "65%",
           labels: {
-            show: false,
+            show: true,
+            name: {
+              show: false,
+            },
+            value: {
+              show: false,
+            },
+            total: {
+              show: isEmpty,
+              label: undefined,
+              fontSize: "14px",
+              fontWeight: 400,
+              color: "#888",
+              formatter: () => "No available data",
+            },
           },
         },
         offsetY: 0,
@@ -53,12 +87,6 @@ const PieChart = ({
     },
     dataLabels: {
       enabled: false,
-      // style: {
-      //   fontSize: "12px",
-      //   fontFamily: "Arial",
-      //   fontWeight: "bold",
-      //   colors: ["#fff"],
-      // },
       dropShadow: {
         enabled: false,
       },
@@ -72,7 +100,7 @@ const PieChart = ({
     legend: {
       show: false,
     },
-    labels: labels || [],
+    labels: labels,
     responsive: [
       {
         breakpoint: 768,
@@ -100,22 +128,20 @@ const PieChart = ({
   return (
     <div
       style={{
-        aspectRatio: "1/1",
         width: "100%",
-        position: "relative",
+        height: "100%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "150px",
-        minHeight: "200px",
+        position: "relative",
       }}
     >
       <ReactApexChart
         options={options}
-        series={series}
+        series={displaySeries}
         type="donut"
-        height="100%"
-        width="100%"
+        height="90%"
+        width="90%"
       />
       {title && (
         <div
@@ -729,22 +755,24 @@ const DashboardLanding = () => {
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
           <div className="card p-2" style={{ height: 250 }}>
             <span className="text-center">Warranty Distribution</span>
-            <DonutChart
-              data={donutData(
-                dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels,
-                dashboardData?.assets?.totalAssetsInWarrentyVsOut?.series
-              )}
+            <PieChart
+              labels={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels}
+              series={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.series}
+              gradientColor={["#c91a20", "#0089a1"]}
             />
           </div>
           <div className="card p-2 mt-3" style={{ height: 250 }}>
             <span className="text-center">Agent installation Distribution</span>
-            <DonutChart
-              data={donutData(
+            <PieChart
+              labels={
                 dashboardData?.assets?.totalComputersAgentDistribution
-                  ?.labels ?? [],
+                  ?.labels ?? []
+              }
+              series={
                 dashboardData?.assets?.totalComputersAgentDistribution
                   ?.series ?? []
-              )}
+              }
+              gradientColor={["#c91a20", "#0089a1"]}
             />
           </div>
         </div>
@@ -752,21 +780,18 @@ const DashboardLanding = () => {
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mt-3 mt-md-0">
           <div className="card p-2" style={{ height: 250 }}>
             <span className="text-center">Tickets Status Distribution</span>
-            <DonutChartClickable
-              onSelect={(label) => handleStatusTrigger(label)}
-              data={donutData(
-                dashboardData?.tickets?.ticketsStatusDist?.labels ?? [],
-                dashboardData?.tickets?.ticketsStatusDist?.series ?? []
-              )}
+            <PieChart
+              labels={dashboardData?.tickets?.ticketsStatusDist?.labels ?? []}
+              series={dashboardData?.tickets?.ticketsStatusDist?.series ?? []}
+              gradientColor={["#c91a20", "#0089a1", "#ffa55d", "#314315"]}
             />
           </div>
           <div className="card p-2 mt-3" style={{ height: 250 }}>
             <span className="text-center">Tickets Category Distribution</span>
-            <DonutChart
-              data={donutData(
-                dashboardData?.tickets?.ticketsByCategory?.labels ?? [],
-                dashboardData?.tickets?.ticketsByCategory?.series ?? []
-              )}
+            <PieChart
+              labels={dashboardData?.tickets?.ticketsByCategory?.labels ?? []}
+              series={dashboardData?.tickets?.ticketsByCategory?.series ?? []}
+              gradientColor={["#c91a20", "#0089a1", "#ffa55d"]}
             />
           </div>
         </div>
