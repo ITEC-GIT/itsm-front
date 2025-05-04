@@ -13,12 +13,7 @@ import { GetPrivateIPAddressAPI } from "../../config/ApiCalls";
 import { useNavigate } from "react-router-dom";
 import { OkButton } from "../../components/form/stepsButton";
 import { SoftwareInstallationStaticPage } from "./softwareInstallationStaticDashboardPage";
-
-export interface PrivateIpSchema {
-  id: number;
-  private_ip_address: string;
-  mid: number;
-}
+import { PrivateIpSchema } from "../../types/common";
 
 const RemoteConsoleView = () => {
   const [privateIps, setPrivateIps] = useState<PrivateIpSchema[]>([]);

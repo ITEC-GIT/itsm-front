@@ -3,6 +3,12 @@ import { ActionIcons } from "../../components/hyper-commands/action-icons.tsx";
 import { TerminalDisplay } from "../../components/Remote SSH/terminalDisplay.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import { DisconnectButton } from "../../components/form/stepsButton.tsx";
+import { CustomReactSelect } from "../../components/form/custom-react-select.tsx";
+import { BasicType, PrivateIpSchema } from "../../types/common.ts";
+import { useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms.ts";
+import { StaticDataType } from "../../types/filtersAtomType.ts";
+import { GetPrivateIPAddressAPI } from "../../config/ApiCalls.ts";
 
 const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -22,6 +28,18 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [privateIps, setPrivateIps] = useState<PrivateIpSchema[]>([]);
+  const [selectedDevice, setSelectedDevice] = useState<BasicType | null>(null);
+
+  const [deviceError, setDeviceError] = useState(false);
+
+  const compOptions = (staticData.computers || [])
+    .filter((device) => privateIps.some((ip) => ip.mid === device.id))
+    .map((device) => ({
+      value: device.id ? Number(device.id) : 0,
+      label: device.name || "",
+    }));
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
@@ -118,6 +136,42 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     }
   };
 
+  const handleDeviceChange = (selectedOption: any) => {
+    setDeviceError(false);
+
+    if (selectedOption) {
+      const selectedComputerId = Number(selectedOption.value);
+      const selectedIp = privateIps.find((ip) => ip.mid === selectedComputerId);
+
+      setSelectedDevice({
+        id: selectedComputerId,
+        name: selectedOption.label,
+      });
+
+      if (selectedIp?.private_ip_address) {
+        setIpAddress(selectedIp.private_ip_address);
+      } else {
+        setIpAddress("");
+      }
+    } else {
+      setSelectedDevice(null);
+      setIpAddress("");
+    }
+  };
+
+  useEffect(() => {
+    const fetchPrivateIps = async () => {
+      try {
+        const response = await GetPrivateIPAddressAPI();
+        setPrivateIps(response.data);
+      } catch (error) {
+        console.error("Failed to fetch private IP addresses:", error);
+      }
+    };
+
+    fetchPrivateIps();
+  }, []);
+
   return (
     <AnimatedRouteWrapper>
       <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
@@ -138,18 +192,24 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                 <div>
                   <div className="row mb-4">
                     <div className="col-md-6 mb-4" style={{ height: "85px" }}>
-                      <label className="custom-label required">SSH User</label>
-                      <input
-                        type="text"
-                        className="form-control custom-placeholder custom-input-height"
-                        placeholder="Enter Username"
-                        value={username}
-                        onChange={(e) => {
-                          setUserError(false);
-                          setUsername(e.target.value);
-                        }}
-                        autoComplete="new-username"
-                        required
+                      <label htmlFor="userId" className="form-label required">
+                        Computer
+                      </label>
+                      <CustomReactSelect
+                        options={compOptions}
+                        value={
+                          selectedDevice
+                            ? {
+                                value: selectedDevice.id
+                                  ? Number(selectedDevice.id)
+                                  : 0,
+                                label: selectedDevice.name || "",
+                              }
+                            : null
+                        }
+                        onChange={handleDeviceChange}
+                        placeholder="Select Device"
+                        isClearable={false}
                       />
                       {userError && (
                         <small

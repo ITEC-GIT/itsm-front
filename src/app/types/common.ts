@@ -24,7 +24,13 @@ export type OptionsType = {
   label: string;
 };
 
-export type BasicType  = {
+export type BasicType = {
   id: number;
   name: string;
 };
+
+export interface PrivateIpSchema {
+  id: number;
+  private_ip_address: string;
+  mid: number;
+}

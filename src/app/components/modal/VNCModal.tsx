@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { CustomReactSelect } from "../form/custom-react-select";
 import { SelectDeviceType } from "../../types/devicesTypes";
-import { BasicType } from "../../types/common";
+import { BasicType, PrivateIpSchema } from "../../types/common";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { GetPrivateIPAddressAPI } from "../../config/ApiCalls";
 
@@ -23,11 +23,6 @@ interface RemoteConsoleModalProps {
   >;
 }
 
-export interface PrivateIpSchema {
-  id: number;
-  private_ip_address: string;
-  mid: number;
-}
 
 const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
   onClose,
@@ -96,7 +91,7 @@ const RemoteConsoleModal: React.FC<RemoteConsoleModalProps> = ({
     const fetchPrivateIps = async () => {
       try {
         const response = await GetPrivateIPAddressAPI();
-        setPrivateIps(response.data); // assuming response.data is PrivateIpSchema[]
+        setPrivateIps(response.data);
       } catch (error) {
         console.error("Failed to fetch private IP addresses:", error);
       }
