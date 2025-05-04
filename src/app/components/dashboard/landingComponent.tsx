@@ -669,14 +669,14 @@ const DashboardLanding = () => {
       bg: "var(--color-dark-gray)",
       color: "var(--color-light-gray)",
       icon: "fa-ticket",
-      number: dashboardData.tickets.todaysTickets ?? 0,
+      number: dashboardData.tickets?.todaysTickets ?? 0,
       title: "Today's Tickets",
     },
     {
       bg: "var(--color-dark-red)",
       color: "var(--color-light-red)",
       icon: "fa-cubes",
-      number: dashboardData.management.totalSoftwares ?? 0,
+      number: dashboardData.management?.totalSoftwares ?? 0,
       title: "Software",
     },
     {
