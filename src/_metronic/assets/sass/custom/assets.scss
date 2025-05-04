@@ -115,6 +115,11 @@
   color: #00a86b !important;
 }
 
+.patch-status-icon-red {
+  font-size: 4rem !important;
+  color: #fe4f2d !important;
+}
+
 .patch-status-text {
   color: #212529 !important;
   font-weight: bold !important;
@@ -125,13 +130,18 @@
   justify-content: center !important;
   align-items: center !important;
   color: white !important;
-  width: 40px !important;
-  height: 40px !important;
+  width: 50px !important;
+  height: 50px !important;
   margin-right: 10px !important;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .net-traffic-element i {
-  font-size: 1.5rem !important;
+  font-size: 1.2rem !important;
+  line-height: 1 !important;
+  display: block !important;
+  text-align: center;
 }
 
 .net-traffic-element.download {

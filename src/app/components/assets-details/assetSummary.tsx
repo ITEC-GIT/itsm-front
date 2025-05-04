@@ -12,13 +12,40 @@ const AssetSummaryComponent = () => {
   const [metrics, setMetrics] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const [firewallProfiles, setFirewallProfiles] = useState<
+    { STATUS: string; PROFILE: string }[]
+  >([]);
+
+  const [antivirusList, setAntivirusList] = useState<
+    { NAME: string; ENABLED: string }[]
+  >([]);
+
+  const [warrantyValid, setWarrantyValid] = useState<boolean | null>(null);
+  const [warrantyExpiration, setWarrantyExpiration] = useState<string | null>(
+    null
+  );
+
   useEffect(() => {
     if (!selectedComputerInfo?.id) return;
 
     setIsLoading(true);
     GetComputerMetricsAPI(selectedComputerInfo.id)
       .then((data) => {
-        setMetrics(mapMetricsToObject(data.data));
+        const metricArray = data?.data?.metrics?.metric || [];
+        console.log(metricArray);
+        setMetrics(mapMetricsToObject(metricArray));
+
+        const firewallData = data?.data?.firewall?.specific_attributes || [];
+        setFirewallProfiles(firewallData);
+
+        const antivirusData = data?.data?.antivirus?.specific_attributes || [];
+        setAntivirusList(antivirusData);
+
+        const expirationDate = data?.data?.antivirus?.warranty_expiration;
+        if (expirationDate) {
+          setWarrantyExpiration(expirationDate);
+          setWarrantyValid(new Date(expirationDate) < new Date());
+        }
       })
       .finally(() => setIsLoading(false));
   }, [selectedComputerInfo?.id]);
@@ -34,7 +61,7 @@ const AssetSummaryComponent = () => {
         </div>
       ) : (
         <>
-          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+          <div className="col-md-4 col-lg-4 col-xl-4 mb-3">
             <StatCard
               leftTop={`<i class='bi bi-cpu text-muted'>&nbsp;CPU</i> <span class='text-dark fw-bold'> ${
                 (Number(metrics["clock-speed-mhz"]) / 1000).toFixed(2) || "-"
@@ -43,7 +70,7 @@ const AssetSummaryComponent = () => {
               strokeColor={{ start: "#800020", end: "#ff69b4" }}
             />
           </div>
-          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+          <div className="col-md-4 col-lg-4 col-xl-4 mb-3">
             <StatCard
               leftTop={`<i class='bi bi-cpu text-muted'>&nbsp;CPU Model</i>`}
               center={`<div class="text-center fw-bold bg-orange p-2 rounded-lg">${
@@ -53,36 +80,48 @@ const AssetSummaryComponent = () => {
               }</div>`}
             />
           </div>
-          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+          <div className="col-md-4 col-lg-4 col-xl-4 mb-3">
             <StatCard
-              leftTop={`<i class='bi bi-sd-card-fill text-muted'>&nbsp;Memory</i> <span class='text-dark fw-bold'>${Number(
-                metrics["memory_usage"] || 0
+              leftTop={`<i class='bi bi-sd-card-fill text-muted'>&nbsp;Memory</i> <span class='text-dark fw-bold'>${(
+                Number(metrics["memory_usage"] || 0) /
+                100 /
+                Number(metrics["Physical Memory"] || 1)
               ).toFixed(2)}% </span>`}
               center={Number(metrics["memory_usage"] || 0)}
-              rightBottom={`<div><i class='text-muted'>Total </i> <span class='text-dark fw-bold'>~${(
-                (Number(metrics["memory_usage"]) / 100) *
-                32
+              rightBottom={`<div><i class='text-muted'>Total </i> <span class='text-dark fw-bold'>${Number(
+                metrics["Physical Memory"] || 0
               ).toFixed(2)} GB</span></div>`}
               strokeColor={{ start: "#2596be", end: "#00ff00" }}
             />
           </div>
 
-          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+          <div className="col-md-4 col-lg-4 col-xl-4 mb-3">
             <StatCard
-              leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Antivirus</i>`}
-              center={` <div class='d-flex flex-column align-items-center'>
-                        <div class='icon-element'>
-                          <i class='bi bi-shield-shaded icon-green'></i>
-                        </div>
-                        <span class='icon-label'>Window Defender</span>
-                        <span class='icon-status'>Active - UP TO DATE</span>
-                      </div>
-                   `}
+              leftTop={`<i class='bi bi-patch-check text-muted'></i>&nbsp;Warranty Status`}
+              center={`
+      <div class='d-flex flex-column align-items-center'>
+        <div class='icon-element'>
+         <i class='bi ${
+           warrantyValid
+             ? "bi-check-circle-fill patch-status-icon-green"
+             : "bi-x-circle-fill patch-status-icon-red"
+         } '></i>
+</div>
+<span class='icon-status'>${warrantyValid ? "Active until " : "Expired on "}${
+                warrantyExpiration
+                  ? new Date(warrantyExpiration).toLocaleDateString()
+                  : ""
+              }</span>
+
+
+      </div>
+    `}
             />
           </div>
-          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+
+          <div className="col-md-4 col-lg-4 col-xl-4 mb-3">
             <StatCard
-              leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Antivirus</i>`}
+              leftTop={`<i class='bi bi-shield-shaded text-muted'>&nbsp;Interface</i>`}
               center={` <div class="d-flex align-items-center mb-3">
                 <div class="net-traffic-element rounded-circle download" >
                     <i class="bi bi-arrow-down text-white "></i>
@@ -111,7 +150,7 @@ const AssetSummaryComponent = () => {
             </div>`}
             />
           </div>
-          <div className="col-md-5 col-lg-4 col-xl-4 mb-3">
+          <div className="col-md-4 col-lg-4 col-xl-4 mb-3">
             <StatCard
               center={` <div class="d-flex align-items-center mb-3">
                 <div class="net-traffic-element rounded-circle download" >
@@ -137,49 +176,76 @@ const AssetSummaryComponent = () => {
             </div>`}
             />
           </div>
+
           <div className="col-12 mb-3">
             <StatCard
-              leftTop={`<i class='bi bi-layers text-muted'>&nbsp;System Summary</i>`}
-              center={`<div class="d-flex align-items-center flex-wrap justify-content-between gap-5 px-2 w-100">
-      <div class="d-flex align-items-center gap-3">
-        <div class="icon-element  text-white mx-auto mb-1 bg-green">
-          <i class="bi bi-cpu fs-5 text-white"></i>
-        </div>
-        <div>
-          <div class="fw-bold">${metrics["total-processes"] || "0"}</div>
-          <small class="text-muted">Processes</small>
-        </div>
-        
-      </div>
-      <div class="d-flex align-items-center gap-3">
-        <div class="icon-element  text-white mx-auto mb-1 bg-blue">
-          <i class="bi bi-threads fs-5 text-white"></i>
-        </div>
-        <div>
-          <div class="fw-bold">${metrics["total-threads"] || "0"}</div>
-          <small class="text-muted">Threads</small>
-        </div>
-      </div>
-      <div class="d-flex align-items-center gap-3">
-        <div class="icon-element text-white mx-auto mb-1 bg-orange">
-          <i class="bi bi-diagram-3-fill fs-5 text-white"></i>
-        </div>
-        <div>
-          <div class="fw-bold">${metrics["total-handles"] || "0"}</div>
-          <small class="text-muted">Handles</small>
-        </div>
-      </div>
-    </div>`}
-              rightBottom={`<div class='text-center text-muted mt-2'>
-      <i class="bi bi-clock-history me-1 text-white"></i>
-      <span class='fw-bold'>Uptime:</span> ${
-        metrics["uptime"] || ""
-      }
-    </div>`}
+              isCenter={false}
+              leftTop={`<i class='bi bi-shield-shaded text-muted'></i>&nbsp;Antivirus Status`}
+              center={
+                antivirusList.length > 0
+                  ? `
+        <div class="row g-3">
+          ${antivirusList
+            .map(
+              (antivirus) => `
+            <div class="col-12 col-sm-6 col-lg-4">
+              <div class="d-flex align-items-center gap-3 p-3">
+                <i class="bi ${
+                  antivirus.ENABLED === "1"
+                    ? "bi-check-circle-fill patch-status-icon-green"
+                    : "bi-x-circle-fill patch-status-icon-red"
+                } fs-5"></i>
+                <div>
+                  <div class="fw-bold">${antivirus.NAME || "Unnamed AV"}</div>
+                  <small class="text-muted">${
+                    antivirus.ENABLED === "1" ? "ENABLED" : "DISABLED"
+                  }</small>
+                </div>
+              </div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>`
+                  : `<div class='text-muted'>No antivirus data available</div>`
+              }
             />
           </div>
 
           <div className="col-12 mb-3">
+            <StatCard
+              isCenter={false}
+              leftTop={`<i class='bi bi-fire text-muted'>&nbsp;Firewall Status</i>`}
+              center={
+                firewallProfiles.length > 0
+                  ? `
+      <div class="row g-3">
+        ${firewallProfiles
+          .map(
+            (profile) => `
+            <div class="col-12 col-sm-6 col-lg-4">
+              <div class="d-flex align-items-center gap-3 p-3 ">
+                <i class="bi ${
+                  profile.STATUS === "on"
+                    ? "bi-check-circle-fill patch-status-icon-green"
+                    : "bi-x-circle-fill patch-status-icon-red"
+                } fs-5"></i>
+                <div>
+                  <div class="fw-bold">${profile.PROFILE}</div>
+                  <small class="text-muted">${profile.STATUS.toUpperCase()}</small>
+                </div>
+              </div>
+            </div>
+          `
+          )
+          .join("")}
+      </div>`
+                  : `<div class='text-muted'>No firewall data available</div>`
+              }
+            />
+          </div>
+
+          {/* <div className="col-12 mb-3">
             <StatCard
               leftTop={`<i class='bi bi-fire text-muted'>&nbsp;Firewall Status</i>`}
               center={`<div class="icon-element">
@@ -188,7 +254,7 @@ const AssetSummaryComponent = () => {
                   `}
               rightBottom={`<span class='text-dark fw-bold'>Not Installed</span>`}
             />
-          </div>
+          </div> */}
           <div className="col-12 mb-3">
             <StatCard
               leftTop={`<i class='bi bi-nvme text-muted'>&nbsp; Disk</i>
@@ -198,6 +264,7 @@ const AssetSummaryComponent = () => {
     <i class='text-muted'> Available</i>`}
               center={
                 <ProgressBar
+                  type={metrics["disk_type_c"]}
                   used={
                     (+metrics["disk_total_c"] - +metrics["disk_free_c"]) /
                     1024 ** 3
@@ -219,6 +286,7 @@ const AssetSummaryComponent = () => {
     <i class='text-muted'> Available</i>`}
                 center={
                   <ProgressBar
+                    type={metrics["disk_type_d"]}
                     used={
                       (+metrics["disk_total_d"] - +metrics["disk_free_d"]) /
                       1024 ** 3
@@ -231,6 +299,46 @@ const AssetSummaryComponent = () => {
               />
             </div>
           )}
+          <div className="col-12 mb-3">
+            <StatCard
+              isCenter={false}
+              leftTop={`<i class='bi bi-layers text-muted'>&nbsp;System Summary</i>`}
+              center={`<div class="d-flex align-items-center flex-wrap justify-content-between gap-5 px-2 w-100">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-element  text-white mx-auto mb-1 bg-green">
+          <i class="bi bi-cpu fs-2 text-white"></i>
+        </div>
+        <div>
+          <div class="fw-bold">${metrics["total-processes"] || "0"}</div>
+          <small class="text-muted">Processes</small>
+        </div>
+        
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-element  text-white mx-auto mb-1 bg-blue">
+          <i class="bi bi-threads fs-2 text-white"></i>
+        </div>
+        <div>
+          <div class="fw-bold">${metrics["total-threads"] || "0"}</div>
+          <small class="text-muted">Threads</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-element text-white mx-auto mb-1 bg-orange">
+          <i class="bi bi-diagram-3-fill fs-2 text-white"></i>
+        </div>
+        <div>
+          <div class="fw-bold">${metrics["total-handles"] || "0"}</div>
+          <small class="text-muted">Handles</small>
+        </div>
+      </div>
+    </div>`}
+              rightBottom={`<div class='text-center text-muted mt-2'>
+      <i class="bi bi-clock-history me-1 text-white"></i>
+      <span class='fw-bold'>Uptime:</span> ${metrics["uptime"] || ""}
+    </div>`}
+            />
+          </div>
         </>
       )}
     </div>

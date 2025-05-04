@@ -6,6 +6,7 @@ interface StatCardProps {
   rightBottom?: string;
   center?: string | number | React.ReactNode;
   strokeColor?: { start: string; end: string };
+  isCenter?: boolean;
 }
 
 const getColorByPercentage = (percentage: number): string => {
@@ -21,6 +22,7 @@ const StatCard: React.FC<StatCardProps> = ({
   rightBottom,
   center,
   strokeColor,
+  isCenter = true,
 }) => {
   let renderedCenter: React.ReactNode;
 
@@ -28,13 +30,17 @@ const StatCard: React.FC<StatCardProps> = ({
     .toString(36)
     .substr(2, 9)}`;
 
-  const gradientColors = strokeColor || { start: "#ff0000", end: "#00ff00" }; // Default gradient
+  const gradientColors = strokeColor || { start: "#ff0000", end: "#00ff00" };
 
   if (typeof center === "number") {
     renderedCenter = (
       <div
         className="progress-circle"
-        style={{ position: "relative", width: "100px", height: "100px" }}
+        style={{
+          position: "relative",
+          width: "100px",
+          height: "100px",
+        }}
       >
         <svg width="100" height="100" viewBox="0 0 100 100">
           <defs>
@@ -44,7 +50,6 @@ const StatCard: React.FC<StatCardProps> = ({
             </linearGradient>
           </defs>
 
-          {/* Background Circle */}
           <circle
             cx="50"
             cy="50"
@@ -54,7 +59,6 @@ const StatCard: React.FC<StatCardProps> = ({
             fill="none"
           />
 
-          {/* Gradient Stroke Circle */}
           <circle
             cx="50"
             cy="50"
@@ -86,7 +90,10 @@ const StatCard: React.FC<StatCardProps> = ({
     );
   } else if (typeof center === "string") {
     renderedCenter = (
-      <div className="fw-bold" dangerouslySetInnerHTML={{ __html: center }} />
+      <div
+        className={`fw-bold ${!isCenter ? "w-100" : ""}`}
+        dangerouslySetInnerHTML={{ __html: center }}
+      />
     );
   } else {
     renderedCenter = <div className="w-100 p-5">{center}</div>;
@@ -96,7 +103,8 @@ const StatCard: React.FC<StatCardProps> = ({
     <div
       className="card rounded-3 p-0"
       style={{
-        height: "200px",
+        minHeight: "200px",
+        height: "100%",
       }}
     >
       <div className="card-body d-flex flex-column justify-content-between h-100 p-2">
