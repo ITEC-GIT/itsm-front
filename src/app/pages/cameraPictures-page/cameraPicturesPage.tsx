@@ -258,7 +258,7 @@ const CameraPictureGalleryPage = () => {
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
               <DefaultImage
-                text={"Select a computer to display its camera picturess."}
+                text={"Select a computer to display its camera pictures."}
               />
             </div>
           )}
