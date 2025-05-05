@@ -51,11 +51,11 @@ const Navbar = () => {
         </div>
       </div> */}
 
-      <div className={clsx("app-navbar-item", itemClass)}>
+      {/* <div className={clsx("app-navbar-item", itemClass)}>
         <ThemeModeSwitcher
           toggleBtnClass={clsx("btn-active-light-primary btn-custom")}
         />
-      </div>
+      </div> */}
 
       <div className={clsx("app-navbar-item", itemClass)}>
         <div
@@ -64,7 +64,7 @@ const Navbar = () => {
           data-kt-menu-attach="parent"
           data-kt-menu-placement="bottom-end"
         >
-          <img src={toAbsoluteUrl("media/svg/300-3.jpg")} alt="" />
+          <img src={toAbsoluteUrl("media/svg/profile-32.png")} alt="" />
         </div>
         <HeaderUserMenu />
       </div>
