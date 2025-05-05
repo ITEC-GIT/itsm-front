@@ -39,9 +39,15 @@ type Branch = {
   value: string;
 };
 
+type ActionTypes = {
+  id: number;
+  anttype: string;
+};
+
 export type FilterValue = { value: string; label: string };
 
 export interface StaticDataType {
+  actionTypes: ActionTypes[];
   branches: Branch[];
   computers: Computer[];
   locations: Location[];

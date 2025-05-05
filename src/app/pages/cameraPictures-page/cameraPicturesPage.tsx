@@ -10,44 +10,13 @@ import "swiper/css/navigation";
 import { ZoomableImage } from "../../components/screenshots/zoomableimage";
 import { CustomReactSelect } from "../../components/form/custom-react-select";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { DefaultImage } from "../../components/screenshots/defaultImage";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { DatetimePicker } from "../../components/form/datetimePicker";
-
-export const dummyData = [
-  {
-    computerName: "Salameh-PC",
-    screenshots: [
-      {
-        url: "media/svg/Screenshot (1439).png",
-        w: 1024,
-        h: 768,
-      },
-      {
-        url: "media/svg/Screenshot (1439).png",
-        w: 800,
-        h: 600,
-      },
-    ],
-  },
-  {
-    computerName: "Computer B",
-    screenshots: [
-      {
-        url: "media/svg/Screenshot (1439).png",
-        w: 1280,
-        h: 720,
-      },
-    ],
-  },
-  {
-    computerName: "Computer C",
-    screenshots: [],
-  },
-];
+import { GetAntitheftActionAPI } from "../../config/ApiCalls";
+import { GetAntitheftType } from "../../types/antitheftTypes";
 
 const CameraPictureGalleryPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -56,6 +25,10 @@ const CameraPictureGalleryPage = () => {
   const [endDate, setEndDate] = useState<string>("");
 
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+
+  const actionTypeId = (staticData.actionTypes || []).find((action) =>
+    action.anttype.toLowerCase().includes("camera_picture")
+  )?.id;
 
   const compOptions = (staticData.computers || []).map((device) => ({
     value: device.id ? Number(device.id) : 0,
@@ -70,15 +43,88 @@ const CameraPictureGalleryPage = () => {
     setSelectedDevice(newValue);
   };
 
-  const selectedComputerScreenshots = dummyData.find(
-    (item) => item.computerName === selectedDevice?.label
-  );
+  const handleGoClick = async () => {
+    if (!selectedDevice?.value) return;
+
+    const reqData: GetAntitheftType = {
+      computers_id: selectedDevice.value,
+      action_type: 5,
+      ...(startDate && { start_date: new Date(startDate) }),
+      ...(endDate && { end_date: new Date(endDate) }),
+    };
+
+    try {
+      const res = await GetAntitheftActionAPI(reqData);
+      if (res?.data && Array.isArray(res.data)) {
+        const screenshots = res.data.map((item: any) => ({
+          url: item.value,
+        }));
+
+        setSelectedComputerScreenshots({
+          computerName: selectedDevice.label,
+          screenshots,
+        });
+
+        setStartDate("");
+        setEndDate("");
+      } else {
+        setSelectedComputerScreenshots({
+          computerName: selectedDevice.label,
+          screenshots: [],
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load screenshots:", err);
+    }
+  };
+
+  const [selectedComputerScreenshots, setSelectedComputerScreenshots] =
+    useState<{
+      computerName: string;
+      screenshots: { url: string }[];
+    } | null>(null);
 
   useEffect(() => {
     if (divRef.current) {
       setHeight(divRef.current.offsetHeight);
     }
   }, [divRef.current]);
+
+  useEffect(() => {
+    const fetchScreenshots = async () => {
+      if (!selectedDevice?.value) return;
+
+      const reqData: GetAntitheftType = {
+        computers_id: selectedDevice.value,
+        action_type: 5,
+        ...(startDate.trim() && { start_date: new Date(startDate) }),
+        ...(endDate.trim() && { end_date: new Date(endDate) }),
+      };
+
+      try {
+        const res = await GetAntitheftActionAPI(reqData);
+        if (res?.data && Array.isArray(res.data)) {
+          const screenshots = res.data.map((item: any) => ({
+            url: item.value,
+          }));
+
+          setSelectedComputerScreenshots({
+            computerName: selectedDevice.label,
+            screenshots,
+          });
+        } else {
+          setSelectedComputerScreenshots({
+            computerName: selectedDevice.label,
+            screenshots: [],
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load screenshots:", err);
+      }
+    };
+
+    fetchScreenshots();
+  }, [selectedDevice]);
 
   useEffect(() => {
     if (!divRef.current) return;
@@ -101,7 +147,7 @@ const CameraPictureGalleryPage = () => {
         <div className="p-5" ref={divRef}>
           <div className="col-12 mb-4">
             <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
-              <h2 className="mb-0">📸 Camera Picture</h2>
+              <h2 className="mb-0">📸 Camera Pictures</h2>
               <button className="btn custom-btn p-5">
                 <FiCamera className="fs-2" />
               </button>
@@ -134,7 +180,7 @@ const CameraPictureGalleryPage = () => {
                   <button
                     className="btn btn-sm btn-primary"
                     style={{ whiteSpace: "nowrap" }}
-                    onClick={() => {}}
+                    onClick={handleGoClick}
                   >
                     Go
                   </button>

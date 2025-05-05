@@ -59,7 +59,7 @@ async function LoginApi(login: string, password: string) {
 
   return await axios
     .post(
-        `${baseURL}/session/init_session`,
+      `${baseURL}/session/init_session`,
       new URLSearchParams({
         username: login,
         password: password,
@@ -144,9 +144,13 @@ export interface DocumentAttachment {
   created_at: string; // or Date if you parse it
 }
 
-async function GetTicketAttachments(ticketId: number): Promise<DocumentAttachment[] | null> {
+async function GetTicketAttachments(
+  ticketId: number
+): Promise<DocumentAttachment[] | null> {
   try {
-    const response = await PrivateApiCallFastApi.get<DocumentAttachment[]>(`/tickets/get_documents/${ticketId}`);
+    const response = await PrivateApiCallFastApi.get<DocumentAttachment[]>(
+      `/tickets/get_documents/${ticketId}`
+    );
     return response.data;
   } catch (error: any) {
     errorCatch(error);
@@ -749,6 +753,12 @@ async function ExecuteAntitheftActionAPI(data: ExecuteAntitheftActionType) {
     .catch((error: any) => errorCatch(error));
 }
 
+async function GetAllAntitheftActionsAPI() {
+  return await PrivateApiCallFastApi.get(`/anti-theft/ant-result-types/`)
+    .then((response) => response)
+    .catch((error: any) => errorCatch(error));
+}
+
 export {
   LoginApi,
   GetUserProfile,
@@ -793,4 +803,5 @@ export {
   GetAntitheftActionAPI,
   ExecuteAntitheftActionAPI,
   GetComputerMetricsAPI,
+  GetAllAntitheftActionsAPI,
 };
