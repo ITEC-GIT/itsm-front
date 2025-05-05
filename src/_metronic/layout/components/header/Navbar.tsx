@@ -26,7 +26,7 @@ const Navbar = () => {
     <div className="app-navbar flex-shrink-0">
       {/* header right navbar,profile settings,language,search,notifications  */}
 
-      <div className={clsx("app-navbar-item", itemClass)}>
+      {/* <div className={clsx("app-navbar-item", itemClass)}>
         <div
           data-kt-menu-trigger="{default: 'click'}"
           data-kt-menu-attach="parent"
@@ -39,7 +39,7 @@ const Navbar = () => {
           </div>
         </div>
         <HeaderNotificationsMenu />
-      </div>
+      </div> */}
 
       {/* <div className={clsx("app-navbar-item", itemClass)}>
         <div
