@@ -253,12 +253,16 @@ const CameraPictureGalleryDashboard = ({
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
-                <DefaultImage />
+                <DefaultImage
+                  text={`No camera picture available for ${selectedComputerScreenshots?.computerName}.`}
+                />
               </div>
             )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DefaultImage />
+              <DefaultImage
+                text={"Select a computer to display its camera pictures."}
+              />
             </div>
           )}
         </div>

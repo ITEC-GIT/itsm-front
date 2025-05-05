@@ -38,6 +38,12 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
+
+    if (!newValue) {
+      setSelectedComputerVoiceRecords(null);
+      setStartDate("");
+      setEndDate("");
+    }
   };
 
   const getPlaceholderText = () => {
@@ -177,20 +183,28 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
           style={{ maxHeight: "100%", flexGrow: 1 }}
         >
           {selectedComputerVoiceRecords ? (
-            <div className="col-12 h-100">
-              <div className="row">
-                {selectedComputerVoiceRecords.recordings.map(
-                  (recording: { url: string }, i: number) => (
-                    <div
-                      key={i}
-                      className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
-                    >
-                      <VoiceCardComponent audioUrl={recording.url} />
-                    </div>
-                  )
-                )}
+            selectedComputerVoiceRecords.recordings.length > 0 ? (
+              <div className="col-12 h-100">
+                <div className="row">
+                  {selectedComputerVoiceRecords.recordings.map(
+                    (recording: { url: string }, i: number) => (
+                      <div
+                        key={i}
+                        className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                      >
+                        <VoiceCardComponent audioUrl={recording.url} />
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="d-flex justify-content-center align-items-center h-100">
+                <DeafultVoiceCardComponent
+                  text={`No voice recordings found for ${selectedComputerVoiceRecords.computerName}.`}
+                />
+              </div>
+            )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
               <DeafultVoiceCardComponent text={getPlaceholderText()} />
