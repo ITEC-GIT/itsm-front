@@ -39,7 +39,6 @@ const SidebarMain = () => {
 
   const handleResize = useCallback(() => {
     const currentWidth = getWindowWidth();
-    console.log("Detected window width:", currentWidth);
     setIsCollapsed(currentWidth <= MOBILE_BREAKPOINT);
   }, []);
 

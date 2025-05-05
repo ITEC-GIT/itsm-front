@@ -52,7 +52,6 @@ const UserProfileForm = ({
 
   useEffect(() => {
     if (usersPrerequisites?.titles) {
-      console.log(usersPrerequisites.titles);
       setTitleOptions(
         usersPrerequisites.titles.map((title) => ({
           id: title.id,

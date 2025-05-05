@@ -32,7 +32,6 @@ const AssetSummaryComponent = () => {
     GetComputerMetricsAPI(selectedComputerInfo.id)
       .then((data) => {
         const metricArray = data?.data?.metrics?.metric || [];
-        console.log(metricArray);
         setMetrics(mapMetricsToObject(metricArray));
 
         const firewallData = data?.data?.firewall?.specific_attributes || [];

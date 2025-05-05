@@ -11,7 +11,6 @@ const CustomSwitch = ({ setStatus }: CustomSwitchProps) => {
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.checked;
     setIsChecked(value);
-    console.log("Switch is:", value ? "Active" : "Inactive");
     setStatus(value ? true : false);
   };
 
