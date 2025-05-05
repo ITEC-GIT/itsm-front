@@ -49,7 +49,11 @@ export const dummyData = [
   },
 ];
 
-const CameraPictureGalleryPage = () => {
+const CameraPictureGalleryDashboard = ({
+  computerId,
+}: {
+  computerId: number;
+}) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
@@ -62,9 +66,11 @@ const CameraPictureGalleryPage = () => {
     label: device.name || "",
   }));
 
-  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
-    null
-  );
+  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>({
+    value: computerId,
+    label:
+      compOptions.find((option) => option.value === computerId)?.label || "",
+  });
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -95,13 +101,11 @@ const CameraPictureGalleryPage = () => {
   }, []);
 
   return (
-    // <AnimatedRouteWrapper>
-    <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
+    <AnimatedRouteWrapper>
       <div className="row d-flex custom-main-container custom-container-height">
         <div className="p-5" ref={divRef}>
-          <div className="col-12 mb-4">
-            <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
-              <h2 className="mb-0">📸 Camera Picture</h2>
+          <div className="col-12">
+            <div className="d-flex justify-content-end flex-wrap gap-3">
               <button className="btn custom-btn p-5">
                 <FiCamera className="fs-2" />
               </button>
@@ -214,9 +218,8 @@ const CameraPictureGalleryPage = () => {
           )}
         </div>
       </div>
-    </div>
-    // {/* </AnimatedRouteWrapper> */}
+    </AnimatedRouteWrapper>
   );
 };
 
-export { CameraPictureGalleryPage };
+export { CameraPictureGalleryDashboard };

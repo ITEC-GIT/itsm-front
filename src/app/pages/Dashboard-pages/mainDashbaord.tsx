@@ -15,6 +15,10 @@ import { OkButton } from "../../components/form/stepsButton";
 import { SoftwareInstallationStaticPage } from "./softwareInstallationStaticDashboardPage";
 import { PrivateIpSchema } from "../../types/common";
 
+import { ScreenshotGalleryDashboard } from "./screenshotsDashboard";
+import { CameraPictureGalleryDashboard } from "./cameraPictureDashboard";
+import { VoiceRecordingsDashboard } from "./voiceRecorderDashboard";
+
 const RemoteConsoleView = () => {
   const [privateIps, setPrivateIps] = useState<PrivateIpSchema[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -92,22 +96,16 @@ const RemoteConsoleView = () => {
   );
 };
 
-const ScreenshotsView = () => (
-  <div className="remote-ssh-view">
-    <h2>Screenshots</h2>
-  </div>
+const ScreenshotsView: React.FC<{ computerId: number }> = ({ computerId }) => (
+  <ScreenshotGalleryDashboard computerId={computerId} />
 );
 
-const CameraPicrureView = () => (
-  <div className="remote-ssh-view">
-    <h2>Camera Picture</h2>
-  </div>
-);
+const CameraPicrureView: React.FC<{ computerId: number }> = ({
+  computerId,
+}) => <CameraPictureGalleryDashboard computerId={computerId} />;
 
-const VoiceRecordView = () => (
-  <div className="remote-ssh-view">
-    <h2>Voice Record</h2>
-  </div>
+const VoiceRecordView: React.FC<{ computerId: number }> = ({ computerId }) => (
+  <VoiceRecordingsDashboard computerId={computerId} />
 );
 
 const DashboardPlaceholder = () => (
@@ -139,11 +137,11 @@ const MainDashboard = () => {
       case "remote-console":
         return <RemoteConsoleView />;
       case "screenshots":
-        return <ScreenshotsView />;
+        return <ScreenshotsView computerId={selctedDeviceAtom} />;
       case "camera-picture":
-        return <CameraPicrureView />;
+        return <CameraPicrureView computerId={selctedDeviceAtom} />;
       case "voice-record":
-        return <VoiceRecordView />;
+        return <VoiceRecordView computerId={selctedDeviceAtom} />;
       case "ticket":
         return <TicketsPage />;
       default:
@@ -179,10 +177,10 @@ const MainDashboard = () => {
     const fromDetails = location.state?.from === "details";
     const restoreTicket = location.state?.restoreTicketView;
     const computerId = location.state?.computerId;
-  
+
     if (fromDetails && restoreTicket && computerId !== undefined) {
-      setSelectedDeviceAtom(computerId);        // select the computer
-      setActiveView("ticket");                  // set ticket view
+      setSelectedDeviceAtom(computerId); // select the computer
+      setActiveView("ticket"); // set ticket view
     }
   }, [location]);
   return (
