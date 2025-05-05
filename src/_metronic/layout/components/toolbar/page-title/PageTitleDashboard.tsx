@@ -32,36 +32,44 @@ const PageTitleDashboard = () => {
         "align-items-center": appPageTitleDirection !== "column",
       })}
     >
-      <div
-        className="d-flex align-items-center gap-2"
-        onClick={handleToggleView}
-        style={{ cursor: "pointer" }}
-      >
-        <i
-          className={
-            currentView === "main"
-              ? "bi bi-box"
-              : currentView === "analytics"
-              ? "bi bi-bar-chart"
-              : ""
-          }
-          style={{
-            color: "black",
-            fontSize: "medium",
-            backgroundColor: "#f0f0f0",
-            borderRadius: "5px",
-            padding: "5px",
-          }}
-        ></i>
-        {currentView === "analytics" ? (
-          <h1 className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center">
-            Analytics Dashboard
-          </h1>
-        ) : (
-          <h1 className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center text-nowrap">
-            Main Dashboard
-          </h1>
-        )}
+      <div>
+        <div className="d-flex align-items-center gap-2">
+          <i
+            onClick={handleToggleView}
+            className={
+              currentView === "main"
+                ? "bi bi-box"
+                : currentView === "analytics"
+                ? "bi bi-bar-chart"
+                : ""
+            }
+            style={{
+              color: "black",
+              fontSize: "medium",
+              backgroundColor: "#f0f0f0",
+              borderRadius: "5px",
+              padding: "5px",
+              cursor: "pointer",
+            }}
+          ></i>
+          {currentView === "analytics" ? (
+            <h1
+              onClick={handleToggleView}
+              className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center"
+              style={{ cursor: "pointer" }}
+            >
+              Analytics Dashboard
+            </h1>
+          ) : (
+            <h1
+              onClick={handleToggleView}
+              className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center text-nowrap"
+              style={{ cursor: "pointer" }}
+            >
+              Main Dashboard
+            </h1>
+          )}
+        </div>
       </div>
     </div>
   );
