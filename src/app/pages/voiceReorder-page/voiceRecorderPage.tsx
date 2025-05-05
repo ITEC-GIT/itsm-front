@@ -42,7 +42,6 @@ const VoiceRecordingsPage = () => {
     setSelectedDevice(newValue);
 
     if (!newValue) {
-      // 🧹 Clear the previously fetched recordings
       setSelectedComputerVoiceRecords(null);
       setStartDate("");
       setEndDate("");

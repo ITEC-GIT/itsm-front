@@ -44,11 +44,11 @@ const CameraPictureGalleryPage = () => {
   };
 
   const handleGoClick = async () => {
-    if (!selectedDevice?.value) return;
+    if (!selectedDevice?.value || actionTypeId === undefined) return;
 
     const reqData: GetAntitheftType = {
       computers_id: selectedDevice.value,
-      action_type: 5,
+      action_type: actionTypeId,
       ...(startDate && { start_date: new Date(startDate) }),
       ...(endDate && { end_date: new Date(endDate) }),
     };
@@ -91,12 +91,12 @@ const CameraPictureGalleryPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    const fetchScreenshots = async () => {
-      if (!selectedDevice?.value) return;
+    const fetchCameraPicture = async () => {
+      if (!selectedDevice?.value || actionTypeId === undefined) return;
 
       const reqData: GetAntitheftType = {
         computers_id: selectedDevice.value,
-        action_type: 5,
+        action_type: actionTypeId,
         ...(startDate.trim() && { start_date: new Date(startDate) }),
         ...(endDate.trim() && { end_date: new Date(endDate) }),
       };
@@ -123,7 +123,7 @@ const CameraPictureGalleryPage = () => {
       }
     };
 
-    fetchScreenshots();
+    fetchCameraPicture();
   }, [selectedDevice]);
 
   useEffect(() => {
