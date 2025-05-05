@@ -4,9 +4,7 @@ services:
     container_name: react-itsm-ui
     build:
       context: .
-      args:
-        IMAGE_TAG: ${TAG} # Dynamically passed from GitHub Actions
-    image: react-itsm-image:${TAG} # Set the dynamic tag for the image
+    image: react-itsm-image
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:

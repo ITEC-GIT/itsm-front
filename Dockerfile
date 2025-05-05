@@ -2,8 +2,8 @@
 FROM node:22 AS build
 WORKDIR /usr/src/app
 # Define build argument
-ARG IMAGE_TAG
-ENV IMAGE_TAG=${IMAGE_TAG}
+#ARG IMAGE_TAG
+#ENV IMAGE_TAG=${IMAGE_TAG}
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
@@ -84,10 +84,10 @@ ENV VITE_BASE_URL=$VITE_BASE_URL
 # Expose port 80
 EXPOSE 3000
 
-
-# Define build argument
-ARG IMAGE_TAG
-ENV IMAGE_TAG=${IMAGE_TAG}
+#
+## Define build argument
+#ARG IMAGE_TAG
+#ENV IMAGE_TAG=${IMAGE_TAG}
 
 # Run Nginx in the foreground
 CMD ["npm", "run", "serve"]
