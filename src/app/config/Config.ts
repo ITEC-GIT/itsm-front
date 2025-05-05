@@ -17,7 +17,7 @@ export const PrivateApiCallFastApi = axios.create({
     baseURL: import.meta.env.VITE_APP_ITSM_BACKEND_SERVICE,
 });
 export const ImageUploadApiCall = axios.create({
-    baseURL: import.meta.env.VITE_APP_ITSM_BACKEND_SERVICE,
+  baseURL: import.meta.env.VITE_APP_ITSM_NGINX_IMAGES_URL,
 });
 
 export function getSessionTokenFromCookie() {
