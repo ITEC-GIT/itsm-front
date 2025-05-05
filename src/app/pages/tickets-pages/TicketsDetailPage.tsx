@@ -30,15 +30,15 @@ import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import {CircularSpinner} from "../../components/spinners/circularSpinner.tsx";
 
 
-const TicketsDetailPage: React.FC = () => {
+type TicketsDetailPageProps = {
+    ticket: any;
+    onBack: () => void;
+  };
+  
+const TicketsDetailPage: React.FC<TicketsDetailPageProps> = ({ ticket, onBack }) => {
     const location = useLocation()
     // const {ticket} = location.state || {}
-    const [ticket, setTicket] = useState<any>(location.state?.ticket || null);
 
-    useEffect(() => {
-        console.log(ticket)
-
-    }, []);
     const isCurrentUserMaster = useAtomValue(
         isCurrentUserMasterAtom
     );
@@ -300,15 +300,17 @@ const TicketsDetailPage: React.FC = () => {
         (assignee:any) => assignee.id === null && assignee.name === null && assignee.avatar === null
     );
     const assigneesFiltered: Assignee[] = isEmptyAssignees ? [] : assignees;
+
+
+
     return (
         <>
             <AnimatedRouteWrapper>
 
                 <Content>
-                    <button className="btn btn-sm btn-light"
-                            onClick={() => navigate('/tickets', {state: {from: 'details'}})}>
-                        <i className="fa fa-arrow-left me-2"></i> Back
-                    </button>
+                <button className="btn btn-sm btn-light" onClick={onBack}>
+  <i className="fa fa-arrow-left me-2"></i> Back
+</button>
                     <TicketCard
                         key={ticket.id}
                         id={ticket.id}

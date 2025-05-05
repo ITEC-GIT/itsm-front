@@ -53,9 +53,11 @@ const RemoteConsoleDashboardComponent = () => {
 
   useEffect(() => {
     const handleLaunchConsole = async () => {
+      const vncServiceBaseUrl = import.meta.env.VITE_APP_ITSM_VNC;
+
       try {
         const res = await fetch(
-          `http://localhost:8004/vnc/connect?user_id=${computerId}&vnc_ip=${computerIp}`
+          `${vncServiceBaseUrl}/vnc/connect?user_id=${computerId}&vnc_ip=${computerIp}`
         );
         const data = await res.json();
 

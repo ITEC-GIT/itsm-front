@@ -81,7 +81,6 @@ const PrivateRoutes = () => {
         />
         <Route path="assets/new" element={<AssetCreationPage />} />
         <Route path="tickets" element={<TicketPageWrapper />} />
-        <Route path="/ticket/:id" element={<TicketsDetailPage />} />
         <Route path="/user-management/roles" element={<RolesPageWrapper />} />
         <Route path="/user-management/groups" element={<GroupsPageWrapper />} />
         <Route

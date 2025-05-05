@@ -33,6 +33,7 @@ import {
     fetchActionAtom,
     currentTicketsPageAtom,
     ticketIdsWithReplyUnreadAtom,
+    selectedTicketAtom,
 } from "../../atoms/tickets-page-atom/ticketsPageAtom";
 import {toolbarTicketsFrontFiltersAtom} from "../../atoms/toolbar-atoms/toolbarTicketsAtom";
 import {userAtom} from "../../atoms/auth-atoms/authAtom";
@@ -64,6 +65,7 @@ import {string} from "yup";
 import {getMaxWords} from "./TicketUtils.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
 import {CircularSpinner} from "../../components/spinners/circularSpinner.tsx";
+import TicketsDetailPage from "./TicketsDetailPage.tsx";
 
 const TicketsPage: React.FC = () => {
     // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -867,12 +869,13 @@ const TicketsPage: React.FC = () => {
     const handleTicketClick = (ticket: any) => {
 
         updateCommentsItem('DynamicTicketsUnread', ticket.id);
+        setSelectedTicket(ticket);
 
         // setTicketIdsWithReplyUnread((prevUnreadReplies:any) => {
         //     if (prevUnreadReplies.includes(`${ticket.id}|${ticket.last_reply_date}`)) {
         //         return prevUnreadReplies.filter((ticketId:string) => ticketId !== `${ticket.id}|${ticket.last_reply_date}`);}});
 
-        navigate(`/ticket/${ticket.id}`, {state: {ticket}});
+        // navigate(`/ticket/${ticket.id}`, {state: {ticket}});
     };
     const handleMouseDown = (event: React.MouseEvent, ticket: any) => {
         // if (event.button === 1) { // Middle mouse button
@@ -1319,13 +1322,19 @@ const TicketsPage: React.FC = () => {
             }
         }
     }, [ticketChangeAssigneenOn]);
+    const [selectedTicket, setSelectedTicket] = useAtom(selectedTicketAtom);
 
+
+    const handleBack = () => {
+      setSelectedTicket(null);
+    };
 
     return (
         <>
             <ToolbarWrapper source={"tickets"}/>
             <AnimatedRouteWrapper>
-
+            <>
+      {!selectedTicket ? (    <>
                 <Content>
                     <div className="tickets-component-container align-self-stretch">
                         <div className="d-flex flex-column justify-content-between">
@@ -1461,6 +1470,12 @@ const TicketsPage: React.FC = () => {
                         Last
                     </button>
                 </div>
+                </>
+      ) : (
+        <TicketsDetailPage ticket={selectedTicket} onBack={handleBack} />
+      )}
+    </>
+            
             </AnimatedRouteWrapper>
             {/* <TicketCard
           id="#HFCS00117299"
