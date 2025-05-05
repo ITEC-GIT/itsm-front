@@ -284,7 +284,7 @@ export const WizardStatic = ({
         {currentStep === 3 && (
           <div>
             <div className="row d-flex justify-content-end">
-              <div className="col-sm-6 col-md-4 col-lg-4 col-xl-3 mt-4 mb-5 d-flex justify-content-end">
+              <div className="col-6 d-flex justify-content-end">
                 <div className=" d-flex">
                   <label
                     className={`form-check-label me-2 ${
@@ -321,7 +321,7 @@ export const WizardStatic = ({
               </div>
             </div>
             <div className="row d-flex justify-content-between">
-              <div className="col-sm-6 col-md-4 col-lg-4 col-xl-3 mt-4 mb-5">
+              <div className="col-sm-6 col-md-4 col-lg-4 col-xl-3 mt-4">
                 <label className="required">Software Name</label>
                 <input
                   type="text"
