@@ -83,3 +83,6 @@ newTicketsAvailableCount.debugLabel = "newTicketsAvailableCount";
 // the ids of tickets that has replies that are unread
 export const ticketIdsWithReplyUnreadAtom = atom<string[]>([]);
 ticketIdsWithReplyUnreadAtom.debugLabel = "ticketIdsWithReplyUnreadAtom";
+
+
+export const selectedTicketAtom = atom<any | null>(null)

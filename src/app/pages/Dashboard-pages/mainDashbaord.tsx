@@ -10,7 +10,7 @@ import { sidebarToggleAtom } from "../../atoms/sidebar-atom/sidebar";
 import { SoftwareInstallationDashboard } from "./softwareInstallationDashboard";
 import { RemoteSSHDashboardComponent } from "./remoteSSHDashboard";
 import { GetPrivateIPAddressAPI } from "../../config/ApiCalls";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { OkButton } from "../../components/form/stepsButton";
 import { SoftwareInstallationStaticPage } from "./softwareInstallationStaticDashboardPage";
 import { PrivateIpSchema } from "../../types/common";
@@ -173,6 +173,18 @@ const MainDashboard = () => {
     return () => observer.disconnect();
   }, [toggleInstance]);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    const fromDetails = location.state?.from === "details";
+    const restoreTicket = location.state?.restoreTicketView;
+    const computerId = location.state?.computerId;
+  
+    if (fromDetails && restoreTicket && computerId !== undefined) {
+      setSelectedDeviceAtom(computerId);        // select the computer
+      setActiveView("ticket");                  // set ticket view
+    }
+  }, [location]);
   return (
     <div className="container-fluid dashboard-container-fluid">
       <div className="row flex-grow-1" style={{ overflow: "hidden" }}>

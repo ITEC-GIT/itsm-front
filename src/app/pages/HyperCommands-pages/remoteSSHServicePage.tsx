@@ -40,6 +40,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       value: device.id ? Number(device.id) : 0,
       label: device.name || "",
     }));
+  const base_ssh_url=import.meta.env.VITE_APP_ITSM_SSH;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
@@ -85,7 +86,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8002/auth/ssh", {
+      const response = await fetch(`${base_ssh_url}/auth/ssh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -115,7 +116,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     if (!sessionId) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:8002/kill/ssh", {
+      const response = await fetch(`${base_ssh_url}/kill/ssh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sessionId }),

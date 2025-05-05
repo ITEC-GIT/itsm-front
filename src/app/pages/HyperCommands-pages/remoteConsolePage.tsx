@@ -27,8 +27,9 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
 
   const handleLaunchConsole = async () => {
     try {
+
       const res = await fetch(
-        `http://localhost:8004/vnc/connect?user_id=${connectionInfo.computerId}&vnc_ip=${connectionInfo.computerIp}`
+        `http://cobalt.pulsar.ao:3021/vnc/connect?user_id=${connectionInfo.computerId}&vnc_ip=${connectionInfo.computerIp}`
       );
       const data = await res.json();
 
@@ -54,7 +55,7 @@ const RemoteConsolePage = ({ computerIdProp }: RemoteConsolePageProps) => {
     if (!connectionInfo.computerId || !connectionInfo.computerIp) return;
 
     try {
-      await fetch(`http://localhost:8004/vnc/disconnect`, {
+      await fetch(`http://cobalt.pulsar.ao:3021/vnc/disconnect`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

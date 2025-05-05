@@ -33,6 +33,7 @@ import {
     fetchActionAtom,
     currentTicketsPageAtom,
     ticketIdsWithReplyUnreadAtom,
+    selectedTicketAtom,
 } from "../../atoms/tickets-page-atom/ticketsPageAtom";
 import {toolbarTicketsFrontFiltersAtom} from "../../atoms/toolbar-atoms/toolbarTicketsAtom";
 import {userAtom} from "../../atoms/auth-atoms/authAtom";
@@ -63,6 +64,8 @@ import {transformStaticData} from "../../../utils/dataTransformUtils.ts";
 import {string} from "yup";
 import {getMaxWords} from "./TicketUtils.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
+import {CircularSpinner} from "../../components/spinners/circularSpinner.tsx";
+import TicketsDetailPage from "./TicketsDetailPage.tsx";
 
 const TicketsPage: React.FC = () => {
     // const currentPage = useAtomValue(toolbarTicketsNavigationAtom)
@@ -456,26 +459,26 @@ const TicketsPage: React.FC = () => {
                     prevTickets.map((ticket) =>
                         ticket.id === updatedTicket.id
                             ? {
-                                  ...ticket,
-                                  urgency: {
-                                      id: updatedTicket.urgency?.value,
-                                      label: updatedTicket.urgency?.label,
-                                  },
-                                  priority: {
-                                      id: updatedTicket.priority?.value,
-                                      label: updatedTicket.priority?.label,
-                                  },
-                                  status: {
-                                      id: updatedTicket.status?.value,
-                                      label: updatedTicket.status?.label,
-                                  },
-                                  type: {
-                                      id: updatedTicket.type?.value,
-                                      label: updatedTicket.type?.label,
-                                  },
-                                  // You can update date_mod if you want
-                                  date_mod: new Date().toISOString(),
-                              }
+                                ...ticket,
+                                urgency: {
+                                    id: ticketPerformingActionOn.urgency?.value,
+                                    label: ticketPerformingActionOn.urgency?.label,
+                                },
+                                priority: {
+                                    id: ticketPerformingActionOn.priority?.value,
+                                    label: ticketPerformingActionOn.priority?.label,
+                                },
+                                status: {
+                                    id: ticketPerformingActionOn.status?.value,
+                                    label: ticketPerformingActionOn.status?.label,
+                                },
+                                type: {
+                                    id: ticketPerformingActionOn.type?.value,
+                                    label: ticketPerformingActionOn.type?.label,
+                                },
+                                // You can update date_mod if you want
+                                date_mod: new Date().toISOString(),
+                            }
                             : ticket
                     )
                 );
@@ -520,13 +523,13 @@ const TicketsPage: React.FC = () => {
         const ticket = tickets.find((ticket) => ticket.id === id);
 
         if (ticket) {
-            const newStarredStatus = ticket.starred === 1 ? 0 : 1;
+            const newStarredStatus = ticket.is_starred === 1 ? 0 : 1;
             const response = await UpdateStarred(parseInt(id), newStarredStatus);
 
             if (response !== undefined) {
                 setTickets(prevTickets =>
                     prevTickets.map(t =>
-                        t.id === id ? {...t, starred: newStarredStatus} : t
+                        t.id === id ? {...t, is_starred: newStarredStatus} : t
                     )
                 );
             }
@@ -679,9 +682,9 @@ const TicketsPage: React.FC = () => {
                 return lastPart !== undefined && !isNaN(Number(lastPart));
             };
             const toDetailsRoute = isTicketFormat(window.location.pathname);
-            if (!toDetailsRoute) {
-                setTickets([]);
-            }
+            // if (!toDetailsRoute) {
+            //     setTickets([]);
+            // }
         };
     }, [
         location.state,
@@ -866,12 +869,13 @@ const TicketsPage: React.FC = () => {
     const handleTicketClick = (ticket: any) => {
 
         updateCommentsItem('DynamicTicketsUnread', ticket.id);
+        setSelectedTicket(ticket);
 
         // setTicketIdsWithReplyUnread((prevUnreadReplies:any) => {
         //     if (prevUnreadReplies.includes(`${ticket.id}|${ticket.last_reply_date}`)) {
         //         return prevUnreadReplies.filter((ticketId:string) => ticketId !== `${ticket.id}|${ticket.last_reply_date}`);}});
 
-        navigate(`/ticket/${ticket.id}`, {state: {ticket}});
+        // navigate(`/ticket/${ticket.id}`, {state: {ticket}});
     };
     const handleMouseDown = (event: React.MouseEvent, ticket: any) => {
         // if (event.button === 1) { // Middle mouse button
@@ -951,16 +955,16 @@ const TicketsPage: React.FC = () => {
                         item.name,
                         item.date,
                         item.date_mod,
-                        item.users_lastupdater,
-                        item.status_label,
-                        item.users_recipient,
+                        item.urgency.label,
+                        item.status.label,
+                        item.issuer.name,
                         item.content,
-                        item.urgency_label,
-                        item.impact_label,
-                        item.priority_label,
-                        item.type_label,
-                        item.date_creation,
-                        item.assignees
+                        item.issuer.name,
+                        item.department.name,
+                        item.location.name,
+                        item.priority.label,
+                        item.type.label,
+                        item.date_creation
                     ];
 
                     const itemValuesString = fieldsToFilter.join(" ").toLowerCase();
@@ -986,25 +990,25 @@ const TicketsPage: React.FC = () => {
             const assignees: Assignee[] = ticket?.assignees || [];
             const matchesStatus =
                 frontFilter.status.value === "" ||
-                String(ticket.status) === frontFilter.status.value;
+                String(ticket.status.id.toString()) === frontFilter.status.value;
             const matchesUrgency =
                 frontFilter.urgency.value === "" ||
-                String(ticket.urgency) === frontFilter.urgency.value;
+                String(ticket.urgency.id.toString()) === frontFilter.urgency.value;
             const matchesPriority =
                 frontFilter.priority.value === "" ||
-                String(ticket.priority) === frontFilter.priority.value;
+                String(ticket.priority.id.toString()) === frontFilter.priority.value;
             const matchesType =
                 frontFilter.type.value === "" ||
-                String(ticket.type) === frontFilter.type.value;
+                String(ticket.type.id.toString()) === frontFilter.type.value;
             const matchesRequester =
                 frontFilter.requester.value === "" ||
-                String(ticket.requester) === frontFilter.requester.value;
+                String(ticket.issuer.id.toString()) === frontFilter.requester.value;
             const matchesBranch =
                 frontFilter.branch.value === "" ||
-                String(ticket.areas_id) === frontFilter.branch.value;
-            const matchesAssignee = frontFilter.assignee.value === "" || assignees.some(
-                (assignee) =>
-                    String(assignee.id) === frontFilter.assignee.value
+                String(ticket.department.id.toString()) === frontFilter.branch.value;
+            const matchesAssignee = frontFilter.assignee.value === "" || ticket.assignees.some(
+                (assignee:any) =>
+                    String(assignee.assigned_to_id) === frontFilter.assignee.value
             );
 
 
@@ -1059,25 +1063,27 @@ const TicketsPage: React.FC = () => {
             return tickets.filter((ticket) => {
                 const matchesStatus =
                     frontFilter.status.value === "" ||
-                    String(ticket.status) === frontFilter.status.value;
+                    String(ticket.status.id) === frontFilter.status.value;
                 const matchesUrgency =
                     frontFilter.urgency.value === "" ||
-                    String(ticket.urgency) === frontFilter.urgency.value;
+                    String(ticket.urgency.id) === frontFilter.urgency.value;
                 const matchesPriority =
                     frontFilter.priority.value === "" ||
-                    String(ticket.priority) === frontFilter.priority.value;
+                    String(ticket.priority.id) === frontFilter.priority.value;
                 const matchesType =
                     frontFilter.type.value === "" ||
-                    String(ticket.type) === frontFilter.type.value;
+                    String(ticket.type.id) === frontFilter.type.value;
                 const matchesRequester =
                     frontFilter.requester.value === "" ||
-                    String(ticket.requester) === frontFilter.requester.value;
+                    String(ticket.issuer.id) === frontFilter.requester.value;
                 const matchesBranch =
                     frontFilter.branch.value === "" ||
-                    String(ticket.areas_id) === frontFilter.branch.value;
+                    String(ticket.department.id) === frontFilter.branch.value;
                 const matchesAssignee =
                     frontFilter.assignee.value === "" ||
-                    String(ticket.users_id_recipient) === frontFilter.assignee.value;
+                    ticket.assignees.some(
+                        (assignee: { assigned_to_id: any; }) => String(assignee.assigned_to_id) === frontFilter.assignee.value
+                    );
                 return (
                     matchesStatus &&
                     matchesUrgency &&
@@ -1289,18 +1295,19 @@ const TicketsPage: React.FC = () => {
                         value: string;
                     }) => option.label === "Assigned") || {value: "", label: ""};
                 }
+                const statusNew={'value': status.value, 'label': status.label}
                 const new_assignees: Assignee[] = Array.isArray(ticketChangeAssigneenOn.assigneeNewData)
                     ? ticketChangeAssigneenOn.assigneeNewData.map((item2: Assignee) => ({
                         id: item2.id,
                         name: item2.name || "",
-                    
+
                     }))
                     : [];
+
                 const newTicket = {
                     ...updatedTicket,
-                    assignees:new_assignees,
-                    status: status.value,
-                    status_label: status.label
+                    assignees: new_assignees,
+                    status: (updatedTicket.status === 'New') ? statusNew : updatedTicket.status,
                 };
 
                 setTickets((prevTickets) =>
@@ -1315,24 +1322,26 @@ const TicketsPage: React.FC = () => {
             }
         }
     }, [ticketChangeAssigneenOn]);
+    const [selectedTicket, setSelectedTicket] = useAtom(selectedTicketAtom);
 
+
+    const handleBack = () => {
+      setSelectedTicket(null);
+    };
 
     return (
         <>
             <ToolbarWrapper source={"tickets"}/>
             <AnimatedRouteWrapper>
-
+            <>
+      {!selectedTicket ? (    <>
                 <Content>
                     <div className="tickets-component-container align-self-stretch">
                         <div className="d-flex flex-column justify-content-between">
                             {isDataLoading ? (
                                 <div className="spinner-wrapper">
-                                    <div
-                                        className="spinner-border spinner-loading-data"
-                                        role="status"
-                                    >
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
+                                    <CircularSpinner />
+
                                 </div>
                             ) : (
                                 paginatedTickets.map((ticket) => {
@@ -1461,6 +1470,12 @@ const TicketsPage: React.FC = () => {
                         Last
                     </button>
                 </div>
+                </>
+      ) : (
+        <TicketsDetailPage ticket={selectedTicket} onBack={handleBack} />
+      )}
+    </>
+            
             </AnimatedRouteWrapper>
             {/* <TicketCard
           id="#HFCS00117299"

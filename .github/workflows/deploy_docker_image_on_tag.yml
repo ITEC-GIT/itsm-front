@@ -21,10 +21,10 @@ jobs:
           # Stop and remove the old container
           docker ps -a -q --filter "name=$CONTAINER_NAME" | xargs -r docker rm -f
 
-          # Remove older images beyond the retention limit (keep 3 older + current)
-          docker images $IMAGE_NAME --format "{{.Repository}}:{{.Tag}} {{.CreatedAt}}" | \
-          sort -rk 2 | \
-          awk 'NR>3 {print $1}' | xargs -r docker rmi -f
+          # Remove older images beyond the retention limit (keep 2 most recent)
+          docker images $IMAGE_NAME --format "{{.ID}} {{.CreatedAt}}" | \
+            sort -rk2 | \
+            awk 'NR>2 {print $1}' | xargs -r docker rmi -f
 
           export TAG=${GITHUB_REF_NAME}
           TAG=${GITHUB_REF_NAME} docker compose build

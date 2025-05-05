@@ -24,7 +24,7 @@ interface CustomFilterBackendDataDropdownProps {
 }
 
 const CustomFilterBackendDataDropdown: React.FC<
-  CustomFilterBackendDataDropdownProps
+    CustomFilterBackendDataDropdownProps
 > = ({ setIsFilterDatabaseDropdownOpen }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -66,40 +66,40 @@ const CustomFilterBackendDataDropdown: React.FC<
     setAssignee({ value: e.target.value, label: e.target.options[e.target.selectedIndex].text });
   };
   const { statusOptions, urgencyOptions, priorityOptions, typeOptions } =
-    transformStaticData(staticData);
+      transformStaticData(staticData);
 
   const ItsmBranches = useAtomValue(branchesAtom);
   const ItsmSlaves = useAtomValue(slavesAtom);
   const ItsmMasters = useAtomValue(mastersAtom);
 
   const requesterOptions = useMemo(
-    () =>
-      ItsmSlaves.map((item) => ({
-        value: item.id,
-        label: item.user_name,
-      })),
-    [ItsmSlaves]
+      () =>
+          ItsmSlaves.map((item) => ({
+            value: item.id,
+            label: item.user_name,
+          })),
+      [ItsmSlaves]
   );
 
   const branchOptions = useMemo(
-    () =>
-      ItsmBranches.map((item) => ({
-        value: item.id,
-        label: item.name,
-      })),
-    [ItsmBranches]
+      () =>
+          ItsmBranches.map((item) => ({
+            value: item.id,
+            label: item.name,
+          })),
+      [ItsmBranches]
   );
   const assigneeOptions = useMemo(
-    () =>
-      ItsmMasters.map((item) => ({
-        value: item.id,
-        label: item.user_name,
-      })),
-    [ItsmMasters]
+      () =>
+          ItsmMasters.map((item) => ({
+            value: item.id,
+            label: item.user_name,
+          })),
+      [ItsmMasters]
   );
 
   const [backendFilter, setBackendFilters] = useAtom(
-    toolbarTicketsBackendFiltersAtom
+      toolbarTicketsBackendFiltersAtom
   );
 
   const handleApply = () => {
@@ -200,11 +200,11 @@ const CustomFilterBackendDataDropdown: React.FC<
     );
   }, [backendFilter]);
   const handleWindowFocus = useCallback(
-    debounce(() => {
-      console.log("Window focused! Refetching data...");
-      // Add your data refetching logic here
-    }, 500),
-    []
+      debounce(() => {
+        console.log("Window focused! Refetching data...");
+        // Add your data refetching logic here
+      }, 500),
+      []
   );
 
   useEffect(() => {
@@ -286,173 +286,173 @@ const CustomFilterBackendDataDropdown: React.FC<
   const [isStarred, setIsStarred] = useState(false); // State in parent
 
   return (
-    <div
-      className="dropdown-menu p-4 show"
-      style={{ top: "120%", right: 0, width: "600px" }}
-    >
-      <div className="mb-3">
-        <h5 className="text-primary fw-bold">Filter Query Options</h5>
-      </div>
-      <div className="d-flex mb-3">
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">From:</label>
-          <input
-            type="date"
-            className="form-control"
-            id="date"
-            value={fromDateTime}
-            onChange={handleFromDateTimeChange}
-          />
+      <div
+          className="dropdown-menu p-4 show"
+          style={{ top: "120%", right: 0, width: "600px" }}
+      >
+        <div className="mb-3">
+          <h5 className="text-primary fw-bold">Filter Query Options</h5>
         </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">To:</label>
-          <input
-            type="date"
-            className="form-control"
-            id="date"
-            value={toDateTime}
-            onChange={handleToDateTimeChange}
-          />
+        <div className="d-flex mb-3">
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">From:</label>
+            <input
+                type="date"
+                className="form-control"
+                id="date"
+                value={fromDateTime}
+                onChange={handleFromDateTimeChange}
+            />
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">To:</label>
+            <input
+                type="date"
+                className="form-control"
+                id="date"
+                value={toDateTime}
+                onChange={handleToDateTimeChange}
+            />
+          </div>
         </div>
-      </div>
-      <div className="d-flex mb-3">
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Status:</label>
-          <select
-            className="form-select"
-            value={status.value}
-            onChange={handleStatusChange}
-          >
-            <option value="">Select option</option>
-            {statusOptions.map((status: { value: string; label: string }) => (
-              <option key={status.value} value={status.value}>
-                {status.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Urgency:</label>
-          <select
-            className="form-select"
-            value={urgency.value}
-            onChange={handleUrgencyChange}
-          >
-            <option value="">Select option</option>
-            {urgencyOptions.map((urgency: { value: string; label: string }) => (
-              <option key={urgency.value} value={urgency.value}>
-                {urgency.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Priority:</label>
-          <select
-            className="form-select"
-            value={priority.value}
-            onChange={handlePriorityChange}
-          >
-            <option value="">Select option</option>
-            {priorityOptions.map(
-              (priority: { value: string; label: string }) => (
-                <option key={priority.value} value={priority.value}>
-                  {priority.label}
-                </option>
-              )
-            )}
-          </select>
-        </div>
-      </div>
-
-      <div className="d-flex mb-3">
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Type:</label>
-          <select
-            className="form-select"
-            value={type.value}
-            onChange={handleTypeChange}
-          >
-            <option value="">Select option</option>
-            {typeOptions.map((type: { value: string; label: string }) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Requester:</label>
-          <select
-            className="form-select"
-            value={requester.value}
-            onChange={handleRequesterChange}
-          >
-            <option value="">Select option</option>
-            {requesterOptions.map((requester) => (
-              <option key={requester.value} value={requester.value}>
-                {requester.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Branch:</label>
-          <select
-            className="form-select"
-            value={branch.value}
-            onChange={handleBranchChange}
-          >
-            <option value="">Select option</option>
-            {branchOptions.map((branch) => (
-              <option key={branch.value} value={branch.value}>
-                {branch.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="d-flex mb-3 gap-2">
-        <div className="flex-fill">
-          <label className="form-label fw-bold">Assignee:</label>
-          <select
-            className="form-select"
-            value={assignee.value}
-            onChange={handleAssigneeChange}
-          >
-            <option value="">Select option</option>
-            {assigneeOptions.map((assignee) => (
-              <option key={assignee.value} value={assignee.value}>
-                {assignee.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className='d-flex align-self-end'>
-          <StarredToggle isStarred={isStarred} onToggle={setIsStarred} />
+        <div className="d-flex mb-3">
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Status:</label>
+            <select
+                className="form-select"
+                value={status.value}
+                onChange={handleStatusChange}
+            >
+              <option value="">Select option</option>
+              {statusOptions.map((status: { value: string; label: string }) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Urgency:</label>
+            <select
+                className="form-select"
+                value={urgency.value}
+                onChange={handleUrgencyChange}
+            >
+              <option value="">Select option</option>
+              {urgencyOptions.map((urgency: { value: string; label: string }) => (
+                  <option key={urgency.value} value={urgency.value}>
+                    {urgency.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Priority:</label>
+            <select
+                className="form-select"
+                value={priority.value}
+                onChange={handlePriorityChange}
+            >
+              <option value="">Select option</option>
+              {priorityOptions.map(
+                  (priority: { value: string; label: string }) => (
+                      <option key={priority.value} value={priority.value}>
+                        {priority.label}
+                      </option>
+                  )
+              )}
+            </select>
+          </div>
         </div>
 
+        <div className="d-flex mb-3">
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Type:</label>
+            <select
+                className="form-select"
+                value={type.value}
+                onChange={handleTypeChange}
+            >
+              <option value="">Select option</option>
+              {typeOptions.map((type: { value: string; label: string }) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Requester:</label>
+            <select
+                className="form-select"
+                value={requester.value}
+                onChange={handleRequesterChange}
+            >
+              <option value="">Select option</option>
+              {requesterOptions.map((requester) => (
+                  <option key={requester.value} value={requester.value}>
+                    {requester.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Branch:</label>
+            <select
+                className="form-select"
+                value={branch.value}
+                onChange={handleBranchChange}
+            >
+              <option value="">Select option</option>
+              {branchOptions.map((branch) => (
+                  <option key={branch.value} value={branch.value}>
+                    {branch.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-      </div>
+        <div className="d-flex mb-3 gap-2">
+          <div className="flex-fill">
+            <label className="form-label fw-bold">Assignee:</label>
+            <select
+                className="form-select"
+                value={assignee.value}
+                onChange={handleAssigneeChange}
+            >
+              <option value="">Select option</option>
+              {assigneeOptions.map((assignee) => (
+                  <option key={assignee.value} value={assignee.value}>
+                    {assignee.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className='d-flex align-self-end'>
+            <StarredToggle isStarred={isStarred} onToggle={setIsStarred} />
+          </div>
 
-      <div className="d-flex justify-content-end">
-        <button
-          type="button"
-          className="btn btn-sm btn-secondary me-2"
-          onClick={handleReset}
-        >
-          Reset
-        </button>
-        <button
-          type="button"
-          className="btn btn-sm btn-primary"
-          onClick={handleApply}
-        >
-          Apply
-        </button>
+
+        </div>
+
+        <div className="d-flex justify-content-end">
+          <button
+              type="button"
+              className="btn btn-sm btn-secondary me-2"
+              onClick={handleReset}
+          >
+            Reset
+          </button>
+          <button
+              type="button"
+              className="btn btn-sm btn-primary"
+              onClick={handleApply}
+          >
+            Apply
+          </button>
+        </div>
       </div>
-    </div>
   );
 };
 

@@ -15,7 +15,7 @@ interface CustomFilterFrontDataDropdownProps {
 }
 
 const CustomFilterFrontDataDropdown: React.FC<
-  CustomFilterFrontDataDropdownProps
+    CustomFilterFrontDataDropdownProps
 > = ({ setIsFilterFrontDropdownOpen }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -100,41 +100,41 @@ const CustomFilterFrontDataDropdown: React.FC<
     });
   };
   const { statusOptions, urgencyOptions, priorityOptions, typeOptions } =
-    transformStaticData(staticData);
+      transformStaticData(staticData);
 
   const ItsmBranches = useAtomValue(branchesAtom);
   const ItsmSlaves = useAtomValue(slavesAtom);
   const ItsmMasters = useAtomValue(mastersAtom);
 
   const requesterOptions = useMemo(
-    () =>
-      ItsmSlaves.map((item) => ({
-        value: item.id,
-        label: item.user_name,
-      })),
-    [ItsmSlaves]
+      () =>
+          ItsmSlaves.map((item) => ({
+            value: item.id,
+            label: item.user_name,
+          })),
+      [ItsmSlaves]
   );
 
   const branchOptions = useMemo(
-    () =>
-      ItsmBranches.map((item) => ({
-        value: item.id,
-        label: item.name,
-      })),
-    [ItsmBranches]
+      () =>
+          ItsmBranches.map((item) => ({
+            value: item.id,
+            label: item.name,
+          })),
+      [ItsmBranches]
   );
 
   const assigneeOptions = useMemo(
-    () =>
-      ItsmMasters.map((item) => ({
-        value: item.id,
-        label: item.user_name,
-      })),
-    [ItsmMasters]
+      () =>
+          ItsmMasters.map((item) => ({
+            value: item.id,
+            label: item.user_name,
+          })),
+      [ItsmMasters]
   );
 
   const [frontFilter, setFrontFilters] = useAtom(
-    toolbarTicketsFrontFiltersAtom
+      toolbarTicketsFrontFiltersAtom
   );
 
   const handleApply = () => {
@@ -197,11 +197,11 @@ const CustomFilterFrontDataDropdown: React.FC<
     });
   }, [frontFilter]);
   const handleWindowFocus = useCallback(
-    debounce(() => {
-      console.log("Window focused! Refetching data...");
-      // Add your data refetching logic here
-    }, 500),
-    []
+      debounce(() => {
+        console.log("Window focused! Refetching data...");
+        // Add your data refetching logic here
+      }, 500),
+      []
   );
 
   useEffect(() => {
@@ -216,147 +216,147 @@ const CustomFilterFrontDataDropdown: React.FC<
   }, [handleWindowFocus]);
 
   return (
-    <div
-      className="dropdown-menu p-4 show"
-      style={{ top: "120%", right: 0, width: "600px" }}
-    >
-      <div className="mb-3">
-        <h5 className="text-primary fw-bold">Filter Options</h5>
-      </div>
+      <div
+          className="dropdown-menu p-4 show"
+          style={{ top: "120%", right: 0, width: "600px" }}
+      >
+        <div className="mb-3">
+          <h5 className="text-primary fw-bold">Filter Options</h5>
+        </div>
 
-      <div className="d-flex mb-3">
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Status:</label>
-          <select
-            className="form-select"
-            value={status.value}
-            onChange={handleStatusChange}
-          >
-            <option value="">Select option</option>
-            {statusOptions.map((status: { value: string; label: string }) => (
-              <option key={status.value} value={status.value}>
-                {status.label}
-              </option>
-            ))}
-          </select>
+        <div className="d-flex mb-3">
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Status:</label>
+            <select
+                className="form-select"
+                value={status.value}
+                onChange={handleStatusChange}
+            >
+              <option value="">Select option</option>
+              {statusOptions.map((status: { value: string; label: string }) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Urgency:</label>
+            <select
+                className="form-select"
+                value={urgency.value}
+                onChange={handleUrgencyChange}
+            >
+              <option value="">Select option</option>
+              {urgencyOptions.map((urgency: { value: string; label: string }) => (
+                  <option key={urgency.value} value={urgency.value}>
+                    {urgency.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Priority:</label>
+            <select
+                className="form-select"
+                value={priority.value}
+                onChange={handlePriorityChange}
+            >
+              <option value="">Select option</option>
+              {priorityOptions.map(
+                  (priority: { value: string; label: string }) => (
+                      <option key={priority.value} value={priority.value}>
+                        {priority.label}
+                      </option>
+                  )
+              )}
+            </select>
+          </div>
         </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Urgency:</label>
-          <select
-            className="form-select"
-            value={urgency.value}
-            onChange={handleUrgencyChange}
-          >
-            <option value="">Select option</option>
-            {urgencyOptions.map((urgency: { value: string; label: string }) => (
-              <option key={urgency.value} value={urgency.value}>
-                {urgency.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Priority:</label>
-          <select
-            className="form-select"
-            value={priority.value}
-            onChange={handlePriorityChange}
-          >
-            <option value="">Select option</option>
-            {priorityOptions.map(
-              (priority: { value: string; label: string }) => (
-                <option key={priority.value} value={priority.value}>
-                  {priority.label}
-                </option>
-              )
-            )}
-          </select>
-        </div>
-      </div>
 
-      <div className="d-flex mb-3">
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Type:</label>
-          <select
-            className="form-select"
-            value={type.value}
-            onChange={handleTypeChange}
-          >
-            <option value="">Select option</option>
-            {typeOptions.map((type: { value: string; label: string }) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
+        <div className="d-flex mb-3">
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Type:</label>
+            <select
+                className="form-select"
+                value={type.value}
+                onChange={handleTypeChange}
+            >
+              <option value="">Select option</option>
+              {typeOptions.map((type: { value: string; label: string }) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Requester:</label>
+            <select
+                className="form-select"
+                value={requester.value}
+                onChange={handleRequesterChange}
+            >
+              <option value="">Select option</option>
+              {requesterOptions.map((requester) => (
+                  <option key={requester.value} value={requester.value}>
+                    {requester.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Branch:</label>
+            <select
+                className="form-select"
+                value={branch.value}
+                onChange={handleBranchChange}
+            >
+              <option value="">Select option</option>
+              {branchOptions.map((branch) => (
+                  <option key={branch.value} value={branch.value}>
+                    {branch.label}
+                  </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Requester:</label>
-          <select
-            className="form-select"
-            value={requester.value}
-            onChange={handleRequesterChange}
-          >
-            <option value="">Select option</option>
-            {requesterOptions.map((requester) => (
-              <option key={requester.value} value={requester.value}>
-                {requester.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Branch:</label>
-          <select
-            className="form-select"
-            value={branch.value}
-            onChange={handleBranchChange}
-          >
-            <option value="">Select option</option>
-            {branchOptions.map((branch) => (
-              <option key={branch.value} value={branch.value}>
-                {branch.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
 
-      <div className="d-flex mb-3">
-        <div className="me-2 flex-fill">
-          <label className="form-label fw-bold">Assignee:</label>
-          <select
-            className="form-select"
-            value={assignee.value}
-            onChange={handleAssigneeChange}
+        <div className="d-flex mb-3">
+          <div className="me-2 flex-fill">
+            <label className="form-label fw-bold">Assignee:</label>
+            <select
+                className="form-select"
+                value={assignee.value}
+                onChange={handleAssigneeChange}
+            >
+              <option value="">Select option</option>
+              {assigneeOptions.map((assignee) => (
+                  <option key={assignee.value} value={assignee.value}>
+                    {assignee.label}
+                  </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="d-flex justify-content-end">
+          <button
+              type="button"
+              className="btn btn-sm btn-secondary me-2"
+              onClick={handleReset}
           >
-            <option value="">Select option</option>
-            {assigneeOptions.map((assignee) => (
-              <option key={assignee.value} value={assignee.value}>
-                {assignee.label}
-              </option>
-            ))}
-          </select>
+            Reset
+          </button>
+          <button
+              type="button"
+              className="btn btn-sm btn-primary"
+              onClick={handleApply}
+          >
+            Apply
+          </button>
         </div>
       </div>
-
-      <div className="d-flex justify-content-end">
-        <button
-          type="button"
-          className="btn btn-sm btn-secondary me-2"
-          onClick={handleReset}
-        >
-          Reset
-        </button>
-        <button
-          type="button"
-          className="btn btn-sm btn-primary"
-          onClick={handleApply}
-        >
-          Apply
-        </button>
-      </div>
-    </div>
   );
 };
 
