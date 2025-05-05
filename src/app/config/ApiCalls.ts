@@ -746,9 +746,15 @@ async function GetAntitheftActionAPI(data: GetAntitheftType) {
 }
 
 async function ExecuteAntitheftActionAPI(data: ExecuteAntitheftActionType) {
-  return await PrivateApiCallFastApi.post(`/anti-theft/commands/actions/`, {
+  return await PrivateApiCallFastApi.post(
+    `/anti-theft/commands/actions/`,
     data,
-  })
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
     .then((response) => response)
     .catch((error: any) => errorCatch(error));
 }
