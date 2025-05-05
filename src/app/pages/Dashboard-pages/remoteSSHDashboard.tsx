@@ -2,23 +2,26 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ActionIcons } from "../../components/hyper-commands/action-icons.tsx";
 import { TerminalDisplay } from "../../components/Remote SSH/terminalDisplay.tsx";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper.tsx";
-import {
-  DisconnectButton,
-  OkButton,
-} from "../../components/form/stepsButton.tsx";
+import { DisconnectButton } from "../../components/form/stepsButton.tsx";
+import { CustomReactSelect } from "../../components/form/custom-react-select.tsx";
+import { BasicType, PrivateIpSchema } from "../../types/common.ts";
+import { useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms.ts";
+import { StaticDataType } from "../../types/filtersAtomType.ts";
+import { GetPrivateIPAddressAPI } from "../../config/ApiCalls.ts";
+import { selectValueType } from "../../types/dashboard.ts";
 
 const RemoteSSHDashboardComponent = ({
   computerIdProp,
 }: {
-  computerIdProp?: number;
+  computerIdProp: number;
 }) => {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const [ipAddress, setIpAddress] = useState("");
   const [port, setPort] = useState(22);
   const [username, setUsername] = useState("");
+
   const [pass, setPass] = useState("");
 
   const [userError, setUserError] = useState(false);
@@ -27,20 +30,39 @@ const RemoteSSHDashboardComponent = ({
 
   const divRef = useRef<HTMLDivElement>(null);
   const [divHeight, setDivHeight] = useState<number>(0);
-  const parentRef = useRef<HTMLDivElement>(null);
-  const [parentHeight, setParentHeight] = useState<number>(0);
+
   const dialogRef = useRef<HTMLDivElement>(null);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+  const [privateIps, setPrivateIps] = useState<PrivateIpSchema[]>([]);
+
+  const [deviceError, setDeviceError] = useState(false);
+
+  const compOptions = (staticData.computers || []).map((device) => ({
+    value: device.id ? Number(device.id) : 0,
+    label: device.name || "",
+  }));
+
+  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>({
+    value: computerIdProp,
+    label:
+      compOptions.find((option) => option.value === computerIdProp)?.label ||
+      "",
+  });
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+      setErrorModalOpen(false);
+    }
+  };
 
   useEffect(() => {
     if (divRef.current) {
       const rect = divRef.current.getBoundingClientRect();
       setDivHeight(Math.round(rect.height));
     }
-    if (parentRef.current) {
-      const rect = parentRef.current.getBoundingClientRect();
-      setParentHeight(Math.round(rect.height));
-    }
-  }, [divRef.current, parentRef.current]);
+  }, [divRef.current]);
 
   const handleReset = () => {
     setPort(22);
@@ -56,22 +78,27 @@ const RemoteSSHDashboardComponent = ({
   const handleConnect = async () => {
     let hasError = false;
 
+    if (!selectedDevice) {
+      setDeviceError(true);
+      hasError = true;
+    }
+
     if (!username) {
       setUserError(true);
       hasError = true;
     }
+
     if (!pass) {
       setPassError(true);
       hasError = true;
     }
+
     if (!ipAddress) {
       setHostError(true);
       hasError = true;
     }
 
-    if (hasError) {
-      return;
-    }
+    if (hasError) return;
 
     try {
       const response = await fetch(`${base_ssh_url}/auth/ssh`, {
@@ -125,147 +152,224 @@ const RemoteSSHDashboardComponent = ({
     }
   };
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
-      setErrorModalOpen(false);
+  const handleDeviceChange = (selectedOption: any) => {
+    setDeviceError(false);
+
+    if (selectedOption) {
+      const selectedComputerId = Number(selectedOption.value);
+      const selectedIp = privateIps.find((ip) => ip.mid === selectedComputerId);
+
+      setSelectedDevice({
+        value: selectedComputerId,
+        label: selectedOption.label,
+      });
+
+      if (selectedIp?.private_ip_address) {
+        setIpAddress(selectedIp.private_ip_address);
+      } else {
+        setIpAddress("");
+      }
+    } else {
+      setSelectedDevice(null);
+      setIpAddress("");
     }
   };
 
-  return (
-    <div className="row d-flex custom-main-container h-100" ref={parentRef}>
-      <div className="col-12 h-100">
-        <div className="d-flex justify-content-between" ref={divRef}>
-          <h2 className="text-center mb-4">🔐 Remote SSH</h2>
-        </div>
+  useEffect(() => {
+    if (selectedDevice && privateIps.length > 0) {
+      const selectedIp = privateIps.find(
+        (ip) => ip.mid === selectedDevice.value
+      );
+      if (selectedIp?.private_ip_address) {
+        setIpAddress(selectedIp.private_ip_address);
+      }
+    }
+  }, [selectedDevice, privateIps]);
 
-        {!sessionId ? (
-          <div className="d-flex justify-content-center">
-            <div>
-              <div className="row mb-4">
-                <div className="row mb-4 d-flex justify-content-end align-items-end">
-                  <div className="col-md-2 border rounded p-3">
-                    <label className="form-label text-start">
-                      <i className="bi bi-usb-symbol text-primary"></i>
-                      <span className="text-primary"> Port</span>
+  useEffect(() => {
+    const fetchPrivateIps = async () => {
+      try {
+        const response = await GetPrivateIPAddressAPI();
+        setPrivateIps(response.data);
+
+        if (computerIdProp) {
+          const selectedIp = response.data.find(
+            (ip: { mid: number }) => ip.mid === computerIdProp
+          );
+          if (selectedIp?.private_ip_address) {
+            setIpAddress(selectedIp.private_ip_address);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch private IP addresses:", error);
+      }
+    };
+
+    fetchPrivateIps();
+  }, []);
+
+  return (
+    <AnimatedRouteWrapper>
+      <div
+        className="row d-flex custom-main-container custom-container-height"
+        style={{ overflowY: "auto" }}
+      >
+        <div className="col-12 d-flex justify-content-center align-items-center">
+          {!computerIdProp && (
+            <div className="d-flex justify-content-between" ref={divRef}>
+              <h2 className="text-center mb-4">🔐 Remote SSH</h2>
+              <ActionIcons />
+            </div>
+          )}
+
+          {!sessionId ? (
+            <div className="d-flex justify-content-center">
+              <div>
+                <div className="row mb-4">
+                  <div className="col-md-6 mb-4" style={{ height: "85px" }}>
+                    <label htmlFor="userId" className="form-label required">
+                      Computer
                     </label>
-                    <input
-                      type="number"
-                      className="form-control form-control-solid"
-                      value={port}
-                      placeholder="Enter Port (e.g., 22)"
-                      onChange={(e) => setPort(Number(e.target.value))}
+                    <CustomReactSelect
+                      options={compOptions}
+                      value={selectedDevice}
+                      onChange={handleDeviceChange}
+                      placeholder="Select Device"
+                      isClearable
                     />
+                    {deviceError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please select a computer.
+                      </small>
+                    )}
+                  </div>
+
+                  <div className="col-md-6" style={{ height: "85px" }}>
+                    <label className="custom-label required">SSH Host/IP</label>
+                    <input
+                      type="text"
+                      className="form-control custom-placeholder custom-input-height"
+                      placeholder="Enter Host/IP"
+                      value={ipAddress}
+                      onChange={(e) => {
+                        setHostError(false);
+                        setIpAddress(e.target.value);
+                      }}
+                      required
+                    />
+                    {hostError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter the SSH Host/IP.
+                      </small>
+                    )}
                   </div>
                 </div>
 
-                <div className="col-md-6 mb-4" style={{ height: "85px" }}>
-                  <label className="custom-label required">SSH User</label>
-                  <input
-                    type="text"
-                    className="form-control custom-placeholder custom-input-height"
-                    placeholder="Enter Username"
-                    value={username}
-                    onChange={(e) => {
-                      setUserError(false);
-                      setUsername(e.target.value);
-                    }}
-                    autoComplete="new-username"
-                    // required
-                  />
-                  {userError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      Please enter your username.
-                    </small>
-                  )}
+                <div className="row mb-4">
+                  <div className="col-md-6 mb-4" style={{ height: "85px" }}>
+                    <label className="custom-label required">SSH User</label>
+                    <input
+                      type="text"
+                      className="form-control custom-placeholder custom-input-height"
+                      placeholder="Enter Username"
+                      value={username}
+                      onChange={(e) => {
+                        setUserError(false);
+                        setUsername(e.target.value);
+                      }}
+                      autoComplete="new-username"
+                      required
+                    />
+                    {userError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter your username.
+                      </small>
+                    )}
+                  </div>
+
+                  <div className="col-md-6 mb-4" style={{ height: "85px" }}>
+                    <label className="custom-label required">Password</label>
+                    <input
+                      type="password"
+                      className="form-control custom-placeholder custom-input-height"
+                      placeholder="Enter Password"
+                      value={pass}
+                      onChange={(e) => {
+                        setPassError(false);
+                        setPass(e.target.value);
+                      }}
+                      autoComplete="new-password"
+                      required
+                    />
+                    {passError && (
+                      <small
+                        className="text-danger"
+                        style={{ fontSize: "0.875rem" }}
+                      >
+                        Please enter your password.
+                      </small>
+                    )}
+                  </div>
+
+                  <div className="col-md-6 d-flex flex-column align-items-end">
+                    <div className="d-flex flex-column align-items-end border rounded p-3 w-50">
+                      <label className="form-label text-start">
+                        <i className="bi bi-usb-symbol text-primary"></i>
+                        <span className="text-primary"> Port</span>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control form-control-solid "
+                        value={port}
+                        placeholder="Enter Port (e.g., 22)"
+                        onChange={(e) => setPort(Number(e.target.value))}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="col-md-6 mb-4" style={{ height: "85px" }}>
-                  <label className="custom-label required">Password</label>
-                  <input
-                    type="password"
-                    className="form-control custom-placeholder custom-input-height"
-                    placeholder="Enter Password"
-                    value={pass}
-                    onChange={(e) => {
-                      setPassError(false);
-                      setPass(e.target.value);
-                    }}
-                    autoComplete="new-password"
-                    // required
-                  />
-                  {passError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      Please enter your password.
-                    </small>
-                  )}
+                <div className="d-flex justify-content-center gap-3 mt-4">
+                  <button
+                    className="btn btn-sm btn-dark action-btn"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-primary action-btn"
+                    onClick={handleConnect}
+                  >
+                    Connect
+                  </button>
                 </div>
-              </div>
-
-              <div className="row mb-4">
-                <div className="col-md-6" style={{ height: "85px" }}>
-                  <label className="custom-label required">SSH Host/IP</label>
-                  <input
-                    type="text"
-                    className="form-control custom-placeholder custom-input-height"
-                    placeholder="Enter Host/IP"
-                    value={ipAddress}
-                    onChange={(e) => {
-                      setHostError(false);
-                      setIpAddress(e.target.value);
-                    }}
-                    // required
-                  />
-                  {hostError && (
-                    <small
-                      className="text-danger"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      Please enter the SSH Host/IP.
-                    </small>
-                  )}
-                </div>
-              </div>
-
-              <div className="d-flex justify-content-center gap-3 mt-4">
-                <button
-                  className="btn btn-sm btn-dark action-btn"
-                  onClick={handleReset}
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-primary action-btn"
-                  onClick={handleConnect}
-                >
-                  Connect
-                </button>
               </div>
             </div>
-          </div>
-        ) : (
-          <div
-            style={{
-              height: `calc(${parentHeight}px - 20px - ${divHeight}px)`,
-              padding: "10px",
-            }}
-          >
-            <div className="d-flex flex-column gap-2 h-100">
-              <div className="d-flex justify-content-end">
-                <DisconnectButton onClick={handleDisconnect} />
+          ) : (
+            <div
+              style={{
+                height: `calc(100vh - var(--bs-app-header-height) - 20px - 20px  - ${divHeight}px)`,
+              }}
+            >
+              <div className="d-flex flex-column gap-2 h-100">
+                <div className="d-flex justify-content-end">
+                  <DisconnectButton onClick={handleDisconnect} />
+                </div>
+                <TerminalDisplay sessionId={sessionId} />
               </div>
-              <TerminalDisplay sessionId={sessionId} />
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-
       {errorModalOpen && (
         <div
           className="modal fade show d-block"
@@ -302,7 +406,7 @@ const RemoteSSHDashboardComponent = ({
           </div>
         </div>
       )}
-    </div>
+    </AnimatedRouteWrapper>
   );
 };
 

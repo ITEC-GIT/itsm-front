@@ -133,7 +133,9 @@ const MainDashboard = () => {
           <SoftwareInstallationStaticPage computerIdProp={selctedDeviceAtom} />
         );
       case "remote-ssh":
-        return <RemoteSSHDashboardComponent />;
+        return (
+          <RemoteSSHDashboardComponent computerIdProp={selctedDeviceAtom} />
+        );
       case "remote-console":
         return <RemoteConsoleView />;
       case "screenshots":

@@ -30,7 +30,10 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
   const [privateIps, setPrivateIps] = useState<PrivateIpSchema[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState<BasicType | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<{
+    value: number;
+    label: string;
+  } | null>(null);
 
   const [deviceError, setDeviceError] = useState(false);
 
@@ -40,7 +43,7 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       value: device.id ? Number(device.id) : 0,
       label: device.name || "",
     }));
-  const base_ssh_url=import.meta.env.VITE_APP_ITSM_SSH;
+  const base_ssh_url = import.meta.env.VITE_APP_ITSM_SSH;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
@@ -67,6 +70,11 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
 
   const handleConnect = async () => {
     let hasError = false;
+
+    if (!selectedDevice) {
+      setDeviceError(true);
+      hasError = true;
+    }
 
     if (!username) {
       setUserError(true);
@@ -144,13 +152,10 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       const selectedComputerId = Number(selectedOption.value);
       const selectedIp = privateIps.find((ip) => ip.mid === selectedComputerId);
 
-      setSelectedDevice({
-        id: selectedComputerId,
-        name: selectedOption.label,
-      });
-
+      setSelectedDevice(selectedOption);
       if (selectedIp?.private_ip_address) {
         setIpAddress(selectedIp.private_ip_address);
+        setHostError(false);
       } else {
         setIpAddress("");
       }
@@ -198,19 +203,61 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                       </label>
                       <CustomReactSelect
                         options={compOptions}
-                        value={
-                          selectedDevice
-                            ? {
-                                value: selectedDevice.id
-                                  ? Number(selectedDevice.id)
-                                  : 0,
-                                label: selectedDevice.name || "",
-                              }
-                            : null
-                        }
+                        value={selectedDevice}
                         onChange={handleDeviceChange}
                         placeholder="Select Device"
-                        isClearable={false}
+                        isClearable
+                      />
+                      {deviceError && (
+                        <small
+                          className="text-danger"
+                          style={{ fontSize: "0.875rem" }}
+                        >
+                          Please select a computer.
+                        </small>
+                      )}
+                    </div>
+
+                    <div className="col-md-6" style={{ height: "85px" }}>
+                      <label className="custom-label required">
+                        SSH Host/IP
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control custom-placeholder custom-input-height"
+                        placeholder="Enter Host/IP"
+                        value={ipAddress}
+                        onChange={(e) => {
+                          setHostError(false);
+                          setIpAddress(e.target.value);
+                        }}
+                        required
+                      />
+                      {hostError && (
+                        <small
+                          className="text-danger"
+                          style={{ fontSize: "0.875rem" }}
+                        >
+                          Please enter the SSH Host/IP.
+                        </small>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="row mb-4">
+                    <div className="col-md-6 mb-4" style={{ height: "85px" }}>
+                      <label className="custom-label required">SSH User</label>
+                      <input
+                        type="text"
+                        className="form-control custom-placeholder custom-input-height"
+                        placeholder="Enter Username"
+                        value={username}
+                        onChange={(e) => {
+                          setUserError(false);
+                          setUsername(e.target.value);
+                        }}
+                        autoComplete="new-username"
+                        required
                       />
                       {userError && (
                         <small
@@ -242,33 +289,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                           style={{ fontSize: "0.875rem" }}
                         >
                           Please enter your password.
-                        </small>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="row mb-4">
-                    <div className="col-md-6" style={{ height: "85px" }}>
-                      <label className="custom-label required">
-                        SSH Host/IP
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control custom-placeholder custom-input-height"
-                        placeholder="Enter Host/IP"
-                        value={ipAddress}
-                        onChange={(e) => {
-                          setHostError(false);
-                          setIpAddress(e.target.value);
-                        }}
-                        required
-                      />
-                      {hostError && (
-                        <small
-                          className="text-danger"
-                          style={{ fontSize: "0.875rem" }}
-                        >
-                          Please enter the SSH Host/IP.
                         </small>
                       )}
                     </div>
