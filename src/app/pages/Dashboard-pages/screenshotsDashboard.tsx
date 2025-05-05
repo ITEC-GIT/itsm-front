@@ -93,7 +93,7 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
   }, [divRef.current]);
 
   useEffect(() => {
-    const fetchCameraPictures = async () => {
+    const fetchScreenshot = async () => {
       if (!selectedDevice?.value || actionTypeId === undefined) return;
 
       const reqData: GetAntitheftType = {
@@ -125,7 +125,7 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
       }
     };
 
-    fetchCameraPictures();
+    fetchScreenshot();
   }, [selectedDevice]);
 
   useEffect(() => {

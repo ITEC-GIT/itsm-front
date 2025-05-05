@@ -12,26 +12,8 @@ import { DatetimePicker } from "../../components/form/datetimePicker";
 import { FiCamera } from "react-icons/fi";
 import { DeafultVoiceCardComponent } from "../../components/voice-recorder/defaultComponent";
 import { MdOutlineKeyboardVoice } from "react-icons/md";
-
-const dummyData = [
-  {
-    computerName: "Salameh-PC",
-    recordings: [
-      { audio: "/media/audio/audio1.mp3" },
-      { audio: "/media/audio/audio2.mp3" },
-      { audio: "/media/audio/audio1.mp3" },
-      { audio: "/media/audio/audio2.mp3" },
-    ],
-  },
-  {
-    computerName: "PC-202",
-    recordings: Array(8).fill({ audio: "/media/audio/audio1.mp3" }),
-  },
-  {
-    computerName: "PC-303",
-    recordings: Array(3).fill({ audio: "/media/audio/audio1.mp3" }),
-  },
-];
+import { GetAntitheftActionAPI } from "../../config/ApiCalls";
+import { GetAntitheftType } from "../../types/antitheftTypes";
 
 const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -40,7 +22,9 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
   const [endDate, setEndDate] = useState<string>("");
 
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
-
+  const actionTypeId = (staticData.actionTypes || []).find((action) =>
+    action.anttype.toLowerCase().includes("voice_record")
+  )?.id;
   const compOptions = (staticData.computers || []).map((device) => ({
     value: device.id ? Number(device.id) : 0,
     label: device.name || "",
@@ -66,9 +50,47 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
     return "";
   };
 
-  const selectedComputerData = dummyData.find(
-    (comp) => comp.computerName === selectedDevice?.label
-  );
+  const [selectedComputerVoiceRecords, setSelectedComputerVoiceRecords] =
+    useState<{
+      computerName: string;
+      recordings: { url: string }[];
+    } | null>(null);
+
+  useEffect(() => {
+    const fetchScreenshot = async () => {
+      if (!selectedDevice?.value || actionTypeId === undefined) return;
+
+      const reqData: GetAntitheftType = {
+        computers_id: selectedDevice.value,
+        action_type: actionTypeId,
+        ...(startDate && { start_date: new Date(startDate) }),
+        ...(endDate && { end_date: new Date(endDate) }),
+      };
+
+      try {
+        const res = await GetAntitheftActionAPI(reqData);
+        if (res?.data && Array.isArray(res.data)) {
+          const recordings = res.data.map((item: any) => ({
+            url: item.value,
+          }));
+
+          setSelectedComputerVoiceRecords({
+            computerName: selectedDevice.label,
+            recordings,
+          });
+        } else {
+          setSelectedComputerVoiceRecords({
+            computerName: selectedDevice.label,
+            recordings: [],
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load recordings:", err);
+      }
+    };
+
+    fetchScreenshot();
+  }, [selectedDevice]);
 
   useEffect(() => {
     if (divRef.current) {
@@ -137,12 +159,14 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
             </div>
           </div>
 
-          {selectedComputerData && (
+          {selectedComputerVoiceRecords && (
             <div className="d-flex gap-2 align-items-center mb-3">
-              <h4 className="mb-0">{selectedComputerData.computerName}</h4>
+              <h4 className="mb-0">
+                {selectedComputerVoiceRecords.computerName}
+              </h4>
               <span className="badge bg-primary text-white">
-                {selectedComputerData.recordings.length} Voice Recorder
-                {selectedComputerData.recordings.length !== 1 && "s"}
+                {selectedComputerVoiceRecords.recordings.length} Voice Recorder
+                {selectedComputerVoiceRecords.recordings.length !== 1 && "s"}
               </span>
             </div>
           )}
@@ -152,17 +176,19 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
           className="d-flex flex-column overflow-auto"
           style={{ maxHeight: "100%", flexGrow: 1 }}
         >
-          {selectedComputerData ? (
+          {selectedComputerVoiceRecords ? (
             <div className="col-12 h-100">
               <div className="row">
-                {selectedComputerData.recordings.map((recording, i) => (
-                  <div
-                    key={i}
-                    className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
-                  >
-                    <VoiceCardComponent audioUrl={recording.audio} />
-                  </div>
-                ))}
+                {selectedComputerVoiceRecords.recordings.map(
+                  (recording: { url: string }, i: number) => (
+                    <div
+                      key={i}
+                      className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                    >
+                      <VoiceCardComponent audioUrl={recording.url} />
+                    </div>
+                  )
+                )}
               </div>
             </div>
           ) : (
