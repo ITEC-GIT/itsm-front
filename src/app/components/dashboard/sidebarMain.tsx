@@ -98,11 +98,13 @@ const SidebarMain = () => {
 
             <div className="d-flex flex-column align-items-start">
               <button
-                className={`btn-command ${
-                  isCollapsed && activeView === "ticket"
-                    ? "active-collapsed"
-                    : ""
-                }`}
+                className={`btn-command 
+                    ${activeView === "ticket" ? "active" : ""} 
+                  ${
+                    isCollapsed && activeView === "ticket"
+                      ? "active-collapsed"
+                      : ""
+                  }`}
                 onClick={() => setActiveView("ticket")}
                 data-bs-toggle="tooltip"
                 data-bs-placement="top"
@@ -132,11 +134,13 @@ const SidebarMain = () => {
               ].map((item) => (
                 <button
                   key={item.view}
-                  className={`btn-command ${
-                    isCollapsed && activeView === item.view
-                      ? "active-collapsed"
-                      : ""
-                  }`}
+                  className={`btn-command 
+                    ${activeView === item.view ? "active" : ""} 
+                    ${
+                      isCollapsed && activeView === item.view
+                        ? "active-collapsed"
+                        : ""
+                    }`}
                   onClick={() => setActiveView(item.view)}
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
@@ -166,11 +170,13 @@ const SidebarMain = () => {
               ].map((item) => (
                 <button
                   key={item.view}
-                  className={`btn-command ${
-                    isCollapsed && activeView === item.view
-                      ? "active-collapsed"
-                      : ""
-                  }`}
+                  className={`btn-command 
+                    ${activeView === item.view ? "active" : ""} 
+                    ${
+                      isCollapsed && activeView === item.view
+                        ? "active-collapsed"
+                        : ""
+                    }`}
                   onClick={() => setActiveView(item.view)}
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"

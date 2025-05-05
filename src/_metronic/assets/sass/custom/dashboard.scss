@@ -197,7 +197,6 @@
   gap: 12px;
 }
 
-
 .Select__control {
   border-radius: 6px;
   border: 1px solid var(--kt-gray-300);
@@ -385,5 +384,9 @@
 
 .btn-command.active-collapsed {
   background: #e7ebfd !important;
-  border-left: 1px solid #1b84ff !important;
+  // border-left: 1px solid #1b84ff !important;
+}
+.btn-command.active {
+  background: #e7ebfd !important;
+  // border-left: 1px solid #1b84ff !important;
 }
