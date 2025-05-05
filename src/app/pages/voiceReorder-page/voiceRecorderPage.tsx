@@ -40,9 +40,6 @@ const VoiceRecordingsPage = () => {
   const [endDate, setEndDate] = useState<string>("");
 
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
-  const [selectedDeviceAtom, setSelectedDeviceAtom] = useAtom(
-    selectedComputerDashboardAtom
-  );
 
   const compOptions = (staticData.computers || []).map((device) => ({
     value: device.id ? Number(device.id) : 0,
@@ -50,19 +47,11 @@ const VoiceRecordingsPage = () => {
   }));
 
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
-    selectedDeviceAtom
-      ? {
-          value: selectedDeviceAtom,
-          label:
-            compOptions.find((option) => option.value === selectedDeviceAtom)
-              ?.label || "",
-        }
-      : null
+    null
   );
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
-    setSelectedDeviceAtom(newValue ? Number(newValue.value) : undefined);
   };
 
   const getPlaceholderText = () => {
