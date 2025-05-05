@@ -85,7 +85,7 @@ const VoiceRecordingsPage = () => {
 
   const getPlaceholderText = () => {
     if (!selectedDevice) {
-      return "Select a computer to display its recordings";
+      return "Select a computer to display its recordings.";
     }
     // if (recordings.length === 0) {
     //   return `No audio recordings found for ${selectedDevice.name}.`;
@@ -219,20 +219,28 @@ const VoiceRecordingsPage = () => {
           }}
         >
           {selectedComputerVoiceRecords ? (
-            <div className="col-12 h-100">
-              <div className="row">
-                {selectedComputerVoiceRecords.recordings.map(
-                  (recording: { url: string }, i: number) => (
-                    <div
-                      key={i}
-                      className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
-                    >
-                      <VoiceCardComponent audioUrl={recording.url} />
-                    </div>
-                  )
-                )}
+            selectedComputerVoiceRecords.recordings.length > 0 ? (
+              <div className="col-12 h-100">
+                <div className="row">
+                  {selectedComputerVoiceRecords.recordings.map(
+                    (recording: { url: string }, i: number) => (
+                      <div
+                        key={i}
+                        className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                      >
+                        <VoiceCardComponent audioUrl={recording.url} />
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="d-flex justify-content-center align-items-center h-100">
+                <DeafultVoiceCardComponent
+                  text={`No voice recordings found for ${selectedComputerVoiceRecords.computerName}.`}
+                />
+              </div>
+            )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
               <DeafultVoiceCardComponent text={getPlaceholderText()} />

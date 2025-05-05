@@ -78,12 +78,10 @@ const StyledWrapper = styled.div`
   }
 `;
 
-const DefaultImage = () => (
+const DefaultImage = ({ text }: { text: string }) => (
   <StyledWrapper>
     <div className="default-image-loader" />
-    <small className="default-image-loader-note">
-      Select a computer to display its screenshots
-    </small>
+    <small className="default-image-loader-note">{text}</small>
   </StyledWrapper>
 );
 
