@@ -758,7 +758,7 @@ const DashboardLanding = () => {
             <PieChart
               labels={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels}
               series={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.series}
-              gradientColor={["#c91a20", "#0089a1"]}
+              gradientColor={["#ab94e3", "#fccc6d"]}
             />
           </div>
           <div className="card p-2 mt-3" style={{ height: 250 }}>
@@ -772,7 +772,7 @@ const DashboardLanding = () => {
                 dashboardData?.assets?.totalComputersAgentDistribution
                   ?.series ?? []
               }
-              gradientColor={["#c91a20", "#0089a1"]}
+              gradientColor={["#fb8c9c", "#56b49a"]}
             />
           </div>
         </div>
@@ -783,7 +783,7 @@ const DashboardLanding = () => {
             <PieChart
               labels={dashboardData?.tickets?.ticketsStatusDist?.labels ?? []}
               series={dashboardData?.tickets?.ticketsStatusDist?.series ?? []}
-              gradientColor={["#c91a20", "#0089a1", "#ffa55d", "#314315"]}
+              gradientColor={["#ab94e3", "#fccc6d", "#fb8c9c", "#56b49a"]}
             />
           </div>
           <div className="card p-2 mt-3" style={{ height: 250 }}>
@@ -791,7 +791,7 @@ const DashboardLanding = () => {
             <PieChart
               labels={dashboardData?.tickets?.ticketsByCategory?.labels ?? []}
               series={dashboardData?.tickets?.ticketsByCategory?.series ?? []}
-              gradientColor={["#c91a20", "#0089a1", "#ffa55d"]}
+              gradientColor={["#ab94e3", "#fccc6d", "#fb8c9c"]}
             />
           </div>
         </div>
