@@ -58,7 +58,6 @@ const UsersPage = () => {
   };
 
   const handleSaveUser = (newOrUpdatedUser: any) => {
-   
     const newUserData: UserType = {
       id: newOrUpdatedUser.id,
       name: newOrUpdatedUser.name,
@@ -227,7 +226,7 @@ const UsersPage = () => {
               <div className="col-12 d-flex justify-content-end mb-3">
                 <button
                   onClick={toggleModelCreation}
-                  className="btn btn-gradient-add d-flex align-items-center gap-2 px-4 py-2"
+                  className="btn btn-primary  d-flex align-items-center gap-2 px-4 py-2"
                 >
                   <i className="bi bi-plus fs-1 text-white"></i>
                   <span className="d-none d-sm-inline">Add New User</span>

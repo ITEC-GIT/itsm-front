@@ -77,7 +77,7 @@ const RolesPage = () => {
                 {/* <AddButton text="Add New Role" onClick={toggleModelCreation} /> */}
                 <button
                   onClick={toggleModelCreation}
-                  className="btn btn-gradient-add d-flex align-items-center gap-2 px-4 py-2"
+                  className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2"
                 >
                   <i className="bi bi-plus fs-1 text-white"></i>
                   <span className="d-none d-sm-inline">Add New Role</span>
