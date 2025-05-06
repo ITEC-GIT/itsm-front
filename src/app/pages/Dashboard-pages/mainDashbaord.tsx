@@ -187,12 +187,12 @@ const MainDashboard = () => {
   }, [location]);
   return (
     <div className="container-fluid dashboard-container-fluid">
-      <div className="row flex-grow-1" style={{ overflow: "hidden" }}>
+      <div className="row flex-grow-1 gap-0" style={{ overflow: "hidden" }}>
         <div
           className={`pe-0 transition-all height-100 ${
             isSidebarOpen
-              ? " col-1 col-sm-1 col-md-4 col-lg-5 col-xl-2"
-              : " col-1 col-sm-1 col-md-3 col-lg-3 col-xl-2"
+              ? " col-2 col-sm-2 col-md-4 col-lg-5 col-xl-2"
+              : " col-2 col-sm-2 col-md-3 col-lg-3 col-xl-2"
           }`}
         >
           <SidebarMain />
@@ -200,8 +200,8 @@ const MainDashboard = () => {
         <div
           className={`pt-3 pb-3 height-100 transition-all${
             isSidebarOpen
-              ? " col-11 col-sm-11 col-md-8 col-lg-7 col-xl-10"
-              : " col-11 col-sm-11 col-md-9 col-lg-9 col-xl-10"
+              ? " col-10 col-sm-10 col-md-8 col-lg-7 col-xl-10"
+              : " col-10 col-sm-10 col-md-9 col-lg-9 col-xl-10"
           }`}
         >
           <div className="dashboard-display-container p-3">

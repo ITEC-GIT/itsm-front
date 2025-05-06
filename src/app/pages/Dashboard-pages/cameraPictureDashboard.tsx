@@ -149,7 +149,7 @@ const CameraPictureGalleryDashboard = ({
     <AnimatedRouteWrapper>
       <div className="row d-flex custom-main-container custom-container-height">
         <div ref={divRef}>
-          <div className="row mb-3 gx-10 gy-0">
+          <div className="row mb-3 gx-10 gy-2">
             <div className="col-12 col-md-5 col-lg-3">
               <div className="d-flex flex-column justify-content-end h-100">
                 <label className="custom-label">Computer</label>
@@ -163,21 +163,21 @@ const CameraPictureGalleryDashboard = ({
               </div>
             </div>
 
-            <div className="col-12 col-md-12 col-lg-8 mt-md-2">
-              <div className="d-flex gap-2">
-                <div className="col-12 col-md-5">
+            <div className="col-12 col-md-6 col-lg-8 mt-md-2">
+              <div className="row gx-2 gy-2">
+                <div className="col-12 col-sm-5">
                   <label className="custom-label">From</label>
                   <DatetimePicker date={startDate} setDate={setStartDate} />
                 </div>
-                <div className="col-12 col-md-5">
+                <div className="col-12 col-sm-5">
                   <label className="custom-label">To</label>
                   <DatetimePicker date={endDate} setDate={setEndDate} />
                 </div>
-                <div className="col-12 col-md-2 d-flex align-items-end">
+                <div className="col-12 col-sm-2 d-flex align-items-end">
                   <button
-                    className="btn custom-btn bg-primary text-white p-5"
+                    className="btn custom-btn bg-primary text-white  p-2 p-md-3"
                     style={{ whiteSpace: "nowrap" }}
-                    onClick={handleGoClick}
+                    onClick={() => {}}
                   >
                     Go
                   </button>
@@ -185,8 +185,8 @@ const CameraPictureGalleryDashboard = ({
               </div>
             </div>
 
-            <div className="col-12 col-md-1 d-flex justify-content-end align-items-end mt-md-2">
-              <button className="btn custom-btn p-5">
+            <div className="col-12 col-md-1 col-lg-1 d-flex justify-content-end justify-content-md-end align-items-end mt-2 mt-md-0">
+              <button className="btn custom-btn p-2 p-md-3">
                 <FiCamera className="fs-2" />
               </button>
             </div>
