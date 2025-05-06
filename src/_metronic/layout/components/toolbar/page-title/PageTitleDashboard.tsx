@@ -35,7 +35,11 @@ const PageTitleDashboard = () => {
     >
       <div>
         <div className="d-flex align-items-center gap-2">
-          <MdDoubleArrow onClick={handleToggleView} className="fs-2" />
+          <MdDoubleArrow
+            onClick={handleToggleView}
+            className="fs-2 arrow-icon"
+          />
+
           {currentView === "analytics" ? (
             <h1
               onClick={handleToggleView}
