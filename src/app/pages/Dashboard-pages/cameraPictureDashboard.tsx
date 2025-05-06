@@ -148,47 +148,47 @@ const CameraPictureGalleryDashboard = ({
   return (
     <AnimatedRouteWrapper>
       <div className="row d-flex custom-main-container custom-container-height">
-        <div className="p-5" ref={divRef}>
-          <div className="col-12">
-            <div className="d-flex justify-content-end flex-wrap gap-3">
-              <button className="btn custom-btn p-5">
-                <FiCamera className="fs-2" />
-              </button>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-12 col-md-3 d-flex flex-column justify-content-end">
-              <label className="custom-label">Computer</label>
-              <CustomReactSelect
-                options={compOptions}
-                value={selectedDevice}
-                onChange={handleDeviceChange}
-                placeholder="Select Device"
-                isClearable
-              />
+        <div ref={divRef}>
+          <div className="row mb-3 gx-10 gy-0">
+            <div className="col-12 col-md-5 col-lg-3">
+              <div className="d-flex flex-column justify-content-end h-100">
+                <label className="custom-label">Computer</label>
+                <CustomReactSelect
+                  options={compOptions}
+                  value={selectedDevice}
+                  onChange={handleDeviceChange}
+                  placeholder="Select Device"
+                  isClearable
+                />
+              </div>
             </div>
 
-            <div className="col-12 col-md-9">
-              <div className="d-flex flex-wrap align-items-end gap-3 justify-content-md-end">
-                <div className="d-flex flex-column">
+            <div className="col-12 col-md-12 col-lg-8 mt-md-2">
+              <div className="d-flex gap-2">
+                <div className="col-12 col-md-5">
                   <label className="custom-label">From</label>
                   <DatetimePicker date={startDate} setDate={setStartDate} />
                 </div>
-                <div className="d-flex flex-column">
+                <div className="col-12 col-md-5">
                   <label className="custom-label">To</label>
                   <DatetimePicker date={endDate} setDate={setEndDate} />
                 </div>
-                <div className="align-self-end">
+                <div className="col-12 col-md-2 d-flex align-items-end">
                   <button
-                    className="btn btn-sm btn-primary"
+                    className="btn custom-btn bg-primary text-white p-5"
                     style={{ whiteSpace: "nowrap" }}
-                    onClick={() => {}}
+                    onClick={handleGoClick}
                   >
                     Go
                   </button>
                 </div>
               </div>
+            </div>
+
+            <div className="col-12 col-md-1 d-flex justify-content-end align-items-end mt-md-2">
+              <button className="btn custom-btn p-5">
+                <FiCamera className="fs-2" />
+              </button>
             </div>
           </div>
 
@@ -200,8 +200,7 @@ const CameraPictureGalleryDashboard = ({
                   {selectedComputerScreenshots.computerName}
                 </h4>
                 <span className="badge text-white bg-primary">
-                  {selectedComputerScreenshots.screenshots.length} Camera
-                  picture
+                  {selectedComputerScreenshots.screenshots.length} Screenshot
                   {selectedComputerScreenshots.screenshots.length !== 1 && "s"}
                 </span>
               </div>
