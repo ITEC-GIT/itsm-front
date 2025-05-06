@@ -5,6 +5,7 @@ import {
   dashboardViewAtom,
   selectedComputerDashboardAtom,
 } from "../../../../../app/atoms/dashboard-atoms/dashboardAtom";
+import { MdDoubleArrow } from "react-icons/md";
 
 const PageTitleDashboard = () => {
   const { config, classes } = useLayout();
@@ -34,24 +35,7 @@ const PageTitleDashboard = () => {
     >
       <div>
         <div className="d-flex align-items-center gap-2">
-          <i
-            onClick={handleToggleView}
-            className={
-              currentView === "main"
-                ? "bi bi-box"
-                : currentView === "analytics"
-                ? "bi bi-bar-chart"
-                : ""
-            }
-            style={{
-              color: "black",
-              fontSize: "medium",
-              backgroundColor: "#f0f0f0",
-              borderRadius: "5px",
-              padding: "5px",
-              cursor: "pointer",
-            }}
-          ></i>
+          <MdDoubleArrow onClick={handleToggleView} className="fs-2" />
           {currentView === "analytics" ? (
             <h1
               onClick={handleToggleView}
