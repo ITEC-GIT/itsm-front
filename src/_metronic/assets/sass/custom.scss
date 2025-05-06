@@ -146,6 +146,13 @@
   border-radius: 12px;
 }
 
+.header-blue-color {
+  background: linear-gradient(90deg, #1c68d6, #33b4f5) !important;
+  background-clip: text !important; 
+  -webkit-background-clip: text !important; 
+  -webkit-text-fill-color: transparent !important;
+}
+
 .react-select__control {
   border: none !important;
 }
@@ -215,4 +222,7 @@
   opacity: 0.5 !important;
   font-weight: 500 !important;
   line-height: 1.5 !important;
+  min-height: 42px !important;
+  border: 1px solid var(--bs-gray-300) !important;
+  border-radius: 0.375rem !important;
 }

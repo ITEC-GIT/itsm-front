@@ -40,23 +40,17 @@ const PageTitleDashboard = () => {
             className="fs-2 arrow-icon"
           />
 
-          {currentView === "analytics" ? (
+          
             <h1
               onClick={handleToggleView}
-              className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center"
-              style={{ cursor: "pointer" }}
+              className="page-heading d-flex fw-bold fs-3 my-0 flex-column justify-content-center header-blue-color"
+              style={{
+                cursor: "pointer",
+              }}
             >
-              Analytics Dashboard
+             {currentView === "analytics" ? "Analytics Dashboard" : "Main Dashboard"}
             </h1>
-          ) : (
-            <h1
-              onClick={handleToggleView}
-              className="page-heading d-flex text-gray-900 fw-bold fs-3 my-0 flex-column justify-content-center text-nowrap"
-              style={{ cursor: "pointer" }}
-            >
-              Main Dashboard
-            </h1>
-          )}
+         
         </div>
       </div>
     </div>
