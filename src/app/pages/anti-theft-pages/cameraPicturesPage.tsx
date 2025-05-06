@@ -15,28 +15,19 @@ import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { DatetimePicker } from "../../components/form/datetimePicker";
-import {
-  ExecuteAntitheftActionAPI,
-  GetAntitheftActionAPI,
-} from "../../config/ApiCalls";
-import {
-  ExecuteAntitheftActionType,
-  GetAntitheftType,
-} from "../../types/antitheftTypes";
-import Cookies from "js-cookie";
+import { GetAntitheftActionAPI } from "../../config/ApiCalls";
+import { GetAntitheftType } from "../../types/antitheftTypes";
 
-const ScreenshotGalleryPage = () => {
+const CameraPictureGalleryPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
 
   const actionTypeId = (staticData.actionTypes || []).find((action) =>
-    action.anttype.toLowerCase().includes("screenshot")
+    action.anttype.toLowerCase().includes("camera_picture")
   )?.id;
 
   const compOptions = (staticData.computers || []).map((device) => ({
@@ -47,69 +38,6 @@ const ScreenshotGalleryPage = () => {
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
-
-  const handleExecuteScreenshot = async () => {
-    if (!selectedDevice?.value) {
-      setErrorModalOpen(true);
-      return;
-    }
-
-    if (actionTypeId === undefined) return;
-
-    const data: ExecuteAntitheftActionType = {
-      mid: selectedDevice.value,
-      action_type: actionTypeId,
-      users_id: Number(Cookies.get("user")),
-    };
-
-    try {
-      const res = await ExecuteAntitheftActionAPI(data);
-      if (res.status === 200 || res.status === 201) {
-        console.log("Action executed successfully");
-
-        // Wait 65 seconds
-        await new Promise((resolve) => setTimeout(resolve, 65000));
-
-        const fetchCameraPictures = async () => {
-          if (!selectedDevice?.value || actionTypeId === undefined) return;
-
-          const reqData: GetAntitheftType = {
-            computers_id: selectedDevice.value,
-            action_type: actionTypeId,
-            ...(startDate && { start_date: new Date(startDate) }),
-            ...(endDate && { end_date: new Date(endDate) }),
-          };
-
-          try {
-            const res = await GetAntitheftActionAPI(reqData);
-            if (res?.data && Array.isArray(res.data)) {
-              const screenshots = res.data.map((item: any) => ({
-                url: item.value,
-              }));
-
-              setSelectedComputerScreenshots({
-                computerName: selectedDevice.label,
-                screenshots,
-              });
-            } else {
-              setSelectedComputerScreenshots({
-                computerName: selectedDevice.label,
-                screenshots: [],
-              });
-            }
-          } catch (err) {
-            console.error("Failed to load screenshots:", err);
-          }
-        };
-
-        fetchCameraPictures();
-      } else {
-        console.error("Failed to execute screenshot action");
-      }
-    } catch (err) {
-      console.error("Error executing action:", err);
-    }
-  };
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -163,14 +91,14 @@ const ScreenshotGalleryPage = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    const fetchCameraPictures = async () => {
+    const fetchCameraPicture = async () => {
       if (!selectedDevice?.value || actionTypeId === undefined) return;
 
       const reqData: GetAntitheftType = {
         computers_id: selectedDevice.value,
         action_type: actionTypeId,
-        ...(startDate && { start_date: new Date(startDate) }),
-        ...(endDate && { end_date: new Date(endDate) }),
+        ...(startDate.trim() && { start_date: new Date(startDate) }),
+        ...(endDate.trim() && { end_date: new Date(endDate) }),
       };
 
       try {
@@ -195,7 +123,7 @@ const ScreenshotGalleryPage = () => {
       }
     };
 
-    fetchCameraPictures();
+    fetchCameraPicture();
   }, [selectedDevice]);
 
   useEffect(() => {
@@ -219,11 +147,8 @@ const ScreenshotGalleryPage = () => {
         <div className="p-5" ref={divRef}>
           <div className="col-12 mb-4">
             <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
-              <h2 className="mb-0">📸 Screenshots</h2>
-              <button
-                className="btn custom-btn p-5"
-                onClick={handleExecuteScreenshot}
-              >
+              <h2 className="mb-0">📸 Camera Pictures</h2>
+              <button className="btn custom-btn p-5">
                 <FiCamera className="fs-2" />
               </button>
             </div>
@@ -272,7 +197,8 @@ const ScreenshotGalleryPage = () => {
                   {selectedComputerScreenshots.computerName}
                 </h4>
                 <span className="badge text-white bg-primary">
-                  {selectedComputerScreenshots.screenshots.length} Screenshot
+                  {selectedComputerScreenshots.screenshots.length} Camera
+                  picture
                   {selectedComputerScreenshots.screenshots.length !== 1 && "s"}
                 </span>
               </div>
@@ -324,53 +250,23 @@ const ScreenshotGalleryPage = () => {
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
-                <DefaultImage />
+                <DefaultImage
+                  text={`No camera picture available for ${selectedComputerScreenshots?.computerName}.`}
+                />
               </div>
             )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DefaultImage />
+              <DefaultImage
+                text={"Select a computer to display its camera pictures."}
+              />
             </div>
           )}
         </div>
       </div>
-      {errorModalOpen && (
-        <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          role="dialog"
-          onClick={() => setErrorModalOpen(false)}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered w-100"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-content">
-              <div className="modal-header border-0">
-                <div className="d-flex gap-2 align-items-start">
-                  <i className="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
-                  <h5 className="modal-title text-danger mb-1">
-                    You should select a computer to complete the screenshot
-                  </h5>
-                </div>
-              </div>
-
-              <div className="modal-footer border-0">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setErrorModalOpen(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
     // {/* </AnimatedRouteWrapper> */}
   );
 };
 
-export { ScreenshotGalleryPage };
+export { CameraPictureGalleryPage };

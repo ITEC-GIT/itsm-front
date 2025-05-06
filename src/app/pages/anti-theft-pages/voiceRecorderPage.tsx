@@ -1,24 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import { motion } from "framer-motion";
-import { FiCamera } from "react-icons/fi";
-import { useAtom, useAtomValue } from "jotai";
-import "swiper/css";
-import "swiper/css/navigation";
-
-import { ZoomableImage } from "../../components/screenshots/zoomableimage";
-import { CustomReactSelect } from "../../components/form/custom-react-select";
-import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { DefaultImage } from "../../components/screenshots/defaultImage";
-import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
+import { useAtom, useAtomValue } from "jotai";
+import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { StaticDataType } from "../../types/filtersAtomType";
+import { CustomReactSelect } from "../../components/form/custom-react-select";
+import { VoiceCardComponent } from "../../components/voice-recorder/voiceRecorderComponent";
 import { DatetimePicker } from "../../components/form/datetimePicker";
+import { DeafultVoiceCardComponent } from "../../components/voice-recorder/defaultComponent";
+import { MdOutlineKeyboardVoice } from "react-icons/md";
 import { GetAntitheftActionAPI } from "../../config/ApiCalls";
 import { GetAntitheftType } from "../../types/antitheftTypes";
 
-const CameraPictureGalleryPage = () => {
+const VoiceRecordingsPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
@@ -27,7 +20,7 @@ const CameraPictureGalleryPage = () => {
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
 
   const actionTypeId = (staticData.actionTypes || []).find((action) =>
-    action.anttype.toLowerCase().includes("camera_picture")
+    action.anttype.toLowerCase().includes("voice_record")
   )?.id;
 
   const compOptions = (staticData.computers || []).map((device) => ({
@@ -39,16 +32,28 @@ const CameraPictureGalleryPage = () => {
     null
   );
 
+  const [selectedComputerVoiceRecords, setSelectedComputerVoiceRecords] =
+    useState<{
+      computerName: string;
+      recordings: { url: string }[];
+    } | null>(null);
+
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
+
+    if (!newValue) {
+      setSelectedComputerVoiceRecords(null);
+      setStartDate("");
+      setEndDate("");
+    }
   };
 
   const handleGoClick = async () => {
-    if (!selectedDevice?.value) return;
+    if (!selectedDevice?.value || actionTypeId === undefined) return;
 
     const reqData: GetAntitheftType = {
       computers_id: selectedDevice.value,
-      action_type: 5,
+      action_type: actionTypeId,
       ...(startDate && { start_date: new Date(startDate) }),
       ...(endDate && { end_date: new Date(endDate) }),
     };
@@ -56,75 +61,79 @@ const CameraPictureGalleryPage = () => {
     try {
       const res = await GetAntitheftActionAPI(reqData);
       if (res?.data && Array.isArray(res.data)) {
-        const screenshots = res.data.map((item: any) => ({
+        const recordings = res.data.map((item: any) => ({
           url: item.value,
         }));
 
-        setSelectedComputerScreenshots({
+        setSelectedComputerVoiceRecords({
           computerName: selectedDevice.label,
-          screenshots,
+          recordings,
         });
 
         setStartDate("");
         setEndDate("");
       } else {
-        setSelectedComputerScreenshots({
+        setSelectedComputerVoiceRecords({
           computerName: selectedDevice.label,
-          screenshots: [],
+          recordings: [],
         });
       }
     } catch (err) {
-      console.error("Failed to load screenshots:", err);
+      console.error("Failed to load recordings:", err);
     }
   };
 
-  const [selectedComputerScreenshots, setSelectedComputerScreenshots] =
-    useState<{
-      computerName: string;
-      screenshots: { url: string }[];
-    } | null>(null);
+  const getPlaceholderText = () => {
+    if (!selectedDevice) {
+      return "Select a computer to display its recordings.";
+    }
+    // if (recordings.length === 0) {
+    //   return `No audio recordings found for ${selectedDevice.name}.`;
+    // }
+    return "";
+  };
+
+  useEffect(() => {
+    const fetchVoiceRecords = async () => {
+      if (!selectedDevice?.value || actionTypeId === undefined) return;
+
+      const reqData: GetAntitheftType = {
+        computers_id: selectedDevice.value,
+        action_type: actionTypeId,
+        ...(startDate && { start_date: new Date(startDate) }),
+        ...(endDate && { end_date: new Date(endDate) }),
+      };
+
+      try {
+        const res = await GetAntitheftActionAPI(reqData);
+        if (res?.data && Array.isArray(res.data)) {
+          const recordings = res.data.map((item: any) => ({
+            url: item.value,
+          }));
+
+          setSelectedComputerVoiceRecords({
+            computerName: selectedDevice.label,
+            recordings,
+          });
+        } else {
+          setSelectedComputerVoiceRecords({
+            computerName: selectedDevice.label,
+            recordings: [],
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load recordings:", err);
+      }
+    };
+
+    fetchVoiceRecords();
+  }, [selectedDevice]);
 
   useEffect(() => {
     if (divRef.current) {
       setHeight(divRef.current.offsetHeight);
     }
   }, [divRef.current]);
-
-  useEffect(() => {
-    const fetchScreenshots = async () => {
-      if (!selectedDevice?.value) return;
-
-      const reqData: GetAntitheftType = {
-        computers_id: selectedDevice.value,
-        action_type: 5,
-        ...(startDate.trim() && { start_date: new Date(startDate) }),
-        ...(endDate.trim() && { end_date: new Date(endDate) }),
-      };
-
-      try {
-        const res = await GetAntitheftActionAPI(reqData);
-        if (res?.data && Array.isArray(res.data)) {
-          const screenshots = res.data.map((item: any) => ({
-            url: item.value,
-          }));
-
-          setSelectedComputerScreenshots({
-            computerName: selectedDevice.label,
-            screenshots,
-          });
-        } else {
-          setSelectedComputerScreenshots({
-            computerName: selectedDevice.label,
-            screenshots: [],
-          });
-        }
-      } catch (err) {
-        console.error("Failed to load screenshots:", err);
-      }
-    };
-
-    fetchScreenshots();
-  }, [selectedDevice]);
 
   useEffect(() => {
     if (!divRef.current) return;
@@ -147,9 +156,9 @@ const CameraPictureGalleryPage = () => {
         <div className="p-5" ref={divRef}>
           <div className="col-12 mb-4">
             <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
-              <h2 className="mb-0">📸 Camera Pictures</h2>
+              <h2 className="mb-0">🎙️ Voice Recordings</h2>
               <button className="btn custom-btn p-5">
-                <FiCamera className="fs-2" />
+                <MdOutlineKeyboardVoice className="fs-2" />
               </button>
             </div>
           </div>
@@ -189,80 +198,59 @@ const CameraPictureGalleryPage = () => {
             </div>
           </div>
 
-          {selectedDevice ? (
-            selectedComputerScreenshots &&
-            selectedComputerScreenshots.screenshots.length > 0 ? (
-              <div className="d-flex gap-2 align-items-center mt-3">
-                <h4 className="mb-0">
-                  {selectedComputerScreenshots.computerName}
-                </h4>
-                <span className="badge text-white bg-primary">
-                  {selectedComputerScreenshots.screenshots.length} Camera
-                  picture
-                  {selectedComputerScreenshots.screenshots.length !== 1 && "s"}
-                </span>
-              </div>
-            ) : (
-              <></>
-            )
-          ) : null}
+          {selectedComputerVoiceRecords && (
+            <div className="d-flex gap-2 align-items-center mb-3">
+              <h4 className="mb-0">
+                {selectedComputerVoiceRecords.computerName}
+              </h4>
+              <span className="badge bg-primary text-white">
+                {selectedComputerVoiceRecords.recordings.length} Voice Recorder
+                {selectedComputerVoiceRecords.recordings.length !== 1 && "s"}
+              </span>
+            </div>
+          )}
         </div>
 
         <div
-          className="row p-5"
+          className="row vertical-scroll none-scroll-width p-5"
           style={{
             height: `calc(100vh - var(--bs-app-header-height) - 30px - ${height}px)`,
+            overflowY: "auto",
           }}
         >
-          {selectedDevice ? (
-            selectedComputerScreenshots &&
-            selectedComputerScreenshots.screenshots.length > 0 ? (
-              <div className="col-12 mb-5 h-100">
-                <Swiper
-                  spaceBetween={20}
-                  slidesPerView={1}
-                  navigation
-                  modules={[Navigation]}
-                  breakpoints={{
-                    640: { slidesPerView: 1 },
-                    768: { slidesPerView: 1 },
-                    1024: { slidesPerView: 1 },
-                  }}
-                  style={{ paddingBottom: "2rem", height: "100%" }}
-                >
-                  {selectedComputerScreenshots.screenshots.map((img, i) => (
-                    <SwiperSlide key={i}>
-                      <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        style={{
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
+          {selectedComputerVoiceRecords ? (
+            selectedComputerVoiceRecords.recordings.length > 0 ? (
+              <div className="col-12 h-100">
+                <div className="row">
+                  {selectedComputerVoiceRecords.recordings.map(
+                    (recording: { url: string }, i: number) => (
+                      <div
+                        key={i}
+                        className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
                       >
-                        <ZoomableImage src={img.url} index={i} />
-                      </motion.div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+                        <VoiceCardComponent audioUrl={recording.url} />
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
-                <DefaultImage />
+                <DeafultVoiceCardComponent
+                  text={`No voice recordings found for ${selectedComputerVoiceRecords.computerName}.`}
+                />
               </div>
             )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DefaultImage />
+              <DeafultVoiceCardComponent text={getPlaceholderText()} />
             </div>
           )}
         </div>
       </div>
     </div>
-    // {/* </AnimatedRouteWrapper> */}
+    // </AnimatedRouteWrapper>
   );
 };
 
-export { CameraPictureGalleryPage };
+export { VoiceRecordingsPage };

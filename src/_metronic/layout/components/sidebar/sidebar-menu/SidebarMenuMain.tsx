@@ -15,13 +15,19 @@ const SidebarMenuMain = () => {
         title={t.dashboard}
         fontIcon="bi-app-indicator"
       />
-      {/* <SidebarMenuItem
+      <SidebarMenuItem
         to="/hyper-commands"
         icon="switch"
         title={t.hyperCommands}
         fontIcon="bi-layers"
-      /> */}
+      />
       <SidebarMenuItem
+        to="/antitheft"
+        icon="switch"
+        title={t.antitheft}
+        fontIcon="bi-layers"
+      />
+      {/* <SidebarMenuItem
         to="/hyper-commands/software-installation"
         icon="switch"
         title={t.hyperCommands_software}
@@ -38,25 +44,25 @@ const SidebarMenuMain = () => {
         icon="switch"
         title={t.hyperCommands_vnc}
         fontIcon="bi-layers"
-      />
-      <SidebarMenuItem
-        to="/screenshots"
+      /> */}
+      {/* <SidebarMenuItem
+        to="/antitheft/screenshots"
         icon="switch"
         title={t.screenshots}
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
-        to="/camerapicture"
+        to="/antitheft/camerapicture"
         icon="switch"
         title={t.cameraPicture}
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
-        to="/voicerecorder"
+        to="/antitheft/voicerecorder"
         icon="switch"
         title={t.voiceRecorder}
         fontIcon="bi-layers"
-      />
+      /> */}
       <SidebarMenuItem
         to="/assets"
         icon="switch"

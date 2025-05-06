@@ -466,7 +466,7 @@ const SoftwareInstallationStaticPage = ({
     <AnimatedRouteWrapper>
       <div className="row d-flex custom-main-container custom-container-height">
         <div className="d-flex flex-column col-12">
-          <h2>🚀 Software Installation</h2>
+          {/* <h2>🚀 Software Installation</h2> */}
           <div>
             <div
               style={{

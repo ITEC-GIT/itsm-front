@@ -233,9 +233,9 @@ const AssetsPage = () => {
         const baseWidthPercentage = Math.ceil(100 / visibleCount);
 
         columnsWithoutAction.forEach((col) => {
-          let columnWidth = col.width;
+          const columnWidth = col.width;
           if (columnWidth) {
-            let pixelWidth = parseFloat(columnWidth.replace("px", ""));
+            const pixelWidth = parseFloat(columnWidth.replace("px", ""));
             if (!isNaN(pixelWidth)) {
               if (col.id === "settings") {
                 newWidths[col.id] = columnWidth || `${baseWidthPercentage}%`;

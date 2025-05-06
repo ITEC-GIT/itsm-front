@@ -7,8 +7,6 @@ import {
 } from "../../config/ApiCalls";
 import { toast } from "react-toastify";
 import { CircularSpinner } from "../spinners/circularSpinner";
-import { DonutChart } from "./donut-chart-d3";
-import DonutChartClickable from "./donut-chart-d3 clickable";
 
 interface GradientPieChartProps {
   gradientColor: string | string[];
@@ -49,12 +47,12 @@ const PieChart = ({
     states: {
       active: {
         filter: {
-          type: isEmpty ? "none" : "lighten",
+          type: isEmpty ? "none" : "darken",
         },
       },
       hover: {
         filter: {
-          type: isEmpty ? "none" : "lighten",
+          type: isEmpty ? "none" : "darken",
         },
       },
     },
@@ -562,7 +560,7 @@ const StatBox = ({
 }) => {
   return (
     <div
-      className="p-3 d-flex justify-content-between align-items-start hyper-card"
+      className="p-3 d-flex justify-content-between align-items-start stat-box"
       style={{
         // backgroundColor: bg,
         minHeight: "60px",
@@ -741,6 +739,7 @@ const DashboardLanding = () => {
       title: "Documents",
     },
   ];
+
   return (
     <div className="container-fluid px-3 px-sm-4 py-3">
       <div className="row g-3">
@@ -753,7 +752,7 @@ const DashboardLanding = () => {
 
       <div className="row mt-3">
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
-          <div className="card p-2" style={{ height: 250 }}>
+          <div className="card p-2 stat-card" style={{ height: 250 }}>
             <span className="text-center">Warranty Distribution</span>
             <PieChart
               labels={dashboardData?.assets?.totalAssetsInWarrentyVsOut?.labels}
@@ -761,7 +760,7 @@ const DashboardLanding = () => {
               gradientColor={["#ab94e3", "#fccc6d"]}
             />
           </div>
-          <div className="card p-2 mt-3" style={{ height: 250 }}>
+          <div className="card p-2 mt-3 stat-card" style={{ height: 250 }}>
             <span className="text-center">Agent installation Distribution</span>
             <PieChart
               labels={
@@ -778,7 +777,7 @@ const DashboardLanding = () => {
         </div>
 
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mt-3 mt-md-0">
-          <div className="card p-2" style={{ height: 250 }}>
+          <div className="card p-2 stat-card" style={{ height: 250 }}>
             <span className="text-center">Tickets Status Distribution</span>
             <PieChart
               labels={dashboardData?.tickets?.ticketsStatusDist?.labels ?? []}
@@ -786,7 +785,7 @@ const DashboardLanding = () => {
               gradientColor={["#ab94e3", "#fccc6d", "#fb8c9c", "#56b49a"]}
             />
           </div>
-          <div className="card p-2 mt-3" style={{ height: 250 }}>
+          <div className="card p-2 mt-3 stat-card" style={{ height: 250 }}>
             <span className="text-center">Tickets Category Distribution</span>
             <PieChart
               labels={dashboardData?.tickets?.ticketsByCategory?.labels ?? []}
@@ -796,8 +795,8 @@ const DashboardLanding = () => {
           </div>
         </div>
 
-        <div className="col-12 col-lg-4 col-xl-6 mt-3 mt-md-0">
-          <div className="card p-3 h-100">
+        <div className="col-12 col-lg-4 col-xl-6 mt-3 mt-md-3 mt-lg-0">
+          <div className="card p-3 h-100 stat-card">
             <BarChart
               gradientColor={"#56b49a"}
               title={`${dashboardData?.ticketsByStatusCount?.status
@@ -825,7 +824,7 @@ const DashboardLanding = () => {
 
       <div className="row mt-3">
         <div className="col-12 col-md-4">
-          <div className="card p-2">
+          <div className="card p-2 stat-card">
             <HorizontalBarChart
               gradientColor={"var(--color-dark-gray)"}
               title="Top 5 Assignees"
@@ -837,7 +836,7 @@ const DashboardLanding = () => {
           </div>
         </div>
         <div className="col-12 col-md-4 mt-3 mt-md-0">
-          <div className="card p-2">
+          <div className="card p-2 stat-card">
             <HorizontalBarChart
               gradientColor="var(--color-p5)"
               title="Asset Distribution"
@@ -855,7 +854,7 @@ const DashboardLanding = () => {
           </div>
         </div>
         <div className="col-12 col-md-4 mt-3 mt-md-0">
-          <div className="card p-2">
+          <div className="card p-2 stat-card">
             <LineChart
               colors={["#c91a20", "#00ae47", "#6d6875"]}
               series={dashboardData.tickets.totalTicketsByPriority.series ?? []}

@@ -10,22 +10,31 @@ import "swiper/css/navigation";
 import { ZoomableImage } from "../../components/screenshots/zoomableimage";
 import { CustomReactSelect } from "../../components/form/custom-react-select";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
 import { DefaultImage } from "../../components/screenshots/defaultImage";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { DatetimePicker } from "../../components/form/datetimePicker";
-import { GetAntitheftType } from "../../types/antitheftTypes";
-import { GetAntitheftActionAPI } from "../../config/ApiCalls";
+import {
+  ExecuteAntitheftActionAPI,
+  GetAntitheftActionAPI,
+} from "../../config/ApiCalls";
+import {
+  ExecuteAntitheftActionType,
+  GetAntitheftType,
+} from "../../types/antitheftTypes";
+import Cookies from "js-cookie";
 
-const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
+const ScreenshotGalleryPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
+
   const actionTypeId = (staticData.actionTypes || []).find((action) =>
     action.anttype.toLowerCase().includes("screenshot")
   )?.id;
@@ -35,11 +44,72 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
     label: device.name || "",
   }));
 
-  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>({
-    value: computerId,
-    label:
-      compOptions.find((option) => option.value === computerId)?.label || "",
-  });
+  const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
+    null
+  );
+
+  const handleExecuteScreenshot = async () => {
+    if (!selectedDevice?.value) {
+      setErrorModalOpen(true);
+      return;
+    }
+
+    if (actionTypeId === undefined) return;
+
+    const data: ExecuteAntitheftActionType = {
+      mid: selectedDevice.value,
+      action_type: actionTypeId,
+      users_id: Number(Cookies.get("user")),
+    };
+
+    try {
+      const res = await ExecuteAntitheftActionAPI(data);
+      if (res.status === 200 || res.status === 201) {
+        console.log("Action executed successfully");
+
+        // Wait 65 seconds
+        await new Promise((resolve) => setTimeout(resolve, 65000));
+
+        const fetchCameraPictures = async () => {
+          if (!selectedDevice?.value || actionTypeId === undefined) return;
+
+          const reqData: GetAntitheftType = {
+            computers_id: selectedDevice.value,
+            action_type: actionTypeId,
+            ...(startDate && { start_date: new Date(startDate) }),
+            ...(endDate && { end_date: new Date(endDate) }),
+          };
+
+          try {
+            const res = await GetAntitheftActionAPI(reqData);
+            if (res?.data && Array.isArray(res.data)) {
+              const screenshots = res.data.map((item: any) => ({
+                url: item.value,
+              }));
+
+              setSelectedComputerScreenshots({
+                computerName: selectedDevice.label,
+                screenshots,
+              });
+            } else {
+              setSelectedComputerScreenshots({
+                computerName: selectedDevice.label,
+                screenshots: [],
+              });
+            }
+          } catch (err) {
+            console.error("Failed to load screenshots:", err);
+          }
+        };
+
+        fetchCameraPictures();
+      } else {
+        console.error("Failed to execute screenshot action");
+      }
+    } catch (err) {
+      console.error("Error executing action:", err);
+    }
+  };
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -93,7 +163,7 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
   }, [divRef.current]);
 
   useEffect(() => {
-    const fetchScreenshot = async () => {
+    const fetchCameraPictures = async () => {
       if (!selectedDevice?.value || actionTypeId === undefined) return;
 
       const reqData: GetAntitheftType = {
@@ -125,7 +195,7 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
       }
     };
 
-    fetchScreenshot();
+    fetchCameraPictures();
   }, [selectedDevice]);
 
   useEffect(() => {
@@ -143,12 +213,17 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
   }, []);
 
   return (
-    <AnimatedRouteWrapper>
+    // <AnimatedRouteWrapper>
+    <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
       <div className="row d-flex custom-main-container custom-container-height">
         <div className="p-5" ref={divRef}>
-          <div className="col-12">
-            <div className="d-flex justify-content-end flex-wrap gap-3">
-              <button className="btn custom-btn p-5">
+          <div className="col-12 mb-4">
+            <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
+              <h2 className="mb-0">📸 Screenshots</h2>
+              <button
+                className="btn custom-btn p-5"
+                onClick={handleExecuteScreenshot}
+              >
                 <FiCamera className="fs-2" />
               </button>
             </div>
@@ -263,8 +338,43 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
           )}
         </div>
       </div>
-    </AnimatedRouteWrapper>
+      {errorModalOpen && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          onClick={() => setErrorModalOpen(false)}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered w-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content">
+              <div className="modal-header border-0">
+                <div className="d-flex gap-2 align-items-start">
+                  <i className="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+                  <h5 className="modal-title text-danger mb-1">
+                    You should select a computer to complete the screenshot
+                  </h5>
+                </div>
+              </div>
+
+              <div className="modal-footer border-0">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setErrorModalOpen(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+    // {/* </AnimatedRouteWrapper> */}
   );
 };
 
-export { ScreenshotGalleryDashboard };
+export { ScreenshotGalleryPage };
