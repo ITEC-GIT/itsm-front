@@ -98,7 +98,7 @@ const PieChart = ({
       },
     },
     legend: {
-      show: false,
+      show: true,
     },
     labels: labels,
     responsive: [
@@ -140,8 +140,8 @@ const PieChart = ({
         options={options}
         series={displaySeries}
         type="donut"
-        height="90%"
-        width="90%"
+        height="100%"
+        width="100%"
       />
       {title && (
         <div
@@ -752,7 +752,7 @@ const DashboardLanding = () => {
       </div>
 
       <div className="row mt-3">
-        <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
+        {/* <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
           <div className="card p-2" style={{ height: 250 }}>
             <span className="text-center">Warranty Distribution</span>
             <PieChart
@@ -775,9 +775,9 @@ const DashboardLanding = () => {
               gradientColor={["#fb8c9c", "#56b49a"]}
             />
           </div>
-        </div>
+        </div> */}
 
-        <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mt-3 mt-md-0">
+        <div className="col-12 col-sm-6 col-md-6 mt-3 mt-md-0">
           <div className="card p-2" style={{ height: 250 }}>
             <span className="text-center">Tickets Status Distribution</span>
             <PieChart
@@ -796,7 +796,7 @@ const DashboardLanding = () => {
           </div>
         </div>
 
-        <div className="col-12 col-lg-4 col-xl-6 mt-3 mt-md-0">
+        <div className="col-12  col-sm-6 col-md-6 mt-3 mt-md-0">
           <div className="card p-3 h-100">
             <BarChart
               gradientColor={"#56b49a"}
