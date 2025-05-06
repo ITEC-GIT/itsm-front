@@ -17,6 +17,7 @@ import { StaticDataType } from "../../types/filtersAtomType";
 import { DatetimePicker } from "../../components/form/datetimePicker";
 import { GetAntitheftActionAPI } from "../../config/ApiCalls";
 import { GetAntitheftType } from "../../types/antitheftTypes";
+import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
 
 const CameraPictureGalleryPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -250,14 +251,14 @@ const CameraPictureGalleryPage = () => {
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
-                <DefaultImage
+                <DeafultComponent
                   text={`No camera picture available for ${selectedComputerScreenshots?.computerName}.`}
                 />
               </div>
             )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DefaultImage
+              <DeafultComponent
                 text={"Select a computer to display its camera pictures."}
               />
             </div>

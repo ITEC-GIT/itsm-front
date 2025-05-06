@@ -6,7 +6,7 @@ import { StaticDataType } from "../../types/filtersAtomType";
 import { CustomReactSelect } from "../../components/form/custom-react-select";
 import { VoiceCardComponent } from "../../components/voice-recorder/voiceRecorderComponent";
 import { DatetimePicker } from "../../components/form/datetimePicker";
-import { DeafultVoiceCardComponent } from "../../components/voice-recorder/defaultComponent";
+import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
 import { MdOutlineKeyboardVoice } from "react-icons/md";
 import { GetAntitheftActionAPI } from "../../config/ApiCalls";
 import { GetAntitheftType } from "../../types/antitheftTypes";
@@ -236,14 +236,14 @@ const VoiceRecordingsPage = () => {
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
-                <DeafultVoiceCardComponent
+                <DeafultComponent
                   text={`No voice recordings found for ${selectedComputerVoiceRecords.computerName}.`}
                 />
               </div>
             )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DeafultVoiceCardComponent text={getPlaceholderText()} />
+              <DeafultComponent text={getPlaceholderText()} />
             </div>
           )}
         </div>

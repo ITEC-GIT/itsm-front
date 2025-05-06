@@ -24,6 +24,7 @@ import {
   GetAntitheftType,
 } from "../../types/antitheftTypes";
 import Cookies from "js-cookie";
+import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
 
 const ScreenshotGalleryPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -324,14 +325,14 @@ const ScreenshotGalleryPage = () => {
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
-                <DefaultImage
+                <DeafultComponent
                   text={`No screenshots available for ${selectedComputerScreenshots?.computerName}.`}
                 />
               </div>
             )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DefaultImage
+              <DeafultComponent
                 text={"Select a computer to display its screenshots."}
               />
             </div>

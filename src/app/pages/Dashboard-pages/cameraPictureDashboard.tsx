@@ -11,13 +11,13 @@ import { ZoomableImage } from "../../components/screenshots/zoomableimage";
 import { CustomReactSelect } from "../../components/form/custom-react-select";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
-import { DefaultImage } from "../../components/screenshots/defaultImage";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { DatetimePicker } from "../../components/form/datetimePicker";
 import { GetAntitheftActionAPI } from "../../config/ApiCalls";
 import { GetAntitheftType } from "../../types/antitheftTypes";
+import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
 
 const CameraPictureGalleryDashboard = ({
   computerId,
@@ -252,14 +252,14 @@ const CameraPictureGalleryDashboard = ({
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
-                <DefaultImage
+                <DeafultComponent
                   text={`No camera picture available for ${selectedComputerScreenshots?.computerName}.`}
                 />
               </div>
             )
           ) : (
             <div className="d-flex justify-content-center align-items-center h-100">
-              <DefaultImage
+              <DeafultComponent
                 text={"Select a computer to display its camera pictures."}
               />
             </div>
