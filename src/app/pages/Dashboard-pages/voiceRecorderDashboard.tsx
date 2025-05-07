@@ -16,8 +16,10 @@ import { GetAntitheftActionAPI } from "../../config/ApiCalls";
 import { GetAntitheftType } from "../../types/antitheftTypes";
 
 const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [parentHeight, setParentHeight] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
-  // const [height, setHeight] = useState(0);
+  const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
@@ -35,6 +37,12 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
     label:
       compOptions.find((option) => option.value === computerId)?.label || "",
   });
+
+  const [selectedComputerVoiceRecords, setSelectedComputerVoiceRecords] =
+    useState<{
+      computerName: string;
+      recordings: { url: string }[];
+    } | null>(null);
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -56,11 +64,40 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
     return "";
   };
 
-  const [selectedComputerVoiceRecords, setSelectedComputerVoiceRecords] =
-    useState<{
-      computerName: string;
-      recordings: { url: string }[];
-    } | null>(null);
+  const handleGoClick = async () => {
+    if (!selectedDevice?.value || actionTypeId === undefined) return;
+
+    const reqData: GetAntitheftType = {
+      computers_id: selectedDevice.value,
+      action_type: actionTypeId,
+      ...(startDate && { start_date: new Date(startDate) }),
+      ...(endDate && { end_date: new Date(endDate) }),
+    };
+
+    try {
+      const res = await GetAntitheftActionAPI(reqData);
+      if (res?.data && Array.isArray(res.data)) {
+        const recordings = res.data.map((item: any) => ({
+          url: item.value,
+        }));
+
+        setSelectedComputerVoiceRecords({
+          computerName: selectedDevice.label,
+          recordings,
+        });
+
+        setStartDate("");
+        setEndDate("");
+      } else {
+        setSelectedComputerVoiceRecords({
+          computerName: selectedDevice.label,
+          recordings: [],
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load screenshots:", err);
+    }
+  };
 
   useEffect(() => {
     const fetchVoiceRecords = async () => {
@@ -98,11 +135,14 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
     fetchVoiceRecords();
   }, [selectedDevice]);
 
-  // useEffect(() => {
-  //   if (divRef.current) {
-  //     setHeight(divRef.current.offsetHeight);
-  //   }
-  // }, [divRef.current]);
+  useEffect(() => {
+    if (divRef.current) {
+      setHeight(divRef.current.offsetHeight);
+    }
+    if (parentRef.current) {
+      setParentHeight(parentRef.current.offsetHeight);
+    }
+  }, [divRef.current, parentRef.current]);
 
   // useEffect(() => {
   //   if (!divRef.current) return;
@@ -120,10 +160,10 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
 
   return (
     <AnimatedRouteWrapper>
-      <div className="row d-flex custom-main-container ">
-        <div>
-          <div className="row mb-3 gx-10 gy-2">
-            <div className="col-12 col-md-5 col-lg-3">
+      <div className="row d-flex custom-main-container h-100" ref={parentRef}>
+        <div ref={divRef}>
+          <div className="row gx-5 gy-2">
+            <div className="col-12 col-md-6 col-lg-4 col-xl-3">
               <div className="d-flex flex-column justify-content-end h-100">
                 <label className="custom-label">Computer</label>
                 <CustomReactSelect
@@ -136,7 +176,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
               </div>
             </div>
 
-            <div className="col-12 col-md-6 col-lg-8 mt-md-2">
+            <div className="col-12 col-md-5 col-lg-7 col-xl-8 d-flex justify-content-end align-items-end">
               <div className="row gx-2 gy-2">
                 <div className="col-12 col-sm-5">
                   <label className="custom-label">From</label>
@@ -150,7 +190,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
                   <button
                     className="btn custom-btn bg-primary text-white  p-2 p-md-3"
                     style={{ whiteSpace: "nowrap" }}
-                    onClick={() => {}}
+                    onClick={handleGoClick}
                   >
                     Go
                   </button>
@@ -158,29 +198,19 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
               </div>
             </div>
 
-            <div className="col-12 col-md-1 col-lg-1 d-flex justify-content-end justify-content-md-end align-items-end mt-2 mt-md-0">
+            <div className="col-12 col-md-1 col-lg-1 d-flex justify-content-end align-items-end">
               <button className="btn custom-btn p-2 p-md-3">
                 <MdOutlineKeyboardVoice className="fs-2" />
               </button>
             </div>
           </div>
-
-          {selectedComputerVoiceRecords && (
-            <div className="d-flex gap-2 mb-3">
-              <h4 className="mb-0">
-                {selectedComputerVoiceRecords.computerName}
-              </h4>
-              <span className="badge bg-primary text-white">
-                {selectedComputerVoiceRecords.recordings.length} Voice Recorder
-                {selectedComputerVoiceRecords.recordings.length !== 1 && "s"}
-              </span>
-            </div>
-          )}
         </div>
 
         <div
           className="d-flex flex-column overflow-auto"
-          style={{ maxHeight: "100%" }}
+          style={{
+            height: `calc(${parentHeight}px - ${height}px)`,
+          }}
         >
           {selectedComputerVoiceRecords ? (
             selectedComputerVoiceRecords.recordings.length > 0 ? (
