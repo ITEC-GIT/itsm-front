@@ -164,30 +164,35 @@ const VoiceRecordingsPage = () => {
           </div>
 
           <div className="row mb-4">
-            <div className="col-12 col-md-3 d-flex flex-column justify-content-end">
-              <label className="custom-label">Computer</label>
-              <CustomReactSelect
-                options={compOptions}
-                value={selectedDevice}
-                onChange={handleDeviceChange}
-                placeholder="Select Device"
-                isClearable
-              />
+            <div className="col-12 col-md-5 mb-3 mb-md-0">
+              <div className="row">
+                <div className="col-12 col-md-7">
+                  <label className="custom-label">Computer</label>
+                  <CustomReactSelect
+                    options={compOptions}
+                    value={selectedDevice}
+                    onChange={handleDeviceChange}
+                    placeholder="Select Device"
+                    isClearable
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="col-12 col-md-9">
-              <div className="d-flex flex-wrap align-items-end gap-3 justify-content-md-end">
-                <div className="d-flex flex-column">
+            <div className="col-12 col-md-7 ">
+              <div className="row">
+                {/* <div className="col-12 col-md-1"></div> */}
+                <div className="col-5 col-md-5">
                   <label className="custom-label">From</label>
                   <DatetimePicker date={startDate} setDate={setStartDate} />
                 </div>
-                <div className="d-flex flex-column">
+                <div className="col-5 col-md-5">
                   <label className="custom-label">To</label>
                   <DatetimePicker date={endDate} setDate={setEndDate} />
                 </div>
-                <div className="align-self-end">
+                <div className="col-2 col-md-2  d-flex align-items-end justify-content-end">
                   <button
-                    className="btn btn-sm btn-primary"
+                    className="btn btn-sm btn-primary "
                     style={{ whiteSpace: "nowrap" }}
                     onClick={handleGoClick}
                   >
