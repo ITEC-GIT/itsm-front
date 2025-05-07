@@ -56,13 +56,6 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     }
   };
 
-  useEffect(() => {
-    if (divRef.current) {
-      const rect = divRef.current.getBoundingClientRect();
-      setDivHeight(Math.round(rect.height));
-    }
-  }, [divRef.current]);
-
   const handleReset = () => {
     setPort(22);
     setPass("");
@@ -81,10 +74,13 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
       username,
       password: pass,
       port,
-      timestamp: new Date().toISOString(), 
+      timestamp: new Date().toISOString(),
     };
 
-    setSshHistory((prev) => [...prev, newEntry]);
+    setSshHistory((prev) => {
+      const updated = [...prev, newEntry];
+      return updated.slice(-10);
+    });
 
     let hasError = false;
 
@@ -182,6 +178,24 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
     }
   };
 
+  const applySessionEntry = (entry: any) => {
+    setSelectedDevice({
+      value: entry.computerId,
+      label: entry.computerName,
+    });
+    setUsername(entry.username);
+    setPass(entry.password);
+    setPort(entry.port || 22);
+    setIpAddress(entry.host);
+  };
+
+  useEffect(() => {
+    if (divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
+      setDivHeight(Math.round(rect.height));
+    }
+  }, [divRef.current]);
+
   useEffect(() => {
     const fetchPrivateIps = async () => {
       try {
@@ -219,10 +233,10 @@ const RemoteSSHPage = ({ computerIdProp }: { computerIdProp?: number }) => {
                   height: `calc(100vh - var(--bs-app-header-height) - 30px - ${divHeight}px) `,
                 }}
               >
-                <div className="col-12 col-sm-4 col-md-3 mb-4">
-                  <UserSessions />
+                <div className="col-12 col-sm-5 col-md-4 col-lg-3 mb-4">
+                  <UserSessions onSelectHistory={applySessionEntry} />
                 </div>
-                <div className="col-12 col-sm-8 col-md-9">
+                <div className="col-12 col-sm-7 col-md-8 col-lg-9">
                   <div className="d-flex justify-content-start">
                     <div className="w-100">
                       <div className="row mb-4">

@@ -1,4 +1,8 @@
-import { atomWithIndexedDB } from "../atomWithIndexDB";
 
-export const sshHistoryAtom = atomWithIndexedDB<any[]>("sshHistoryAtom", []);
+import { atomWithFromIndexedDB } from "./atomWithFromIndexDB";
+
+export const sshHistoryAtom = atomWithFromIndexedDB<any[]>(
+  "sshHistoryAtom",
+  []
+);
 sshHistoryAtom.debugLabel = "sshHistoryAtom";

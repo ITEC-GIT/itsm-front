@@ -1,26 +1,36 @@
-import React, { Suspense, useEffect } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import React, { useEffect } from "react";
+import { useAtom } from "jotai";
 import { sshHistoryAtom } from "../../atoms/hypercommands-atoms/remote-ssh-atom";
 import { FaKey } from "react-icons/fa";
 
-const UserSessionsContent = () => {
-  // const [sshHistory] = useAtom(sshHistoryAtom);
-  const [sshHistory, setSshHistory] = useAtom(sshHistoryAtom);
+type UserSessionsProps = {
+  onSelectHistory?: (entry: any) => void;
+};
 
-  useEffect(() => {
-    console.log("🔥 sshHistory changed", sshHistory);
-  }, [sshHistory]);
+const UserSessionsContent = ({
+  onSelectHistory,
+}: {
+  onSelectHistory?: (entry: any) => void;
+}) => {
+  const [sshHistory] = useAtom(sshHistoryAtom);
 
   return sshHistory.length ? (
     <ul className="list-unstyled m-0">
-      {sshHistory.map((entry, index) => (
-        <li key={index} className="d-flex align-items-center mb-2 ms-2">
-          <div className="bg-dark me-2 d-flex justify-content-center p-1">
-            <FaKey className="text-warning" />
+      {[...sshHistory].reverse().map((entry, index) => (
+        <li
+          key={index}
+          className="d-flex align-items-center mb-2 ms-2 cursor-pointer"
+          onClick={() => onSelectHistory?.(entry)}
+          style={{ cursor: "pointer" }}
+        >
+          <div className="d-flex align-items-start">
+            <div className="me-2 d-flex justify-content-center p-1">
+              <FaKey className="text-warning" />
+            </div>
+            <span className="d-block">
+              {entry.host} - {entry.computerName}
+            </span>
           </div>
-          <span>
-            {entry.host} - {entry.computerName}
-          </span>
         </li>
       ))}
     </ul>
@@ -29,12 +39,10 @@ const UserSessionsContent = () => {
   );
 };
 
-const UserSessions = () => (
-  <div className="p-1 border rounded bg-light h-100" style={{ maxWidth: 250 }}>
+const UserSessions = ({ onSelectHistory }: UserSessionsProps) => (
+  <div className="p-1 border rounded bg-light h-100">
     <h6 className="fw-bold">User sessions</h6>
-    <Suspense fallback={<p className="text-muted ms-2">Loading...</p>}>
-      <UserSessionsContent />
-    </Suspense>
+    <UserSessionsContent onSelectHistory={onSelectHistory} />
   </div>
 );
 
