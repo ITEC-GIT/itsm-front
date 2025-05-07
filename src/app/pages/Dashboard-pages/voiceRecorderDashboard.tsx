@@ -120,7 +120,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
 
   return (
     <AnimatedRouteWrapper>
-      <div className="row d-flex custom-main-container custom-container-height">
+      <div className="row d-flex custom-main-container ">
         <div>
           <div className="row mb-3 gx-10 gy-2">
             <div className="col-12 col-md-5 col-lg-3">
