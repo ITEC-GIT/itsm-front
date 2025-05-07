@@ -14,7 +14,7 @@ export const customStyles = {
     style: {
       fontSize: "14px",
       minHeight: "48px",
-      // borderBottom: "none !important",
+      borderBottom: "none !important",
       position: "relative !important" as "relative",
       "&:hover": {
         backgroundColor: "transparent !important",

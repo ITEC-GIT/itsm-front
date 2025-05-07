@@ -51,8 +51,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Software
+      <span className="ms-2"> Software
       </span>
     ),
     selector: (row: SoftwareHistoryType) => row.software,
@@ -71,8 +70,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Device
+      <span className="ms-2"> Device
       </span>
     ),
 
@@ -92,8 +90,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> URL
+      <span className="ms-2"> URL
       </span>
     ),
     width: columnXXLargeWidth,
@@ -113,8 +110,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Destination
+      <span className="ms-2"> Destination
       </span>
     ),
     width: columnXXXLargeWidth,
@@ -133,8 +129,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Arguments
+      <span className="ms-2"> Arguments
       </span>
     ),
     width: columnXXXLargeWidth,
@@ -153,8 +148,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Status
+      <span className="ms-2"> Status
       </span>
     ),
     selector: (row: SoftwareHistoryType) => row.status,
@@ -194,8 +188,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> User
+      <span className="ms-2"> User
       </span>
     ),
     width: columnXLargeWidth,
@@ -205,8 +198,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span> Date
+      <span className="ms-2"> Date
       </span>
     ),
     id: "Date",
@@ -224,8 +216,7 @@ export const getColumns = (
   },
   {
     name: (
-      <span>
-        <span style={{ color: "#f0f0f0" }}>|</span>
+      <span className="ms-2">
       </span>
     ),
     width: columnSmallWidth,

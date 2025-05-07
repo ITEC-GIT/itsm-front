@@ -637,7 +637,7 @@ const SoftwareInstallationStaticPage = ({
                 {activeTab === "history" && (
                   <div className="d-flex flex-column flex-grow-1 position-relative overflow-auto none-scroll-width ">
                     <div ref={filtersRef}>
-                      <div className="d-flex align-items-center justify-content-end gap-2">
+                      <div className="d-flex align-items-center justify-content-end gap-2 mb-3">
                         <SearchComponent
                           value={searchQuery}
                           onChange={handleSearchChange}

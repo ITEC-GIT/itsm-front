@@ -312,14 +312,11 @@ const SoftwareInstallationStaticPage = ({
   const loggedInUser = Number(Cookies.get("user"));
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
   const [isAdmin, setIsAdmin] = useState<1 | 0>(0);
+  const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [showForm, setShowForm] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedEntry, setSelectedEntry] = useState<SoftwareHistoryType>();
   const SoftwarePerPage = 8;
-  const minPagesToShow = 3;
-  const [maxTotalSoftwares, setMaxTotalSoftwares] = useState<number>(0);
 
   const [currentHistorysPage, setCurrentHistoryPage] = useState<number>(1);
 
@@ -327,28 +324,9 @@ const SoftwareInstallationStaticPage = ({
     SoftwareHistoryType[]
   >(staticSoftwareHistoryData);
 
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const [filters, setFilters] = useState<filterType>({
-    range: "0-50",
-    order: "desc",
-  });
-
-  const [columnWidths, setColumnWidths] = useState<Record<string, string>>({});
   const [visibleColumns, setVisibleColumns] = useState<
     TableColumn<SoftwareHistoryType>[]
   >([]);
-
-  const [activeTab, setActiveTab] = useState("installation");
-  const divRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
-  const pagRef = useRef<HTMLDivElement>(null);
-  const [pagHeight, setPagHeight] = useState(0);
-  const filtersRef = useRef<HTMLDivElement>(null);
-  const [filtersHeight, setFiltersHeight] = useState(0);
 
   const handleCancelClick = (entry: SoftwareHistoryType) => {
     setSelectedEntry(entry);
@@ -358,11 +336,6 @@ const SoftwareInstallationStaticPage = ({
   const memoizedColumns = useMemo(() => {
     return getColumns(handleCancelClick);
   }, []);
-
-  const toggleSidebar = () => {
-    setShowForm(false);
-    setIsSidebarOpen((prevState) => !prevState);
-  };
 
   const confirmCancellation = async () => {
     if (selectedEntry) {
@@ -378,61 +351,6 @@ const SoftwareInstallationStaticPage = ({
     }
   };
 
-  const handleSearchChange = debounce((query: string) => {
-    setCurrentHistoryPage(1);
-    setSearchQuery(query);
-  }, 100);
-
-  const filteredHistory = useMemo(() => {
-    if (!searchQuery.trim()) return paginatedHistory;
-    const keywords = searchQuery.toLowerCase().trim().split(/\s+/);
-    return paginatedHistory.filter((entry: SoftwareHistoryType) =>
-      keywords.every(
-        (keyword) =>
-          entry.software.toLowerCase().includes(keyword) ||
-          entry.computer_name?.toLowerCase().includes(keyword) ||
-          entry.url.toLowerCase().includes(keyword) ||
-          entry.status.toLowerCase().includes(keyword) ||
-          entry.destination.toLowerCase().includes(keyword) ||
-          entry.user_name.toString().toLowerCase().includes(keyword)
-      )
-    );
-  }, [searchQuery, paginatedHistory]);
-
-  const totalPages = Math.ceil(filteredHistory.length / SoftwarePerPage);
-  const totalPagess2 = Math.ceil(maxTotalSoftwares / SoftwarePerPage);
-
-  const handlePageChange = (page: number) => {
-    setCurrentHistoryPage(page);
-
-    const totalFetchedPages = Math.ceil(
-      filteredHistory.length / SoftwarePerPage
-    );
-    if (page > totalFetchedPages && hasMore) {
-      setIsLoadingMore(true);
-    }
-  };
-
-  const startPage =
-    Math.floor((currentHistorysPage - 1) / minPagesToShow) * minPagesToShow + 1;
-  const endPage = Math.min(startPage + minPagesToShow - 1, totalPages);
-
-  const handleFirstPage = () => setCurrentHistoryPage(1);
-  const handlePreviousPage = () =>
-    setCurrentHistoryPage((prev) => Math.max(prev - 1, 1));
-  const handleNextPage = () => {
-    setCurrentHistoryPage((prev) => Math.min(prev + 1, totalPages));
-    handlePageChange(currentHistorysPage + 1);
-  };
-
-  const handleLastPage = () => setCurrentHistoryPage(totalPages);
-
-  const getCurrentPageRecords = useMemo(() => {
-    const startIndex = (currentHistorysPage - 1) * SoftwarePerPage;
-    const endIndex = startIndex + SoftwarePerPage;
-    return filteredHistory.slice(startIndex, endIndex);
-  }, [filteredHistory, currentHistorysPage, SoftwarePerPage]);
-
   useEffect(() => {
     if (staticData?.assignees) {
       const user = staticData.assignees.find(
@@ -447,26 +365,10 @@ const SoftwareInstallationStaticPage = ({
     setVisibleColumns(memoizedColumns);
   }, [memoizedColumns]);
 
-  useEffect(() => {
-    if (divRef.current) {
-      const rect = divRef.current.getBoundingClientRect();
-      setHeight(Math.round(rect.height));
-    }
-    if (pagRef.current) {
-      const rect = pagRef.current.getBoundingClientRect();
-      setPagHeight(Math.round(rect.height));
-    }
-    if (filtersRef.current) {
-      const rect = filtersRef.current.getBoundingClientRect();
-      setFiltersHeight(Math.round(rect.height));
-    }
-  }, [divRef.current, pagRef.current, filtersRef.current]);
-
   return (
     <AnimatedRouteWrapper>
       <div className="row d-flex custom-main-container custom-container-height">
         <div className="d-flex flex-column col-12">
-          {/* <h2>🚀 Software Installation</h2> */}
           <div>
             <div
               style={{
@@ -492,7 +394,7 @@ const SoftwareInstallationStaticPage = ({
                       ...col,
                       width: columnWidths[col.id as string],
                     }))}
-                    data={getCurrentPageRecords.slice(0, 5)}
+                    data={paginatedHistory.slice(0, 5)}
                     persistTableHead={true}
                     responsive
                     highlightOnHover

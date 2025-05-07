@@ -71,8 +71,7 @@ export const RolesColumnsTable = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Role Name
+        <span className="ms-2"> Role Name
         </span>
       ),
       selector: (row: RolesType) => row.name,
@@ -81,8 +80,7 @@ export const RolesColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Permissions
+        <span className="ms-2"> Permissions
         </span>
       ),
       selector: (row: RolesType) => row.permissions,
@@ -92,8 +90,7 @@ export const RolesColumnsTable = (
 
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Users
+        <span className="ms-2"> Users
         </span>
       ),
       selector: (row: RolesType) => row.users,
@@ -102,8 +99,7 @@ export const RolesColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span>
+        <span className="ms-2">
         </span>
       ),
       width: "100px",
@@ -250,8 +246,7 @@ export const GroupsColumnsTable = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Group Name
+        <span className="ms-2"> Group Name
         </span>
       ),
       selector: (row) =>
@@ -272,8 +267,7 @@ export const GroupsColumnsTable = (
 
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Description
+        <span className="ms-2"> Description
         </span>
       ),
       selector: (row) =>
@@ -294,8 +288,7 @@ export const GroupsColumnsTable = (
 
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Members
+        <span className="ms-2"> Members
         </span>
       ),
       selector: (row) =>
@@ -408,8 +401,7 @@ export const DepartmentsColumnsTable = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Department Name
+        <span className="ms-2"> Department Name
         </span>
       ),
       selector: (row: DepartmentsType) =>
@@ -429,8 +421,7 @@ export const DepartmentsColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Location
+        <span className="ms-2"> Location
         </span>
       ),
       cell: (row: DepartmentsType) =>
@@ -455,8 +446,7 @@ export const DepartmentsColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Employees
+        <span className="ms-2"> Employees
         </span>
       ),
       selector: (row: DepartmentsType) =>
@@ -545,8 +535,7 @@ export const LocationsColumnsTable = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Location Name
+        <span className="ms-2"> Location Name
         </span>
       ),
       selector: (row: LocationsType) =>
@@ -566,8 +555,7 @@ export const LocationsColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Address
+        <span className="ms-2"> Address
         </span>
       ),
       selector: (row: LocationsType) =>
@@ -587,8 +575,7 @@ export const LocationsColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> State
+        <span className="ms-2"> State
         </span>
       ),
       selector: (row: LocationsType) =>
@@ -608,8 +595,7 @@ export const LocationsColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Departments
+        <span className="ms-2"> Departments
         </span>
       ),
       selector: (row: LocationsType) =>
@@ -621,8 +607,7 @@ export const LocationsColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Employees
+        <span className="ms-2"> Employees
         </span>
       ),
       selector: (row: LocationsType) =>
@@ -730,8 +715,7 @@ export const AliasesColumnsTable = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Computer
+        <span className="ms-2"> Computer
         </span>
       ),
       cell: (row: AliasesType) =>
@@ -766,8 +750,7 @@ export const AliasesColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Alias
+        <span className="ms-2"> Alias
         </span>
       ),
       cell: (row: AliasesType) =>
@@ -912,8 +895,7 @@ export const UsersColumnsTable = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Name
+        <span className="ms-2"> Name
         </span>
       ),
       width: columnXXXLargeWidth,
@@ -941,8 +923,7 @@ export const UsersColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Username
+        <span className="ms-2"> Username
         </span>
       ),
       width: columnXXXLargeWidth,
@@ -952,8 +933,7 @@ export const UsersColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Roles
+        <span className="ms-2"> Roles
         </span>
       ),
       width: columnXXXLargeWidth,
@@ -981,8 +961,7 @@ export const UsersColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Title
+        <span className="ms-2"> Title
         </span>
       ),
       width: columnXLargeWidth,
@@ -992,8 +971,7 @@ export const UsersColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Groups
+        <span className="ms-2"> Groups
         </span>
       ),
       width: columnXXXLargeWidth,
@@ -1021,8 +999,7 @@ export const UsersColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Department
+        <span className="ms-2"> Department
         </span>
       ),
       width: columnXXLargeWidth,
@@ -1046,8 +1023,7 @@ export const UsersColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Location
+        <span className="ms-2"> Location
         </span>
       ),
       width: columnXXLargeWidth,
@@ -1068,8 +1044,7 @@ export const UsersColumnsTable = (
     // },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Status
+        <span className="ms-2"> Status
         </span>
       ),
       width: columnMediumWidth,
@@ -1096,8 +1071,7 @@ export const UsersColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span>
+        <span className="ms-2">
         </span>
       ),
       width: "100px",
@@ -1199,8 +1173,7 @@ export const FieldRulesColumnsTable = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Field Rule Name
+        <span className="ms-2"> Field Rule Name
         </span>
       ),
       cell: (row: FieldRulesType) =>
@@ -1220,8 +1193,7 @@ export const FieldRulesColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Field Rule
+        <span className="ms-2"> Field Rule
         </span>
       ),
       cell: (row: FieldRulesType) =>
@@ -1241,8 +1213,7 @@ export const FieldRulesColumnsTable = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Used In Tabs
+        <span className="ms-2"> Used In Tabs
         </span>
       ),
       cell: (row: FieldRulesType) =>

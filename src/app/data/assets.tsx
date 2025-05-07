@@ -132,11 +132,7 @@ export const getColumns = (
       id: "settings",
     },
     {
-      name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Device
-        </span>
-      ),
+      name: <span className="ms-2"> Device</span>,
       selector: (row: AssetsHistoryType) => row.name,
       sortable: true,
       width: columnXXXLargeWidth,
@@ -164,8 +160,8 @@ export const getColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Category
+        
+          <span className="ms-2"> Category
         </span>
       ),
       selector: (row: AssetsHistoryType) => row.category.name.toLowerCase(),
@@ -176,8 +172,8 @@ export const getColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Type
+       
+          <span className="ms-2"> Type
         </span>
       ),
       width: columnXLargeWidth,
@@ -187,8 +183,8 @@ export const getColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Model
+        
+          <span className="ms-2"> Model
         </span>
       ),
       width: columnLargeWidth,
@@ -207,8 +203,8 @@ export const getColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Manufacturer
+        
+          <span className="ms-2"> Manufacturer
         </span>
       ),
       width: columnXXLargeWidth,
@@ -227,8 +223,8 @@ export const getColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Serial Number
+        
+          <span className="ms-2"> Serial Number
         </span>
       ),
       width: columnXXLargeWidth,
@@ -248,8 +244,8 @@ export const getColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Parent Asset
+       
+          <span className="ms-2"> Parent Asset
         </span>
       ),
       width: columnXXLargeWidth,
@@ -272,8 +268,8 @@ export const getColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Modified date
+        
+          <span className="ms-2"> Modified date
         </span>
       ),
       width: columnXXLargeWidth,
@@ -1176,8 +1172,8 @@ export const getAssetSoftwaresColumns = (
   [
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Name
+       
+          <span className="ms-2"> Name
         </span>
       ),
       selector: (row: AssetSoftwaresType) => row.name,
@@ -1190,8 +1186,8 @@ export const getAssetSoftwaresColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Category
+        
+          <span className="ms-2"> Category
         </span>
       ),
       selector: (row: AssetSoftwaresType) => row.category,
@@ -1211,8 +1207,8 @@ export const getAssetSoftwaresColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Publisher
+      
+          <span className="ms-2"> Publisher
         </span>
       ),
       width: columnXXLargeWidth,
@@ -1222,8 +1218,8 @@ export const getAssetSoftwaresColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Version
+        
+          <span className="ms-2"> Version
         </span>
       ),
       width: columnXLargeWidth,
@@ -1233,8 +1229,8 @@ export const getAssetSoftwaresColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Architecture
+       
+          <span className="ms-2"> Architecture
         </span>
       ),
       width: columnLargeWidth,
@@ -1253,8 +1249,8 @@ export const getAssetSoftwaresColumns = (
     },
     {
       name: (
-        <span>
-          <span style={{ color: "#f0f0f0" }}>|</span> Installed date
+      
+          <span className="ms-2"> Installed date
         </span>
       ),
       width: columnXXLargeWidth,

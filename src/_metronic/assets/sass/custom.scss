@@ -148,8 +148,8 @@
 
 .header-blue-color {
   background: linear-gradient(90deg, #1c68d6, #33b4f5) !important;
-  background-clip: text !important; 
-  -webkit-background-clip: text !important; 
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
@@ -202,6 +202,11 @@
 
 .rdt_TableCell {
   transition: background-color 0.2s ease !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.rdt_TableCol_Sortable {
+  border-left: 1px solid #dee2e6 !important ;
 }
 
 ///custom
