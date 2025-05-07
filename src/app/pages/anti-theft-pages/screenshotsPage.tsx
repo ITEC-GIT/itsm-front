@@ -4,6 +4,7 @@ import { Navigation } from "swiper/modules";
 import { motion } from "framer-motion";
 import { FiCamera } from "react-icons/fi";
 import { useAtom, useAtomValue } from "jotai";
+import { AnimatePresence } from "framer-motion";
 import "swiper/css";
 import "swiper/css/navigation";
 
@@ -28,27 +29,32 @@ import { DeafultComponent } from "../../components/voice-recorder/defaultCompone
 import toast from "react-hot-toast";
 
 const ScreenshotGalleryPage = () => {
+  const waitingPlaceholder = {
+    url: "/media/svg/image-processing.png",
+    isPlaceholder: true,
+  };
+
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
 
   const staticData = useAtomValue(staticDataAtom) as unknown as StaticDataType;
-
   const actionTypeId = (staticData.actionTypes || []).find((action) =>
     action.anttype.toLowerCase().includes("screenshot")
   )?.id;
 
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
   const compOptions = (staticData.computers || []).map((device) => ({
     value: device.id ? Number(device.id) : 0,
     label: device.name || "",
   }));
-
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
+
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleExecuteScreenshot = async () => {
     if (!selectedDevice?.value) {
@@ -70,8 +76,14 @@ const ScreenshotGalleryPage = () => {
         toast.success(
           "Your screenshot is being processed. This may take up to a minute."
         );
+        setSelectedComputerScreenshots((prev) => ({
+          computerName: selectedDevice.label,
+          screenshots: [waitingPlaceholder, ...(prev?.screenshots || [])],
+        }));
 
+        setIsProcessing(true);
         await new Promise((resolve) => setTimeout(resolve, 65000));
+        setIsProcessing(false);
 
         const fetchCameraPictures = async () => {
           if (!selectedDevice?.value || actionTypeId === undefined) return;
@@ -86,21 +98,16 @@ const ScreenshotGalleryPage = () => {
           try {
             const res = await GetAntitheftActionAPI(reqData);
             if (res?.data && Array.isArray(res.data)) {
-              const screenshots = res.data.map((item: any) => ({
+              const newScreenshots = res.data.map((item: any) => ({
                 url: item.value,
               }));
 
-              setSelectedComputerScreenshots({
-                computerName: selectedDevice.label,
-                screenshots,
+              setSelectedComputerScreenshots((prev) => {
+                return {
+                  computerName: selectedDevice.label,
+                  screenshots: newScreenshots,
+                };
               });
-              toast.success("Screenshots retrieved successfully.");
-            } else {
-              setSelectedComputerScreenshots({
-                computerName: selectedDevice.label,
-                screenshots: [],
-              });
-              toast("No screenshots found.", { icon: "⚠️" });
             }
           } catch (err) {
             console.error("Failed to load screenshots:", err);
@@ -161,7 +168,7 @@ const ScreenshotGalleryPage = () => {
   const [selectedComputerScreenshots, setSelectedComputerScreenshots] =
     useState<{
       computerName: string;
-      screenshots: { url: string }[];
+      screenshots: { url: string; isPlaceholder?: boolean }[];
     } | null>(null);
 
   useEffect(() => {
@@ -316,22 +323,45 @@ const ScreenshotGalleryPage = () => {
                   }}
                   style={{ paddingBottom: "2rem", height: "100%" }}
                 >
-                  {selectedComputerScreenshots.screenshots.map((img, i) => (
-                    <SwiperSlide key={i}>
-                      <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        style={{
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <ZoomableImage src={img.url} index={i} />
-                      </motion.div>
-                    </SwiperSlide>
-                  ))}
+                  <AnimatePresence mode="wait" initial={false}>
+                    {selectedComputerScreenshots?.screenshots?.map((img, i) => (
+                      <SwiperSlide key={`${img.url}-${i}`}>
+                        {img.isPlaceholder ? (
+                          <div className="d-flex flex-column justify-content-center align-items-center h-100">
+                            <img
+                              src={img.url}
+                              alt="Waiting"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "100%",
+                                objectFit: "contain",
+                              }}
+                            />
+
+                            <p className="text-muted text-center mt-3">
+                              Screenshot in progress...
+                              <br />
+                              Please wait.
+                            </p>
+                          </div>
+                        ) : (
+                          <motion.div
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 50 }}
+                            transition={{ duration: 0.5 }}
+                            style={{
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <ZoomableImage src={img.url} index={i} />
+                          </motion.div>
+                        )}
+                      </SwiperSlide>
+                    ))}
+                  </AnimatePresence>
                 </Swiper>
               </div>
             ) : (
