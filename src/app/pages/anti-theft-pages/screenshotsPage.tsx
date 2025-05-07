@@ -25,6 +25,7 @@ import {
 } from "../../types/antitheftTypes";
 import Cookies from "js-cookie";
 import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
+import toast from "react-hot-toast";
 
 const ScreenshotGalleryPage = () => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -66,9 +67,10 @@ const ScreenshotGalleryPage = () => {
     try {
       const res = await ExecuteAntitheftActionAPI(data);
       if (res.status === 200 || res.status === 201) {
-        console.log("Action executed successfully");
+        toast.success(
+          "Your screenshot is being processed. This may take up to a minute."
+        );
 
-        // Wait 65 seconds
         await new Promise((resolve) => setTimeout(resolve, 65000));
 
         const fetchCameraPictures = async () => {
@@ -92,23 +94,28 @@ const ScreenshotGalleryPage = () => {
                 computerName: selectedDevice.label,
                 screenshots,
               });
+              toast.success("Screenshots retrieved successfully.");
             } else {
               setSelectedComputerScreenshots({
                 computerName: selectedDevice.label,
                 screenshots: [],
               });
+              toast("No screenshots found.", { icon: "⚠️" });
             }
           } catch (err) {
             console.error("Failed to load screenshots:", err);
+            toast.error("Failed to retrieve screenshots.");
           }
         };
 
         fetchCameraPictures();
       } else {
         console.error("Failed to execute screenshot action");
+        toast.error("Screenshot action failed to execute.");
       }
     } catch (err) {
       console.error("Error executing action:", err);
+      toast.error("Unexpected error occurred while processing.");
     }
   };
 

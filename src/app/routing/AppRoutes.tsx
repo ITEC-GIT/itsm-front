@@ -33,6 +33,7 @@ import {
   mastersAtom,
   slavesAtom,
 } from "../atoms/app-routes-global-atoms/globalFetchedAtoms";
+import { Toaster } from "react-hot-toast";
 
 /**
  * Base URL of the website.
@@ -238,6 +239,7 @@ const RoutesContent: FC = () => {
           )}
         </Route>
       </Routes>
+      <Toaster position="top-right" reverseOrder={false} />
     </AnimatePresence>
   );
 };
