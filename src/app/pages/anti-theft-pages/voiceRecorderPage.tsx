@@ -232,7 +232,7 @@ const VoiceRecordingsPage = () => {
     // <AnimatedRouteWrapper>
     <div className="card-container h-100 d-flex flex-column pt-3 pb-3">
       <div className="row d-flex custom-main-container custom-container-height">
-        <div className="p-5" ref={divRef}>
+        <div ref={divRef}>
           <div className="col-12 mb-4">
             <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
               <h2 className="mb-0">🎙️ Voice Recordings</h2>
@@ -309,7 +309,7 @@ const VoiceRecordingsPage = () => {
         </div>
 
         <div
-          className="row vertical-scroll none-scroll-width p-5"
+          className="row vertical-scroll none-scroll-width"
           style={{
             height: `calc(100vh - var(--bs-app-header-height) - 30px - ${height}px)`,
             overflowY: "auto",
