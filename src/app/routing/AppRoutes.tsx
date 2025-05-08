@@ -183,7 +183,7 @@ const RoutesContent: FC = () => {
       setCurrentUser(null);
       navigate("/auth/login");
     } else {
-      refetch();
+      // refetch();
       setCurrentUser(sessionCookie);
     }
   }, [isAuthAtom, navigate]);
@@ -222,24 +222,26 @@ const RoutesContent: FC = () => {
 
   return (
     <AnimatePresence mode="wait" initial={false}>
-      <Routes>
-        <Route element={<App />}>
-          <Route path="error/*" element={<ErrorsPage />} />
-          <Route path="logout" element={<Logout />} />
-          {currentUser !== null ? (
-            <>
-              <Route path="/*" element={<PrivateRoutes />} />
-              <Route index element={<Navigate to="/dashboard" />} />
-            </>
-          ) : (
-            <>
-              <Route path="auth/*" element={<AuthPage />} />
-              <Route path="*" element={<Navigate to="/auth/login" />} />
-            </>
-          )}
-        </Route>
-      </Routes>
-      <Toaster position="top-right" reverseOrder={false} />
+      <>
+        <Routes>
+          <Route element={<App />}>
+            <Route path="error/*" element={<ErrorsPage />} />
+            <Route path="logout" element={<Logout />} />
+            {currentUser !== null ? (
+              <>
+                <Route path="/*" element={<PrivateRoutes />} />
+                <Route index element={<Navigate to="/dashboard" />} />
+              </>
+            ) : (
+              <>
+                <Route path="auth/*" element={<AuthPage />} />
+                <Route path="*" element={<Navigate to="/auth/login" />} />
+              </>
+            )}
+          </Route>
+        </Routes>
+        <Toaster position="top-right" reverseOrder={false} />
+      </>
     </AnimatePresence>
   );
 };
