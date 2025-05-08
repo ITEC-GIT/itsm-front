@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { motion } from "framer-motion";
 import { FiCamera } from "react-icons/fi";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { AnimatePresence } from "framer-motion";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -11,7 +11,6 @@ import "swiper/css/navigation";
 import { ZoomableImage } from "../../components/screenshots/zoomableimage";
 import { CustomReactSelect } from "../../components/form/custom-react-select";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
-import { DefaultImage } from "../../components/screenshots/defaultImage";
 import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
 import { StaticDataType } from "../../types/filtersAtomType";
@@ -27,6 +26,7 @@ import {
 import Cookies from "js-cookie";
 import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
 import toast from "react-hot-toast";
+import { ModalComponent } from "../../components/modal/ModalComponent";
 
 const ScreenshotGalleryPage = () => {
   const waitingPlaceholder = {
@@ -51,10 +51,14 @@ const ScreenshotGalleryPage = () => {
   const [selectedDevice, setSelectedDevice] = useState<selectValueType | null>(
     null
   );
+  const [selectedComputerScreenshots, setSelectedComputerScreenshots] =
+    useState<{
+      computerName: string;
+      screenshots: { url: string; isPlaceholder?: boolean }[];
+    } | null>(null);
 
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
 
   const handleExecuteScreenshot = async () => {
     if (!selectedDevice?.value) {
@@ -62,7 +66,9 @@ const ScreenshotGalleryPage = () => {
       return;
     }
 
-    if (actionTypeId === undefined) return;
+    if (actionTypeId === undefined || isCapturing) return;
+
+    setIsCapturing(true);
 
     const data: ExecuteAntitheftActionType = {
       mid: selectedDevice.value,
@@ -76,46 +82,37 @@ const ScreenshotGalleryPage = () => {
         toast.success(
           "Your screenshot is being processed. This may take up to a minute."
         );
+
         setSelectedComputerScreenshots((prev) => ({
           computerName: selectedDevice.label,
           screenshots: [waitingPlaceholder, ...(prev?.screenshots || [])],
         }));
 
-        setIsProcessing(true);
         await new Promise((resolve) => setTimeout(resolve, 65000));
-        setIsProcessing(false);
 
-        const fetchCameraPictures = async () => {
-          if (!selectedDevice?.value || actionTypeId === undefined) return;
-
-          const reqData: GetAntitheftType = {
-            computers_id: selectedDevice.value,
-            action_type: actionTypeId,
-            ...(startDate && { start_date: new Date(startDate) }),
-            ...(endDate && { end_date: new Date(endDate) }),
-          };
-
-          try {
-            const res = await GetAntitheftActionAPI(reqData);
-            if (res?.data && Array.isArray(res.data)) {
-              const newScreenshots = res.data.map((item: any) => ({
-                url: item.value,
-              }));
-
-              setSelectedComputerScreenshots((prev) => {
-                return {
-                  computerName: selectedDevice.label,
-                  screenshots: newScreenshots,
-                };
-              });
-            }
-          } catch (err) {
-            console.error("Failed to load screenshots:", err);
-            toast.error("Failed to retrieve screenshots.");
-          }
+        const reqData: GetAntitheftType = {
+          computers_id: selectedDevice.value,
+          action_type: actionTypeId,
+          ...(startDate && { start_date: new Date(startDate) }),
+          ...(endDate && { end_date: new Date(endDate) }),
         };
 
-        fetchCameraPictures();
+        try {
+          const res = await GetAntitheftActionAPI(reqData);
+          if (res?.data && Array.isArray(res.data)) {
+            const newScreenshots = res.data.map((item: any) => ({
+              url: item.value,
+            }));
+
+            setSelectedComputerScreenshots({
+              computerName: selectedDevice.label,
+              screenshots: newScreenshots,
+            });
+          }
+        } catch (err) {
+          console.error("Failed to load screenshots:", err);
+          toast.error("Failed to retrieve screenshots.");
+        }
       } else {
         console.error("Failed to execute screenshot action");
         toast.error("Screenshot action failed to execute.");
@@ -123,6 +120,8 @@ const ScreenshotGalleryPage = () => {
     } catch (err) {
       console.error("Error executing action:", err);
       toast.error("Unexpected error occurred while processing.");
+    } finally {
+      setIsCapturing(false);
     }
   };
 
@@ -164,12 +163,6 @@ const ScreenshotGalleryPage = () => {
       console.error("Failed to load screenshots:", err);
     }
   };
-
-  const [selectedComputerScreenshots, setSelectedComputerScreenshots] =
-    useState<{
-      computerName: string;
-      screenshots: { url: string; isPlaceholder?: boolean }[];
-    } | null>(null);
 
   useEffect(() => {
     if (divRef.current) {
@@ -238,6 +231,12 @@ const ScreenshotGalleryPage = () => {
               <button
                 className="btn custom-btn p-5"
                 onClick={handleExecuteScreenshot}
+                disabled={isCapturing}
+                title={
+                  isCapturing
+                    ? "Screenshot is being captured..."
+                    : "Take Screenshot"
+                }
               >
                 <FiCamera className="fs-2" />
               </button>
@@ -380,39 +379,17 @@ const ScreenshotGalleryPage = () => {
           )}
         </div>
       </div>
-      {errorModalOpen && (
-        <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          role="dialog"
-          onClick={() => setErrorModalOpen(false)}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered w-100"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-content">
-              <div className="modal-header border-0">
-                <div className="d-flex gap-2 align-items-start">
-                  <i className="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
-                  <h5 className="modal-title text-danger mb-1">
-                    You should select a computer to complete the screenshot
-                  </h5>
-                </div>
-              </div>
 
-              <div className="modal-footer border-0">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setErrorModalOpen(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {errorModalOpen && (
+        <ModalComponent
+          isOpen={true}
+          onConfirm={() => setErrorModalOpen(false)}
+          onCancel={() => setErrorModalOpen(false)}
+          message={`<h5 className="modal-title text-warning mb-1">
+    You should select a computer to complete the screenshot
+  </h5>`}
+          type="warning"
+        />
       )}
     </div>
     // {/* </AnimatedRouteWrapper> */}

@@ -8,10 +8,24 @@ import { VoiceCardComponent } from "../../components/voice-recorder/voiceRecorde
 import { DatetimePicker } from "../../components/form/datetimePicker";
 import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
 import { MdOutlineKeyboardVoice } from "react-icons/md";
-import { GetAntitheftActionAPI } from "../../config/ApiCalls";
-import { GetAntitheftType } from "../../types/antitheftTypes";
+import {
+  ExecuteAntitheftActionAPI,
+  GetAntitheftActionAPI,
+} from "../../config/ApiCalls";
+import {
+  ExecuteAntitheftActionType,
+  GetAntitheftType,
+} from "../../types/antitheftTypes";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import { ModalComponent } from "../../components/modal/ModalComponent";
 
 const VoiceRecordingsPage = () => {
+  const waitingPlaceholder = {
+    url: "/media/svg/image-processing.png",
+    isPlaceholder: true,
+  };
+
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const [startDate, setStartDate] = useState<string>("");
@@ -35,8 +49,76 @@ const VoiceRecordingsPage = () => {
   const [selectedComputerVoiceRecords, setSelectedComputerVoiceRecords] =
     useState<{
       computerName: string;
-      recordings: { url: string }[];
+      recordings: { url: string; isPlaceholder?: boolean }[];
     } | null>(null);
+
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const handleExecuteVoiceRecord = async () => {
+    if (!selectedDevice?.value) {
+      setErrorModalOpen(true);
+      return;
+    }
+
+    if (actionTypeId === undefined || isRecording) return;
+
+    setIsRecording(true);
+
+    const data: ExecuteAntitheftActionType = {
+      mid: selectedDevice.value,
+      action_type: actionTypeId,
+      users_id: Number(Cookies.get("user")),
+    };
+
+    try {
+      const res = await ExecuteAntitheftActionAPI(data);
+      if (res.status === 200 || res.status === 201) {
+        toast.success(
+          "Your voice recording is being processed. This may take up to a minute."
+        );
+
+        setSelectedComputerVoiceRecords((prev) => ({
+          computerName: selectedDevice.label,
+          recordings: [waitingPlaceholder, ...(prev?.recordings || [])],
+        }));
+
+        await new Promise((resolve) => setTimeout(resolve, 65000));
+
+        const reqData: GetAntitheftType = {
+          computers_id: selectedDevice.value,
+          action_type: actionTypeId,
+          ...(startDate && { start_date: new Date(startDate) }),
+          ...(endDate && { end_date: new Date(endDate) }),
+        };
+
+        try {
+          const res = await GetAntitheftActionAPI(reqData);
+          if (res?.data && Array.isArray(res.data)) {
+            const newVoiceRecords = res.data.map((item: any) => ({
+              url: item.value,
+            }));
+
+            setSelectedComputerVoiceRecords({
+              computerName: selectedDevice.label,
+              recordings: newVoiceRecords,
+            });
+          }
+        } catch (err) {
+          console.error("Failed to load voice records:", err);
+          toast.error("Failed to retrieve voice records.");
+        }
+      } else {
+        console.error("Failed to execute voice record action");
+        toast.error("Voice Record action failed to execute.");
+      }
+    } catch (err) {
+      console.error("Error executing action:", err);
+      toast.error("Unexpected error occurred while processing.");
+    } finally {
+      setIsRecording(false);
+    }
+  };
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -87,9 +169,6 @@ const VoiceRecordingsPage = () => {
     if (!selectedDevice) {
       return "Select a computer to display its recordings.";
     }
-    // if (recordings.length === 0) {
-    //   return `No audio recordings found for ${selectedDevice.name}.`;
-    // }
     return "";
   };
 
@@ -157,7 +236,12 @@ const VoiceRecordingsPage = () => {
           <div className="col-12 mb-4">
             <div className="d-flex justify-content-between flex-wrap align-items-center gap-3">
               <h2 className="mb-0">🎙️ Voice Recordings</h2>
-              <button className="btn custom-btn p-5">
+              <button
+                className="btn custom-btn p-5"
+                onClick={handleExecuteVoiceRecord}
+                disabled={isRecording}
+                title={isRecording ? "Processing..." : "Start voice recording"}
+              >
                 <MdOutlineKeyboardVoice className="fs-2" />
               </button>
             </div>
@@ -203,17 +287,23 @@ const VoiceRecordingsPage = () => {
             </div>
           </div>
 
-          {selectedComputerVoiceRecords && (
-            <div className="d-flex gap-2 align-items-center mb-3">
-              <h4 className="mb-0">
-                {selectedComputerVoiceRecords.computerName}
-              </h4>
-              <span className="badge bg-primary text-white">
-                {selectedComputerVoiceRecords.recordings.length} Voice Recorder
-                {selectedComputerVoiceRecords.recordings.length !== 1 && "s"}
-              </span>
-            </div>
-          )}
+          {selectedDevice ? (
+            selectedComputerVoiceRecords &&
+            selectedComputerVoiceRecords.recordings.length > 0 ? (
+              <div className="d-flex gap-2 align-items-center mb-3">
+                <h4 className="mb-0">
+                  {selectedComputerVoiceRecords.computerName}
+                </h4>
+                <span className="badge bg-primary text-white">
+                  {selectedComputerVoiceRecords.recordings.length} Voice
+                  Recorder
+                  {selectedComputerVoiceRecords.recordings.length !== 1 && "s"}
+                </span>
+              </div>
+            ) : (
+              <></>
+            )
+          ) : null}
         </div>
 
         <div
@@ -228,14 +318,22 @@ const VoiceRecordingsPage = () => {
               <div className="col-12 h-100">
                 <div className="row">
                   {selectedComputerVoiceRecords.recordings.map(
-                    (recording: { url: string }, i: number) => (
-                      <div
-                        key={i}
-                        className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
-                      >
-                        <VoiceCardComponent audioUrl={recording.url} />
-                      </div>
-                    )
+                    (
+                      recording: { url: string; isPlaceholder?: boolean },
+                      i: number
+                    ) =>
+                      recording.isPlaceholder ? (
+                        <div className="d-flex justify-content-center align-items-center h-100">
+                          <DeafultComponent text={`Processing`} />
+                        </div>
+                      ) : (
+                        <div
+                          key={i}
+                          className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                        >
+                          <VoiceCardComponent audioUrl={recording.url} />
+                        </div>
+                      )
                   )}
                 </div>
               </div>
@@ -253,6 +351,17 @@ const VoiceRecordingsPage = () => {
           )}
         </div>
       </div>
+      {errorModalOpen && (
+        <ModalComponent
+          isOpen={true}
+          onConfirm={() => setErrorModalOpen(false)}
+          onCancel={() => setErrorModalOpen(false)}
+          message={`<h5 className="modal-title text-warning mb-1">
+          You should select a computer to complete the voice record
+        </h5>`}
+          type="warning"
+        />
+      )}
     </div>
     // </AnimatedRouteWrapper>
   );

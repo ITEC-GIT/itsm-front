@@ -44,14 +44,14 @@ const ModalComponent = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-content">
-          <div className="modal-body d-flex align-items-center">
+          <div className="modal-body d-flex align-items-start">
             <i className={`animated-icon ${iconClass}`}></i>
             <div
               className="text-start"
               dangerouslySetInnerHTML={{ __html: message }}
             ></div>
           </div>
-          <div className="modal-footer">
+          <div className="modal-footer border-0">
             <button
               type="button"
               className={`btn ${btnClass} text-white`}
