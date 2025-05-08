@@ -334,26 +334,6 @@
   cursor: pointer !important;
 }
 
-/* animated icon */
-.animated-icon {
-  font-size: 3em;
-  color: #ffc107;
-  animation: pulse 2s infinite ease-in-out;
-  margin-right: 10px;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 //grid
 .custom-grid-item {
   background-color: $btn-bg-color !important;
