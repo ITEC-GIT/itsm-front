@@ -9,6 +9,7 @@ interface CustomReactSelectProps {
   placeholder?: string;
   isMulti?: boolean;
   isClearable?: boolean;
+  isDisabled?: boolean;
 }
 const customStyles = {
   control: (provided: any, state: any) => ({
@@ -20,7 +21,7 @@ const customStyles = {
     borderRadius: "0.375rem",
     color: "var(--bs-gray-700)",
     boxShadow: "none",
-    outline: "none", 
+    outline: "none",
     "&:hover": {
       borderColor: "var(--bs-gray-300)",
     },
@@ -81,6 +82,7 @@ const CustomReactSelect = ({
   placeholder = "Select...",
   isMulti = false,
   isClearable = true,
+  isDisabled = false,
 }: CustomReactSelectProps) => {
   return (
     <Select
@@ -92,6 +94,7 @@ const CustomReactSelect = ({
       isClearable={isClearable}
       styles={customStyles}
       components={{ Input: CustomInput }}
+      isDisabled={isDisabled}
     />
   );
 };

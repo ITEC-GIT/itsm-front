@@ -258,6 +258,7 @@ const VoiceRecordingsPage = () => {
                     onChange={handleDeviceChange}
                     placeholder="Select Device"
                     isClearable
+                    isDisabled={isRecording}
                   />
                 </div>
               </div>
@@ -279,6 +280,7 @@ const VoiceRecordingsPage = () => {
                     className="btn btn-sm btn-primary "
                     style={{ whiteSpace: "nowrap" }}
                     onClick={handleGoClick}
+                    disabled={isRecording}
                   >
                     Go
                   </button>
@@ -315,28 +317,39 @@ const VoiceRecordingsPage = () => {
         >
           {selectedComputerVoiceRecords ? (
             selectedComputerVoiceRecords.recordings.length > 0 ? (
-              <div className="col-12 h-100">
-                <div className="row">
-                  {selectedComputerVoiceRecords.recordings.map(
-                    (
-                      recording: { url: string; isPlaceholder?: boolean },
-                      i: number
-                    ) =>
-                      recording.isPlaceholder ? (
-                        <div className="d-flex justify-content-center align-items-center h-100">
-                          <DeafultComponent text={`Processing`} />
-                        </div>
-                      ) : (
-                        <div
-                          key={i}
-                          className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
-                        >
-                          <VoiceCardComponent audioUrl={recording.url} />
-                        </div>
-                      )
-                  )}
+              selectedComputerVoiceRecords.recordings.some(
+                (r) => !r.isPlaceholder
+              ) ? (
+                <div className="col-12 h-100">
+                  <div className="row">
+                    {selectedComputerVoiceRecords.recordings.map(
+                      (
+                        recording: { url: string; isPlaceholder?: boolean },
+                        i: number
+                      ) =>
+                        recording.isPlaceholder ? (
+                          <div
+                            key={`placeholder-${i}`}
+                            className="d-flex justify-content-center align-items-center h-100"
+                          >
+                            <DeafultComponent text={`Processing ...`} />
+                          </div>
+                        ) : (
+                          <div
+                            key={i}
+                            className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                          >
+                            <VoiceCardComponent audioUrl={recording.url} />
+                          </div>
+                        )
+                    )}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="d-flex justify-content-center align-items-center h-100">
+                  <DeafultComponent text={`Processing`} />
+                </div>
+              )
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
                 <DeafultComponent

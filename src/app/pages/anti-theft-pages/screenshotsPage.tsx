@@ -252,6 +252,7 @@ const ScreenshotGalleryPage = () => {
                     value={selectedDevice}
                     onChange={handleDeviceChange}
                     placeholder="Select Device"
+                    isDisabled={isCapturing}
                     isClearable
                   />
                 </div>
@@ -274,6 +275,7 @@ const ScreenshotGalleryPage = () => {
                     className="btn btn-sm btn-primary "
                     style={{ whiteSpace: "nowrap" }}
                     onClick={handleGoClick}
+                    disabled={isCapturing}
                   >
                     Go
                   </button>

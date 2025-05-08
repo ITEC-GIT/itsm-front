@@ -242,6 +242,7 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
                   value={selectedDevice}
                   onChange={handleDeviceChange}
                   placeholder="Select Device"
+                  isDisabled={isCapturing}
                   isClearable
                 />
               </div>
@@ -262,6 +263,7 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
                     className="btn custom-btn bg-primary text-white  p-2 p-md-3"
                     style={{ whiteSpace: "nowrap" }}
                     onClick={handleGoClick}
+                    disabled={isCapturing}
                   >
                     Go
                   </button>

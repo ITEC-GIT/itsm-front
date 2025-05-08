@@ -250,6 +250,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
                   value={selectedDevice}
                   onChange={handleDeviceChange}
                   placeholder="Select Device"
+                  isDisabled={isRecording}
                   isClearable
                 />
               </div>
@@ -270,6 +271,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
                     className="btn custom-btn bg-primary text-white  p-2 p-md-3"
                     style={{ whiteSpace: "nowrap" }}
                     onClick={handleGoClick}
+                    disabled={isRecording}
                   >
                     Go
                   </button>
@@ -316,7 +318,6 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
         >
           {selectedComputerVoiceRecords ? (
             selectedComputerVoiceRecords.recordings.length > 0 ? (
-              // Check if there's at least one real (non-placeholder) recording
               selectedComputerVoiceRecords.recordings.some(
                 (r) => !r.isPlaceholder
               ) ? (
@@ -332,7 +333,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
                             key={`placeholder-${i}`}
                             className="d-flex justify-content-center align-items-center h-100"
                           >
-                            <DeafultComponent text={`Processing`} />
+                            <DeafultComponent text={`Processing ...`} />
                           </div>
                         ) : (
                           <div
@@ -346,7 +347,6 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
                   </div>
                 </div>
               ) : (
-                // No non-placeholder recordings
                 <div className="d-flex justify-content-center align-items-center h-100">
                   <DeafultComponent text={`Processing`} />
                 </div>
