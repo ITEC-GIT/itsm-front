@@ -7,7 +7,6 @@ import { useAtom, useAtomValue } from "jotai";
 import "swiper/css";
 import "swiper/css/navigation";
 
-import { ZoomableImage } from "../../components/screenshots/zoomableimage";
 import { CustomReactSelect } from "../../components/form/custom-react-select";
 import { staticDataAtom } from "../../atoms/app-routes-global-atoms/approutesAtoms";
 import { selectedComputerDashboardAtom } from "../../atoms/dashboard-atoms/dashboardAtom";
@@ -15,15 +14,29 @@ import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { DatetimePicker } from "../../components/form/datetimePicker";
-import { GetAntitheftActionAPI } from "../../config/ApiCalls";
-import { GetAntitheftType } from "../../types/antitheftTypes";
+import {
+  ExecuteAntitheftActionAPI,
+  GetAntitheftActionAPI,
+} from "../../config/ApiCalls";
+import {
+  ExecuteAntitheftActionType,
+  GetAntitheftType,
+} from "../../types/antitheftTypes";
 import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
+import { ModalComponent } from "../../components/modal/ModalComponent";
+import { ZoomableImage } from "../../components/screenshots/zoomableimage";
 
 const CameraPictureGalleryDashboard = ({
   computerId,
 }: {
   computerId: number;
 }) => {
+  const waitingPlaceholder = {
+    url: "/media/svg/image-processing.png",
+    isPlaceholder: true,
+  };
   const parentRef = useRef<HTMLDivElement>(null);
   const [parentHeight, setParentHeight] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
@@ -46,6 +59,85 @@ const CameraPictureGalleryDashboard = ({
       compOptions.find((option) => option.value === computerId)?.label || "",
   });
 
+  const [selectedComputerCameraPictures, setSelectedComputerCameraPictures] =
+    useState<{
+      computerName: string;
+      cameraPictures: { url: string; isPlaceholder?: boolean }[];
+    } | null>(null);
+
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+
+  const handleExecuteCameraPicture = async () => {
+    if (!selectedDevice?.value) {
+      setErrorModalOpen(true);
+      return;
+    }
+
+    if (actionTypeId === undefined || isCapturing) return;
+
+    setIsCapturing(true);
+
+    const data: ExecuteAntitheftActionType = {
+      mid: selectedDevice.value,
+      action_type: actionTypeId,
+      users_id: Number(Cookies.get("user")),
+    };
+
+    try {
+      const res = await ExecuteAntitheftActionAPI(data);
+      if (res.status === 200 || res.status === 201) {
+        toast.success(
+          "Your camera picture is being processed. This may take up to a minute."
+        );
+        setSelectedComputerCameraPictures((prev) => ({
+          computerName: selectedDevice.label,
+          cameraPictures: [waitingPlaceholder, ...(prev?.cameraPictures || [])],
+        }));
+
+        await new Promise((resolve) => setTimeout(resolve, 65000));
+
+        const fetchCameraPictures = async () => {
+          if (!selectedDevice?.value || actionTypeId === undefined) return;
+
+          const reqData: GetAntitheftType = {
+            computers_id: selectedDevice.value,
+            action_type: actionTypeId,
+            ...(startDate && { start_date: new Date(startDate) }),
+            ...(endDate && { end_date: new Date(endDate) }),
+          };
+
+          try {
+            const res = await GetAntitheftActionAPI(reqData);
+            if (res?.data && Array.isArray(res.data)) {
+              const newCameraPictures = res.data.map((item: any) => ({
+                url: item.value,
+              }));
+
+              setSelectedComputerCameraPictures({
+                computerName: selectedDevice.label,
+                cameraPictures: newCameraPictures,
+              });
+            }
+          } catch (err) {
+            console.error("Failed to load camera pictures:", err);
+            toast.error("Failed to retrieve camera pictures.");
+          }
+        };
+
+        fetchCameraPictures();
+      } else {
+        console.error("Failed to execute camera picture action");
+        toast.error("Camera picture action failed to execute.");
+      }
+    } catch (err) {
+      console.error("Error executing action:", err);
+      toast.error("Unexpected error occurred while processing.");
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
   };
@@ -63,33 +155,27 @@ const CameraPictureGalleryDashboard = ({
     try {
       const res = await GetAntitheftActionAPI(reqData);
       if (res?.data && Array.isArray(res.data)) {
-        const screenshots = res.data.map((item: any) => ({
+        const cameraPictures = res.data.map((item: any) => ({
           url: item.value,
         }));
 
-        setSelectedComputerScreenshots({
+        setSelectedComputerCameraPictures({
           computerName: selectedDevice.label,
-          screenshots,
+          cameraPictures,
         });
 
         setStartDate("");
         setEndDate("");
       } else {
-        setSelectedComputerScreenshots({
+        setSelectedComputerCameraPictures({
           computerName: selectedDevice.label,
-          screenshots: [],
+          cameraPictures: [],
         });
       }
     } catch (err) {
-      console.error("Failed to load screenshots:", err);
+      console.error("Failed to load cameraPictures:", err);
     }
   };
-
-  const [selectedComputerScreenshots, setSelectedComputerScreenshots] =
-    useState<{
-      computerName: string;
-      screenshots: { url: string }[];
-    } | null>(null);
 
   useEffect(() => {
     const fetchScreenshot = async () => {
@@ -105,22 +191,22 @@ const CameraPictureGalleryDashboard = ({
       try {
         const res = await GetAntitheftActionAPI(reqData);
         if (res?.data && Array.isArray(res.data)) {
-          const screenshots = res.data.map((item: any) => ({
+          const cameraPictures = res.data.map((item: any) => ({
             url: item.value,
           }));
 
-          setSelectedComputerScreenshots({
+          setSelectedComputerCameraPictures({
             computerName: selectedDevice.label,
-            screenshots,
+            cameraPictures,
           });
         } else {
-          setSelectedComputerScreenshots({
+          setSelectedComputerCameraPictures({
             computerName: selectedDevice.label,
-            screenshots: [],
+            cameraPictures: [],
           });
         }
       } catch (err) {
-        console.error("Failed to load screenshots:", err);
+        console.error("Failed to load cameraPictures:", err);
       }
     };
 
@@ -191,11 +277,38 @@ const CameraPictureGalleryDashboard = ({
             </div>
 
             <div className="col-12 col-md-1 col-lg-1 d-flex justify-content-end align-items-end">
-              <button className="btn custom-btn p-2 p-md-3">
+              <button
+                className="btn custom-btn p-2 p-md-3"
+                onClick={handleExecuteCameraPicture}
+                disabled={isCapturing}
+                title={
+                  isCapturing
+                    ? "Camera picture is being captured..."
+                    : "Capture picture"
+                }
+              >
                 <FiCamera className="fs-2" />
               </button>
             </div>
           </div>
+          {selectedDevice ? (
+            selectedComputerCameraPictures &&
+            selectedComputerCameraPictures.cameraPictures.length > 0 ? (
+              <div className="d-flex gap-2 align-items-center mt-3 mb-5">
+                <h4 className="mb-0">
+                  {selectedComputerCameraPictures.computerName}
+                </h4>
+                <span className="badge text-white bg-primary">
+                  {selectedComputerCameraPictures.cameraPictures.length} Camera
+                  picture
+                  {selectedComputerCameraPictures.cameraPictures.length !== 1 &&
+                    "s"}
+                </span>
+              </div>
+            ) : (
+              <></>
+            )
+          ) : null}
         </div>
 
         <div
@@ -205,8 +318,8 @@ const CameraPictureGalleryDashboard = ({
           }}
         >
           {selectedDevice ? (
-            selectedComputerScreenshots &&
-            selectedComputerScreenshots.screenshots.length > 0 ? (
+            selectedComputerCameraPictures &&
+            selectedComputerCameraPictures.cameraPictures.length > 0 ? (
               <div className="col-12 mb-5 h-100">
                 <Swiper
                   spaceBetween={20}
@@ -218,30 +331,52 @@ const CameraPictureGalleryDashboard = ({
                     768: { slidesPerView: 1 },
                     1024: { slidesPerView: 1 },
                   }}
-                  style={{ paddingBottom: "2rem", height: "100%" }}
+                  style={{ paddingBottom: "1rem", height: "100%" }}
                 >
-                  {selectedComputerScreenshots.screenshots.map((img, i) => (
-                    <SwiperSlide key={i}>
-                      <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        style={{
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <ZoomableImage src={img.url} index={i} />
-                      </motion.div>
-                    </SwiperSlide>
-                  ))}
+                  {selectedComputerCameraPictures?.cameraPictures?.map(
+                    (img, i) => (
+                      <SwiperSlide key={`${img.url}-${i}`}>
+                        {img.isPlaceholder ? (
+                          <div className="d-flex flex-column justify-content-center align-items-center h-100">
+                            <img
+                              src={img.url}
+                              alt="Waiting"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "100%",
+                                objectFit: "contain",
+                              }}
+                            />
+
+                            <p className="text-muted text-center mt-1">
+                              Camera Picture in progress...
+                              <br />
+                              Please wait.
+                            </p>
+                          </div>
+                        ) : (
+                          <motion.div
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            style={{
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <ZoomableImage src={img.url} index={i} />
+                          </motion.div>
+                        )}
+                      </SwiperSlide>
+                    )
+                  )}
                 </Swiper>
               </div>
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
                 <DeafultComponent
-                  text={`No camera picture available for ${selectedComputerScreenshots?.computerName}.`}
+                  text={`No camera picture available for ${selectedComputerCameraPictures?.computerName}.`}
                 />
               </div>
             )
@@ -253,6 +388,17 @@ const CameraPictureGalleryDashboard = ({
             </div>
           )}
         </div>
+        {errorModalOpen && (
+          <ModalComponent
+            isOpen={true}
+            onConfirm={() => setErrorModalOpen(false)}
+            onCancel={() => setErrorModalOpen(false)}
+            message={`<h5 className="modal-title text-warning mb-1">
+            You should select a computer to complete the camera picture
+          </h5>`}
+            type="warning"
+          />
+        )}
       </div>
     </AnimatedRouteWrapper>
   );

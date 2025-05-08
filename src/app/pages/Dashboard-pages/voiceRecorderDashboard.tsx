@@ -12,10 +12,23 @@ import { DatetimePicker } from "../../components/form/datetimePicker";
 import { FiCamera } from "react-icons/fi";
 import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
 import { MdOutlineKeyboardVoice } from "react-icons/md";
-import { GetAntitheftActionAPI } from "../../config/ApiCalls";
-import { GetAntitheftType } from "../../types/antitheftTypes";
+import {
+  ExecuteAntitheftActionAPI,
+  GetAntitheftActionAPI,
+} from "../../config/ApiCalls";
+import {
+  ExecuteAntitheftActionType,
+  GetAntitheftType,
+} from "../../types/antitheftTypes";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import { ModalComponent } from "../../components/modal/ModalComponent";
 
 const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
+  const waitingPlaceholder = {
+    url: "",
+    isPlaceholder: true,
+  };
   const parentRef = useRef<HTMLDivElement>(null);
   const [parentHeight, setParentHeight] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
@@ -41,8 +54,76 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
   const [selectedComputerVoiceRecords, setSelectedComputerVoiceRecords] =
     useState<{
       computerName: string;
-      recordings: { url: string }[];
+      recordings: { url: string; isPlaceholder?: boolean }[];
     } | null>(null);
+
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const handleExecuteVoiceRecord = async () => {
+    if (!selectedDevice?.value) {
+      setErrorModalOpen(true);
+      return;
+    }
+
+    if (actionTypeId === undefined || isRecording) return;
+
+    setIsRecording(true);
+
+    const data: ExecuteAntitheftActionType = {
+      mid: selectedDevice.value,
+      action_type: actionTypeId,
+      users_id: Number(Cookies.get("user")),
+    };
+
+    try {
+      const res = await ExecuteAntitheftActionAPI(data);
+      if (res.status === 200 || res.status === 201) {
+        toast.success(
+          "Your voice recording is being processed. This may take up to a minute."
+        );
+
+        setSelectedComputerVoiceRecords((prev) => ({
+          computerName: selectedDevice.label,
+          recordings: [waitingPlaceholder, ...(prev?.recordings || [])],
+        }));
+
+        await new Promise((resolve) => setTimeout(resolve, 65000));
+
+        const reqData: GetAntitheftType = {
+          computers_id: selectedDevice.value,
+          action_type: actionTypeId,
+          ...(startDate && { start_date: new Date(startDate) }),
+          ...(endDate && { end_date: new Date(endDate) }),
+        };
+
+        try {
+          const res = await GetAntitheftActionAPI(reqData);
+          if (res?.data && Array.isArray(res.data)) {
+            const newVoiceRecords = res.data.map((item: any) => ({
+              url: item.value,
+            }));
+
+            setSelectedComputerVoiceRecords({
+              computerName: selectedDevice.label,
+              recordings: newVoiceRecords,
+            });
+          }
+        } catch (err) {
+          console.error("Failed to load voice records:", err);
+          toast.error("Failed to retrieve voice records.");
+        }
+      } else {
+        console.error("Failed to execute voice record action");
+        toast.error("Voice Record action failed to execute.");
+      }
+    } catch (err) {
+      console.error("Error executing action:", err);
+      toast.error("Unexpected error occurred while processing.");
+    } finally {
+      setIsRecording(false);
+    }
+  };
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -58,9 +139,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
     if (!selectedDevice) {
       return "Select a computer to display its recordings";
     }
-    // if (recordings.length === 0) {
-    //   return `No audio recordings found for ${selectedDevice.name}.`;
-    // }
+
     return "";
   };
 
@@ -119,7 +198,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
 
           setSelectedComputerVoiceRecords({
             computerName: selectedDevice.label,
-            recordings: recordings,
+            recordings: [...recordings, ...recordings],
           });
         } else {
           setSelectedComputerVoiceRecords({
@@ -144,19 +223,19 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
     }
   }, [divRef.current, parentRef.current]);
 
-  // useEffect(() => {
-  //   if (!divRef.current) return;
+  useEffect(() => {
+    if (!divRef.current) return;
 
-  //   const observer = new ResizeObserver((entries) => {
-  //     for (let entry of entries) {
-  //       setHeight((entry.target as HTMLElement).offsetHeight);
-  //     }
-  //   });
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setHeight((entry.target as HTMLElement).offsetHeight);
+      }
+    });
 
-  //   observer.observe(divRef.current);
+    observer.observe(divRef.current);
 
-  //   return () => observer.disconnect();
-  // }, []);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <AnimatedRouteWrapper>
@@ -199,35 +278,79 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
             </div>
 
             <div className="col-12 col-md-1 col-lg-1 d-flex justify-content-end align-items-end">
-              <button className="btn custom-btn p-2 p-md-3">
+              <button
+                className="btn custom-btn p-2 p-md-3"
+                onClick={handleExecuteVoiceRecord}
+                disabled={isRecording}
+                title={isRecording ? "Processing..." : "Start voice recording"}
+              >
                 <MdOutlineKeyboardVoice className="fs-2" />
               </button>
             </div>
           </div>
+
+          {selectedDevice ? (
+            selectedComputerVoiceRecords &&
+            selectedComputerVoiceRecords.recordings.length > 0 ? (
+              <div className="d-flex gap-2 align-items-center mt-3 mb-3">
+                <h4 className="mb-0">
+                  {selectedComputerVoiceRecords.computerName}
+                </h4>
+                <span className="badge bg-primary text-white">
+                  {selectedComputerVoiceRecords.recordings.length} Voice
+                  Recording
+                  {selectedComputerVoiceRecords.recordings.length !== 1 && "s"}
+                </span>
+              </div>
+            ) : (
+              <></>
+            )
+          ) : null}
         </div>
 
         <div
-          className="d-flex flex-column overflow-auto"
+          className="row vertical-scroll none-scroll-width"
           style={{
             height: `calc(${parentHeight}px - ${height}px)`,
           }}
         >
           {selectedComputerVoiceRecords ? (
             selectedComputerVoiceRecords.recordings.length > 0 ? (
-              <div className="col-12 h-100">
-                <div className="row">
-                  {selectedComputerVoiceRecords.recordings.map(
-                    (recording: { url: string }, i: number) => (
-                      <div
-                        key={i}
-                        className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
-                      >
-                        <VoiceCardComponent audioUrl={recording.url} />
-                      </div>
-                    )
-                  )}
+              // Check if there's at least one real (non-placeholder) recording
+              selectedComputerVoiceRecords.recordings.some(
+                (r) => !r.isPlaceholder
+              ) ? (
+                <div className="col-12 h-100">
+                  <div className="row">
+                    {selectedComputerVoiceRecords.recordings.map(
+                      (
+                        recording: { url: string; isPlaceholder?: boolean },
+                        i: number
+                      ) =>
+                        recording.isPlaceholder ? (
+                          <div
+                            key={`placeholder-${i}`}
+                            className="d-flex justify-content-center align-items-center h-100"
+                          >
+                            <DeafultComponent text={`Processing`} />
+                          </div>
+                        ) : (
+                          <div
+                            key={i}
+                            className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                          >
+                            <VoiceCardComponent audioUrl={recording.url} />
+                          </div>
+                        )
+                    )}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                // No non-placeholder recordings
+                <div className="d-flex justify-content-center align-items-center h-100">
+                  <DeafultComponent text={`Processing`} />
+                </div>
+              )
             ) : (
               <div className="d-flex justify-content-center align-items-center h-100">
                 <DeafultComponent
@@ -241,6 +364,17 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
             </div>
           )}
         </div>
+        {errorModalOpen && (
+          <ModalComponent
+            isOpen={true}
+            onConfirm={() => setErrorModalOpen(false)}
+            onCancel={() => setErrorModalOpen(false)}
+            message={`<h5 className="modal-title text-warning mb-1">
+                  You should select a computer to complete the voice record
+                </h5>`}
+            type="warning"
+          />
+        )}
       </div>
     </AnimatedRouteWrapper>
   );

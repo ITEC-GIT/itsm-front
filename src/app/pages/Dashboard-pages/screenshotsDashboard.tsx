@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FiCamera } from "react-icons/fi";
 import { useAtom, useAtomValue } from "jotai";
 import "swiper/css";
@@ -15,11 +15,25 @@ import AnimatedRouteWrapper from "../../routing/AnimatedRouteWrapper";
 import { selectValueType } from "../../types/dashboard";
 import { StaticDataType } from "../../types/filtersAtomType";
 import { DatetimePicker } from "../../components/form/datetimePicker";
-import { GetAntitheftType } from "../../types/antitheftTypes";
-import { GetAntitheftActionAPI } from "../../config/ApiCalls";
+import {
+  ExecuteAntitheftActionType,
+  GetAntitheftType,
+} from "../../types/antitheftTypes";
+import {
+  ExecuteAntitheftActionAPI,
+  GetAntitheftActionAPI,
+} from "../../config/ApiCalls";
+import Cookies from "js-cookie";
 import { DeafultComponent } from "../../components/voice-recorder/defaultComponent";
+import toast from "react-hot-toast";
+import { ModalComponent } from "../../components/modal/ModalComponent";
 
 const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
+  const waitingPlaceholder = {
+    url: "/media/svg/image-processing.png",
+    isPlaceholder: true,
+  };
+
   const parentRef = useRef<HTMLDivElement>(null);
   const [parentHeight, setParentHeight] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
@@ -42,6 +56,74 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
     label:
       compOptions.find((option) => option.value === computerId)?.label || "",
   });
+
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+
+  const handleExecuteScreenshot = async () => {
+    if (!selectedDevice?.value) {
+      setErrorModalOpen(true);
+      return;
+    }
+
+    if (actionTypeId === undefined || isCapturing) return;
+
+    setIsCapturing(true);
+
+    const data: ExecuteAntitheftActionType = {
+      mid: selectedDevice.value,
+      action_type: actionTypeId,
+      users_id: Number(Cookies.get("user")),
+    };
+
+    try {
+      const res = await ExecuteAntitheftActionAPI(data);
+      if (res.status === 200 || res.status === 201) {
+        toast.success(
+          "Your screenshot is being processed. This may take up to a minute."
+        );
+
+        setSelectedComputerScreenshots((prev) => ({
+          computerName: selectedDevice.label,
+          screenshots: [waitingPlaceholder, ...(prev?.screenshots || [])],
+        }));
+
+        await new Promise((resolve) => setTimeout(resolve, 65000));
+
+        const reqData: GetAntitheftType = {
+          computers_id: selectedDevice.value,
+          action_type: actionTypeId,
+          ...(startDate && { start_date: new Date(startDate) }),
+          ...(endDate && { end_date: new Date(endDate) }),
+        };
+
+        try {
+          const res = await GetAntitheftActionAPI(reqData);
+          if (res?.data && Array.isArray(res.data)) {
+            const newScreenshots = res.data.map((item: any) => ({
+              url: item.value,
+            }));
+
+            setSelectedComputerScreenshots({
+              computerName: selectedDevice.label,
+              screenshots: newScreenshots,
+            });
+          }
+        } catch (err) {
+          console.error("Failed to load screenshots:", err);
+          toast.error("Failed to retrieve screenshots.");
+        }
+      } else {
+        console.error("Failed to execute screenshot action");
+        toast.error("Screenshot action failed to execute.");
+      }
+    } catch (err) {
+      console.error("Error executing action:", err);
+      toast.error("Unexpected error occurred while processing.");
+    } finally {
+      setIsCapturing(false);
+    }
+  };
 
   const handleDeviceChange = (newValue: selectValueType | null) => {
     setSelectedDevice(newValue);
@@ -85,7 +167,7 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
   const [selectedComputerScreenshots, setSelectedComputerScreenshots] =
     useState<{
       computerName: string;
-      screenshots: { url: string }[];
+      screenshots: { url: string; isPlaceholder?: boolean }[];
     } | null>(null);
 
   useEffect(() => {
@@ -188,17 +270,42 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
             </div>
 
             <div className="col-12 col-md-1 col-lg-1 d-flex justify-content-end align-items-end">
-              <button className="btn custom-btn p-2 p-md-3">
+              <button
+                className="btn custom-btn p-md-3"
+                onClick={handleExecuteScreenshot}
+                disabled={isCapturing}
+                title={
+                  isCapturing
+                    ? "Screenshot is being captured..."
+                    : "Take Screenshot"
+                }
+              >
                 <FiCamera className="fs-2" />
               </button>
             </div>
           </div>
+          {selectedDevice ? (
+            selectedComputerScreenshots &&
+            selectedComputerScreenshots.screenshots.length > 0 ? (
+              <div className="d-flex gap-2 align-items-center mt-3 mb-5">
+                <h4 className="mb-0">
+                  {selectedComputerScreenshots.computerName}
+                </h4>
+                <span className="badge text-white bg-primary">
+                  {selectedComputerScreenshots.screenshots.length} Screenshot
+                  {selectedComputerScreenshots.screenshots.length !== 1 && "s"}
+                </span>
+              </div>
+            ) : (
+              <></>
+            )
+          ) : null}
         </div>
 
         <div
           className="row"
           style={{
-            height: `calc(${parentHeight}px - ${height}px)`,
+            height: `calc(${parentHeight}px  - ${height}px)`,
           }}
         >
           {selectedDevice ? (
@@ -215,24 +322,47 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
                     768: { slidesPerView: 1 },
                     1024: { slidesPerView: 1 },
                   }}
-                  style={{ paddingBottom: "2rem", height: "100%" }}
+                  style={{ paddingBottom: "1rem", height: "100%" }}
                 >
-                  {selectedComputerScreenshots.screenshots.map((img, i) => (
-                    <SwiperSlide key={i}>
-                      <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        style={{
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <ZoomableImage src={img.url} index={i} />
-                      </motion.div>
-                    </SwiperSlide>
-                  ))}
+                  <AnimatePresence mode="wait" initial={false}>
+                    {selectedComputerScreenshots?.screenshots?.map((img, i) => (
+                      <SwiperSlide key={`${img.url}-${i}`}>
+                        {img.isPlaceholder ? (
+                          <div className="d-flex flex-column justify-content-center align-items-center h-100">
+                            <img
+                              src={img.url}
+                              alt="Waiting"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "100%",
+                                objectFit: "contain",
+                              }}
+                            />
+
+                            <p className="text-muted text-center mt-1">
+                              Screenshot in progress...
+                              <br />
+                              Please wait.
+                            </p>
+                          </div>
+                        ) : (
+                          <motion.div
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 50 }}
+                            transition={{ duration: 0.5 }}
+                            style={{
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <ZoomableImage src={img.url} index={i} />
+                          </motion.div>
+                        )}
+                      </SwiperSlide>
+                    ))}
+                  </AnimatePresence>
                 </Swiper>
               </div>
             ) : (
@@ -250,6 +380,17 @@ const ScreenshotGalleryDashboard = ({ computerId }: { computerId: number }) => {
             </div>
           )}
         </div>
+        {errorModalOpen && (
+          <ModalComponent
+            isOpen={true}
+            onConfirm={() => setErrorModalOpen(false)}
+            onCancel={() => setErrorModalOpen(false)}
+            message={`<h5 className="modal-title text-warning mb-1">
+            You should select a computer to complete the screenshot
+          </h5>`}
+            type="warning"
+          />
+        )}
       </div>
     </AnimatedRouteWrapper>
   );

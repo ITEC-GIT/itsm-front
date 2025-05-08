@@ -296,7 +296,7 @@ const VoiceRecordingsPage = () => {
                 </h4>
                 <span className="badge bg-primary text-white">
                   {selectedComputerVoiceRecords.recordings.length} Voice
-                  Recorder
+                  Recording
                   {selectedComputerVoiceRecords.recordings.length !== 1 && "s"}
                 </span>
               </div>

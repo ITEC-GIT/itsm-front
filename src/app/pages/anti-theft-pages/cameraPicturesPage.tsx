@@ -293,7 +293,7 @@ const CameraPictureGalleryPage = () => {
           {selectedDevice ? (
             selectedComputerCameraPictures &&
             selectedComputerCameraPictures.cameraPictures.length > 0 ? (
-              <div className="d-flex gap-2 align-items-center mt-3">
+              <div className="d-flex gap-2 align-items-center mt-3 mb-5">
                 <h4 className="mb-0">
                   {selectedComputerCameraPictures.computerName}
                 </h4>
