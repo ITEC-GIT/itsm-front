@@ -30,6 +30,7 @@ import { ScreenshotGalleryPage } from "../pages/anti-theft-pages/screenshotsPage
 import { VoiceRecordingsPage } from "../pages/anti-theft-pages/voiceRecorderPage";
 import { CameraPictureGalleryPage } from "../pages/anti-theft-pages/cameraPicturesPage";
 import { AntiTheftWrapper } from "../pages/anti-theft-pages/antitheftPage";
+import { AntiTheftCommandsPage } from "../pages/anti-theft-pages/commandsPage";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -81,6 +82,7 @@ const PrivateRoutes = () => {
           path="antitheft/voice-recorders"
           element={<VoiceRecordingsPage />}
         />
+        <Route path="antitheft/commands" element={<AntiTheftCommandsPage />} />
         <Route path="/assets" element={<AssetsPageWrapper />} />
         <Route
           path="/assets/asset-details/:id/:hash"
