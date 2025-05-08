@@ -198,7 +198,7 @@ const VoiceRecordingsDashboard = ({ computerId }: { computerId: number }) => {
 
           setSelectedComputerVoiceRecords({
             computerName: selectedDevice.label,
-            recordings: [...recordings, ...recordings],
+            recordings: recordings,
           });
         } else {
           setSelectedComputerVoiceRecords({
