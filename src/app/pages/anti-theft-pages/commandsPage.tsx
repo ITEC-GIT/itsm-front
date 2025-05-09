@@ -166,20 +166,15 @@ const AntiTheftCommandsPage = () => {
 
   useEffect(() => {
     if (divRef.current) {
-      console.log(divRef.current.offsetHeight);
       setHeight(divRef.current.offsetHeight);
     }
     if (parentRef.current) {
-      console.log(parentRef.current.offsetHeight);
       setParentHeight(parentRef.current.offsetHeight);
     }
   }, [divRef.current, parentRef.current]);
 
   useEffect(() => {
-    const divEl = divRef.current;
-    const parentEl = parentRef.current;
-
-    if (!divEl && !parentEl) return;
+    if (!divRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -187,8 +182,7 @@ const AntiTheftCommandsPage = () => {
       }
     });
 
-    if (divEl) observer.observe(divEl);
-    if (parentEl) observer.observe(parentEl);
+    observer.observe(divRef.current);
 
     return () => observer.disconnect();
   }, []);
