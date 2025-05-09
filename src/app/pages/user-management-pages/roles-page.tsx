@@ -73,24 +73,18 @@ const RolesPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-12 d-flex justify-content-end mb-3">
-                {/* <AddButton text="Add New Role" onClick={toggleModelCreation} /> */}
-                <button
-                  onClick={toggleModelCreation}
-                  className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2"
-                >
-                  <i className="bi bi-plus fs-1 text-white"></i>
-                  <span className="d-none d-sm-inline">Add New Role</span>
-                </button>
-              </div>
-
-              <div className="col-12 d-flex justify-content-end align-items-center gap-2">
+              <div className="col-12 d-flex justify-content-end align-items-center mb-3 gap-2">
                 <SearchComponent
                   value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleSearchChange(e.target.value)
-                  }
+                  onChange={handleSearchChange}
                 />
+                <button
+                  onClick={toggleModelCreation}
+                  className="btn text-dark  d-flex align-items-center gap-2 px-4 py-2 custom-btn"
+                >
+                  <i className="bi bi-plus fs-1 text-dark"></i>
+                  <span className="d-none d-sm-inline">Add New Role</span>
+                </button>
               </div>
             </div>
 
