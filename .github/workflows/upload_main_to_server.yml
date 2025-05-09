@@ -3,17 +3,18 @@ name: Deploy Main Code to Remote Server
 on:
   push:
     branches:
-      - main  # Replace with the branch you want to deploy from
+      - '*'
 
 jobs:
   deploy:
     runs-on: self-hosted  # Use the self-hosted runner on the same machine
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Deploy Main Application
-      run: |
-        mkdir -p /home/glpi/main
-        rsync -avz --exclude='.git/' ./ /home/glpi/main/
+      - name: Deploy Application
+        run: |
+          echo "Deploying branch ${{ github.ref_name }}"
+          mkdir -p /home/glpi/${{ github.ref_name }}_frontend
+          rsync -avz --exclude='.git/' ./ /home/glpi/${{ github.ref_name }}_frontend/
