@@ -159,11 +159,7 @@ export const getColumns = (
       id: "name",
     },
     {
-      name: (
-        
-          <span className="ms-2"> Category
-        </span>
-      ),
+      name: <span className="ms-2"> Category</span>,
       selector: (row: AssetsHistoryType) => row.category.name.toLowerCase(),
       sortable: true,
       width: columnXXLargeWidth,
@@ -171,22 +167,14 @@ export const getColumns = (
       id: "category",
     },
     {
-      name: (
-       
-          <span className="ms-2"> Type
-        </span>
-      ),
+      name: <span className="ms-2"> Type</span>,
       width: columnXLargeWidth,
       selector: (row: AssetsHistoryType) => row.type,
       sortable: true,
       id: "type",
     },
     {
-      name: (
-        
-          <span className="ms-2"> Model
-        </span>
-      ),
+      name: <span className="ms-2"> Model</span>,
       width: columnLargeWidth,
       selector: (row: AssetsHistoryType) => row.model,
       sortable: true,
@@ -202,11 +190,7 @@ export const getColumns = (
       id: "model",
     },
     {
-      name: (
-        
-          <span className="ms-2"> Manufacturer
-        </span>
-      ),
+      name: <span className="ms-2"> Manufacturer</span>,
       width: columnXXLargeWidth,
       selector: (row: AssetsHistoryType) => row.model,
       sortable: true,
@@ -222,11 +206,7 @@ export const getColumns = (
       id: "manufacturer",
     },
     {
-      name: (
-        
-          <span className="ms-2"> Serial Number
-        </span>
-      ),
+      name: <span className="ms-2"> Serial Number</span>,
       width: columnXXLargeWidth,
       selector: (row: AssetsHistoryType) => row.serial_number,
       sortable: true,
@@ -243,11 +223,7 @@ export const getColumns = (
       id: "serial_number",
     },
     {
-      name: (
-       
-          <span className="ms-2"> Parent Asset
-        </span>
-      ),
+      name: <span className="ms-2"> Parent Asset</span>,
       width: columnXXLargeWidth,
       selector: (row: AssetsHistoryType) => {
         row.computer?.name;
@@ -267,11 +243,7 @@ export const getColumns = (
       id: "computer",
     },
     {
-      name: (
-        
-          <span className="ms-2"> Modified date
-        </span>
-      ),
+      name: <span className="ms-2"> Modified date</span>,
       width: columnXXLargeWidth,
       selector: (row: AssetsHistoryType) => row.date_mode,
       sortable: true,
@@ -1078,7 +1050,12 @@ export const Actions: Record<
   {
     key: string;
     id: number;
-    labels: { name: string; icon: string; excludedCategories?: string[] }[];
+    labels: {
+      action?: string;
+      name: string;
+      icon: string;
+      excludedCategories?: string[];
+    }[];
   }
 > = {
   "Anti-Theft Actions": {
@@ -1086,16 +1063,24 @@ export const Actions: Record<
     key: "Anti-Theft Actions",
     labels: [
       {
+        action: "screenshot",
         name: "Take Screenshot",
         icon: "https://img.icons8.com/?size=50&id=13371&format=png&color=000000",
       },
       {
+        action: "camera_picture",
         name: "Take Camera Picture",
         icon: "https://img.icons8.com/?size=50&id=20859&format=png&color=000000",
       },
       {
+        action: "voice_record",
         name: "Voice Record (5min)",
         icon: "https://img.icons8.com/?size=50&id=MewtzptWEsk5&format=png&color=000000",
+      },
+      {
+        action: "command",
+        name: "Send Command",
+        icon: "https://img.icons8.com/?size=50&id=1PZDx02Lg0Is&format=png&color=000000",
       },
       {
         name: "Open Location",
@@ -1119,10 +1104,7 @@ export const Actions: Record<
         name: "SSH",
         icon: "https://img.icons8.com/?size=50&id=19292&format=png&color=000000",
       },
-      {
-        name: "Send Command",
-        icon: "https://img.icons8.com/?size=50&id=1PZDx02Lg0Is&format=png&color=000000",
-      },
+
       {
         name: "Software Install",
         icon: "https://img.icons8.com/?size=50&id=18363&format=png&color=000000",
@@ -1171,11 +1153,7 @@ export const getAssetSoftwaresColumns = (
 ): TableColumn<AssetSoftwaresType>[] =>
   [
     {
-      name: (
-       
-          <span className="ms-2"> Name
-        </span>
-      ),
+      name: <span className="ms-2"> Name</span>,
       selector: (row: AssetSoftwaresType) => row.name,
       sortable: true,
       width: columnXXXLargeWidth,
@@ -1185,11 +1163,7 @@ export const getAssetSoftwaresColumns = (
       id: "name",
     },
     {
-      name: (
-        
-          <span className="ms-2"> Category
-        </span>
-      ),
+      name: <span className="ms-2"> Category</span>,
       selector: (row: AssetSoftwaresType) => row.category,
       cell: (row: AssetSoftwaresType) => (
         <span
@@ -1206,33 +1180,21 @@ export const getAssetSoftwaresColumns = (
       id: "category",
     },
     {
-      name: (
-      
-          <span className="ms-2"> Publisher
-        </span>
-      ),
+      name: <span className="ms-2"> Publisher</span>,
       width: columnXXLargeWidth,
       selector: (row: AssetSoftwaresType) => row.publisher,
       sortable: true,
       id: "publisher",
     },
     {
-      name: (
-        
-          <span className="ms-2"> Version
-        </span>
-      ),
+      name: <span className="ms-2"> Version</span>,
       width: columnXLargeWidth,
       selector: (row: AssetSoftwaresType) => row.version,
       sortable: true,
       id: "version",
     },
     {
-      name: (
-       
-          <span className="ms-2"> Architecture
-        </span>
-      ),
+      name: <span className="ms-2"> Architecture</span>,
       width: columnLargeWidth,
       selector: (row: AssetSoftwaresType) => row.architecture,
       sortable: true,
@@ -1248,11 +1210,7 @@ export const getAssetSoftwaresColumns = (
       id: "arch",
     },
     {
-      name: (
-      
-          <span className="ms-2"> Installed date
-        </span>
-      ),
+      name: <span className="ms-2"> Installed date</span>,
       width: columnXXLargeWidth,
       selector: (row: AssetSoftwaresType) => row.install_date,
       sortable: true,
