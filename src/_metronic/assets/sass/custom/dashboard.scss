@@ -393,7 +393,7 @@
 
 //landing page boxes
 .stat-box {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  // transition: transform 0.3s ease, box-shadow 0.3s ease;
   background-color: white !important;
   border-radius: 6px !important;
   border: 2px solid #dde2e6 !important;
@@ -404,10 +404,7 @@
     margin-bottom: 20px;
   }
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
+
 }
 
 .stat-card {
