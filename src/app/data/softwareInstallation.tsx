@@ -50,10 +50,7 @@ export const getColumns = (
     id: "id",
   },
   {
-    name: (
-      <span className="ms-2"> Software
-      </span>
-    ),
+    name: <span className="ms-2"> Software</span>,
     selector: (row: SoftwareHistoryType) => row.software,
     sortable: true,
     width: columnXXXLargeWidth,
@@ -69,10 +66,7 @@ export const getColumns = (
     id: "Software",
   },
   {
-    name: (
-      <span className="ms-2"> Device
-      </span>
-    ),
+    name: <span className="ms-2"> Device</span>,
 
     selector: (row: SoftwareHistoryType) => row.computer_name,
     width: columnXXXLargeWidth,
@@ -89,10 +83,7 @@ export const getColumns = (
     id: "Device",
   },
   {
-    name: (
-      <span className="ms-2"> URL
-      </span>
-    ),
+    name: <span className="ms-2"> URL</span>,
     width: columnXXLargeWidth,
     selector: (row: SoftwareHistoryType) => row.url,
     sortable: true,
@@ -109,10 +100,7 @@ export const getColumns = (
     ),
   },
   {
-    name: (
-      <span className="ms-2"> Destination
-      </span>
-    ),
+    name: <span className="ms-2"> Destination</span>,
     width: columnXXXLargeWidth,
     selector: (row: SoftwareHistoryType) => row.destination,
     sortable: true,
@@ -128,10 +116,7 @@ export const getColumns = (
     id: "Destination",
   },
   {
-    name: (
-      <span className="ms-2"> Arguments
-      </span>
-    ),
+    name: <span className="ms-2"> Arguments</span>,
     width: columnXXXLargeWidth,
     selector: (row: SoftwareHistoryType) => row.arguments,
     sortable: true,
@@ -147,13 +132,10 @@ export const getColumns = (
     ),
   },
   {
-    name: (
-      <span className="ms-2"> Status
-      </span>
-    ),
+    name: <span className="ms-2"> Status</span>,
     selector: (row: SoftwareHistoryType) => row.status,
     sortable: true,
-    width: columnLargeWidth,
+    width: columnMediumWidth,
     id: "status",
     cell: (row: SoftwareHistoryType) => {
       const backgroundColor = getBackgroundColor(
@@ -187,20 +169,14 @@ export const getColumns = (
     },
   },
   {
-    name: (
-      <span className="ms-2"> User
-      </span>
-    ),
+    name: <span className="ms-2"> User</span>,
     width: columnXLargeWidth,
     selector: (row: SoftwareHistoryType) => row.user_name,
     sortable: true,
     id: "User",
   },
   {
-    name: (
-      <span className="ms-2"> Date
-      </span>
-    ),
+    name: <span className="ms-2"> Date</span>,
     id: "Date",
     width: columnMediumWidth,
     selector: (row: SoftwareHistoryType) => {
@@ -215,10 +191,7 @@ export const getColumns = (
     sortable: true,
   },
   {
-    name: (
-      <span className="ms-2">
-      </span>
-    ),
+    name: <span className="ms-2"></span>,
     width: columnSmallWidth,
     cell: (row: SoftwareHistoryType) => (
       <button
