@@ -15,54 +15,34 @@ const SidebarMenuMain = () => {
         title={t.dashboard}
         fontIcon="bi-app-indicator"
       />
-      <SidebarMenuItem
-        to="/hyper-commands"
-        icon="switch"
+      <SidebarMenuItemWithSub
+        to="/hyper-commands/"
         title={t.hyperCommands}
+        icon="switch"
         fontIcon="bi-layers"
-      />
+      >
+        <SidebarMenuItem
+          to="/hyper-commands/software-installation"
+          title={t.hyperCommands_software}
+          hasBullet={true}
+        />
+        <SidebarMenuItem
+          to="/hyper-commands/remote-ssh"
+          title={t.hyperCommands_ssh}
+          hasBullet={true}
+        />
+        <SidebarMenuItem
+          to="/hyper-commands/remote-console"
+          title={t.hyperCommands_vnc}
+          hasBullet={true}
+        />
+      </SidebarMenuItemWithSub>
       <SidebarMenuItem
         to="/antitheft"
         icon="switch"
         title={t.antitheft}
         fontIcon="bi-layers"
       />
-      {/* <SidebarMenuItem
-        to="/hyper-commands/software-installation"
-        icon="switch"
-        title={t.hyperCommands_software}
-        fontIcon="bi-layers"
-      />
-      <SidebarMenuItem
-        to="/hyper-commands/remote-ssh"
-        icon="switch"
-        title={t.hyperCommands_ssh}
-        fontIcon="bi-layers"
-      />
-      <SidebarMenuItem
-        to="/hyper-commands/remote-console"
-        icon="switch"
-        title={t.hyperCommands_vnc}
-        fontIcon="bi-layers"
-      /> */}
-      {/* <SidebarMenuItem
-        to="/antitheft/screenshots"
-        icon="switch"
-        title={t.screenshots}
-        fontIcon="bi-layers"
-      />
-      <SidebarMenuItem
-        to="/antitheft/camerapicture"
-        icon="switch"
-        title={t.cameraPicture}
-        fontIcon="bi-layers"
-      />
-      <SidebarMenuItem
-        to="/antitheft/voicerecorder"
-        icon="switch"
-        title={t.voiceRecorder}
-        fontIcon="bi-layers"
-      /> */}
       <SidebarMenuItem
         to="/assets"
         icon="switch"

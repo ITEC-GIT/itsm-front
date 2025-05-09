@@ -181,8 +181,8 @@ const MainDashboard = () => {
     const computerId = location.state?.computerId;
 
     if (fromDetails && restoreTicket && computerId !== undefined) {
-      setSelectedDeviceAtom(computerId); // select the computer
-      setActiveView("ticket"); // set ticket view
+      setSelectedDeviceAtom(computerId);
+      setActiveView("ticket");
     }
   }, [location]);
   return (
